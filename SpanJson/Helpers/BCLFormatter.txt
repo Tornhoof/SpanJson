@@ -1,0 +1,33 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#
+    var types = new[]
+    {
+		typeof(DateTime), typeof(DateTimeOffset), typeof(TimeSpan), typeof(Guid), typeof(string)
+    };
+#>
+using System;
+
+<# foreach(var t in types) {  #>
+namespace SpanJson.Formatters
+{
+    public sealed class <#= t.Name #>Formatter : IJsonFormatter<<#= t.Name #>>
+    {
+        public static readonly <#= t.Name #>Formatter Default = new <#= t.Name #>Formatter();
+
+        public void Serialize(ref JsonWriter writer, <#= t.Name #> value, IJsonFormatterResolver formatterResolver)
+        {
+            writer.Write<#= t.Name #>(value);
+        }
+
+        public <#= t.Name #> DeSerialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
+        {
+            return reader.Read<#= t.Name #>();
+        }
+	}
+}
+<# } #>

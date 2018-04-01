@@ -5,9 +5,9 @@ VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanJson", "SpanJson\SpanJson.csproj", "{251948D9-BBB1-4EB3-AA33-4C4C3328D5C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpanJson.Benchmarks", "SpanJson.Benchmarks\SpanJson.Benchmarks\SpanJson.Benchmarks.csproj", "{F2C45B6F-6F9B-41D4-BC0C-F0C86EDAEB56}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpanJson.Benchmarks", "SpanJson.Benchmarks\SpanJson.Benchmarks.csproj", "{F2C45B6F-6F9B-41D4-BC0C-F0C86EDAEB56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpanJson.Tests", "SpanJson.Tests\SpanJson.Tests\SpanJson.Tests.csproj", "{81A97B5A-D389-4F15-BCBA-6680C2407424}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpanJson.Tests", "SpanJson.Tests\SpanJson.Tests.csproj", "{81A97B5A-D389-4F15-BCBA-6680C2407424}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
