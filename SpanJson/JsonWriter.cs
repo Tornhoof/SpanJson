@@ -13,14 +13,12 @@ namespace SpanJson
         private char[] _arrayToReturnToPool;
         private Span<char> _chars;
         private int _pos;
-        private Guid guid;
 
         public JsonWriter(Span<char> initialBuffer)
         {
             _arrayToReturnToPool = null;
             _chars = initialBuffer;
             _pos = 0;
-            guid = Guid.NewGuid();
         }
 
         public JsonWriter(int initialSize)
@@ -28,7 +26,6 @@ namespace SpanJson
             _arrayToReturnToPool = ArrayPool<char>.Shared.Rent(initialSize);
             _chars = _arrayToReturnToPool;
             _pos = 0;
-            guid = Guid.NewGuid();
         }
 
         public int Length

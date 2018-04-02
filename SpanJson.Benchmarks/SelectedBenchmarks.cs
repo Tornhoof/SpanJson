@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Running;
 using SpanJson.Benchmarks.Fixture;
 using SpanJson.Benchmarks.Models;
 using SpanJson.Benchmarks.Serializers;
@@ -9,7 +10,6 @@ using SpanJson.Benchmarks.Serializers;
 namespace SpanJson.Benchmarks
 {
     [MemoryDiagnoser]
-    [DisassemblyDiagnoser(true, recursiveDepth: 4)]
     public class SelectedBenchmarks
     {
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
@@ -26,6 +26,9 @@ namespace SpanJson.Benchmarks
         private static readonly MobileCommunityBulletin MobileCommunityBulletinInput =
             ExpressionTreeFixture.Create<MobileCommunityBulletin>();
 
+        private static readonly Question.ClosedDetails QuestionClosedDetailsInput =
+            ExpressionTreeFixture.Create<Question.ClosedDetails>();
+
         //[Benchmark]
         //public string SerializeAccessTokenWithJilSerializer()
         //{
@@ -33,9 +36,9 @@ namespace SpanJson.Benchmarks
         //}
 
         [Benchmark]
-        public string SerializeMobileCommunityBulletinInputWithSpanJsonSerializer()
+        public string SerializeQuestionClosedDetailsSpanJsonSerializer()
         {
-            return SpanJsonSerializer.Serialize(MobileCommunityBulletinInput);
+            return SpanJsonSerializer.Serialize(QuestionClosedDetailsInput);
         }
 
         //[Benchmark]

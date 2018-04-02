@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using SpanJson.Resolvers;
@@ -46,12 +46,27 @@ namespace SpanJson.Formatters
 
         protected static int EstimateSize<T>()
         {
-            var propertyInfos = typeof(T).GetProperties();
+            Queue<Type> queue = new Queue<Type>();
+            HashSet<Type> alreadyseen = new HashSet<Type>();
+            queue.Enqueue(typeof(T));
             int result = 0;
-            foreach (var propertyInfo in propertyInfos)
+            while (queue.Count > 0)
             {
-                result += propertyInfo.Name.Length + 3; // two quotes + :
-                result += 20; // find better estimation
+                var current = queue.Dequeue();
+                if (alreadyseen.Add(current))
+                {
+                    var propertyInfos = current.GetProperties();
+                    foreach (var propertyInfo in propertyInfos)
+                    {
+                        result += propertyInfo.Name.Length + 3; // two quotes + :
+                        result += 20; // find better estimation
+                        if (propertyInfo.PropertyType.IsClass)
+                        {
+                            result += 4;
+                            queue.Enqueue(propertyInfo.PropertyType);
+                        }
+                    }
+                }
             }
 
             return result;

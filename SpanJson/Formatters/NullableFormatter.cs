@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
@@ -13,6 +14,7 @@ namespace SpanJson.Formatters
             throw new NotImplementedException();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Serialize(ref JsonWriter writer, T? value, IJsonFormatterResolver formatterResolver)
         {
             if (value == null)
