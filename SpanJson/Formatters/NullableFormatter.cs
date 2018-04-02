@@ -23,5 +23,7 @@ namespace SpanJson.Formatters
 
             DefaultFormatter.Serialize(ref writer, value.Value, formatterResolver);
         }
+
+        public int AllocSize { get; } = 100;
     }
 }

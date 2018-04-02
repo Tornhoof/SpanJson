@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang='en'><head><meta charset='utf-8' /><head>
+<title>Pretty Output of DisassemblyDiagnoser for SelectedBenchmarks.SerializeMobileCommunityBulletinInputWithSpanJsonSerializer: DefaultJob</title>
+
+<style type="text/css">
+    pre { margin: 0px; }
+    table { border-collapse:collapse; }
+    td.perMethod { border-top: 1px black solid; }
+    tr.evenMap td { background-color: #F5F5F5; }  
+</style>
+
+<style type='text/css'>
+    td.label:hover { cursor: pointer; background-color: yellow !important; }
+    td.highlighted { background-color: yellow !important; }
+</style>
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.2.1.min.js"></script>
+<script>$(document).ready(function () {
+    var selectedIndex = 0;
+
+    function highlight() {
+        $('td.reference.highlighted').removeClass('highlighted');
+
+        var selectedLabel = $(this).attr('data-label');
+        if (selectedLabel) {
+            $('td.reference[data-reference=' + selectedLabel + ']').addClass('highlighted');
+        }
+        selectedIndex = 0;
+    }
+
+    function selectNext() {
+        var $highlighted = $('td.reference.highlighted');
+        var selected = $highlighted[selectedIndex++ % $highlighted.length];
+
+        if (selected) {
+            var selectedReference = $(selected).attr('id');
+            if (selectedReference) {
+                window.location.hash = '#' + selectedReference;
+            }
+        }
+    }
+
+    $('td.label').on('click', highlight);
+
+    $(document).on('keydown', function (event) {
+        if (event.keyCode == 114) { // F3
+            event.preventDefault();
+            // Remap F3 to some other key that the browser doesn't care about
+            selectNext();
+        }
+    });
+});</script>
+</head><body><table><tbody>
+<tr><th colspan="2" style="text-align: left;">SpanJson.Benchmarks.SelectedBenchmarks.SerializeMobileCommunityBulletinInputWithSpanJsonSerializer()</th><th></th></tr>
+<tr class="">
+<td></td><td title="00007fff`8be81575 48b9c0fdf18bff7f0000 mov rcx,7FFF8BF1FDC0h"><pre><code>mov     rcx,7FFF8BF1FDC0h</pre></code></td>
+</tr><tr class="">
+<td></td><td title="00007fff`8be8157f ba07000000      mov     edx,7"><pre><code>mov     edx,7</pre></code></td>
+</tr><tr class="">
+<td></td><td title="00007fff`8be81584 e837f2aa5f      call    coreclr!MetaDataGetDispenser+0x2dc20 (00007fff`eb9307c0)"><pre><code>call    coreclr!MetaDataGetDispenser+0x2dc20</pre></code></td>
+</tr><tr class="">
+<td></td><td title="00007fff`8be81589 48b9189b73dbf8010000 mov rcx,1F8DB739B18h"><pre><code>mov     rcx,1F8DB739B18h</pre></code></td>
+</tr><tr class="">
+<td></td><td title="00007fff`8be81593 488b31          mov     rsi,qword ptr [rcx]"><pre><code>mov     rsi,qword ptr [rcx]</pre></code></td>
+</tr><tr class="">
+<td></td><td title="00007fff`8be81596 488bce          mov     rcx,rsi"><pre><code>mov     rcx,rsi</pre></code></td>
+</tr><tr class="">
+<td></td><td title="00007fff`8be81599 48bae8befd8bff7f0000 mov rdx,7FFF8BFDBEE8h"><pre><code>mov     rdx,7FFF8BFDBEE8h</pre></code></td>
+</tr><tr class="">
+<td></td><td title="00007fff`8be815a3 49b898cbfd8bff7f0000 mov r8,7FFF8BFDCB98h"><pre><code>mov     r8,7FFF8BFDCB98h</pre></code></td>
+</tr><tr class="">
+<td></td><td title="00007fff`8be815ad e8de46a85f      call    coreclr!MetaDataGetDispenser+0x30f0 (00007fff`eb905c90)"><pre><code>call    coreclr!MetaDataGetDispenser+0x30f0</pre></code></td>
+</tr><tr class="">
+<td></td><td title="00007fff`8be815b2 48ba309b73dbf8010000 mov rdx,1F8DB739B30h"><pre><code>mov     rdx,1F8DB739B30h</pre></code></td>
+</tr><tr class="">
+<td></td><td title="00007fff`8be815bc 488b12          mov     rdx,qword ptr [rdx]"><pre><code>mov     rdx,qword ptr [rdx]</pre></code></td>
+</tr><tr class="">
+<td></td><td title="00007fff`8be815bf 488bce          mov     rcx,rsi"><pre><code>mov     rcx,rsi</pre></code></td>
+</tr><tr><td colspan="{2}">&nbsp;</td></tr>
+</tbody></table></body></html>

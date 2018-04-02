@@ -13,5 +13,7 @@
         {
             return reader.ReadDouble();
         }
+
+        public int AllocSize { get; } = 100;
     }
 }

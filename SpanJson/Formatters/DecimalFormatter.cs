@@ -13,5 +13,7 @@
         {
             return reader.ReadDecimal();
         }
+
+        public int AllocSize { get; } = 100;
     }
 }

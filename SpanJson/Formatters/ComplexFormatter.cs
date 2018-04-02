@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using SpanJson.Resolvers;
@@ -41,6 +42,19 @@ namespace SpanJson.Formatters
             var lambda = Expression.Lambda<SerializationDelegate<T>>(blockExpression, writerParameter, valueParameter,
                 resolverParameter);
             return lambda.Compile();
+        }
+
+        protected static int EstimateSize<T>()
+        {
+            var propertyInfos = typeof(T).GetProperties();
+            int result = 0;
+            foreach (var propertyInfo in propertyInfos)
+            {
+                result += propertyInfo.Name.Length + 3; // two quotes + :
+                result += 20; // find better estimation
+            }
+
+            return result;
         }
     }
 }

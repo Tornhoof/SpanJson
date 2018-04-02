@@ -23,6 +23,9 @@ namespace SpanJson.Benchmarks
 
         private static readonly AccessToken AccessTokenInput = ExpressionTreeFixture.Create<AccessToken>();
 
+        private static readonly MobileCommunityBulletin MobileCommunityBulletinInput =
+            ExpressionTreeFixture.Create<MobileCommunityBulletin>();
+
         //[Benchmark]
         //public string SerializeAccessTokenWithJilSerializer()
         //{
@@ -30,9 +33,9 @@ namespace SpanJson.Benchmarks
         //}
 
         [Benchmark]
-        public string SerializeAccessTokenWithSpanJsonSerializer()
+        public string SerializeMobileCommunityBulletinInputWithSpanJsonSerializer()
         {
-            return SpanJsonSerializer.Serialize(AccessTokenInput);
+            return SpanJsonSerializer.Serialize(MobileCommunityBulletinInput);
         }
 
         //[Benchmark]

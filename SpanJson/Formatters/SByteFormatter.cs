@@ -13,5 +13,7 @@
         {
             return reader.ReadSByte();
         }
+
+        public int AllocSize { get; } = 100;
     }
 }

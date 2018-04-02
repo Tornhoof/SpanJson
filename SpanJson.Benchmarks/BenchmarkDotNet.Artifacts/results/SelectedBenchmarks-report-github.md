@@ -9,6 +9,6 @@ Frequency=3906246 Hz, Resolution=256.0003 ns, Timer=TSC
 
 
 ```
-|                                     Method |     Mean |    Error |   StdDev |  Gen 0 | Allocated |
-|------------------------------------------- |---------:|---------:|---------:|-------:|----------:|
-| SerializeAccessTokenWithSpanJsonSerializer | 681.0 ns | 3.695 ns | 2.885 ns | 0.0658 |     280 B |
+|                                                      Method |     Mean |     Error |    StdDev |  Gen 0 | Allocated |
+|------------------------------------------------------------ |---------:|----------:|----------:|-------:|----------:|
+| SerializeMobileCommunityBulletinInputWithSpanJsonSerializer | 959.4 ns | 0.3213 ns | 0.2509 ns | 0.1698 |     720 B |

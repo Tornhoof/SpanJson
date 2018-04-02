@@ -19,12 +19,13 @@ namespace SpanJson.Formatters
 
             var valueLength = value.Count;
             writer.WriteArrayStart();
-            for (var i = 0; i < valueLength; i++)
+            if (valueLength > 0)
             {
-                DefaultFormatter.Serialize(ref writer, value[i], formatterResolver);
-                if (i < valueLength - 1)
+                DefaultFormatter.Serialize(ref writer, value[0], formatterResolver);
+                for (var i = 1; i < valueLength; i++)
                 {
                     writer.WriteSeparator();
+                    DefaultFormatter.Serialize(ref writer, value[i], formatterResolver);
                 }
             }
 
@@ -35,5 +36,7 @@ namespace SpanJson.Formatters
         {
             throw new NotImplementedException();
         }
+
+        public int AllocSize { get; } = 100;
     }
 }

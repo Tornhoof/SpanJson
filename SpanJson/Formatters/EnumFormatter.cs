@@ -26,6 +26,8 @@ namespace SpanJson.Formatters
             }
         }
 
+        public int AllocSize { get; } = 100;
+
         private static Dictionary<T, string> BuildEnumDictionary()
         {
             var result = new Dictionary<T, string>();

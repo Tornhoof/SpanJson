@@ -14,11 +14,20 @@ namespace SpanJson
             {
                 var resolver = StandardResolvers.Default;
                 var formatter = resolver.GetFormatter<T>();
-                Span<char> span = stackalloc char[100];
-                var jsonWriter = new JsonWriter(span);
-                formatter.Serialize(ref jsonWriter, input, resolver);
-                var result = jsonWriter.ToString(); // includes Dispose
-                return result;
+                if (formatter.AllocSize <= 256) // todo find better values
+                {
+                    Span<char> span = stackalloc char[formatter.AllocSize];
+                    var jsonWriter = new JsonWriter(span);
+                    formatter.Serialize(ref jsonWriter, input, resolver);
+                    return jsonWriter.ToString(); // includes Dispose
+                }
+                else
+                {
+                    var jsonWriter = new JsonWriter(formatter.AllocSize);
+                    formatter.Serialize(ref jsonWriter, input, resolver);
+                    var result = jsonWriter.ToString(); // includes Dispose
+                    return result;
+                }
             }
         }
 
@@ -34,7 +43,9 @@ namespace SpanJson
                     return null;
                 }
 
+                // ReSharper disable ConvertClosureToMethodGroup
                 var invoker = Invokers.GetOrAdd(input.GetType(), x => BuildInvoker(x));
+                // ReSharper restore ConvertClosureToMethodGroup
                 return invoker(input);
             }
 

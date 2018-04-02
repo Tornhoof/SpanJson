@@ -13,5 +13,7 @@
         {
             return reader.ReadInt32();
         }
+
+        public int AllocSize { get; } = 100;
     }
 }

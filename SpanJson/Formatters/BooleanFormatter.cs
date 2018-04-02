@@ -13,5 +13,7 @@
         {
             return reader.ReadBoolean();
         }
+
+        public int AllocSize { get; } = 100;
     }
 }

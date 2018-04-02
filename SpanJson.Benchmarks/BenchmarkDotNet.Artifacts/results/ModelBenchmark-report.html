@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>ModelBenchmark</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet=v0.10.13, OS=Windows 10 Redstone 3 [1709, Fall Creators Update] (10.0.16299.309)
+Intel Core i7-4790K CPU 4.00GHz (Haswell), 1 CPU, 8 logical cores and 4 physical cores
+Frequency=3906246 Hz, Resolution=256.0003 ns, Timer=TSC
+.NET Core SDK=2.1.300-preview1-008174
+  [Host]     : .NET Core 2.1.0-preview3-26329-05 (CoreCLR 4.6.26329.01, CoreFX 4.6.26329.01), 64bit RyuJIT
+  DefaultJob : .NET Core 2.1.0-preview3-26329-05 (CoreCLR 4.6.26329.01, CoreFX 4.6.26329.01), 64bit RyuJIT
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>                                          Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>Median</th><th>Gen 0</th><th>Allocated</th>
+</tr>
+</thead><tbody><tr><td>SerializeReputationHistoryWithUtf8JsonSerializer</td><td>736.5 ns</td><td>1.5380 ns</td><td>1.2843 ns</td><td>736.7 ns</td><td>0.0448</td><td>192 B</td>
+</tr><tr><td>SerializeRevisionWithUtf8JsonSerializer</td><td>1,885.6 ns</td><td>17.0158 ns</td><td>15.0841 ns</td><td>1,883.8 ns</td><td>0.1526</td><td>648 B</td>
+</tr><tr><td>SerializeSearchExcerptWithUtf8JsonSerializer</td><td>4,046.9 ns</td><td>7.1850 ns</td><td>6.3693 ns</td><td>4,046.0 ns</td><td>0.2441</td><td>1040 B</td>
+</tr><tr><td>SerializeShallowUserWithUtf8JsonSerializer</td><td>608.5 ns</td><td>0.3129 ns</td><td>0.2927 ns</td><td>608.4 ns</td><td>0.0620</td><td>264 B</td>
+</tr><tr><td>SerializeSuggestedEditWithUtf8JsonSerializer</td><td>2,357.9 ns</td><td>7.8356 ns</td><td>7.3294 ns</td><td>2,361.0 ns</td><td>0.1373</td><td>592 B</td>
+</tr><tr><td>SerializeTagWithUtf8JsonSerializer</td><td>812.1 ns</td><td>0.2418 ns</td><td>0.2143 ns</td><td>812.0 ns</td><td>0.0544</td><td>232 B</td>
+</tr><tr><td>SerializeTagScoreWithUtf8JsonSerializer</td><td>760.7 ns</td><td>0.3658 ns</td><td>0.3243 ns</td><td>760.6 ns</td><td>0.0734</td><td>312 B</td>
+</tr><tr><td>SerializeTagSynonymWithUtf8JsonSerializer</td><td>1,069.1 ns</td><td>2.1328 ns</td><td>1.7809 ns</td><td>1,068.2 ns</td><td>0.0477</td><td>208 B</td>
+</tr><tr><td>SerializeTagWikiWithUtf8JsonSerializer</td><td>2,250.1 ns</td><td>12.8771 ns</td><td>12.0452 ns</td><td>2,252.6 ns</td><td>0.1717</td><td>736 B</td>
+</tr><tr><td>SerializeTopTagWithUtf8JsonSerializer</td><td>369.0 ns</td><td>0.0929 ns</td><td>0.0824 ns</td><td>369.0 ns</td><td>0.0415</td><td>176 B</td>
+</tr><tr><td>SerializeUserWithUtf8JsonSerializer</td><td>3,249.2 ns</td><td>34.0822 ns</td><td>30.2130 ns</td><td>3,231.8 ns</td><td>0.2174</td><td>928 B</td>
+</tr><tr><td>SerializeUserTimelineWithUtf8JsonSerializer</td><td>1,025.0 ns</td><td>3.6522 ns</td><td>3.0497 ns</td><td>1,025.2 ns</td><td>0.0706</td><td>304 B</td>
+</tr><tr><td>SerializeWritePermissionWithUtf8JsonSerializer</td><td>353.2 ns</td><td>0.0362 ns</td><td>0.0339 ns</td><td>353.2 ns</td><td>0.0472</td><td>200 B</td>
+</tr><tr><td>SerializeMobileBannerAdImageWithUtf8JsonSerializer</td><td>207.8 ns</td><td>2.9172 ns</td><td>2.4360 ns</td><td>206.7 ns</td><td>0.0207</td><td>88 B</td>
+</tr><tr><td>SerializeSiteWithUtf8JsonSerializer</td><td>2,394.0 ns</td><td>5.7255 ns</td><td>5.3556 ns</td><td>2,394.7 ns</td><td>0.1717</td><td>736 B</td>
+</tr><tr><td>SerializeRelatedSiteWithUtf8JsonSerializer</td><td>217.0 ns</td><td>0.4943 ns</td><td>0.4382 ns</td><td>216.8 ns</td><td>0.0284</td><td>120 B</td>
+</tr><tr><td>SerializeClosedDetailsWithUtf8JsonSerializer</td><td>1,030.8 ns</td><td>1.3706 ns</td><td>1.0701 ns</td><td>1,030.6 ns</td><td>0.1106</td><td>472 B</td>
+</tr><tr><td>SerializeNoticeWithUtf8JsonSerializer</td><td>587.9 ns</td><td>0.0978 ns</td><td>0.0764 ns</td><td>587.9 ns</td><td>0.0296</td><td>128 B</td>
+</tr><tr><td>SerializeMigrationInfoWithUtf8JsonSerializer</td><td>2,986.5 ns</td><td>6.8262 ns</td><td>6.0512 ns</td><td>2,987.3 ns</td><td>0.1945</td><td>824 B</td>
+</tr><tr><td>SerializeBadgeCountWithUtf8JsonSerializer</td><td>224.3 ns</td><td>2.0338 ns</td><td>1.8029 ns</td><td>223.6 ns</td><td>0.0207</td><td>88 B</td>
+</tr><tr><td>SerializeStylingWithUtf8JsonSerializer</td><td>165.9 ns</td><td>0.0552 ns</td><td>0.0517 ns</td><td>165.9 ns</td><td>0.0284</td><td>120 B</td>
+</tr><tr><td>SerializeOriginalQuestionWithUtf8JsonSerializer</td><td>273.3 ns</td><td>0.5700 ns</td><td>0.4760 ns</td><td>273.2 ns</td><td>0.0300</td><td>128 B</td>
+</tr><tr><td>SerializeMobileAssociationBonusWithSpanJsonSerializer</td><td>420.5 ns</td><td>0.2954 ns</td><td>0.2619 ns</td><td>420.5 ns</td><td>0.0491</td><td>208 B</td>
+</tr><tr><td>SerializeMobileCareersJobAdWithSpanJsonSerializer</td><td>578.6 ns</td><td>0.1537 ns</td><td>0.1283 ns</td><td>578.6 ns</td><td>0.0830</td><td>352 B</td>
+</tr><tr><td>SerializeMobileBannerAdWithSpanJsonSerializer</td><td>681.8 ns</td><td>0.2731 ns</td><td>0.2555 ns</td><td>681.8 ns</td><td>0.0772</td><td>328 B</td>
+</tr><tr><td>SerializeMobileUpdateNoticeWithSpanJsonSerializer</td><td>272.6 ns</td><td>2.1742 ns</td><td>1.9274 ns</td><td>273.5 ns</td><td>0.0453</td><td>192 B</td>
+</tr><tr><td>SerializeFlagOptionWithSpanJsonSerializer</td><td>990.9 ns</td><td>11.1046 ns</td><td>10.3873 ns</td><td>984.9 ns</td><td>0.1945</td><td>824 B</td>
+</tr><tr><td>SerializeInboxItemWithSpanJsonSerializer</td><td>2,880.8 ns</td><td>1.0307 ns</td><td>0.9641 ns</td><td>2,880.5 ns</td><td>0.4539</td><td>1920 B</td>
+</tr><tr><td>SerializeInfoWithSpanJsonSerializer</td><td>3,285.3 ns</td><td>3.7538 ns</td><td>3.3276 ns</td><td>3,285.3 ns</td><td>0.5226</td><td>2208 B</td>
+</tr><tr><td>SerializeNetworkUserWithSpanJsonSerializer</td><td>1,551.4 ns</td><td>17.7405 ns</td><td>16.5945 ns</td><td>1,539.1 ns</td><td>0.1831</td><td>776 B</td>
+</tr><tr><td>SerializeNotificationWithSpanJsonSerializer</td><td>2,677.3 ns</td><td>1.0106 ns</td><td>0.8959 ns</td><td>2,677.4 ns</td><td>0.4196</td><td>1768 B</td>
+</tr><tr><td>SerializePostWithSpanJsonSerializer</td><td>5,120.7 ns</td><td>3.5156 ns</td><td>3.2885 ns</td><td>5,121.4 ns</td><td>0.8011</td><td>3392 B</td>
+</tr><tr><td>SerializePrivilegeWithSpanJsonSerializer</td><td>315.0 ns</td><td>0.4809 ns</td><td>0.4499 ns</td><td>314.6 ns</td><td>0.0453</td><td>192 B</td>
+</tr><tr><td>SerializeQuestionWithSpanJsonSerializer</td><td>19,169.9 ns</td><td>11.7432 ns</td><td>10.4100 ns</td><td>19,169.3 ns</td><td>2.9907</td><td>12664 B</td>
+</tr><tr><td>SerializeQuestionTimelineWithSpanJsonSerializer</td><td>2,294.7 ns</td><td>1.2934 ns</td><td>1.2099 ns</td><td>2,294.1 ns</td><td>0.3510</td><td>1488 B</td>
+</tr><tr><td>SerializeReputationWithSpanJsonSerializer</td><td>871.8 ns</td><td>0.1676 ns</td><td>0.1400 ns</td><td>871.7 ns</td><td>0.1040</td><td>440 B</td>
+</tr><tr><td>SerializeReputationHistoryWithSpanJsonSerializer</td><td>736.8 ns</td><td>6.5094 ns</td><td>6.0889 ns</td><td>731.9 ns</td><td>0.0906</td><td>384 B</td>
+</tr><tr><td>SerializeRevisionWithSpanJsonSerializer</td><td>1,794.2 ns</td><td>0.2967 ns</td><td>0.2478 ns</td><td>1,794.2 ns</td><td>0.3014</td><td>1272 B</td>
+</tr><tr><td>SerializeSearchExcerptWithSpanJsonSerializer</td><td>3,510.9 ns</td><td>7.2968 ns</td><td>6.4684 ns</td><td>3,509.4 ns</td><td>0.4845</td><td>2048 B</td>
+</tr><tr><td>SerializeShallowUserWithSpanJsonSerializer</td><td>802.6 ns</td><td>1.3470 ns</td><td>1.1248 ns</td><td>802.5 ns</td><td>0.1192</td><td>504 B</td>
+</tr><tr><td>SerializeSuggestedEditWithSpanJsonSerializer</td><td>2,173.5 ns</td><td>4.8785 ns</td><td>4.5633 ns</td><td>2,173.2 ns</td><td>0.2747</td><td>1168 B</td>
+</tr><tr><td>SerializeTagWithSpanJsonSerializer</td><td>860.2 ns</td><td>12.4382 ns</td><td>11.6347 ns</td><td>855.6 ns</td><td>0.1040</td><td>440 B</td>
+</tr><tr><td>SerializeTagScoreWithSpanJsonSerializer</td><td>1,054.9 ns</td><td>3.0027 ns</td><td>2.8087 ns</td><td>1,054.2 ns</td><td>0.1431</td><td>608 B</td>
+</tr><tr><td>SerializeTagSynonymWithSpanJsonSerializer</td><td>971.7 ns</td><td>0.3252 ns</td><td>0.2883 ns</td><td>971.8 ns</td><td>0.0896</td><td>384 B</td>
+</tr><tr><td>SerializeTagWikiWithSpanJsonSerializer</td><td>2,257.2 ns</td><td>0.8121 ns</td><td>0.7596 ns</td><td>2,257.2 ns</td><td>0.3395</td><td>1432 B</td>
+</tr><tr><td>SerializeTopTagWithSpanJsonSerializer</td><td>526.4 ns</td><td>0.1914 ns</td><td>0.1494 ns</td><td>526.4 ns</td><td>0.0772</td><td>328 B</td>
+</tr><tr><td>SerializeUserWithSpanJsonSerializer</td><td>2,958.2 ns</td><td>5.4776 ns</td><td>5.1238 ns</td><td>2,959.6 ns</td><td>0.4387</td><td>1848 B</td>
+</tr><tr><td>SerializeUserTimelineWithSpanJsonSerializer</td><td>1,059.1 ns</td><td>7.9767 ns</td><td>7.4614 ns</td><td>1,057.6 ns</td><td>0.1354</td><td>576 B</td>
+</tr><tr><td>SerializeWritePermissionWithSpanJsonSerializer</td><td>508.7 ns</td><td>0.0545 ns</td><td>0.0483 ns</td><td>508.7 ns</td><td>0.0868</td><td>368 B</td>
+</tr><tr><td>SerializeMobileBannerAdImageWithSpanJsonSerializer</td><td>337.5 ns</td><td>2.5801 ns</td><td>2.4134 ns</td><td>335.8 ns</td><td>0.0358</td><td>152 B</td>
+</tr><tr><td>SerializeSiteWithSpanJsonSerializer</td><td>1,963.3 ns</td><td>1.3864 ns</td><td>1.2290 ns</td><td>1,962.8 ns</td><td>0.3395</td><td>1440 B</td>
+</tr><tr><td>SerializeRelatedSiteWithSpanJsonSerializer</td><td>317.5 ns</td><td>0.0247 ns</td><td>0.0206 ns</td><td>317.5 ns</td><td>0.0491</td><td>208 B</td>
+</tr><tr><td>SerializeClosedDetailsWithSpanJsonSerializer</td><td>1,259.4 ns</td><td>0.7565 ns</td><td>0.7076 ns</td><td>1,259.4 ns</td><td>0.2174</td><td>920 B</td>
+</tr><tr><td>SerializeNoticeWithSpanJsonSerializer</td><td>570.7 ns</td><td>0.0890 ns</td><td>0.0743 ns</td><td>570.7 ns</td><td>0.0525</td><td>224 B</td>
+</tr><tr><td>SerializeMigrationInfoWithSpanJsonSerializer</td><td>2,542.5 ns</td><td>1.3288 ns</td><td>1.2429 ns</td><td>2,542.2 ns</td><td>0.3815</td><td>1616 B</td>
+</tr><tr><td>SerializeBadgeCountWithSpanJsonSerializer</td><td>362.6 ns</td><td>0.1073 ns</td><td>0.0951 ns</td><td>362.5 ns</td><td>0.0319</td><td>136 B</td>
+</tr><tr><td>SerializeStylingWithSpanJsonSerializer</td><td>284.5 ns</td><td>3.8877 ns</td><td>3.4464 ns</td><td>282.6 ns</td><td>0.0510</td><td>216 B</td>
+</tr><tr><td>SerializeOriginalQuestionWithSpanJsonSerializer</td><td>397.2 ns</td><td>0.2805 ns</td><td>0.2624 ns</td><td>397.0 ns</td><td>0.0548</td><td>232 B</td>
+</tr><tr><td>SerializeAccessTokenWithUtf8JsonSerializer</td><td>680.9 ns</td><td>0.2925 ns</td><td>0.2736 ns</td><td>681.0 ns</td><td>0.0353</td><td>152 B</td>
+</tr><tr><td>SerializeAccountMergeWithUtf8JsonSerializer</td><td>603.9 ns</td><td>5.0526 ns</td><td>4.4790 ns</td><td>600.9 ns</td><td>0.0296</td><td>128 B</td>
+</tr><tr><td>SerializeAnswerWithUtf8JsonSerializer</td><td>6,336.0 ns</td><td>7.0440 ns</td><td>6.5890 ns</td><td>6,335.8 ns</td><td>0.4501</td><td>1904 B</td>
+</tr><tr><td>SerializeBadgeWithUtf8JsonSerializer</td><td>1,008.5 ns</td><td>1.5005 ns</td><td>1.2530 ns</td><td>1,008.3 ns</td><td>0.0973</td><td>416 B</td>
+</tr><tr><td>SerializeCommentWithUtf8JsonSerializer</td><td>2,107.0 ns</td><td>3.0033 ns</td><td>2.5079 ns</td><td>2,106.7 ns</td><td>0.1793</td><td>760 B</td>
+</tr><tr><td>SerializeErrorWithUtf8JsonSerializer</td><td>189.3 ns</td><td>0.0535 ns</td><td>0.0500 ns</td><td>189.3 ns</td><td>0.0226</td><td>96 B</td>
+</tr><tr><td>SerializeEventWithUtf8JsonSerializer</td><td>708.8 ns</td><td>0.3536 ns</td><td>0.3134 ns</td><td>708.7 ns</td><td>0.0391</td><td>168 B</td>
+</tr><tr><td>SerializeMobileFeedWithUtf8JsonSerializer</td><td>7,249.5 ns</td><td>10.7359 ns</td><td>10.0424 ns</td><td>7,248.8 ns</td><td>0.7553</td><td>3184 B</td>
+</tr><tr><td>SerializeMobileQuestionWithUtf8JsonSerializer</td><td>665.8 ns</td><td>0.1790 ns</td><td>0.1587 ns</td><td>665.7 ns</td><td>0.0753</td><td>320 B</td>
+</tr><tr><td>SerializeMobileRepChangeWithUtf8JsonSerializer</td><td>351.0 ns</td><td>0.0692 ns</td><td>0.0578 ns</td><td>351.0 ns</td><td>0.0377</td><td>160 B</td>
+</tr><tr><td>SerializeMobileInboxItemWithUtf8JsonSerializer</td><td>621.5 ns</td><td>0.1895 ns</td><td>0.1773 ns</td><td>621.5 ns</td><td>0.0677</td><td>288 B</td>
+</tr><tr><td>SerializeMobileBadgeAwardWithUtf8JsonSerializer</td><td>587.6 ns</td><td>0.1730 ns</td><td>0.1351 ns</td><td>587.6 ns</td><td>0.0601</td><td>256 B</td>
+</tr><tr><td>SerializeMobilePrivilegeWithUtf8JsonSerializer</td><td>452.2 ns</td><td>0.2173 ns</td><td>0.2033 ns</td><td>452.1 ns</td><td>0.0606</td><td>256 B</td>
+</tr><tr><td>SerializeMobileCommunityBulletinWithUtf8JsonSerializer</td><td>805.8 ns</td><td>0.4417 ns</td><td>0.3689 ns</td><td>805.7 ns</td><td>0.0887</td><td>376 B</td>
+</tr><tr><td>SerializeMobileAssociationBonusWithUtf8JsonSerializer</td><td>296.2 ns</td><td>5.9825 ns</td><td>9.9954 ns</td><td>292.4 ns</td><td>0.0281</td><td>120 B</td>
+</tr><tr><td>SerializeMobileCareersJobAdWithUtf8JsonSerializer</td><td>391.8 ns</td><td>0.1664 ns</td><td>0.1475 ns</td><td>391.7 ns</td><td>0.0453</td><td>192 B</td>
+</tr><tr><td>SerializeMobileBannerAdWithUtf8JsonSerializer</td><td>421.8 ns</td><td>3.4494 ns</td><td>3.0578 ns</td><td>420.0 ns</td><td>0.0415</td><td>176 B</td>
+</tr><tr><td>SerializeMobileUpdateNoticeWithUtf8JsonSerializer</td><td>158.5 ns</td><td>0.0423 ns</td><td>0.0396 ns</td><td>158.5 ns</td><td>0.0265</td><td>112 B</td>
+</tr><tr><td>SerializeFlagOptionWithUtf8JsonSerializer</td><td>772.6 ns</td><td>0.1341 ns</td><td>0.1254 ns</td><td>772.6 ns</td><td>0.1001</td><td>424 B</td>
+</tr><tr><td>SerializeInboxItemWithUtf8JsonSerializer</td><td>3,313.5 ns</td><td>28.3293 ns</td><td>26.4992 ns</td><td>3,297.4 ns</td><td>0.2289</td><td>976 B</td>
+</tr><tr><td>SerializeInfoWithUtf8JsonSerializer</td><td>3,703.2 ns</td><td>6.7002 ns</td><td>6.2673 ns</td><td>3,700.6 ns</td><td>0.3319</td><td>1408 B</td>
+</tr><tr><td>SerializeNetworkUserWithUtf8JsonSerializer</td><td>1,542.9 ns</td><td>1.5641 ns</td><td>1.3061 ns</td><td>1,542.8 ns</td><td>0.0935</td><td>400 B</td>
+</tr><tr><td>SerializeNotificationWithUtf8JsonSerializer</td><td>3,108.8 ns</td><td>16.0994 ns</td><td>15.0594 ns</td><td>3,115.0 ns</td><td>0.2098</td><td>888 B</td>
+</tr><tr><td>SerializePostWithUtf8JsonSerializer</td><td>5,289.2 ns</td><td>4.7300 ns</td><td>4.1931 ns</td><td>5,290.1 ns</td><td>0.4044</td><td>1712 B</td>
+</tr><tr><td>SerializePrivilegeWithUtf8JsonSerializer</td><td>184.9 ns</td><td>0.1454 ns</td><td>0.1360 ns</td><td>184.9 ns</td><td>0.0246</td><td>104 B</td>
+</tr><tr><td>SerializeQuestionWithUtf8JsonSerializer</td><td>22,770.5 ns</td><td>113.2629 ns</td><td>100.4046 ns</td><td>22,741.6 ns</td><td>1.4954</td><td>6360 B</td>
+</tr><tr><td>SerializeQuestionTimelineWithUtf8JsonSerializer</td><td>2,125.3 ns</td><td>13.0552 ns</td><td>12.2119 ns</td><td>2,129.2 ns</td><td>0.1793</td><td>768 B</td>
+</tr><tr><td>SerializeReputationWithUtf8JsonSerializer</td><td>899.0 ns</td><td>5.7277 ns</td><td>5.3577 ns</td><td>896.6 ns</td><td>0.0525</td><td>224 B</td>
+</tr><tr><td>SerializeAccessTokenWithJilSerializer</td><td>700.5 ns</td><td>4.9950 ns</td><td>4.6724 ns</td><td>697.8 ns</td><td>0.2146</td><td>904 B</td>
+</tr><tr><td>SerializeAccountMergeWithJilSerializer</td><td>578.8 ns</td><td>0.1229 ns</td><td>0.1149 ns</td><td>578.8 ns</td><td>0.2050</td><td>864 B</td>
+</tr><tr><td>SerializeAnswerWithJilSerializer</td><td>5,546.2 ns</td><td>12.4867 ns</td><td>11.6801 ns</td><td>5,548.6 ns</td><td>2.1057</td><td>8856 B</td>
+</tr><tr><td>SerializeBadgeWithJilSerializer</td><td>960.6 ns</td><td>0.4400 ns</td><td>0.3435 ns</td><td>960.5 ns</td><td>0.5627</td><td>2368 B</td>
+</tr><tr><td>SerializeCommentWithJilSerializer</td><td>1,889.1 ns</td><td>2.0659 ns</td><td>1.8313 ns</td><td>1,888.2 ns</td><td>1.0281</td><td>4320 B</td>
+</tr><tr><td>SerializeErrorWithJilSerializer</td><td>326.4 ns</td><td>0.0767 ns</td><td>0.0718 ns</td><td>326.4 ns</td><td>0.1922</td><td>808 B</td>
+</tr><tr><td>SerializeEventWithJilSerializer</td><td>725.7 ns</td><td>7.5360 ns</td><td>7.0492 ns</td><td>720.3 ns</td><td>0.2985</td><td>1256 B</td>
+</tr><tr><td>SerializeMobileFeedWithJilSerializer</td><td>7,478.0 ns</td><td>13.0595 ns</td><td>12.2159 ns</td><td>7,474.8 ns</td><td>3.7537</td><td>15792 B</td>
+</tr><tr><td>SerializeMobileQuestionWithJilSerializer</td><td>756.1 ns</td><td>0.0933 ns</td><td>0.0873 ns</td><td>756.1 ns</td><td>0.5159</td><td>2168 B</td>
+</tr><tr><td>SerializeMobileRepChangeWithJilSerializer</td><td>504.0 ns</td><td>2.8997 ns</td><td>2.4214 ns</td><td>503.1 ns</td><td>0.3004</td><td>1264 B</td>
+</tr><tr><td>SerializeMobileInboxItemWithJilSerializer</td><td>783.7 ns</td><td>0.1875 ns</td><td>0.1663 ns</td><td>783.7 ns</td><td>0.4988</td><td>2096 B</td>
+</tr><tr><td>SerializeMobileBadgeAwardWithJilSerializer</td><td>613.6 ns</td><td>0.0745 ns</td><td>0.0660 ns</td><td>613.6 ns</td><td>0.3443</td><td>1448 B</td>
+</tr><tr><td>SerializeMobilePrivilegeWithJilSerializer</td><td>612.4 ns</td><td>0.1045 ns</td><td>0.0927 ns</td><td>612.4 ns</td><td>0.3481</td><td>1464 B</td>
+</tr><tr><td>SerializeMobileCommunityBulletinWithJilSerializer</td><td>890.9 ns</td><td>0.1535 ns</td><td>0.1361 ns</td><td>890.9 ns</td><td>0.5407</td><td>2272 B</td>
+</tr><tr><td>SerializeMobileAssociationBonusWithJilSerializer</td><td>352.7 ns</td><td>0.0501 ns</td><td>0.0418 ns</td><td>352.7 ns</td><td>0.2036</td><td>856 B</td>
+</tr><tr><td>SerializeMobileCareersJobAdWithJilSerializer</td><td>571.7 ns</td><td>0.1098 ns</td><td>0.0973 ns</td><td>571.7 ns</td><td>0.3138</td><td>1320 B</td>
+</tr><tr><td>SerializeMobileBannerAdWithJilSerializer</td><td>534.8 ns</td><td>0.1481 ns</td><td>0.1313 ns</td><td>534.8 ns</td><td>0.3080</td><td>1296 B</td>
+</tr><tr><td>SerializeMobileUpdateNoticeWithJilSerializer</td><td>310.2 ns</td><td>0.0528 ns</td><td>0.0468 ns</td><td>310.2 ns</td><td>0.1750</td><td>736 B</td>
+</tr><tr><td>SerializeFlagOptionWithJilSerializer</td><td>855.0 ns</td><td>1.7105 ns</td><td>1.4283 ns</td><td>854.8 ns</td><td>0.5884</td><td>2472 B</td>
+</tr><tr><td>SerializeInboxItemWithJilSerializer</td><td>3,409.4 ns</td><td>3.6717 ns</td><td>2.8667 ns</td><td>3,410.7 ns</td><td>1.0681</td><td>4496 B</td>
+</tr><tr><td>SerializeInfoWithJilSerializer</td><td>3,545.3 ns</td><td>5.2815 ns</td><td>4.9403 ns</td><td>3,546.5 ns</td><td>1.6937</td><td>7112 B</td>
+</tr><tr><td>SerializeNetworkUserWithJilSerializer</td><td>1,324.2 ns</td><td>0.2097 ns</td><td>0.1962 ns</td><td>1,324.1 ns</td><td>0.5474</td><td>2304 B</td>
+</tr><tr><td>SerializeNotificationWithJilSerializer</td><td>3,154.9 ns</td><td>6.7556 ns</td><td>5.9887 ns</td><td>3,156.2 ns</td><td>1.0338</td><td>4344 B</td>
+</tr><tr><td>SerializePostWithJilSerializer</td><td>4,606.1 ns</td><td>3.6798 ns</td><td>3.4421 ns</td><td>4,605.7 ns</td><td>2.0218</td><td>8488 B</td>
+</tr><tr><td>SerializePrivilegeWithJilSerializer</td><td>353.2 ns</td><td>0.0719 ns</td><td>0.0600 ns</td><td>353.2 ns</td><td>0.1979</td><td>832 B</td>
+</tr><tr><td>SerializeQuestionWithJilSerializer</td><td>19,472.2 ns</td><td>228.9582 ns</td><td>214.1676 ns</td><td>19,502.7 ns</td><td>7.3242</td><td>30800 B</td>
+</tr><tr><td>SerializeQuestionTimelineWithJilSerializer</td><td>1,776.1 ns</td><td>0.6730 ns</td><td>0.5966 ns</td><td>1,776.1 ns</td><td>1.0319</td><td>4336 B</td>
+</tr><tr><td>SerializeReputationWithJilSerializer</td><td>799.6 ns</td><td>0.3372 ns</td><td>0.2816 ns</td><td>799.5 ns</td><td>0.3309</td><td>1392 B</td>
+</tr><tr><td>SerializeReputationHistoryWithJilSerializer</td><td>652.4 ns</td><td>7.7573 ns</td><td>7.2562 ns</td><td>648.3 ns</td><td>0.3157</td><td>1328 B</td>
+</tr><tr><td>SerializeRevisionWithJilSerializer</td><td>1,784.2 ns</td><td>1.7075 ns</td><td>1.5972 ns</td><td>1,784.3 ns</td><td>0.9308</td><td>3912 B</td>
+</tr><tr><td>SerializeSearchExcerptWithJilSerializer</td><td>3,382.6 ns</td><td>7.7164 ns</td><td>7.2180 ns</td><td>3,379.8 ns</td><td>1.1444</td><td>4808 B</td>
+</tr><tr><td>SerializeShallowUserWithJilSerializer</td><td>668.2 ns</td><td>0.1525 ns</td><td>0.1191 ns</td><td>668.2 ns</td><td>0.3519</td><td>1480 B</td>
+</tr><tr><td>SerializeSuggestedEditWithJilSerializer</td><td>2,123.1 ns</td><td>2.9082 ns</td><td>2.7203 ns</td><td>2,121.8 ns</td><td>0.8965</td><td>3776 B</td>
+</tr><tr><td>SerializeTagWithJilSerializer</td><td>816.3 ns</td><td>0.0761 ns</td><td>0.0711 ns</td><td>816.3 ns</td><td>0.3309</td><td>1392 B</td>
+</tr><tr><td>SerializeTagScoreWithJilSerializer</td><td>747.9 ns</td><td>12.9007 ns</td><td>12.0673 ns</td><td>738.0 ns</td><td>0.5159</td><td>2168 B</td>
+</tr><tr><td>SerializeTagSynonymWithJilSerializer</td><td>1,031.3 ns</td><td>0.1031 ns</td><td>0.0914 ns</td><td>1,031.3 ns</td><td>0.3147</td><td>1328 B</td>
+</tr><tr><td>SerializeTagWikiWithJilSerializer</td><td>2,100.6 ns</td><td>1.3151 ns</td><td>1.2302 ns</td><td>2,100.5 ns</td><td>1.0147</td><td>4264 B</td>
+</tr><tr><td>SerializeTopTagWithJilSerializer</td><td>417.7 ns</td><td>0.1242 ns</td><td>0.1101 ns</td><td>417.7 ns</td><td>0.3085</td><td>1296 B</td>
+</tr><tr><td>SerializeUserWithJilSerializer</td><td>2,718.8 ns</td><td>6.3289 ns</td><td>5.9201 ns</td><td>2,716.4 ns</td><td>1.0490</td><td>4416 B</td>
+</tr><tr><td>SerializeUserTimelineWithJilSerializer</td><td>964.8 ns</td><td>1.3640 ns</td><td>1.2759 ns</td><td>964.6 ns</td><td>0.5016</td><td>2112 B</td>
+</tr><tr><td>SerializeWritePermissionWithJilSerializer</td><td>419.4 ns</td><td>0.0986 ns</td><td>0.0874 ns</td><td>419.4 ns</td><td>0.3181</td><td>1336 B</td>
+</tr><tr><td>SerializeMobileBannerAdImageWithJilSerializer</td><td>269.3 ns</td><td>5.1461 ns</td><td>4.8137 ns</td><td>266.1 ns</td><td>0.1407</td><td>592 B</td>
+</tr><tr><td>SerializeSiteWithJilSerializer</td><td>2,629.0 ns</td><td>1.1745 ns</td><td>1.0412 ns</td><td>2,629.0 ns</td><td>0.9651</td><td>4056 B</td>
+</tr><tr><td>SerializeRelatedSiteWithJilSerializer</td><td>384.1 ns</td><td>0.0921 ns</td><td>0.0816 ns</td><td>384.1 ns</td><td>0.2017</td><td>848 B</td>
+</tr><tr><td>SerializeClosedDetailsWithJilSerializer</td><td>1,095.5 ns</td><td>13.6835 ns</td><td>12.7995 ns</td><td>1,086.0 ns</td><td>0.5856</td><td>2464 B</td>
+</tr><tr><td>SerializeNoticeWithJilSerializer</td><td>608.5 ns</td><td>0.0912 ns</td><td>0.0853 ns</td><td>608.5 ns</td><td>0.2012</td><td>848 B</td>
+</tr><tr><td>SerializeMigrationInfoWithJilSerializer</td><td>3,027.5 ns</td><td>4.7252 ns</td><td>4.4200 ns</td><td>3,029.3 ns</td><td>0.9995</td><td>4208 B</td>
+</tr><tr><td>SerializeBadgeCountWithJilSerializer</td><td>221.1 ns</td><td>2.3319 ns</td><td>2.1812 ns</td><td>219.9 ns</td><td>0.1392</td><td>584 B</td>
+</tr><tr><td>SerializeStylingWithJilSerializer</td><td>359.1 ns</td><td>0.0407 ns</td><td>0.0339 ns</td><td>359.1 ns</td><td>0.1807</td><td>760 B</td>
+</tr><tr><td>SerializeOriginalQuestionWithJilSerializer</td><td>327.1 ns</td><td>0.0575 ns</td><td>0.0509 ns</td><td>327.1 ns</td><td>0.2074</td><td>872 B</td>
+</tr><tr><td>SerializeAccessTokenWithSpanJsonSerializer</td><td>607.0 ns</td><td>0.0399 ns</td><td>0.0333 ns</td><td>606.9 ns</td><td>0.0658</td><td>280 B</td>
+</tr><tr><td>SerializeAccountMergeWithSpanJsonSerializer</td><td>606.4 ns</td><td>4.2510 ns</td><td>3.9764 ns</td><td>606.3 ns</td><td>0.0563</td><td>240 B</td>
+</tr><tr><td>SerializeAnswerWithSpanJsonSerializer</td><td>5,879.9 ns</td><td>3.1584 ns</td><td>2.6374 ns</td><td>5,880.5 ns</td><td>0.8926</td><td>3768 B</td>
+</tr><tr><td>SerializeBadgeWithSpanJsonSerializer</td><td>1,199.6 ns</td><td>0.7159 ns</td><td>0.6697 ns</td><td>1,199.4 ns</td><td>0.1926</td><td>816 B</td>
+</tr><tr><td>SerializeCommentWithSpanJsonSerializer</td><td>2,303.9 ns</td><td>28.8096 ns</td><td>26.9485 ns</td><td>2,307.3 ns</td><td>0.3548</td><td>1496 B</td>
+</tr><tr><td>SerializeErrorWithSpanJsonSerializer</td><td>307.1 ns</td><td>0.1833 ns</td><td>0.1715 ns</td><td>307.2 ns</td><td>0.0415</td><td>176 B</td>
+</tr><tr><td>SerializeEventWithSpanJsonSerializer</td><td>645.8 ns</td><td>0.3310 ns</td><td>0.2934 ns</td><td>645.6 ns</td><td>0.0753</td><td>320 B</td>
+</tr><tr><td>SerializeMobileFeedWithSpanJsonSerializer</td><td>7,726.3 ns</td><td>7.8319 ns</td><td>6.5400 ns</td><td>7,727.7 ns</td><td>1.5106</td><td>6352 B</td>
+</tr><tr><td>SerializeMobileQuestionWithSpanJsonSerializer</td><td>926.1 ns</td><td>0.1966 ns</td><td>0.1642 ns</td><td>926.1 ns</td><td>0.1478</td><td>624 B</td>
+</tr><tr><td>SerializeMobileRepChangeWithSpanJsonSerializer</td><td>492.5 ns</td><td>3.7048 ns</td><td>3.0936 ns</td><td>491.5 ns</td><td>0.0696</td><td>296 B</td>
+</tr><tr><td>SerializeMobileInboxItemWithSpanJsonSerializer</td><td>887.0 ns</td><td>0.2776 ns</td><td>0.2597 ns</td><td>887.1 ns</td><td>0.1287</td><td>544 B</td>
+</tr><tr><td>SerializeMobileBadgeAwardWithSpanJsonSerializer</td><td>805.7 ns</td><td>0.3032 ns</td><td>0.2688 ns</td><td>805.8 ns</td><td>0.1135</td><td>480 B</td>
+</tr><tr><td>SerializeMobilePrivilegeWithSpanJsonSerializer</td><td>708.5 ns</td><td>0.1011 ns</td><td>0.0945 ns</td><td>708.5 ns</td><td>0.1154</td><td>488 B</td>
+</tr><tr><td>SerializeMobileCommunityBulletinWithSpanJsonSerializer</td><td>1,053.5 ns</td><td>0.8853 ns</td><td>0.7393 ns</td><td>1,053.6 ns</td><td>0.1736</td><td>736 B</td>
+</tr></tbody></table>
+</body>
+</html>

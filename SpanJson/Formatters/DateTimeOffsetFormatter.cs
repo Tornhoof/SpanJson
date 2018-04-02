@@ -15,5 +15,7 @@ namespace SpanJson.Formatters
         {
             return reader.ReadDateTimeOffset();
         }
+
+        public int AllocSize { get; } = 100;
     }
 }

@@ -13,5 +13,7 @@
         {
             return reader.ReadInt16();
         }
+
+        public int AllocSize { get; } = 100;
     }
 }

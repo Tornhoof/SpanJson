@@ -25,5 +25,7 @@ namespace SpanJson.Formatters
         {
             throw new NotImplementedException();
         }
+
+        public int AllocSize { get; } = EstimateSize<T>();
     }
 }
