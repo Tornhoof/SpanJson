@@ -11,6 +11,8 @@ namespace SpanJson
     {
         private static readonly char[] DateTimeFormat = {'o'};
         private static readonly char[] NullArray = "null".ToCharArray();
+        private static readonly char[] FalseArray = "false".ToCharArray();
+        private static readonly char[] TrueArray = "true".ToCharArray();
         private char[] _arrayToReturnToPool;
         private Span<char> _chars;
         private int _pos;
@@ -123,83 +125,6 @@ namespace SpanJson
             return false;
         }
 
-        public void Insert(int index, char value, int count)
-        {
-            if (_pos > _chars.Length - count)
-            {
-                Grow(count);
-            }
-
-            int remaining = _pos - index;
-            _chars.Slice(index, remaining).CopyTo(_chars.Slice(index + count));
-            _chars.Slice(index, count).Fill(value);
-            _pos += count;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Append(char c)
-        {
-            int pos = _pos;
-            if (pos < _chars.Length)
-            {
-                _chars[pos] = c;
-                _pos = pos + 1;
-            }
-            else
-            {
-                GrowAndAppend(c);
-            }
-        }
-
-        public void Append(char c, int count)
-        {
-            if (_pos > _chars.Length - count)
-            {
-                Grow(count);
-            }
-
-            Span<char> dst = _chars.Slice(_pos, count);
-            for (int i = 0; i < dst.Length; i++)
-            {
-                dst[i] = c;
-            }
-
-            _pos += count;
-        }
-
-
-        public void Append(ReadOnlySpan<char> value)
-        {
-            int pos = _pos;
-            if (pos > _chars.Length - value.Length)
-            {
-                Grow(value.Length);
-            }
-
-            value.CopyTo(_chars.Slice(_pos));
-            _pos += value.Length;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Span<char> AppendSpan(int length)
-        {
-            int origPos = _pos;
-            if (origPos > _chars.Length - length)
-            {
-                Grow(length);
-            }
-
-            _pos = origPos + length;
-            return _chars.Slice(origPos, length);
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void GrowAndAppend(char c)
-        {
-            Grow(1);
-            Append(c);
-        }
-
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void Grow(int requiredAdditionalCapacity)
         {
@@ -231,70 +156,183 @@ namespace SpanJson
 
         public void WriteSByte(sbyte value)
         {
-            throw new NotImplementedException();
+            ref int pos = ref _pos;
+            const int digits = 3;
+            if (pos > _chars.Length - digits)
+            {
+                Grow(digits);
+            }
+
+            value.TryFormat(_chars.Slice(pos), out var written, provider: CultureInfo.InvariantCulture);
+            pos += written;
         }
 
         public void WriteInt16(short value)
         {
-            throw new NotImplementedException();
+            ref int pos = ref _pos;
+            const int digits = 6;
+            if (pos > _chars.Length - digits)
+            {
+                Grow(digits);
+            }
+
+            value.TryFormat(_chars.Slice(pos), out var written, provider: CultureInfo.InvariantCulture);
+            pos += written;
         }
 
         public void WriteInt32(int value)
         {
             ref int pos = ref _pos;
-            var necessarySize = 8; // this is probably not necessary
-            if (pos > _chars.Length - necessarySize)
+            const int digits = 10;
+            if (pos > _chars.Length - digits)
             {
-                Grow(necessarySize);
+                Grow(digits);
             }
 
-            value.TryFormat(_chars.Slice(pos), out var written);
+            value.TryFormat(_chars.Slice(pos), out var written, provider: CultureInfo.InvariantCulture);
             pos += written;
         }
 
         public void WriteInt64(long value)
         {
-            throw new NotImplementedException();
+            ref int pos = ref _pos;
+            const int digits = 20;
+            if (pos > _chars.Length - digits)
+            {
+                Grow(digits);
+            }
+
+            value.TryFormat(_chars.Slice(pos), out var written, provider: CultureInfo.InvariantCulture);
+            pos += written;
         }
 
         public void WriteByte(byte value)
         {
-            throw new NotImplementedException();
+            ref int pos = ref _pos;
+            const int digits = 3;
+            if (pos > _chars.Length - digits)
+            {
+                Grow(digits);
+            }
+
+            value.TryFormat(_chars.Slice(pos), out var written, provider: CultureInfo.InvariantCulture);
+            pos += written;
         }
 
         public void WriteUInt16(ushort value)
         {
-            throw new NotImplementedException();
+            ref int pos = ref _pos;
+            const int digits = 6;
+            if (pos > _chars.Length - digits)
+            {
+                Grow(digits);
+            }
+
+            value.TryFormat(_chars.Slice(pos), out var written, provider: CultureInfo.InvariantCulture);
+            pos += written;
         }
 
         public void WriteUInt32(uint value)
         {
-            throw new NotImplementedException();
+            ref int pos = ref _pos;
+            const int digits = 10;
+            if (pos > _chars.Length - digits)
+            {
+                Grow(digits);
+            }
+
+            value.TryFormat(_chars.Slice(pos), out var written, provider: CultureInfo.InvariantCulture);
+            pos += written;
         }
 
         public void WriteUInt64(ulong value)
         {
-            throw new NotImplementedException();
+            ref int pos = ref _pos;
+            const int digits = 20;
+            if (pos > _chars.Length - digits)
+            {
+                Grow(digits);
+            }
+
+            value.TryFormat(_chars.Slice(pos), out var written, provider: CultureInfo.InvariantCulture);
+            pos += written;
         }
 
         public void WriteSingle(float value)
         {
-            throw new NotImplementedException();
+            Span<char> span = stackalloc char[25]; // TODO find out how long
+            value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
+            ref int pos = ref _pos;
+            if (pos > _chars.Length - written)
+            {
+                Grow(written);
+            }
+            span.Slice(0, written).CopyTo(_chars.Slice(pos));
+            pos += written;
         }
 
         public void WriteDouble(double value)
         {
-            throw new NotImplementedException();
+            Span<char> span = stackalloc char[50]; // TODO find out how long
+            value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
+            ref int pos = ref _pos;
+            if (pos > _chars.Length - written)
+            {
+                Grow(written);
+            }
+            span.Slice(0, written).CopyTo(_chars.Slice(pos));
+            pos += written;
+        }
+
+        public void WriteDecimal(decimal value)
+        {
+            Span<char> span = stackalloc char[100]; // TODO find out how long
+            value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
+            ref int pos = ref _pos;
+            if (pos > _chars.Length - written)
+            {
+                Grow(written);
+            }
+            span.Slice(0, written).CopyTo(_chars.Slice(pos));
+            pos += written;
         }
 
         public void WriteBoolean(bool value)
         {
-            throw new NotImplementedException();
+            ref int pos = ref _pos;
+            if (value)
+            {
+                const int trueLength = 4;
+                if (pos > _chars.Length - trueLength)
+                {
+                    Grow(trueLength);
+                }
+                TrueArray.CopyTo(_chars.Slice(pos));
+                pos += trueLength;
+            }
+            else
+            {
+                const int falseLength = 5;
+                if (pos > _chars.Length - falseLength)
+                {
+                    Grow(falseLength);
+                }
+                FalseArray.CopyTo(_chars.Slice(pos));
+                pos += falseLength;
+            }
         }
 
         public void WriteChar(char value)
         {
-            throw new NotImplementedException();
+            WriteDoubleQuote();
+            ref int pos = ref _pos;
+            const int size = 3; // 1 char + two '"'
+            if (pos > _chars.Length - size)
+            {
+                Grow(size);
+            }
+            _chars[pos++] = value;
+            WriteDoubleQuote();
         }
 
         public void WriteDateTime(DateTime value)
@@ -314,12 +352,32 @@ namespace SpanJson
 
         public void WriteDateTimeOffset(DateTimeOffset value)
         {
-            throw new NotImplementedException();
+            WriteDoubleQuote();
+            ref int pos = ref _pos;
+            const int dtSize = 35; // Form o + two '"'
+            if (pos > _chars.Length - dtSize)
+            {
+                Grow(dtSize);
+            }
+
+            value.TryFormat(_chars.Slice(pos), out var written, DateTimeFormat, CultureInfo.InvariantCulture);
+            pos += written;
+            WriteDoubleQuote();
         }
 
         public void WriteTimeSpan(TimeSpan value)
         {
-            throw new NotImplementedException();
+            WriteDoubleQuote();
+            ref int pos = ref _pos;
+            const int dtSize = 20; // Form o + two '"'
+            if (pos > _chars.Length - dtSize)
+            {
+                Grow(dtSize);
+            }
+
+            value.TryFormat(_chars.Slice(pos), out var written, DateTimeFormat, CultureInfo.InvariantCulture);
+            pos += written;
+            WriteDoubleQuote();
         }
 
         public void WriteGuid(Guid value)

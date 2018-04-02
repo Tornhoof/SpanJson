@@ -1,11 +1,12 @@
 ﻿using System;
+using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
     public sealed class ArrayFormatter<T> : IJsonFormatter<T[]>, IJsonCompositeFormatter<T>
     {
         public static readonly ArrayFormatter<T> Default = new ArrayFormatter<T>();
-        private static readonly IJsonFormatter<T> DefaultFormatter = FormatterHelper.GetDefaultFormatter<T>();
+        private static readonly IJsonFormatter<T> DefaultFormatter = DefaultResolver.Default.GetFormatter<T>();
 
         public T[] DeSerialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
         {

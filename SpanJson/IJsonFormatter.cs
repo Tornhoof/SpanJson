@@ -1,6 +1,6 @@
 ﻿namespace SpanJson
 {
-    delegate void SerializationDelegate<in T>(in JsonWriter writer, T value, IJsonFormatterResolver formatterResolver);
+    public delegate void SerializationDelegate<in T>(in JsonWriter writer, T value, IJsonFormatterResolver formatterResolver);
 
     public interface IJsonFormatter
     {

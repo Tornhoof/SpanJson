@@ -88,5 +88,10 @@ namespace SpanJson
         {
             throw new NotImplementedException();
         }
+
+        public decimal ReadDecimal()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
