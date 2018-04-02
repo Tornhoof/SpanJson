@@ -17,17 +17,14 @@ namespace SpanJson
                 Span<char> span = stackalloc char[100];
                 var jsonWriter = new JsonWriter(span);
                 formatter.Serialize(ref jsonWriter, input, resolver);
-                var result = jsonWriter.ToString();
-                jsonWriter.Dispose();
+                var result = jsonWriter.ToString(); // includes Dispose
                 return result;
             }
         }
 
         public static class NonGeneric
         {
-            private delegate string NonGenericInvoker(object input);
-
-            private static readonly ConcurrentDictionary<Type, NonGenericInvoker> invokers =
+            private static readonly ConcurrentDictionary<Type, NonGenericInvoker> Invokers =
                 new ConcurrentDictionary<Type, NonGenericInvoker>();
 
             public static string Serialize(object input)
@@ -37,7 +34,7 @@ namespace SpanJson
                     return null;
                 }
 
-                var invoker = invokers.GetOrAdd(input.GetType(), x => BuildInvoker(x));
+                var invoker = Invokers.GetOrAdd(input.GetType(), x => BuildInvoker(x));
                 return invoker(input);
             }
 
@@ -53,6 +50,8 @@ namespace SpanJson
                         inputParam);
                 return lambdaExpression.Compile();
             }
+
+            private delegate string NonGenericInvoker(object input);
         }
     }
 }

@@ -3,7 +3,7 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public sealed class NullableFormatter<T> : IJsonFormatter<T?>, IJsonCompositeFormatter<T> where T : struct
+    public sealed class NullableFormatter<T> : IJsonFormatter<T?> where T : struct
     {
         public static readonly NullableFormatter<T> Default = new NullableFormatter<T>();
         private static readonly IJsonFormatter<T> DefaultFormatter = DefaultResolver.Default.GetFormatter<T>();
@@ -20,6 +20,7 @@ namespace SpanJson.Formatters
                 writer.WriteNull();
                 return;
             }
+
             DefaultFormatter.Serialize(ref writer, value.Value, formatterResolver);
         }
     }

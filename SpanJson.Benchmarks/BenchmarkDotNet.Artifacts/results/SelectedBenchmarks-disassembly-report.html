@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>DisassemblyDiagnoser Output SelectedBenchmarks</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<table>
+<thead>
+<tr><th colspan="1">SelectedBenchmarks</th></tr>
+<tr>
+<th>SerializeAccessTokenWithSpanJsonSerializer .NET Core 2.1.0-preview3-26329-05 (CoreCLR 4.6.26329.01, CoreFX 4.6.26329.01), 64bit RyuJIT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="vertical-align:top;"><pre><code>
+00007fff`83fb1160 SpanJson.Benchmarks.SelectedBenchmarks.SerializeAccessTokenWithSpanJsonSerializer()
+00007fff`83fb1165 48b9c0fd0484ff7f0000 mov rcx,7FFF8404FDC0h
+00007fff`83fb116f ba07000000      mov     edx,7
+00007fff`83fb1174 e847f6ad5f      call    coreclr!MetaDataGetDispenser+0x2dc20 (00007fff`e3a907c0)
+00007fff`83fb1179 48b9189ba0b84b020000 mov rcx,24BB8A09B18h
+00007fff`83fb1183 488b31          mov     rsi,qword ptr [rcx]
+00007fff`83fb1186 488bce          mov     rcx,rsi
+00007fff`83fb1189 48bae8be1084ff7f0000 mov rdx,7FFF8410BEE8h
+00007fff`83fb1193 49b8c8c31084ff7f0000 mov r8,7FFF8410C3C8h
+00007fff`83fb119d e8ee4aab5f      call    coreclr!MetaDataGetDispenser+0x30f0 (00007fff`e3a65c90)
+00007fff`83fb11a2 48ba289ba0b84b020000 mov rdx,24BB8A09B28h
+00007fff`83fb11ac 488b12          mov     rdx,qword ptr [rdx]
+00007fff`83fb11af 488bce          mov     rcx,rsi
+
+</code></pre></td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>

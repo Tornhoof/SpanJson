@@ -4,7 +4,7 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public sealed class ListFormatter<T> : IJsonFormatter<List<T>>, IJsonCompositeFormatter<T>
+    public sealed class ListFormatter<T> : IJsonFormatter<List<T>>
     {
         public static readonly ListFormatter<T> Default = new ListFormatter<T>();
         private static readonly IJsonFormatter<T> DefaultFormatter = DefaultResolver.Default.GetFormatter<T>();
@@ -27,6 +27,7 @@ namespace SpanJson.Formatters
                     writer.WriteSeparator();
                 }
             }
+
             writer.WriteArrayEnd();
         }
 

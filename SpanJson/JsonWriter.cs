@@ -130,12 +130,12 @@ namespace SpanJson
         {
             Debug.Assert(requiredAdditionalCapacity > 0);
 
-            char[] poolArray =
+            var poolArray =
                 ArrayPool<char>.Shared.Rent(Math.Max(_pos + requiredAdditionalCapacity, _chars.Length * 2));
 
             _chars.CopyTo(poolArray);
 
-            char[] toReturn = _arrayToReturnToPool;
+            var toReturn = _arrayToReturnToPool;
             _chars = _arrayToReturnToPool = poolArray;
             if (toReturn != null)
             {
@@ -146,7 +146,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Dispose()
         {
-            char[] toReturn = _arrayToReturnToPool;
+            var toReturn = _arrayToReturnToPool;
             this = default; // for safety, to avoid using pooled array if this instance is erroneously appended to again
             if (toReturn != null)
             {
@@ -154,9 +154,10 @@ namespace SpanJson
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteSByte(sbyte value)
         {
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             const int digits = 3;
             if (pos > _chars.Length - digits)
             {
@@ -167,9 +168,10 @@ namespace SpanJson
             pos += written;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteInt16(short value)
         {
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             const int digits = 6;
             if (pos > _chars.Length - digits)
             {
@@ -180,9 +182,10 @@ namespace SpanJson
             pos += written;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteInt32(int value)
         {
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             const int digits = 10;
             if (pos > _chars.Length - digits)
             {
@@ -193,9 +196,10 @@ namespace SpanJson
             pos += written;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteInt64(long value)
         {
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             const int digits = 20;
             if (pos > _chars.Length - digits)
             {
@@ -206,9 +210,10 @@ namespace SpanJson
             pos += written;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteByte(byte value)
         {
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             const int digits = 3;
             if (pos > _chars.Length - digits)
             {
@@ -219,9 +224,10 @@ namespace SpanJson
             pos += written;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUInt16(ushort value)
         {
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             const int digits = 6;
             if (pos > _chars.Length - digits)
             {
@@ -232,9 +238,10 @@ namespace SpanJson
             pos += written;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUInt32(uint value)
         {
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             const int digits = 10;
             if (pos > _chars.Length - digits)
             {
@@ -245,9 +252,10 @@ namespace SpanJson
             pos += written;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUInt64(ulong value)
         {
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             const int digits = 20;
             if (pos > _chars.Length - digits)
             {
@@ -258,48 +266,55 @@ namespace SpanJson
             pos += written;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteSingle(float value)
         {
             Span<char> span = stackalloc char[25]; // TODO find out how long
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             if (pos > _chars.Length - written)
             {
                 Grow(written);
             }
+
             span.Slice(0, written).CopyTo(_chars.Slice(pos));
             pos += written;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteDouble(double value)
         {
             Span<char> span = stackalloc char[50]; // TODO find out how long
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             if (pos > _chars.Length - written)
             {
                 Grow(written);
             }
+
             span.Slice(0, written).CopyTo(_chars.Slice(pos));
             pos += written;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteDecimal(decimal value)
         {
             Span<char> span = stackalloc char[100]; // TODO find out how long
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             if (pos > _chars.Length - written)
             {
                 Grow(written);
             }
+
             span.Slice(0, written).CopyTo(_chars.Slice(pos));
             pos += written;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteBoolean(bool value)
         {
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             if (value)
             {
                 const int trueLength = 4;
@@ -307,6 +322,7 @@ namespace SpanJson
                 {
                     Grow(trueLength);
                 }
+
                 TrueArray.CopyTo(_chars.Slice(pos));
                 pos += trueLength;
             }
@@ -317,28 +333,32 @@ namespace SpanJson
                 {
                     Grow(falseLength);
                 }
+
                 FalseArray.CopyTo(_chars.Slice(pos));
                 pos += falseLength;
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteChar(char value)
         {
             WriteDoubleQuote();
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             const int size = 3; // 1 char + two '"'
             if (pos > _chars.Length - size)
             {
                 Grow(size);
             }
+
             _chars[pos++] = value;
             WriteDoubleQuote();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteDateTime(DateTime value)
         {
             WriteDoubleQuote();
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             const int dtSize = 35; // Form o + two '"'
             if (pos > _chars.Length - dtSize)
             {
@@ -350,10 +370,11 @@ namespace SpanJson
             WriteDoubleQuote();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteDateTimeOffset(DateTimeOffset value)
         {
             WriteDoubleQuote();
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             const int dtSize = 35; // Form o + two '"'
             if (pos > _chars.Length - dtSize)
             {
@@ -365,10 +386,11 @@ namespace SpanJson
             WriteDoubleQuote();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteTimeSpan(TimeSpan value)
         {
             WriteDoubleQuote();
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             const int dtSize = 20; // Form o + two '"'
             if (pos > _chars.Length - dtSize)
             {
@@ -380,9 +402,10 @@ namespace SpanJson
             WriteDoubleQuote();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteGuid(Guid value)
         {
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             const int guidSize = 42; // Format D + two '"';
             if (pos > _chars.Length - guidSize)
             {
@@ -395,10 +418,12 @@ namespace SpanJson
             WriteDoubleQuote();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteString(string value)
         {
-            ref int pos = ref _pos;
-            if (value.Length == 1 && pos < _chars.Length + 2) // very common case, e.g. appending strings from NumberFormatInfo like separators, percent symbols, etc.
+            ref var pos = ref _pos;
+            // very common case, e.g. appending strings from NumberFormatInfo like separators, percent symbols, etc.
+            if (value.Length == 1 && pos < _chars.Length + 2)
             {
                 WriteDoubleQuote();
                 _chars[pos++] = value[0];
@@ -410,10 +435,11 @@ namespace SpanJson
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteName(string value)
         {
-            ref int pos = ref _pos;
-            int sLength = value.Length + 3;
+            ref var pos = ref _pos;
+            var sLength = value.Length + 3;
             if (pos > _chars.Length - sLength)
             {
                 Grow(sLength);
@@ -426,10 +452,11 @@ namespace SpanJson
             _chars[pos++] = ':';
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteStringSlow(string value)
         {
-            ref int pos = ref _pos;
-            int sLength = value.Length + 2;
+            ref var pos = ref _pos;
+            var sLength = value.Length + 2;
             if (pos > _chars.Length - sLength)
             {
                 Grow(sLength);
@@ -441,9 +468,10 @@ namespace SpanJson
             WriteDoubleQuote();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteObjectStart()
         {
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             if (pos > _chars.Length - 1)
             {
                 Grow(1);
@@ -452,9 +480,10 @@ namespace SpanJson
             _chars[pos++] = '{';
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteObjectEnd()
         {
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             if (pos > _chars.Length - 1)
             {
                 Grow(1);
@@ -463,9 +492,10 @@ namespace SpanJson
             _chars[pos++] = '}';
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteArrayStart()
         {
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             if (pos > _chars.Length - 1)
             {
                 Grow(1);
@@ -474,9 +504,10 @@ namespace SpanJson
             _chars[pos++] = '[';
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteArrayEnd()
         {
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             if (pos > _chars.Length - 1)
             {
                 Grow(1);
@@ -485,10 +516,10 @@ namespace SpanJson
             _chars[pos++] = ']';
         }
 
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteSeparator()
         {
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             if (pos > _chars.Length - 1)
             {
                 Grow(1);
@@ -497,9 +528,10 @@ namespace SpanJson
             _chars[pos++] = ',';
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteNull()
         {
-            ref int pos = ref _pos;
+            ref var pos = ref _pos;
             const int nullLength = 4;
             if (pos > _chars.Length - nullLength)
             {

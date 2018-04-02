@@ -3,7 +3,7 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public sealed class ArrayFormatter<T> : IJsonFormatter<T[]>, IJsonCompositeFormatter<T>
+    public sealed class ArrayFormatter<T> : IJsonFormatter<T[]>
     {
         public static readonly ArrayFormatter<T> Default = new ArrayFormatter<T>();
         private static readonly IJsonFormatter<T> DefaultFormatter = DefaultResolver.Default.GetFormatter<T>();
@@ -31,6 +31,7 @@ namespace SpanJson.Formatters
                     writer.WriteSeparator();
                 }
             }
+
             writer.WriteArrayEnd();
         }
     }

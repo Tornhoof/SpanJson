@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SpanJson.Resolvers
+﻿namespace SpanJson.Resolvers
 {
     public static class StandardResolvers
     {

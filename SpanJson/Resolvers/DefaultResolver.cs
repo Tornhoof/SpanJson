@@ -31,7 +31,7 @@ namespace SpanJson.Resolvers
 
         private static IJsonFormatter BuildFormatter(Type type)
         {
-            // support for multidimensional array
+            // todo: support for multidimensional array
             if (type.IsArray)
             {
                 return GetDefault(typeof(ArrayFormatter<>).MakeGenericType(type.GetElementType()));

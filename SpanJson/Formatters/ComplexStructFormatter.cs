@@ -2,20 +2,14 @@
 
 namespace SpanJson.Formatters
 {
-    public sealed class ComplexClassFormatter<T> : ComplexFormatter, IJsonFormatter<T> where T : class
+    public sealed class ComplexStructFormatter<T> : ComplexFormatter, IJsonFormatter<T> where T : struct
     {
-        public static readonly ComplexClassFormatter<T> Default = new ComplexClassFormatter<T>();
+        public static readonly ComplexStructFormatter<T> Default = new ComplexStructFormatter<T>();
         private static readonly SerializationDelegate<T> Delegate = BuildDelegate<T>();
 
 
         public void Serialize(ref JsonWriter writer, T value, IJsonFormatterResolver formatterResolver)
         {
-            if (value == null)
-            {
-                writer.WriteNull();
-                return;
-            }
-
             writer.WriteObjectStart();
             Delegate(ref writer, value, formatterResolver);
             writer.WriteObjectEnd();

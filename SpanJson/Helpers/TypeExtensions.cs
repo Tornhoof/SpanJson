@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SpanJson.Helpers
 {
@@ -13,6 +12,7 @@ namespace SpanJson.Helpers
                 underlingType = Nullable.GetUnderlyingType(type);
                 return underlingType != null;
             }
+
             underlingType = null;
             return false;
         }

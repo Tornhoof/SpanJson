@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SpanJson.Formatters
+﻿namespace SpanJson.Formatters
 {
     public sealed class DecimalFormatter : IJsonFormatter<decimal>
     {
