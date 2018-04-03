@@ -22,32 +22,24 @@ namespace SpanJson.Benchmarks
 
 
         private static readonly AccessToken AccessTokenInput = ExpressionTreeFixture.Create<AccessToken>();
+        private static readonly ShallowUser ShallowUserInput = ExpressionTreeFixture.Create<ShallowUser>();
 
-        private static readonly MobileCommunityBulletin MobileCommunityBulletinInput =
-            ExpressionTreeFixture.Create<MobileCommunityBulletin>();
-
-        private static readonly Question.ClosedDetails QuestionClosedDetailsInput =
-            ExpressionTreeFixture.Create<Question.ClosedDetails>();
-
-        private static readonly Comment CommentInput =
-            ExpressionTreeFixture.Create<Comment>();
+        //[Benchmark]
+        //public string SerializeShallowUserWithJilSerializer()
+        //{
+        //    return JilSerializer.Serialize(ShallowUserInput);
+        //}
 
         [Benchmark]
-        public string SerializeCommentWithJilSerializer()
+        public string SerializeShallowUserSpanJsonSerializer()
         {
-            return JilSerializer.Serialize(CommentInput);
+            return SpanJsonSerializer.Serialize(ShallowUserInput);
         }
 
-        [Benchmark]
-        public string SerializeCommentSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(CommentInput);
-        }
-
-        [Benchmark]
-        public byte[] SerializeCommentWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(CommentInput);
-        }
+        //[Benchmark]
+        //public byte[] SerializeShallowUserWithUtf8JsonSerializer()
+        //{
+        //    return Utf8JsonSerializer.Serialize(ShallowUserInput);
+        //}
     }
 }

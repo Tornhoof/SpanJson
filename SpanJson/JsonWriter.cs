@@ -301,7 +301,7 @@ namespace SpanJson
             span.Slice(0, written).CopyTo(_chars.Slice(pos));
             pos += written;
         }
-        
+
         public void WriteBoolean(bool value)
         {
             ref var pos = ref _pos;
@@ -312,6 +312,7 @@ namespace SpanJson
                 {
                     Grow(trueLength);
                 }
+
                 _chars[pos++] = 't';
                 _chars[pos++] = 'r';
                 _chars[pos++] = 'u';
@@ -324,6 +325,7 @@ namespace SpanJson
                 {
                     Grow(falseLength);
                 }
+
                 _chars[pos++] = 'f';
                 _chars[pos++] = 'a';
                 _chars[pos++] = 'l';
@@ -334,7 +336,6 @@ namespace SpanJson
 
         public void WriteChar(char value)
         {
-            WriteDoubleQuote();
             ref var pos = ref _pos;
             const int size = 3; // 1 char + two '"'
             if (pos > _chars.Length - size)
@@ -342,13 +343,13 @@ namespace SpanJson
                 Grow(size);
             }
 
+            WriteDoubleQuote();
             _chars[pos++] = value;
             WriteDoubleQuote();
         }
 
         public void WriteDateTime(DateTime value)
         {
-            WriteDoubleQuote();
             ref var pos = ref _pos;
             const int dtSize = 35; // Form o + two '"'
             if (pos > _chars.Length - dtSize)
@@ -356,6 +357,7 @@ namespace SpanJson
                 Grow(dtSize);
             }
 
+            WriteDoubleQuote();
             value.TryFormat(_chars.Slice(pos), out var written, DateTimeFormat, CultureInfo.InvariantCulture);
             pos += written;
             WriteDoubleQuote();
@@ -363,7 +365,6 @@ namespace SpanJson
 
         public void WriteDateTimeOffset(DateTimeOffset value)
         {
-            WriteDoubleQuote();
             ref var pos = ref _pos;
             const int dtSize = 35; // Form o + two '"'
             if (pos > _chars.Length - dtSize)
@@ -371,6 +372,7 @@ namespace SpanJson
                 Grow(dtSize);
             }
 
+            WriteDoubleQuote();
             value.TryFormat(_chars.Slice(pos), out var written, DateTimeFormat, CultureInfo.InvariantCulture);
             pos += written;
             WriteDoubleQuote();
@@ -378,7 +380,6 @@ namespace SpanJson
 
         public void WriteTimeSpan(TimeSpan value)
         {
-            WriteDoubleQuote();
             ref var pos = ref _pos;
             const int dtSize = 20; // Form o + two '"'
             if (pos > _chars.Length - dtSize)
@@ -386,6 +387,7 @@ namespace SpanJson
                 Grow(dtSize);
             }
 
+            WriteDoubleQuote();
             value.TryFormat(_chars.Slice(pos), out var written, DateTimeFormat, CultureInfo.InvariantCulture);
             pos += written;
             WriteDoubleQuote();
@@ -411,7 +413,8 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             // very common case, e.g. appending strings from NumberFormatInfo like separators, percent symbols, etc.
-            if (value.Length == 1 && pos < _chars.Length + 3)  // technically we only need 2, but escaped char might be the case
+            if (value.Length == 1 && pos < _chars.Length + 3
+            ) // technically we only need 2, but escaped char might be the case
             {
                 WriteDoubleQuote();
                 var c = value[0];
@@ -434,7 +437,8 @@ namespace SpanJson
                         _chars[pos++] = 'f';
                         break;
                     case '\n':
-                        _chars[pos++] = '\\'; ;
+                        _chars[pos++] = '\\';
+                        ;
                         _chars[pos++] = 'n';
                         break;
                     case '\r':
@@ -449,6 +453,7 @@ namespace SpanJson
                         _chars[pos++] = c;
                         break;
                 }
+
                 WriteDoubleQuote();
             }
             else
@@ -456,8 +461,9 @@ namespace SpanJson
                 WriteStringSlow(value);
             }
         }
+
         /// <summary>
-        /// The value should already be properly escaped
+        ///     The value should already be properly escaped
         /// </summary>
         /// <param name="value"></param>
         public void WriteName(string value)
@@ -522,8 +528,8 @@ namespace SpanJson
         }
 
         /// <summary>
-        /// We need copy the span up to the current index, then write the escape char and continue
-        /// This is one messy thing, resetting the iterator
+        ///     We need copy the span up to the current index, then write the escape char and continue
+        ///     This is one messy thing, resetting the iterator
         /// </summary>
         private void CopyAndEscape(ref ReadOnlySpan<char> remaining, ref int i, char toEscape)
         {
@@ -536,7 +542,7 @@ namespace SpanJson
 
             _chars[_pos++] = '\\';
             _chars[_pos++] = toEscape;
-            remaining = remaining.Slice(i+1); // continuing after the escaped char
+            remaining = remaining.Slice(i + 1); // continuing after the escaped char
             i = 0;
         }
 
