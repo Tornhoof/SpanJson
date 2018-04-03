@@ -29,22 +29,25 @@ namespace SpanJson.Benchmarks
         private static readonly Question.ClosedDetails QuestionClosedDetailsInput =
             ExpressionTreeFixture.Create<Question.ClosedDetails>();
 
-        //[Benchmark]
-        //public string SerializeAccessTokenWithJilSerializer()
-        //{
-        //    return JilSerializer.Serialize(AccessTokenInput);
-        //}
+        private static readonly Comment CommentInput =
+            ExpressionTreeFixture.Create<Comment>();
 
         [Benchmark]
-        public string SerializeQuestionClosedDetailsSpanJsonSerializer()
+        public string SerializeCommentWithJilSerializer()
         {
-            return SpanJsonSerializer.Serialize(QuestionClosedDetailsInput);
+            return JilSerializer.Serialize(CommentInput);
         }
 
-        //[Benchmark]
-        //public byte[] SerializeAccessTokenWithUtf8JsonSerializer()
-        //{
-        //    return Utf8JsonSerializer.Serialize(AccessTokenInput);
-        //}
+        [Benchmark]
+        public string SerializeCommentSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Serialize(CommentInput);
+        }
+
+        [Benchmark]
+        public byte[] SerializeCommentWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(CommentInput);
+        }
     }
 }

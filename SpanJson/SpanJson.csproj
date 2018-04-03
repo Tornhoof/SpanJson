@@ -3,10 +3,25 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <RuntimeFrameworkVersion>2.1.0-preview3-26329-05</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion>2.1.0-preview3-*</RuntimeFrameworkVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Formatters\Generated\BclFormatter.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>BclFormatter.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Formatters\Generated\BclFormatter.cs">
+      <DependentUpon>BclFormatter.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>False</AutoGen>
+    </Compile>
   </ItemGroup>
 </Project>

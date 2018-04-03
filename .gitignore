@@ -251,3 +251,4 @@ paket-files/
 .idea/
 *.sln.iml
 /MetroHash.Benchmark/BenchmarkDotNet.Artifacts/results
+/SpanJson.Benchmarks/BenchmarkDotNet.Artifacts/results

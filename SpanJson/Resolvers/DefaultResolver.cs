@@ -34,12 +34,13 @@ namespace SpanJson.Resolvers
             // todo: support for multidimensional array
             if (type.IsArray)
             {
-                return GetDefault(typeof(ArrayFormatter<>).MakeGenericType(type.GetElementType()));
+                return GetIntegrated(type) ??
+                       GetDefault(typeof(ArrayFormatter<>).MakeGenericType(type.GetElementType()));
             }
 
             if (type.TryGetListType(out var elementType))
             {
-                return GetDefault(typeof(ListFormatter<>).MakeGenericType(elementType));
+                return GetIntegrated(type) ?? GetDefault(typeof(ListFormatter<>).MakeGenericType(elementType));
             }
 
             if (type.IsEnum)
@@ -49,14 +50,14 @@ namespace SpanJson.Resolvers
 
             if (type.TryGetNullableUnderlyingType(out var underlyingType))
             {
-                return GetDefault(typeof(NullableFormatter<>).MakeGenericType(underlyingType));
+                return GetIntegrated(type) ??
+                       GetDefault(typeof(NullableFormatter<>).MakeGenericType(underlyingType));
             }
 
-            var builtInType = Assembly.GetExecutingAssembly().GetTypes()
-                .FirstOrDefault(a => typeof(IJsonFormatter<>).MakeGenericType(type).IsAssignableFrom(a));
-            if (builtInType != null)
+            var integrated = GetIntegrated(type);
+            if (integrated != null)
             {
-                return GetDefault(builtInType);
+                return integrated;
             }
 
             // no integrated type, let's build it
@@ -66,6 +67,18 @@ namespace SpanJson.Resolvers
             }
 
             return GetDefault(typeof(ComplexClassFormatter<>).MakeGenericType(type));
+        }
+
+        private static IJsonFormatter GetIntegrated(Type type)
+        {
+            var builtInType = Assembly.GetExecutingAssembly().GetTypes()
+                .FirstOrDefault(a => typeof(IJsonFormatter<>).MakeGenericType(type).IsAssignableFrom(a));
+            if (builtInType != null)
+            {
+                return GetDefault(builtInType);
+            }
+
+            return null;
         }
     }
 }

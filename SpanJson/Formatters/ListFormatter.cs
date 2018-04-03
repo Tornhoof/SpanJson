@@ -4,12 +4,18 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public sealed class ListFormatter<T> : IJsonFormatter<List<T>>
+    public abstract class ListFormatter
     {
-        public static readonly ListFormatter<T> Default = new ListFormatter<T>();
-        private static readonly IJsonFormatter<T> DefaultFormatter = DefaultResolver.Default.GetFormatter<T>();
+        public int AllocSize { get; } = 100;
 
-        public void Serialize(ref JsonWriter writer, List<T> value, IJsonFormatterResolver formatterResolver)
+        protected List<T> Deserialize<T>(ref JsonReader reader, IJsonFormatter<T> formatter,
+            IJsonFormatterResolver formatterResolver)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected void Serialize<T>(ref JsonWriter writer, List<T> value, IJsonFormatter<T> formatter,
+            IJsonFormatterResolver formatterResolver)
         {
             if (value == null)
             {
@@ -21,22 +27,34 @@ namespace SpanJson.Formatters
             writer.WriteArrayStart();
             if (valueLength > 0)
             {
-                DefaultFormatter.Serialize(ref writer, value[0], formatterResolver);
+                formatter.Serialize(ref writer, value[0], formatterResolver);
                 for (var i = 1; i < valueLength; i++)
                 {
                     writer.WriteSeparator();
-                    DefaultFormatter.Serialize(ref writer, value[i], formatterResolver);
+                    formatter.Serialize(ref writer, value[i], formatterResolver);
                 }
             }
 
             writer.WriteArrayEnd();
         }
+    }
 
-        public List<T> DeSerialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
+    /// <summary>
+    /// Used for types which are not built-in
+    /// </summary>
+    public sealed class ListFormatter<T> : ListFormatter, IJsonFormatter<List<T>>
+    {
+        public static readonly ListFormatter<T> Default = new ListFormatter<T>();
+        private static readonly IJsonFormatter<T> DefaultFormatter = DefaultResolver.Default.GetFormatter<T>();
+
+        public List<T> Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
         {
-            throw new NotImplementedException();
+            return Deserialize(ref reader, DefaultFormatter, formatterResolver);
         }
 
-        public int AllocSize { get; } = 100;
+        public void Serialize(ref JsonWriter writer, List<T> value, IJsonFormatterResolver formatterResolver)
+        {
+            Serialize(ref writer, value, DefaultFormatter, formatterResolver);
+        }
     }
 }

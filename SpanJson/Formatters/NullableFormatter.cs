@@ -4,18 +4,18 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public sealed class NullableFormatter<T> : IJsonFormatter<T?> where T : struct
+    public abstract class NullableFormatter
     {
-        public static readonly NullableFormatter<T> Default = new NullableFormatter<T>();
-        private static readonly IJsonFormatter<T> DefaultFormatter = DefaultResolver.Default.GetFormatter<T>();
+        public int AllocSize { get; } = 100;
 
-        public T? DeSerialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
+        protected T? Deserialize<T>(ref JsonReader reader, IJsonFormatter<T> formatter,
+            IJsonFormatterResolver formatterResolver) where T : struct
         {
             throw new NotImplementedException();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Serialize(ref JsonWriter writer, T? value, IJsonFormatterResolver formatterResolver)
+        protected void Serialize<T>(ref JsonWriter writer, T? value, IJsonFormatter<T> formatter,
+            IJsonFormatterResolver formatterResolver) where T : struct
         {
             if (value == null)
             {
@@ -23,9 +23,24 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            DefaultFormatter.Serialize(ref writer, value.Value, formatterResolver);
+            formatter.Serialize(ref writer, value.Value, formatterResolver);
+        }
+    }
+
+    public sealed class NullableFormatter<T> : NullableFormatter, IJsonFormatter<T?> where T : struct
+    {
+        public static readonly NullableFormatter<T> Default = new NullableFormatter<T>();
+        private static readonly IJsonFormatter<T> DefaultFormatter = DefaultResolver.Default.GetFormatter<T>();
+
+        public T? Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
+        {
+            return Deserialize(ref reader, DefaultFormatter, formatterResolver);
         }
 
-        public int AllocSize { get; } = 100;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Serialize(ref JsonWriter writer, T? value, IJsonFormatterResolver formatterResolver)
+        {
+            Serialize(ref writer, value, DefaultFormatter, formatterResolver);
+        }
     }
 }

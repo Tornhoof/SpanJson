@@ -8,10 +8,6 @@ namespace SpanJson.Formatters
 {
     public abstract class ComplexFormatter
     {
-        private static MethodInfo FindWriteMethod(string name)
-        {
-            return typeof(JsonWriter).GetMethod(name);
-        }
 
         protected static SerializationDelegate<T> BuildDelegate<T>()
         {
@@ -22,7 +18,7 @@ namespace SpanJson.Formatters
             var expressions = new List<Expression>();
             var propertyNameWriterMethodInfo = FindWriteMethod(nameof(JsonWriter.WriteName));
             var seperatorWriteMethodInfo = FindWriteMethod(nameof(JsonWriter.WriteSeparator));
-            for (int i = 0; i < propertyInfos.Length; i++)
+            for (var i = 0; i < propertyInfos.Length; i++)
             {
                 var propertyInfo = propertyInfos[i];
                 var formatter = DefaultResolver.Default.GetFormatter(propertyInfo.PropertyType);
@@ -33,9 +29,7 @@ namespace SpanJson.Formatters
                     Expression.Property(valueParameter, propertyInfo),
                     resolverParameter));
                 if (i != propertyInfos.Length - 1)
-                {
                     expressions.Add(Expression.Call(writerParameter, seperatorWriteMethodInfo));
-                }
             }
 
             var blockExpression = Expression.Block(expressions);
@@ -46,10 +40,10 @@ namespace SpanJson.Formatters
 
         protected static int EstimateSize<T>()
         {
-            Queue<Type> queue = new Queue<Type>();
-            HashSet<Type> alreadyseen = new HashSet<Type>();
+            var queue = new Queue<Type>();
+            var alreadyseen = new HashSet<Type>();
             queue.Enqueue(typeof(T));
-            int result = 0;
+            var result = 0;
             while (queue.Count > 0)
             {
                 var current = queue.Dequeue();
@@ -70,6 +64,11 @@ namespace SpanJson.Formatters
             }
 
             return result;
+        }
+
+        private static MethodInfo FindWriteMethod(string name)
+        {
+            return typeof(JsonWriter).GetMethod(name);
         }
     }
 }
