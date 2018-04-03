@@ -10,24 +10,48 @@ namespace SpanJson
     {
         public static class Generic
         {
+            private static class Inner<T>
+            {
+                public delegate string SerializeDelegate(T input, IJsonFormatterResolver formatterResolver);
+
+                public static readonly SerializeDelegate InnerSerialize = BuildDelegate();
+                /// <summary>
+                /// This gets us around the runtime decision of allocSize, we know it after init of the formatter
+                /// A delegate to a local method
+                /// </summary>
+                private static SerializeDelegate BuildDelegate()
+                {
+                    var resolver = StandardResolvers.Default;
+                    var formatter = resolver.GetFormatter<T>();
+                    if (formatter.AllocSize <= 256) // todo find better values
+                    {
+                        string Serialize(T input, IJsonFormatterResolver formatterResolver)
+                        {
+                            Span<char> span = stackalloc char[formatter.AllocSize];
+                            var jsonWriter = new JsonWriter(span);
+                            formatter.Serialize(ref jsonWriter, input, resolver);
+                            return jsonWriter.ToString(); // includes Dispose
+                        }
+
+                        return Serialize;
+                    }
+                    else
+                    {
+                        string Serialize(T input, IJsonFormatterResolver formatterResolver)
+                        {
+                            var jsonWriter = new JsonWriter(formatter.AllocSize);
+                            formatter.Serialize(ref jsonWriter, input, resolver);
+                            var result = jsonWriter.ToString(); // includes Dispose
+                            return result;
+                        }
+
+                        return Serialize;
+                    }
+                }
+            }
             public static string Serialize<T>(T input)
             {
-                var resolver = StandardResolvers.Default;
-                var formatter = resolver.GetFormatter<T>();
-                if (formatter.AllocSize <= 256) // todo find better values
-                {
-                    Span<char> span = stackalloc char[formatter.AllocSize];
-                    var jsonWriter = new JsonWriter(span);
-                    formatter.Serialize(ref jsonWriter, input, resolver);
-                    return jsonWriter.ToString(); // includes Dispose
-                }
-                else
-                {
-                    var jsonWriter = new JsonWriter(formatter.AllocSize);
-                    formatter.Serialize(ref jsonWriter, input, resolver);
-                    var result = jsonWriter.ToString(); // includes Dispose
-                    return result;
-                }
+                return Inner<T>.InnerSerialize(input, StandardResolvers.Default);
             }
         }
 
