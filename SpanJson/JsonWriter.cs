@@ -411,10 +411,44 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             // very common case, e.g. appending strings from NumberFormatInfo like separators, percent symbols, etc.
-            if (value.Length == 1 && pos < _chars.Length + 2)
+            if (value.Length == 1 && pos < _chars.Length + 3)  // technically we only need 2, but escaped char might be the case
             {
                 WriteDoubleQuote();
-                _chars[pos++] = value[0];
+                var c = value[0];
+                switch (c)
+                {
+                    case '"':
+                        _chars[pos++] = '\\';
+                        _chars[pos++] = '"';
+                        break;
+                    case '\\':
+                        _chars[pos++] = '\\';
+                        _chars[pos++] = '\\';
+                        break;
+                    case '\b':
+                        _chars[pos++] = '\\';
+                        _chars[pos++] = 'b';
+                        break;
+                    case '\f':
+                        _chars[pos++] = '\\';
+                        _chars[pos++] = 'f';
+                        break;
+                    case '\n':
+                        _chars[pos++] = '\\'; ;
+                        _chars[pos++] = 'n';
+                        break;
+                    case '\r':
+                        _chars[pos++] = '\\';
+                        _chars[pos++] = 'r';
+                        break;
+                    case '\t':
+                        _chars[pos++] = '\\';
+                        _chars[pos++] = 't';
+                        break;
+                    default:
+                        _chars[pos++] = c;
+                        break;
+                }
                 WriteDoubleQuote();
             }
             else
@@ -422,7 +456,10 @@ namespace SpanJson
                 WriteStringSlow(value);
             }
         }
-
+        /// <summary>
+        /// The value should already be properly escaped
+        /// </summary>
+        /// <param name="value"></param>
         public void WriteName(string value)
         {
             ref var pos = ref _pos;
@@ -449,9 +486,58 @@ namespace SpanJson
             }
 
             WriteDoubleQuote();
-            value.AsSpan().CopyTo(_chars.Slice(pos));
-            pos += value.Length;
+            ReadOnlySpan<char> remaining = value.AsSpan();
+            for (int i = 0; i < remaining.Length; i++)
+            {
+                var c = remaining[i];
+                switch (c)
+                {
+                    case '"':
+                        CopyAndEscape(ref remaining, ref i, '"');
+                        break;
+                    case '\\':
+                        CopyAndEscape(ref remaining, ref i, '\\');
+                        break;
+                    case '\b':
+                        CopyAndEscape(ref remaining, ref i, 'b');
+                        break;
+                    case '\f':
+                        CopyAndEscape(ref remaining, ref i, 'f');
+                        break;
+                    case '\n':
+                        CopyAndEscape(ref remaining, ref i, 'n');
+                        break;
+                    case '\r':
+                        CopyAndEscape(ref remaining, ref i, 'r');
+                        break;
+                    case '\t':
+                        CopyAndEscape(ref remaining, ref i, 't');
+                        break;
+                }
+            }
+
+            remaining.CopyTo(_chars.Slice(pos)); // if there is still something to copy we continue here
+            pos += remaining.Length;
             WriteDoubleQuote();
+        }
+
+        /// <summary>
+        /// We need copy the span up to the current index, then write the escape char and continue
+        /// This is one messy thing, resetting the iterator
+        /// </summary>
+        private void CopyAndEscape(ref ReadOnlySpan<char> remaining, ref int i, char toEscape)
+        {
+            remaining.Slice(0, i).CopyTo(_chars.Slice(_pos));
+            _pos += i;
+            if (_pos > _chars.Length - 1) // one more now
+            {
+                Grow(1);
+            }
+
+            _chars[_pos++] = '\\';
+            _chars[_pos++] = toEscape;
+            remaining = remaining.Slice(i+1); // continuing after the escaped char
+            i = 0;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

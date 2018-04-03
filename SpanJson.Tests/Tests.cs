@@ -4,6 +4,7 @@ using System.Linq;
 using SpanJson.Benchmarks;
 using SpanJson.Benchmarks.Fixture;
 using SpanJson.Benchmarks.Models;
+using SpanJson.Formatters;
 using Xunit;
 
 namespace SpanJson.Tests
@@ -27,6 +28,19 @@ namespace SpanJson.Tests
                 .Where(t => t.Namespace == typeof(AccessToken).Namespace && !t.IsEnum && !t.IsInterface && !t.IsAbstract)
                 .ToList();
             return models.Select(a => new object[] {a});
+        }
+
+
+        [Theory]
+        [InlineData("Hello \"World", "\"Hello \\\"World\"")]
+        [InlineData("Hello \"Univ\"erse", "\"Hello \\\"Univ\\\"erse\"")]
+        public void WriteEscaped(string input, string output)
+        {
+            var serialized = JsonSerializer.Generic.Serialize(input);
+            var jilSerialized = Jil.JSON.Serialize(input);
+            Assert.Equal(output, serialized);
+            Assert.Equal(jilSerialized, serialized);
+
         }
     }
 }

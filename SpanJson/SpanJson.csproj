@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <RuntimeFrameworkVersion>2.1.0-preview3-*</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion>2.1.0-preview3-26403-01</RuntimeFrameworkVersion>
   </PropertyGroup>
 
   <ItemGroup>
