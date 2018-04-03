@@ -10,7 +10,7 @@ namespace SpanJson.Benchmarks
     {
         public MyConfig()
         {
-            Add(Job.Default);
+            Add(Job.ShortRun);
             Add(CsvMeasurementsExporter.Default);
             Add(MemoryDiagnoser.Default);
         }
