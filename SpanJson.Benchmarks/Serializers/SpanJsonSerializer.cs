@@ -1,6 +1,4 @@
-﻿using Jil;
-
-namespace SpanJson.Benchmarks.Serializers
+﻿namespace SpanJson.Benchmarks.Serializers
 {
     public class SpanJsonSerializer : SerializerBase<string>
     {
@@ -11,7 +9,7 @@ namespace SpanJson.Benchmarks.Serializers
 
         public override string Serialize<T>(T input)
         {
-             return SpanJson.JsonSerializer.Generic.Serialize(input);
+            return JsonSerializer.Generic.Serialize(input);
         }
     }
 }

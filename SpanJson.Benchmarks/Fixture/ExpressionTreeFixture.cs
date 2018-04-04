@@ -70,6 +70,7 @@ namespace SpanJson.Benchmarks.Fixture
                     {
                         continue;
                     }
+
                     var propertyType = propertyInfo.PropertyType;
                     var isRecursion = IsRecursion(type, propertyType) || IsRecursion(propertyType, type);
                     var memberAccess = Expression.MakeMemberAccess(typedOutput, propertyInfo);
@@ -78,6 +79,7 @@ namespace SpanJson.Benchmarks.Fixture
                     subExpressions.Add(expression);
                 }
             }
+
             var returnTarget = Expression.Label(typeof(object));
             var returnLabel = Expression.Label(returnTarget, Expression.Convert(typedOutput, typeof(object)));
             subExpressions.Add(returnLabel);
@@ -92,21 +94,25 @@ namespace SpanJson.Benchmarks.Fixture
             {
                 return true;
             }
+
             if (parentType.IsTypedList())
             {
                 var childType = parentType.GetGenericArguments()[0];
                 return IsRecursion(type, childType);
             }
+
             if (parentType.IsArray)
             {
                 var elementType = parentType.GetElementType();
                 return IsRecursion(type, elementType);
             }
+
             if (Nullable.GetUnderlyingType(parentType) != null)
             {
                 var nullableType = Nullable.GetUnderlyingType(parentType);
                 return IsRecursion(type, nullableType);
             }
+
             return false;
         }
 
@@ -139,6 +145,7 @@ namespace SpanJson.Benchmarks.Fixture
                     var loopContent = Expression.Block(new[] {childValue, index}, loopBlock);
                     expressionList.Add(ForLoop(index, repeatCount, loopContent));
                 }
+
                 result.Add(MakeIfExpression(recursiveCount, expressionList));
             }
             else if (type.IsArray)
@@ -166,6 +173,7 @@ namespace SpanJson.Benchmarks.Fixture
                     valueFixture = new EnumValueFixture(type);
                     _valueFixtures.Add(valueFixture.Type, valueFixture);
                 }
+
                 result.Add(GenerateValue(generatedValue, repeatCount, recursiveCount,
                     type)); // call again for main method
             }
@@ -174,6 +182,7 @@ namespace SpanJson.Benchmarks.Fixture
                 result.Add(MakeIfExpression(recursiveCount,
                     InvokeCreate(type, generatedValue, repeatCount, recursiveCount)));
             }
+
             return result.Count > 1 ? Expression.Block(result) : result.Single();
         }
 

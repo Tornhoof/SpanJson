@@ -1,5 +1,4 @@
-﻿using System;
-using Jil;
+﻿using Jil;
 
 namespace SpanJson.Benchmarks.Serializers
 {
@@ -7,12 +6,12 @@ namespace SpanJson.Benchmarks.Serializers
     {
         public override T Deserialize<T>(string input)
         {
-            return Jil.JSON.Deserialize<T>(input, Options.ISO8601);
+            return JSON.Deserialize<T>(input, Options.ISO8601);
         }
 
         public override string Serialize<T>(T input)
         {
-            return Jil.JSON.Serialize(input, Options.ISO8601);
+            return JSON.Serialize(input, Options.ISO8601);
         }
     }
 }

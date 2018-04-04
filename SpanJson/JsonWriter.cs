@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics.X86;
+using System.Text;
 
 namespace SpanJson
 {
@@ -156,290 +158,330 @@ namespace SpanJson
             }
         }
 
-        public void WriteSByte(sbyte value)
-        {
-            ref var pos = ref _pos;
-            const int digits = 4; // (3 + 1 for minus)
-            if (pos > _chars.Length - digits)
-            {
-                Grow(digits);
-            }
-            WriteInt64Internal(value);
-        }
+        public void WriteSByte(sbyte value) => WriteInt64Internal(value);
 
-        public void WriteInt16(short value)
-        {
-            ref var pos = ref _pos;
-            const int digits = 7;// (6 + 1 for minus)
-            if (pos > _chars.Length - digits)
-            {
-                Grow(digits);
-            }
-            WriteInt64Internal(value);
-        }
+        public void WriteInt16(short value) => WriteInt64Internal(value);
 
-        public void WriteInt32(int value)
-        {
-            ref var pos = ref _pos;
-            const int digits = 11; // (10 + 1 for minus)
-            if (pos > _chars.Length - digits)
-            {
-                Grow(digits);
-            }
-            WriteInt64Internal(value);
-        }
+        public void WriteInt32(int value) => WriteInt64Internal(value);
 
-        public void WriteInt64(long value)
-        {
-            ref var pos = ref _pos;
-            const int digits = 20; // (19 + 1 for minus)
-            if (pos > _chars.Length - digits)
-            {
-                Grow(digits);
-            }
-            WriteInt64Internal(value);
-        }
+        public void WriteInt64(long value) => WriteInt64Internal(value);
+
+        private static readonly char[] LongMinValue = long.MinValue.ToString().ToCharArray();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteInt64Internal(long value)
         {
-            if (value < 0)
+            ref var pos = ref _pos;
+            if (value == long.MinValue)
             {
+                if (pos > _chars.Length - 21)
+                {
+                    Grow(21);
+                }
+
+                LongMinValue.AsSpan().TryCopyTo(_chars.Slice(pos));
+                pos += LongMinValue.Length;
+            }
+            else if (value < 0)
+            {
+                if (pos > _chars.Length - 1)
+                {
+                    Grow(1);
+                }
+
                 _chars[_pos++] = '-';
                 value = unchecked(-value);
             }
-
             WriteUInt64Internal((ulong) value);
         }
 
+        private static readonly ulong[] Powers10 = new[]
+        {
+            1UL,
+            10UL,
+            100UL,
+            1000UL,
+            10000UL,
+            100000UL,
+            1000000UL,
+            10000000UL,
+            100000000UL,
+            1000000000UL,
+            10000000000UL,
+            100000000000UL,
+            1000000000000UL,
+            10000000000000UL,
+            100000000000000UL,
+            1000000000000000UL,
+            10000000000000000UL,
+            100000000000000000UL,
+            1000000000000000000UL,
+            10000000000000000000UL
+//   1234567890123456789
+        };
+
+        private static readonly byte[] Tab64 = new byte[]
+        {
+            63, 0, 58, 1, 59, 47, 53, 2,
+            60, 39, 48, 27, 54, 33, 42, 3,
+            61, 51, 37, 40, 49, 18, 28, 20,
+            55, 30, 34, 11, 43, 14, 22, 4,
+            62, 57, 46, 52, 38, 26, 32, 41,
+            50, 36, 17, 19, 29, 10, 13, 21,
+            56, 45, 25, 31, 35, 16, 9, 12,
+            44, 24, 15, 8, 23, 7, 6, 5
+        };
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // https://github.com/neuecc/Utf8Json/blob/master/src/Utf8Json/Internal/NumberConverter.cs
-        // or https://stackoverflow.com/questions/4351371/c-performance-challenge-integer-to-stdstring-conversion
+        private static int Log2Floor(ulong value)
+        {
+            value |= value >> 1;
+            value |= value >> 2;
+            value |= value >> 4;
+            value |= value >> 8;
+            value |= value >> 16;
+            value |= value >> 32;
+            return Tab64[(value - (value >> 1)) * 0x07EDD5E59A4E28C2 >> 58];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteUInt64Internal(ulong value)
         {
-            var num1 = value;
-            ulong div;
-
-            if (num1 < 10000)
+            ref var pos = ref _pos;
+            if (value < 10)
             {
-                if (num1 < 10)
+                if (pos > _chars.Length - 1)
                 {
-                    goto L1;
+                    Grow(1);
                 }
 
-                if (num1 < 100)
-                {
-                    goto L2;
-                }
+                _chars[_pos++] = (char) ('0' + value);
+                return;
+            }
 
-                if (num1 < 1000)
-                {
-                    goto L3;
-                }
-
-                goto L4;
+            int log2Value;
+            if (!Lzcnt.IsSupported || !Environment.Is64BitProcess)
+            {
+                log2Value = Log2Floor(value);
             }
             else
             {
-                var num2 = num1 / 10000;
-                num1 -= num2 * 10000;
-                if (num2 < 10000)
-                {
-                    if (num2 < 10)
-                    {
-                        goto L5;
-                    }
-
-                    if (num2 < 100)
-                    {
-                        goto L6;
-                    }
-
-                    if (num2 < 1000)
-                    {
-                        goto L7;
-                    }
-
-                    goto L8;
-                }
-                else
-                {
-                    var num3 = num2 / 10000;
-                    num2 -= num3 * 10000;
-                    if (num3 < 10000)
-                    {
-                        if (num3 < 10)
-                        {
-                            goto L9;
-                        }
-
-                        if (num3 < 100)
-                        {
-                            goto L10;
-                        }
-
-                        if (num3 < 1000)
-                        {
-                            goto L11;
-                        }
-
-                        goto L12;
-                    }
-                    else
-                    {
-                        var num4 = num3 / 10000;
-                        num3 -= num4 * 10000;
-                        if (num4 < 10000)
-                        {
-                            if (num4 < 10)
-                            {
-                                goto L13;
-                            }
-
-                            if (num4 < 100)
-                            {
-                                goto L14;
-                            }
-
-                            if (num4 < 1000)
-                            {
-                                goto L15;
-                            }
-
-                            goto L16;
-                        }
-                        else
-                        {
-                            var num5 = num4 / 10000;
-                            num4 -= num5 * 10000;
-                            if (num5 < 10000)
-                            {
-                                if (num5 < 10)
-                                {
-                                    goto L17;
-                                }
-
-                                if (num5 < 100)
-                                {
-                                    goto L18;
-                                }
-
-                                if (num5 < 1000)
-                                {
-                                    goto L19;
-                                }
-
-                                goto L20;
-                            }
-
-                            L20:
-                            _chars[_pos++] = (char) ('0' + (div = (num5 * 8389L) >> 23));
-                            num5 -= div * 1000;
-                            L19:
-                            _chars[_pos++] = (char) ('0' + (div = (num5 * 5243L) >> 19));
-                            num5 -= div * 100;
-                            L18:
-                            _chars[_pos++] = (char) ('0' + (div = (num5 * 6554L) >> 16));
-                            num5 -= div * 10;
-                            L17:
-                            _chars[_pos++] = (char) ('0' + (num5));
-                        }
-
-                        L16:
-                        _chars[_pos++] = (char) ('0' + (div = (num4 * 8389L) >> 23));
-                        num4 -= div * 1000;
-                        L15:
-                        _chars[_pos++] = (char) ('0' + (div = (num4 * 5243L) >> 19));
-                        num4 -= div * 100;
-                        L14:
-                        _chars[_pos++] = (char) ('0' + (div = (num4 * 6554L) >> 16));
-                        num4 -= div * 10;
-                        L13:
-                        _chars[_pos++] = (char) ('0' + (num4));
-                    }
-
-                    L12:
-                    _chars[_pos++] = (char) ('0' + (div = (num3 * 8389L) >> 23));
-                    num3 -= div * 1000;
-                    L11:
-                    _chars[_pos++] = (char) ('0' + (div = (num3 * 5243L) >> 19));
-                    num3 -= div * 100;
-                    L10:
-                    _chars[_pos++] = (char) ('0' + (div = (num3 * 6554L) >> 16));
-                    num3 -= div * 10;
-                    L9:
-                    _chars[_pos++] = (char) ('0' + (num3));
-                }
-
-                L8:
-                _chars[_pos++] = (char) ('0' + (div = (num2 * 8389L) >> 23));
-                num2 -= div * 1000;
-                L7:
-                _chars[_pos++] = (char) ('0' + (div = (num2 * 5243L) >> 19));
-                num2 -= div * 100;
-                L6:
-                _chars[_pos++] = (char) ('0' + (div = (num2 * 6554L) >> 16));
-                num2 -= div * 10;
-                L5:
-                _chars[_pos++] = (char) ('0' + (num2));
+                log2Value = (int) (sizeof(ulong) * 8 - 1 - Lzcnt.LeadingZeroCount(value));
             }
 
-            L4:
-            _chars[_pos++] = (char) ('0' + (div = (num1 * 8389L) >> 23));
-            num1 -= div * 1000;
-            L3:
-            _chars[_pos++] = (char) ('0' + (div = (num1 * 5243L) >> 19));
-            num1 -= div * 100;
-            L2:
-            _chars[_pos++] = (char) ('0' + (div = (num1 * 6554L) >> 16));
-            num1 -= div * 10;
-            L1:
-            _chars[_pos++] = (char) ('0' + (num1));
-        }
+            log2Value += (value & (value - 1)) == 0 ? 0 : 1; // we need ceiling
 
-        public void WriteByte(byte value)
-        {
-            ref var pos = ref _pos;
-            const int digits = 3;
+            var log10Value = ((log2Value + 1) * 77) >> 8;
+            var digits = log10Value + (value >= Powers10[log10Value] ? 1 : 0);
+
             if (pos > _chars.Length - digits)
             {
                 Grow(digits);
             }
-            WriteUInt64Internal(value);
+
+            for (var i = digits; i > 0; i--)
+            {
+                var x = value / 10;
+                var d = value - x * 10;
+                _chars[pos + i - 1] = (char) ('0' + d);
+                value = x;
+            }
+
+            pos += digits;
         }
 
-        public void WriteUInt16(ushort value)
-        {
-            ref var pos = ref _pos;
-            const int digits = 6;
-            if (pos > _chars.Length - digits)
-            {
-                Grow(digits);
-            }
-            WriteUInt64Internal(value);
-        }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //// https://github.com/neuecc/Utf8Json/blob/master/src/Utf8Json/Internal/NumberConverter.cs
+        //// or https://stackoverflow.com/questions/4351371/c-performance-challenge-integer-to-stdstring-conversion
+        //private void WriteUInt64Internal(ulong value)
+        //{
+        //    var num1 = value;
+        //    ulong div;
 
-        public void WriteUInt32(uint value)
-        {
-            ref var pos = ref _pos;
-            const int digits = 10;
-            if (pos > _chars.Length - digits)
-            {
-                Grow(digits);
-            }
-            WriteUInt64Internal(value);
-        }
+        //    if (num1 < 10000)
+        //    {
+        //        if (num1 < 10)
+        //        {
+        //            goto L1;
+        //        }
 
-        public void WriteUInt64(ulong value)
-        {
-            ref var pos = ref _pos;
-            const int digits = 19;
-            if (pos > _chars.Length - digits)
-            {
-                Grow(digits);
-            }
-            WriteUInt64Internal(value);
-        }
+        //        if (num1 < 100)
+        //        {
+        //            goto L2;
+        //        }
+
+        //        if (num1 < 1000)
+        //        {
+        //            goto L3;
+        //        }
+
+        //        goto L4;
+        //    }
+        //    else
+        //    {
+        //        var num2 = num1 / 10000;
+        //        num1 -= num2 * 10000;
+        //        if (num2 < 10000)
+        //        {
+        //            if (num2 < 10)
+        //            {
+        //                goto L5;
+        //            }
+
+        //            if (num2 < 100)
+        //            {
+        //                goto L6;
+        //            }
+
+        //            if (num2 < 1000)
+        //            {
+        //                goto L7;
+        //            }
+
+        //            goto L8;
+        //        }
+        //        else
+        //        {
+        //            var num3 = num2 / 10000;
+        //            num2 -= num3 * 10000;
+        //            if (num3 < 10000)
+        //            {
+        //                if (num3 < 10)
+        //                {
+        //                    goto L9;
+        //                }
+
+        //                if (num3 < 100)
+        //                {
+        //                    goto L10;
+        //                }
+
+        //                if (num3 < 1000)
+        //                {
+        //                    goto L11;
+        //                }
+
+        //                goto L12;
+        //            }
+        //            else
+        //            {
+        //                var num4 = num3 / 10000;
+        //                num3 -= num4 * 10000;
+        //                if (num4 < 10000)
+        //                {
+        //                    if (num4 < 10)
+        //                    {
+        //                        goto L13;
+        //                    }
+
+        //                    if (num4 < 100)
+        //                    {
+        //                        goto L14;
+        //                    }
+
+        //                    if (num4 < 1000)
+        //                    {
+        //                        goto L15;
+        //                    }
+
+        //                    goto L16;
+        //                }
+        //                else
+        //                {
+        //                    var num5 = num4 / 10000;
+        //                    num4 -= num5 * 10000;
+        //                    if (num5 < 10000)
+        //                    {
+        //                        if (num5 < 10)
+        //                        {
+        //                            goto L17;
+        //                        }
+
+        //                        if (num5 < 100)
+        //                        {
+        //                            goto L18;
+        //                        }
+
+        //                        if (num5 < 1000)
+        //                        {
+        //                            goto L19;
+        //                        }
+
+        //                        goto L20;
+        //                    }
+
+        //                    L20:
+        //                    _chars[_pos++] = (char) ('0' + (div = (num5 * 8389L) >> 23));
+        //                    num5 -= div * 1000;
+        //                    L19:
+        //                    _chars[_pos++] = (char) ('0' + (div = (num5 * 5243L) >> 19));
+        //                    num5 -= div * 100;
+        //                    L18:
+        //                    _chars[_pos++] = (char) ('0' + (div = (num5 * 6554L) >> 16));
+        //                    num5 -= div * 10;
+        //                    L17:
+        //                    _chars[_pos++] = (char) ('0' + (num5));
+        //                }
+
+        //                L16:
+        //                _chars[_pos++] = (char) ('0' + (div = (num4 * 8389L) >> 23));
+        //                num4 -= div * 1000;
+        //                L15:
+        //                _chars[_pos++] = (char) ('0' + (div = (num4 * 5243L) >> 19));
+        //                num4 -= div * 100;
+        //                L14:
+        //                _chars[_pos++] = (char) ('0' + (div = (num4 * 6554L) >> 16));
+        //                num4 -= div * 10;
+        //                L13:
+        //                _chars[_pos++] = (char) ('0' + (num4));
+        //            }
+
+        //            L12:
+        //            _chars[_pos++] = (char) ('0' + (div = (num3 * 8389L) >> 23));
+        //            num3 -= div * 1000;
+        //            L11:
+        //            _chars[_pos++] = (char) ('0' + (div = (num3 * 5243L) >> 19));
+        //            num3 -= div * 100;
+        //            L10:
+        //            _chars[_pos++] = (char) ('0' + (div = (num3 * 6554L) >> 16));
+        //            num3 -= div * 10;
+        //            L9:
+        //            _chars[_pos++] = (char) ('0' + (num3));
+        //        }
+
+        //        L8:
+        //        _chars[_pos++] = (char) ('0' + (div = (num2 * 8389L) >> 23));
+        //        num2 -= div * 1000;
+        //        L7:
+        //        _chars[_pos++] = (char) ('0' + (div = (num2 * 5243L) >> 19));
+        //        num2 -= div * 100;
+        //        L6:
+        //        _chars[_pos++] = (char) ('0' + (div = (num2 * 6554L) >> 16));
+        //        num2 -= div * 10;
+        //        L5:
+        //        _chars[_pos++] = (char) ('0' + (num2));
+        //    }
+
+        //    L4:
+        //    _chars[_pos++] = (char) ('0' + (div = (num1 * 8389L) >> 23));
+        //    num1 -= div * 1000;
+        //    L3:
+        //    _chars[_pos++] = (char) ('0' + (div = (num1 * 5243L) >> 19));
+        //    num1 -= div * 100;
+        //    L2:
+        //    _chars[_pos++] = (char) ('0' + (div = (num1 * 6554L) >> 16));
+        //    num1 -= div * 10;
+        //    L1:
+        //    _chars[_pos++] = (char) ('0' + (num1));
+        //}
+
+        public void WriteByte(byte value) => WriteUInt64Internal(value);
+
+        public void WriteUInt16(ushort value) => WriteUInt64Internal(value);
+
+        public void WriteUInt32(uint value) => WriteUInt64Internal(value);
+
+        public void WriteUInt64(ulong value) => WriteUInt64Internal(value);
 
         public void WriteSingle(float value)
         {
@@ -584,7 +626,7 @@ namespace SpanJson
             }
 
             WriteDoubleQuote();
-            value.TryFormat(_chars.Slice(pos),  out var written);
+            value.TryFormat(_chars.Slice(pos), out var written);
             pos += written;
             WriteDoubleQuote();
         }

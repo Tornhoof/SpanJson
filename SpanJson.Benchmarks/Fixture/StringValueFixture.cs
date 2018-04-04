@@ -21,6 +21,7 @@ namespace SpanJson.Benchmarks.Fixture
             {
                 cArray[i] = chars[_prng.Next(chars.Length)];
             }
+
             return new string(cArray);
         }
     }

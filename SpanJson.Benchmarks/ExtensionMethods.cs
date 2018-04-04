@@ -39,10 +39,12 @@ namespace SpanJson.Benchmarks
             {
                 return true;
             }
+
             if (!a.HasValue)
             {
                 return false;
             }
+
             if (!b.HasValue)
             {
                 return false;
@@ -90,6 +92,7 @@ namespace SpanJson.Benchmarks
             {
                 return false;
             }
+
             if (ReferenceEquals(b, null))
             {
                 return false;
@@ -106,10 +109,12 @@ namespace SpanJson.Benchmarks
                     {
                         return false;
                     }
+
                     if (!e1Next && !e2Next)
                     {
                         break;
                     }
+
                     var c1 = e1.Current;
                     var c2 = e2.Current;
 
@@ -117,10 +122,12 @@ namespace SpanJson.Benchmarks
                     {
                         return false;
                     }
+
                     if (c2 == null && c1 != null)
                     {
                         return false;
                     }
+
                     if (!c1.EqualsDynamic(c2))
                     {
                         return false;
