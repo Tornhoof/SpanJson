@@ -4,7 +4,7 @@
     {
         private static void Main(string[] args)
         {
-            BenchmarkDotNet.Running.BenchmarkRunner.Run<ModelBenchmark>();
+            BenchmarkDotNet.Running.BenchmarkRunner.Run<SelectedBenchmarks>();
         }
     }
 }
