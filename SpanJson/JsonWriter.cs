@@ -164,9 +164,7 @@ namespace SpanJson
             {
                 Grow(digits);
             }
-            MyWriteInt64(value);
-            //value.TryFormat(_chars.Slice(pos), out var written, provider: CultureInfo.InvariantCulture);
-            //pos += written;
+            WriteInt64Internal(value);
         }
 
         public void WriteInt16(short value)
@@ -177,9 +175,7 @@ namespace SpanJson
             {
                 Grow(digits);
             }
-            MyWriteInt64(value);
-            //value.TryFormat(_chars.Slice(pos), out var written, provider: CultureInfo.InvariantCulture);
-            //pos += written;
+            WriteInt64Internal(value);
         }
 
         public void WriteInt32(int value)
@@ -190,50 +186,22 @@ namespace SpanJson
             {
                 Grow(digits);
             }
-            MyWriteInt64(value);
-            //value.TryFormat(_chars.Slice(pos), out var written, provider: CultureInfo.InvariantCulture);
-            //pos += written;
-        }
-
-        public void WriteInt32Old(int value)
-        {
-            ref var pos = ref _pos;
-            const int digits = 11; // (10 + 1 for minus)
-            if (pos > _chars.Length - digits)
-            {
-                Grow(digits);
-            }
-            value.TryFormat(_chars.Slice(pos), out var written, provider: CultureInfo.InvariantCulture);
-            pos += written;
+            WriteInt64Internal(value);
         }
 
         public void WriteInt64(long value)
         {
             ref var pos = ref _pos;
-            const int digits = 21; // (20 + 1 for minus)
+            const int digits = 20; // (19 + 1 for minus)
             if (pos > _chars.Length - digits)
             {
                 Grow(digits);
             }
-            MyWriteInt64(value);
-            //value.TryFormat(_chars.Slice(pos), out var written, provider: CultureInfo.InvariantCulture);
-            //pos += written;
+            WriteInt64Internal(value);
         }
 
-
-        public void MyWriteInt32(int value)
-        {
-            ref var pos = ref _pos;
-            const int digits = 11; // (10 + 1 for minus)
-            if (pos > _chars.Length - digits)
-            {
-                Grow(digits);
-            }
-
-            MyWriteInt64( value);
-        }
-
-        private void MyWriteInt64(long value)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void WriteInt64Internal(long value)
         {
             if (value < 0)
             {
@@ -241,14 +209,13 @@ namespace SpanJson
                 value = unchecked(-value);
             }
 
-            MyWriteUInt64((ulong) value);
-
+            WriteUInt64Internal((ulong) value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         // https://github.com/neuecc/Utf8Json/blob/master/src/Utf8Json/Internal/NumberConverter.cs
         // or https://stackoverflow.com/questions/4351371/c-performance-challenge-integer-to-stdstring-conversion
-        private void MyWriteUInt64(ulong value)
+        private void WriteUInt64Internal(ulong value)
         {
             var num1 = value;
             ulong div;
@@ -438,9 +405,7 @@ namespace SpanJson
             {
                 Grow(digits);
             }
-            MyWriteUInt64(value);
-            // value.TryFormat(_chars.Slice(pos), out var written, provider: CultureInfo.InvariantCulture);
-            // pos += written;
+            WriteUInt64Internal(value);
         }
 
         public void WriteUInt16(ushort value)
@@ -451,9 +416,7 @@ namespace SpanJson
             {
                 Grow(digits);
             }
-            MyWriteUInt64(value);
-            //value.TryFormat(_chars.Slice(pos), out var written, provider: CultureInfo.InvariantCulture);
-            //pos += written;
+            WriteUInt64Internal(value);
         }
 
         public void WriteUInt32(uint value)
@@ -464,22 +427,18 @@ namespace SpanJson
             {
                 Grow(digits);
             }
-            MyWriteUInt64(value);
-            //value.TryFormat(_chars.Slice(pos), out var written, provider: CultureInfo.InvariantCulture);
-            //pos += written;
+            WriteUInt64Internal(value);
         }
 
         public void WriteUInt64(ulong value)
         {
             ref var pos = ref _pos;
-            const int digits = 20;
+            const int digits = 19;
             if (pos > _chars.Length - digits)
             {
                 Grow(digits);
             }
-            MyWriteUInt64(value);
-            //value.TryFormat(_chars.Slice(pos), out var written, provider: CultureInfo.InvariantCulture);
-            //pos += written;
+            WriteUInt64Internal(value);
         }
 
         public void WriteSingle(float value)
@@ -625,7 +584,7 @@ namespace SpanJson
             }
 
             WriteDoubleQuote();
-            value.TryFormat(_chars.Slice(pos), out var written);
+            value.TryFormat(_chars.Slice(pos),  out var written);
             pos += written;
             WriteDoubleQuote();
         }

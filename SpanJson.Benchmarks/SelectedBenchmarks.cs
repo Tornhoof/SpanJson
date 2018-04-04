@@ -47,24 +47,44 @@ namespace SpanJson.Benchmarks
         //    return Utf8JsonSerializer.Serialize(NullableLong);
         //}
 
-        const int Int32Value = 12345678;
+        const float FloatValue = 1.23456f;
+        const double DoubleValue = 1.23456d;
+        const decimal DecimalValue = 1.23456m;
 
         [Benchmark]
-        public string SerializeNumberFormatInt()
+        public string SerializeNumberFormatDoubleSpanJson()
         {
-            Span<char> span = stackalloc char[20];
-            var writer = new JsonWriter(span);
-            writer.WriteInt32Old(Int32Value);
-            return writer.ToString();
+            return SpanJsonSerializer.Serialize(DoubleValue);
         }
 
         [Benchmark]
-        public string SerializeUtf8JsonInt()
+        public byte[] SerializeNumberFormatDoubleUtf8Json()
         {
-            Span<char> span = stackalloc char[20];
-            var writer = new JsonWriter(span);
-            writer.MyWriteInt32(Int32Value);
-            return writer.ToString();
+            return Utf8JsonSerializer.Serialize(DoubleValue);
+        }
+
+        [Benchmark]
+        public string SerializeNumberFormatFloatSpanJson()
+        {
+            return SpanJsonSerializer.Serialize(FloatValue);
+        }
+
+        [Benchmark]
+        public byte[] SerializeNumberFormatFloatUtf8Json()
+        {
+            return Utf8JsonSerializer.Serialize(FloatValue);
+        }
+
+        [Benchmark]
+        public string SerializeNumberFormatDecimalSpanJson()
+        {
+            return SpanJsonSerializer.Serialize(DecimalValue);
+        }
+
+        [Benchmark]
+        public byte[] SerializeNumberFormatDecimalUtf8Json()
+        {
+            return Utf8JsonSerializer.Serialize(DecimalValue);
         }
     }
 }
