@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
+using SpanJson.Helpers;
 
 namespace SpanJson
 {
@@ -259,20 +260,7 @@ namespace SpanJson
                 return;
             }
 
-            int log2Value;
-            if (!Lzcnt.IsSupported || !Environment.Is64BitProcess)
-            {
-                log2Value = Log2Floor(value);
-            }
-            else
-            {
-                log2Value = (int) (sizeof(ulong) * 8 - 1 - Lzcnt.LeadingZeroCount(value));
-            }
-
-            log2Value += (value & (value - 1)) == 0 ? 0 : 1; // we need ceiling
-
-            var log10Value = ((log2Value + 1) * 77) >> 8;
-            var digits = log10Value + (value >= Powers10[log10Value] ? 1 : 0);
+            var digits = FormatterUtils.CountDigits(value);
 
             if (pos > _chars.Length - digits)
             {
@@ -281,10 +269,9 @@ namespace SpanJson
 
             for (var i = digits; i > 0; i--)
             {
-                var x = value / 10;
-                var d = value - x * 10;
-                _chars[pos + i - 1] = (char) ('0' + d);
-                value = x;
+                var temp = '0' + value;
+                value /= 10;
+                _chars[pos + i - 1] = (char) (temp - (value * 10));
             }
 
             pos += digits;

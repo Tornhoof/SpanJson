@@ -10,7 +10,17 @@ namespace SpanJson.Formatters
         protected T[] Deserialize<T>(ref JsonReader reader, IJsonFormatter<T> formatter,
             IJsonFormatterResolver formatterResolver)
         {
-            throw new NotImplementedException();
+            if (reader.ReadIsNull())
+            {
+                return null;
+            }
+            reader.ReadIsBeginArray();
+            int count = 0;
+            while (!reader.ReadIsEndArray(ref count))
+            {
+            }
+
+            return null;
         }
 
         protected void Serialize<T>(ref JsonWriter writer, T[] value, IJsonFormatter<T> formatter,

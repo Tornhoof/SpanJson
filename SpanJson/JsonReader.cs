@@ -4,6 +4,15 @@ namespace SpanJson
 {
     public ref struct JsonReader
     {
+        private ReadOnlySpan<char> _chars;
+        private int _pos;
+
+        public JsonReader(ReadOnlySpan<char> chars)
+        {
+            _chars = chars;
+            _pos = 0;
+        }
+
         internal sbyte ReadSByte()
         {
             throw new NotImplementedException();
@@ -90,6 +99,21 @@ namespace SpanJson
         }
 
         public decimal ReadDecimal()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool ReadIsNull()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ReadIsBeginArray()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool ReadIsEndArray(ref int count)
         {
             throw new NotImplementedException();
         }
