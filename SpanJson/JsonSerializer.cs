@@ -13,13 +13,14 @@ namespace SpanJson
             private static class Inner<T>
             {
                 public delegate string SerializeDelegate(T input, IJsonFormatterResolver formatterResolver);
-
-                public static readonly SerializeDelegate InnerSerialize = BuildDelegate();
+                public static readonly SerializeDelegate InnerSerialize = BuildSerializeDelegate();
+                public delegate T DeserializeDelegate(string input, IJsonFormatterResolver formatterResolver);
+                public static readonly DeserializeDelegate InnerDeserialize = BuildDeserializeDelegate();
                 /// <summary>
                 /// This gets us around the runtime decision of allocSize, we know it after init of the formatter
                 /// A delegate to a local method
                 /// </summary>
-                private static SerializeDelegate BuildDelegate()
+                private static SerializeDelegate BuildSerializeDelegate()
                 {
                     var resolver = StandardResolvers.Default;
                     var formatter = resolver.GetFormatter<T>();
@@ -48,10 +49,29 @@ namespace SpanJson
                         return Serialize;
                     }
                 }
+
+                private static DeserializeDelegate BuildDeserializeDelegate()
+                {
+                    var resolver = StandardResolvers.Default;
+                    var formatter = resolver.GetFormatter<T>();
+
+                    T Deserialize(string input, IJsonFormatterResolver formatterResolver)
+                    {
+                        var jsonReader = new JsonReader(input);
+                        return formatter.Deserialize(ref jsonReader, resolver);
+                    }
+
+                    return Deserialize;
+                }
             }
             public static string Serialize<T>(T input)
             {
                 return Inner<T>.InnerSerialize(input, StandardResolvers.Default);
+            }
+
+            public static T Deserialize<T>(string input)
+            {
+                return Inner<T>.InnerDeserialize(input, StandardResolvers.Default);
             }
         }
 

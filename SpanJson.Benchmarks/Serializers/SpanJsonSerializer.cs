@@ -4,7 +4,7 @@
     {
         public override T Deserialize<T>(string input)
         {
-            return default;
+            return JsonSerializer.Generic.Deserialize<T>(input);
         }
 
         public override string Serialize<T>(T input)

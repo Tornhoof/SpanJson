@@ -11,7 +11,12 @@ namespace SpanJson.Formatters
         protected T? Deserialize<T>(ref JsonReader reader, IJsonFormatter<T> formatter,
             IJsonFormatterResolver formatterResolver) where T : struct
         {
-            throw new NotImplementedException();
+            if (reader.ReadIsNull())
+            {
+                return null;
+            }
+
+            return formatter.Deserialize(ref reader, formatterResolver);
         }
 
         protected void Serialize<T>(ref JsonWriter writer, T? value, IJsonFormatter<T> formatter,
