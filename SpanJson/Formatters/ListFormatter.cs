@@ -18,8 +18,8 @@ namespace SpanJson.Formatters
 
             reader.ReadBeginArrayOrThrow();
             var list = new List<T>();
-            int counter = 0;
-            while (!reader.TryReadIsEndArrayOrValueSeparator(ref counter))
+            int count = 0;
+            while (!reader.TryReadIsEndArrayOrValueSeparator(ref count))
             {
                 list.Add(formatter.Deserialize(ref reader, formatterResolver));
             }

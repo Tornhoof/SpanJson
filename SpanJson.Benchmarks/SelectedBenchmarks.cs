@@ -24,44 +24,6 @@ namespace SpanJson.Benchmarks
         private static readonly MobileBadgeAward MobileBadgeAwardInput =
             ExpressionTreeFixture.Create<MobileBadgeAward>();
 
-        private static readonly long? NullableLong = 5000;
-        private static readonly string ListInput = "[\"Hello\",\"World\",\"Universe\"]";
-        private static readonly byte[] ListInputArray = Encoding.UTF8.GetBytes(ListInput);
 
-        //[Benchmark]
-        //public string SerializeWithJilSerializer()
-        //{
-        //    return JilSerializer.Serialize(NullableLong);
-        //}
-
-        //[Benchmark]
-        //public string SerializeSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Serialize(NullableLong);
-        //}
-
-        ////[Benchmark]
-        ////public byte[] SerializeWithUtf8JsonSerializer()
-        ////{
-        ////    return Utf8JsonSerializer.Serialize(NullableLong);
-        ////}
-
-        [Benchmark]
-        public List<string> DeserializeWithJilDeserializer()
-        {
-            return JilSerializer.Deserialize<List<string>>(ListInput);
-        }
-
-        [Benchmark]
-        public List<string> DeserializeSpanJsonDeserializer()
-        {
-            return SpanJsonSerializer.Deserialize<List<string>>(ListInput);
-        }
-
-        [Benchmark]
-        public List<string> DeserializeWithUtf8JsonDeserializer()
-        {
-            return Utf8JsonSerializer.Deserialize<List<string>>(ListInputArray);
-        }
     }
 }

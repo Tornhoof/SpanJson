@@ -13,9 +13,14 @@ namespace SpanJson
             private static class Inner<T>
             {
                 public delegate string SerializeDelegate(T input, IJsonFormatterResolver formatterResolver);
+
                 public static readonly SerializeDelegate InnerSerialize = BuildSerializeDelegate();
-                public delegate T DeserializeDelegate(string input, IJsonFormatterResolver formatterResolver);
+
+                public delegate T DeserializeDelegate(ReadOnlySpan<char> input,
+                    IJsonFormatterResolver formatterResolver);
+
                 public static readonly DeserializeDelegate InnerDeserialize = BuildDeserializeDelegate();
+
                 /// <summary>
                 /// This gets us around the runtime decision of allocSize, we know it after init of the formatter
                 /// A delegate to a local method
@@ -55,7 +60,7 @@ namespace SpanJson
                     var resolver = StandardResolvers.Default;
                     var formatter = resolver.GetFormatter<T>();
 
-                    T Deserialize(string input, IJsonFormatterResolver formatterResolver)
+                    T Deserialize(ReadOnlySpan<char> input, IJsonFormatterResolver formatterResolver)
                     {
                         var jsonReader = new JsonReader(input);
                         return formatter.Deserialize(ref jsonReader, resolver);
@@ -64,12 +69,13 @@ namespace SpanJson
                     return Deserialize;
                 }
             }
+
             public static string Serialize<T>(T input)
             {
                 return Inner<T>.InnerSerialize(input, StandardResolvers.Default);
             }
 
-            public static T Deserialize<T>(string input)
+            public static T Deserialize<T>(ReadOnlySpan<char> input)
             {
                 return Inner<T>.InnerDeserialize(input, StandardResolvers.Default);
             }
@@ -77,8 +83,8 @@ namespace SpanJson
 
         public static class NonGeneric
         {
-            private static readonly ConcurrentDictionary<Type, NonGenericInvoker> Invokers =
-                new ConcurrentDictionary<Type, NonGenericInvoker>();
+            private static readonly ConcurrentDictionary<Type, Invoker> Invokers =
+                new ConcurrentDictionary<Type, Invoker>();
 
             public static string Serialize(object input)
             {
@@ -90,10 +96,28 @@ namespace SpanJson
                 // ReSharper disable ConvertClosureToMethodGroup
                 var invoker = Invokers.GetOrAdd(input.GetType(), x => BuildInvoker(x));
                 // ReSharper restore ConvertClosureToMethodGroup
-                return invoker(input);
+                return invoker.Serializer(input);
             }
 
-            private static NonGenericInvoker BuildInvoker(Type type)
+            public static object Deserialize(ReadOnlySpan<char> input, Type type)
+            {
+                if (input == null)
+                {
+                    return null;
+                }
+
+                // ReSharper disable ConvertClosureToMethodGroup
+                var invoker = Invokers.GetOrAdd(type, x => BuildInvoker(x));
+                // ReSharper restore ConvertClosureToMethodGroup
+                return invoker.Deserializer(input);
+            }
+
+            private static Invoker BuildInvoker(Type type)
+            {
+                return new Invoker(BuildSerializer(type), BuildDeserializer(type));
+            }
+
+            private static SerializeDelegate BuildSerializer(Type type)
             {
                 var inputParam = Expression.Parameter(typeof(object), "input");
                 var typedInputParam = Expression.Convert(inputParam, type);
@@ -101,12 +125,38 @@ namespace SpanJson
                     .GetMethod(nameof(Generic.Serialize), BindingFlags.Public | BindingFlags.Static)
                     .MakeGenericMethod(type);
                 var lambdaExpression =
-                    Expression.Lambda<NonGenericInvoker>(Expression.Call(null, serializerMethodInfo, typedInputParam),
+                    Expression.Lambda<SerializeDelegate>(Expression.Call(null, serializerMethodInfo, typedInputParam),
                         inputParam);
                 return lambdaExpression.Compile();
             }
 
-            private delegate string NonGenericInvoker(object input);
+            private static DeserializeDelegate BuildDeserializer(Type type)
+            {
+                var inputParam = Expression.Parameter(typeof(ReadOnlySpan<char>), "input");
+                var deserializeMethod = typeof(Generic)
+                    .GetMethod(nameof(Generic.Deserialize), BindingFlags.Public | BindingFlags.Static)
+                    .MakeGenericMethod(type);
+                var lambdaExpression =
+                    Expression.Lambda<DeserializeDelegate>(Expression.Call(null, deserializeMethod, inputParam),
+                        inputParam);
+                return lambdaExpression.Compile();
+            }
+
+            private delegate string SerializeDelegate(object input);
+
+            private delegate object DeserializeDelegate(ReadOnlySpan<char> input);
+
+            private readonly struct Invoker
+            {
+                public Invoker(SerializeDelegate serializer, DeserializeDelegate deserializer)
+                {
+                    Serializer = serializer;
+                    Deserializer = deserializer;
+                }
+
+                public readonly SerializeDelegate Serializer;
+                public readonly DeserializeDelegate Deserializer;
+            }
         }
     }
 }

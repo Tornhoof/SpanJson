@@ -23,6 +23,19 @@ namespace SpanJson.Tests
             Assert.NotNull(serialized);
         }
 
+        [Theory]
+        [MemberData(nameof(GetModels))]
+        public void CanDeserializeAll(Type modelType)
+        {
+            var fixture = new ExpressionTreeFixture();
+            var model = fixture.Create(modelType);
+            var serialized = JsonSerializer.NonGeneric.Serialize(model);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.NonGeneric.Deserialize(serialized, modelType);
+            Assert.NotNull(deserialized);
+            Assert.IsType(modelType, deserialized);
+        }
+
         public static IEnumerable<object[]> GetModels()
         {
             var models = typeof(AccessToken).Assembly

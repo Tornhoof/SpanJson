@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace SpanJson
 {
@@ -13,85 +15,217 @@ namespace SpanJson
             _pos = 0;
         }
 
-        internal sbyte ReadSByte()
+        public sbyte ReadSByte()
         {
-            throw new NotImplementedException();
+            return sbyte.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
         }
 
-        internal short ReadInt16()
+        public short ReadInt16()
         {
-            throw new NotImplementedException();
+            return short.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
         }
 
-        internal int ReadInt32()
+        public int ReadInt32()
         {
-            throw new NotImplementedException();
+            return int.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
         }
 
-        internal long ReadInt64()
+        public long ReadInt64()
         {
-            throw new NotImplementedException();
+            return long.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
         }
 
-        internal byte ReadByte()
+        public byte ReadByte()
         {
-            throw new NotImplementedException();
+            return byte.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
         }
 
-        internal ushort ReadUInt16()
+        public ushort ReadUInt16()
         {
-            throw new NotImplementedException();
+            return ushort.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
         }
 
-        internal uint ReadUInt32()
+        public uint ReadUInt32()
         {
-            throw new NotImplementedException();
+            return uint.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
         }
 
-        internal ulong ReadUInt64()
+        public ulong ReadUInt64()
         {
-            throw new NotImplementedException();
+            return ulong.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
         }
 
-        internal float ReadSingle()
+        public float ReadSingle()
         {
-            throw new NotImplementedException();
+            return float.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
         }
 
-        internal double ReadDouble()
+        public double ReadDouble()
         {
-            throw new NotImplementedException();
+            return double.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
         }
 
-        internal bool ReadBoolean()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ReadOnlySpan<char> ReadNumberInternal()
         {
-            throw new NotImplementedException();
+            SkipWhitespace();
+            int i;
+            for (i = _pos; i < _chars.Length; i++)
+            {
+                var c = _chars[i];
+                if (!IsNumericSymbol(c))
+                {
+                    break;
+                }
+            }
+
+            if (i > _pos)
+            {
+                var result = _chars.Slice(_pos, i - _pos);
+                _pos = i;
+                return result;
+            }
+
+            throw new InvalidOperationException();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsNumber(char c)
+        {
+            return '0' <= c && c <= '9';
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsNumericSymbol(char c)
+        {
+            switch (c)
+            {
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                case '+':
+                case '-':
+                case '.':
+                case 'E':
+                case 'e':
+                    return true;
+            }
+
+            return false;
+        }
+
+
+        public bool ReadBoolean()
+        {
+            SkipWhitespace();
+            if (_chars[_pos] == 't') // just peek the char
+            {
+                if (_chars[_pos + 1] != 'r')
+                {
+                    throw new InvalidOperationException();
+                }
+
+                if (_chars[_pos + 2] != 'u')
+                {
+                    throw new InvalidOperationException();
+                }
+
+                if (_chars[_pos + 3] != 'e')
+                {
+                    throw new InvalidOperationException();
+                }
+
+                _pos += 4;
+                return true;
+            }
+
+            if (_chars[_pos] == 'f') // just peek the char
+            {
+                if (_chars[_pos + 1] != 'a')
+                {
+                    throw new InvalidOperationException();
+                }
+
+                if (_chars[_pos + 2] != 'l')
+                {
+                    throw new InvalidOperationException();
+                }
+
+                if (_chars[_pos + 3] != 's')
+                {
+                    throw new InvalidOperationException();
+                }
+
+                if (_chars[_pos + 4] != 'e')
+                {
+                    throw new InvalidOperationException();
+                }
+
+                _pos += 5;
+                return true;
+            }
+
+            throw new InvalidOperationException();
         }
 
         public char ReadChar()
         {
-            throw new NotImplementedException();
+            return _chars[_pos++];
         }
 
         public DateTime ReadDateTime()
         {
-            throw new NotImplementedException();
+            var span = ReadStringSpanInternal();
+            return DateTime.Parse(span, CultureInfo.InvariantCulture);
         }
 
         public DateTimeOffset ReadDateTimeOffset()
         {
-            throw new NotImplementedException();
+            var span = ReadStringSpanInternal();
+            return DateTimeOffset.Parse(span, CultureInfo.InvariantCulture);
         }
 
         public TimeSpan ReadTimeSpan()
         {
-            throw new NotImplementedException();
+            var span = ReadStringSpanInternal();
+            return TimeSpan.Parse(span, CultureInfo.InvariantCulture);
         }
 
         public Guid ReadGuid()
         {
-            throw new NotImplementedException();
+            var span = ReadStringSpanInternal();
+            return Guid.Parse(span);
         }
+
+        public string ReadName()
+        {
+            var span = ReadStringSpanInternal();
+            if (_chars[_pos++] != ':')
+            {
+                throw new InvalidOperationException();
+            }
+
+            return span.ToString();
+        }
+
+        public ReadOnlySpan<char> ReadNameSpan()
+        {
+            var span = ReadStringSpanInternal();
+            if (_chars[_pos++] != ':')
+            {
+                throw new InvalidOperationException();
+            }
+
+            return span;
+        }
+
 
         public string ReadString()
         {
@@ -100,6 +234,12 @@ namespace SpanJson
                 return null;
             }
 
+            var span = ReadStringSpanInternal();
+            return span.ToString();
+        }
+
+        private ReadOnlySpan<char> ReadStringSpanInternal()
+        {
             if (_chars[_pos++] != '"')
             {
                 throw new InvalidOperationException();
@@ -113,9 +253,10 @@ namespace SpanJson
                     if (_chars[i - 1] != '\\')
                     {
                         var length = i - _pos;
-                        var result = _chars.Slice(_pos, length).ToString();
+                        var result = _chars.Slice(_pos, length);
                         _pos += length + 1; // we skip the '"' too
                         return result;
+
                     }
                 }
             }
@@ -125,13 +266,13 @@ namespace SpanJson
 
         public decimal ReadDecimal()
         {
-            throw new NotImplementedException();
+            return decimal.Parse(ReadNumberInternal(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
         }
 
         public bool ReadIsNull()
         {
             SkipWhitespace();
-            if (_pos < _chars.Length - 4 && _chars[_pos] == 'n') // just peek the char
+            if (IsAvailable && _chars[_pos] == 'n') // just peek the char
             {
                 if (_chars[_pos + 1] != 'u')
                 {
@@ -184,10 +325,11 @@ namespace SpanJson
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ReadBeginArray()
         {
             SkipWhitespace();
-            if (_pos < _chars.Length && _chars[_pos] == '[')
+            if (IsAvailable && _chars[_pos] == '[')
             {
                 _pos++;
                 return true;
@@ -199,7 +341,7 @@ namespace SpanJson
         public bool TryReadIsEndArrayOrValueSeparator(ref int count)
         {
             SkipWhitespace();
-            if (_pos < _chars.Length && _chars[_pos] == ']')
+            if (IsAvailable && _chars[_pos] == ']')
             {
                 _pos++;
                 return true;
@@ -207,19 +349,89 @@ namespace SpanJson
 
             if (count++ >= 0)
             {
-                ReadIsValueSeparatorOrThrow();
+                ReadIsValueSeparator();
             }
 
             return false;
         }
 
-        public bool ReadIsValueSeparatorOrThrow()
+        public bool ReadIsValueSeparator()
         {
             SkipWhitespace();
-            if (_pos < _chars.Length && _chars[_pos] == ',')
+            if (IsAvailable && _chars[_pos] == ',')
             {
                 _pos++;
                 return true;
+            }
+
+            return false;
+        }
+
+        public bool IsAvailable => _pos < _chars.Length;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool ReadIsBeginObject()
+        {
+            SkipWhitespace();
+            if (_chars[_pos] == '{')
+            {
+                _pos++;
+                return true;
+            }
+
+            return false;
+        }
+
+        public void ReadBeginObjectOrThrow()
+        {
+            if (!ReadIsBeginObject())
+            {
+                throw new InvalidOperationException();
+            }
+        }
+
+
+        public void ReadEndObjectOrThrow()
+        {
+            if (!ReadIsEndObject())
+            {
+                throw new InvalidOperationException();
+            }
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool PeekEndObject()
+        {
+            SkipWhitespace();
+            return _chars[_pos] == '}';
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool ReadIsEndObject()
+        {
+            SkipWhitespace();
+            if (_chars[_pos] == '}')
+            {
+                _pos++;
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool TryReadIsEndObjectOrValueSeparator(ref int count)
+        {
+            SkipWhitespace();
+            if (IsAvailable && _chars[_pos] == '}')
+            {
+                _pos++;
+                return true;
+            }
+
+            if (count++ >= 0)
+            {
+                ReadIsValueSeparator();
             }
 
             return false;
