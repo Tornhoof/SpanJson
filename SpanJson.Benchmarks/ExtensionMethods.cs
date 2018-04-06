@@ -24,18 +24,26 @@ namespace SpanJson.Benchmarks
     {
         public static bool TrueEqualsString(this IEnumerable<string> a, IEnumerable<string> b)
         {
+            if (ReferenceEquals(a, b))
+            {
+                return true;
+            }
             return a.SequenceEqual(b);
         }
 
         public static bool TrueEqualsString(this string a, string b)
         {
+            if (ReferenceEquals(a, b))
+            {
+                return true;
+            }
             return a == b;
         }
 
         public static bool TrueEquals<T>(this T? a, T? b)
             where T : struct
         {
-            if (!a.HasValue && !b.HasValue)
+            if (ReferenceEquals(a, b))
             {
                 return true;
             }
@@ -56,6 +64,10 @@ namespace SpanJson.Benchmarks
         public static bool TrueEquals<T>(this T a, T b)
             where T : class, IGenericEquality<T>
         {
+            if (ReferenceEquals(a, b))
+            {
+                return true;
+            }
             if (ReferenceEquals(a, null) && ReferenceEquals(b, null))
             {
                 return true;
@@ -77,12 +89,20 @@ namespace SpanJson.Benchmarks
         public static bool TrueEqualsList<T>(this IEnumerable<T> a, IEnumerable<T> b)
             where T : class, IGenericEquality<T>
         {
+            if (ReferenceEquals(a, b))
+            {
+                return true;
+            }
             return a.SequenceEqual(b, GenericEqualityComparer<T>.Default);
         }
 
         public static bool TrueEqualsListDynamic<T>(this IEnumerable<T> a, IEnumerable<dynamic> b)
             where T : class, IGenericEquality<T>
         {
+            if (ReferenceEquals(a, b))
+            {
+                return true;
+            }
             if (ReferenceEquals(a, null) && ReferenceEquals(b, null))
             {
                 return true;

@@ -169,7 +169,7 @@ namespace SpanJson
                 }
 
                 _pos += 5;
-                return true;
+                return false;
             }
 
             throw new InvalidOperationException();
