@@ -86,7 +86,8 @@ namespace SpanJson
                 return result;
             }
 
-            throw new InvalidOperationException();
+            ThrowInvalidOperationException();
+            return null;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -121,7 +122,6 @@ namespace SpanJson
             return false;
         }
 
-
         public bool ReadBoolean()
         {
             SkipWhitespace();
@@ -129,17 +129,17 @@ namespace SpanJson
             {
                 if (_chars[_pos + 1] != 'r')
                 {
-                    throw new InvalidOperationException();
+                    ThrowInvalidOperationException();
                 }
 
                 if (_chars[_pos + 2] != 'u')
                 {
-                    throw new InvalidOperationException();
+                    ThrowInvalidOperationException();
                 }
 
                 if (_chars[_pos + 3] != 'e')
                 {
-                    throw new InvalidOperationException();
+                    ThrowInvalidOperationException();
                 }
 
                 _pos += 4;
@@ -150,29 +150,30 @@ namespace SpanJson
             {
                 if (_chars[_pos + 1] != 'a')
                 {
-                    throw new InvalidOperationException();
+                    ThrowInvalidOperationException();
                 }
 
                 if (_chars[_pos + 2] != 'l')
                 {
-                    throw new InvalidOperationException();
+                    ThrowInvalidOperationException();
                 }
 
                 if (_chars[_pos + 3] != 's')
                 {
-                    throw new InvalidOperationException();
+                    ThrowInvalidOperationException();
                 }
 
                 if (_chars[_pos + 4] != 'e')
                 {
-                    throw new InvalidOperationException();
+                    ThrowInvalidOperationException();
                 }
 
                 _pos += 5;
                 return false;
             }
 
-            throw new InvalidOperationException();
+            ThrowInvalidOperationException();
+            return false;
         }
 
         public char ReadChar()
@@ -209,18 +210,18 @@ namespace SpanJson
             var span = ReadStringSpanInternal();
             if (_chars[_pos++] != ':')
             {
-                throw new InvalidOperationException();
+               ThrowInvalidOperationException();
             }
 
             return span.ToString();
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<char> ReadNameSpan()
         {
             var span = ReadStringSpanInternal();
             if (_chars[_pos++] != ':')
             {
-                throw new InvalidOperationException();
+               ThrowInvalidOperationException();
             }
 
             return span;
@@ -237,12 +238,12 @@ namespace SpanJson
             var span = ReadStringSpanInternal();
             return span.ToString();
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ReadOnlySpan<char> ReadStringSpanInternal()
         {
             if (_chars[_pos++] != '"')
             {
-                throw new InvalidOperationException();
+                ThrowInvalidOperationException();
             }
 
             for (int i = _pos; i < _chars.Length; i++)
@@ -261,7 +262,8 @@ namespace SpanJson
                 }
             }
 
-            throw new InvalidOperationException();
+            ThrowInvalidOperationException();
+            return null;
         }
 
         public decimal ReadDecimal()
@@ -269,6 +271,7 @@ namespace SpanJson
             return decimal.Parse(ReadNumberInternal(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ReadIsNull()
         {
             SkipWhitespace();
@@ -276,17 +279,17 @@ namespace SpanJson
             {
                 if (_chars[_pos + 1] != 'u')
                 {
-                    throw new InvalidOperationException();
+                   ThrowInvalidOperationException();
                 }
 
                 if (_chars[_pos + 2] != 'l')
                 {
-                    throw new InvalidOperationException();
+                   ThrowInvalidOperationException();
                 }
 
                 if (_chars[_pos + 3] != 'l')
                 {
-                    throw new InvalidOperationException();
+                   ThrowInvalidOperationException();
                 }
 
                 _pos += 4;
@@ -299,6 +302,7 @@ namespace SpanJson
         /// <summary>
         /// Make sure we don't increase the pointer too much
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SkipWhitespace()
         {
             do
@@ -316,12 +320,12 @@ namespace SpanJson
                 }
             } while (_pos++ < _chars.Length);
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReadBeginArrayOrThrow()
         {
             if (!ReadBeginArray())
             {
-                throw new InvalidOperationException();
+               ThrowInvalidOperationException();
             }
         }
 
@@ -337,7 +341,7 @@ namespace SpanJson
 
             return false;
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryReadIsEndArrayOrValueSeparator(ref int count)
         {
             SkipWhitespace();
@@ -354,7 +358,7 @@ namespace SpanJson
 
             return false;
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ReadIsValueSeparator()
         {
             SkipWhitespace();
@@ -381,22 +385,28 @@ namespace SpanJson
 
             return false;
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReadBeginObjectOrThrow()
         {
             if (!ReadIsBeginObject())
             {
-                throw new InvalidOperationException();
+               ThrowInvalidOperationException();
             }
         }
 
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReadEndObjectOrThrow()
         {
             if (!ReadIsEndObject())
             {
-                throw new InvalidOperationException();
+               ThrowInvalidOperationException();
             }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowInvalidOperationException()
+        {
+           throw new InvalidOperationException();
         }
 
 
@@ -419,7 +429,7 @@ namespace SpanJson
 
             return false;
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryReadIsEndObjectOrValueSeparator(ref int count)
         {
             SkipWhitespace();

@@ -21,32 +21,27 @@ namespace SpanJson.Benchmarks
         private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
 
 
-        private static readonly string HelloWorldSerializedString =
-            SpanJsonSerializer.Serialize(ExpressionTreeFixture.Create<HelloWorld>());
+        private static readonly string AccessTokenSerializedString =
+            SpanJsonSerializer.Serialize(ExpressionTreeFixture.Create<AccessToken>());
 
-        private static readonly byte[] HelloWorldSerializedByteArray = Encoding.UTF8.GetBytes(HelloWorldSerializedString);
+        private static readonly byte[] AccessTokenSerializedByteArray = Encoding.UTF8.GetBytes(AccessTokenSerializedString);
 
         [Benchmark]
-        public HelloWorld DeserializeHelloWorldWithSpanJsonSerializer()
+        public AccessToken DeserializeAccessTokenWithSpanJsonSerializer()
         {
-            return SpanJsonSerializer.Deserialize<HelloWorld>(HelloWorldSerializedString);
+            return SpanJsonSerializer.Deserialize<AccessToken>(AccessTokenSerializedString);
         }
 
         [Benchmark]
-        public HelloWorld DeserializeHelloWorldWithJilSerializer()
+        public AccessToken DeserializeAccessTokenWithJilSerializer()
         {
-            return JilSerializer.Deserialize<HelloWorld>(HelloWorldSerializedString);
+            return JilSerializer.Deserialize<AccessToken>(AccessTokenSerializedString);
         }
 
         [Benchmark]
-        public HelloWorld DeserializeHelloWorldWithUtf8JsonSerializer()
+        public AccessToken DeserializeAccessTokenWithUtf8JsonSerializer()
         {
-            return Utf8JsonSerializer.Deserialize<HelloWorld>(HelloWorldSerializedByteArray);
+            return Utf8JsonSerializer.Deserialize<AccessToken>(AccessTokenSerializedByteArray);
         }
-    }
-
-    public class HelloWorld
-    {
-        public string Value { get; set; }
     }
 }

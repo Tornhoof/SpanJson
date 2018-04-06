@@ -5,10 +5,11 @@ namespace SpanJson.Formatters
     /// <summary>
     /// Used for types which are not built-in
     /// </summary>
-    public sealed class ComplexClassFormatter<T> : ComplexFormatter<T>, IJsonFormatter<T> where T : class, new()
+    public sealed class ComplexClassFormatter<T> : ComplexFormatter, IJsonFormatter<T> where T : class, new()
     {
         public static readonly ComplexClassFormatter<T> Default = new ComplexClassFormatter<T>();
         private static readonly SerializeDelegate<T> Serializer = BuildSerializeDelegate<T>();
+        private static readonly DeserializeDelegate<T> Deserializer = BuildDeserializeDelegate<T>();
 
         public int AllocSize { get; } = EstimateSize<T>();
 
@@ -18,7 +19,7 @@ namespace SpanJson.Formatters
             {
                 return null;
             }
-            return DeserializeInternal(ref reader, formatterResolver);
+            return Deserializer(ref reader, formatterResolver);
         }
 
 
@@ -30,9 +31,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            writer.WriteObjectStart();
             Serializer(ref writer, value, formatterResolver);
-            writer.WriteObjectEnd();
         }
     }
 }
