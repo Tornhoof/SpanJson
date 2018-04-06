@@ -80,13 +80,18 @@ namespace SpanJson.Formatters
         private delegate void AssignDelegate(ref JsonReader reader, T result,
             IJsonFormatterResolver formatterResolver);
 
+        private delegate T CreateDelegate();        
+
         private static readonly AssignDelegate Assigner = BuildAssigner();
+
+        private static readonly CreateDelegate Creator =
+            Expression.Lambda<CreateDelegate>(Expression.New(typeof(T))).Compile();
 
         protected T DeserializeInternal(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
         {
             reader.ReadBeginObjectOrThrow();
             int count = 0;
-            var result = new T();
+            var result = Creator();
             while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
             {
                 Assigner(ref reader, result, formatterResolver);
@@ -94,7 +99,10 @@ namespace SpanJson.Formatters
             return result;
         }
 
-
+        /// <summary>
+        /// TODO: this is too slow, the switch on the propertynames compares them way too often, need some kind of jagged comparison approach
+        /// </summary>
+        /// <returns></returns>
         private static AssignDelegate BuildAssigner()
         {
             var readerParameter = Expression.Parameter(typeof(JsonReader).MakeByRefType(), "reader");
