@@ -122,7 +122,7 @@ namespace SpanJson.Formatters
             var lambda = Expression.Lambda<DeserializeDelegate<T>>(block, readerParameter,
                 resolverParameter);
             return lambda.Compile();
-        }
+        }        
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsEqual(ReadOnlySpan<char> span, string comparison)

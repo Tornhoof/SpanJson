@@ -71,7 +71,7 @@ namespace SpanJson.Resolvers
 
         private static IJsonFormatter GetIntegrated(Type type)
         {
-            var builtInType = Assembly.GetExecutingAssembly().GetTypes()
+            var builtInType = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes())
                 .FirstOrDefault(a => typeof(IJsonFormatter<>).MakeGenericType(type).IsAssignableFrom(a));
             if (builtInType != null)
             {

@@ -12,7 +12,7 @@ namespace SpanJson
 {
     public ref struct JsonWriter
     {
-        private static readonly char[] DateTimeFormat = {'o'};
+        private static readonly char[] DateTimeFormat = {'r'};
         private char[] _arrayToReturnToPool;
         private Span<char> _chars;
         private int _pos;

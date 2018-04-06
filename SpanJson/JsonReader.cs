@@ -66,7 +66,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ReadOnlySpan<char> ReadNumberInternal()
+        public ReadOnlySpan<char> ReadNumberInternal()
         {
             SkipWhitespace();
             int i;
@@ -239,7 +239,7 @@ namespace SpanJson
             return span.ToString();
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ReadOnlySpan<char> ReadStringSpanInternal()
+        public ReadOnlySpan<char> ReadStringSpanInternal()
         {
             if (_chars[_pos++] != '"')
             {
