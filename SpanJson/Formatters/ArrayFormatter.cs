@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection.Metadata.Ecma335;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
@@ -10,17 +11,7 @@ namespace SpanJson.Formatters
         protected T[] Deserialize<T>(ref JsonReader reader, IJsonFormatter<T> formatter,
             IJsonFormatterResolver formatterResolver)
         {
-            if (reader.ReadIsNull())
-            {
-                return null;
-            }
-            reader.ReadIsBeginArray();
-            int count = 0;
-            while (!reader.ReadIsEndArray(ref count))
-            {
-            }
-
-            return null;
+            return ListFormatter<T>.Default.Deserialize(ref reader, formatterResolver)?.ToArray(); // TODO improve
         }
 
         protected void Serialize<T>(ref JsonWriter writer, T[] value, IJsonFormatter<T> formatter,

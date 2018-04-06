@@ -7,9 +7,44 @@ namespace SpanJson.Formatters
 {
     public class EnumFormatter<T> : IJsonFormatter<T> where T : struct
     {
-        private delegate void SerializeDelegate(ref JsonWriter writer, T value, IJsonFormatterResolver formatterResolver);
+        private delegate void SerializeDelegate(ref JsonWriter writer, T value,
+            IJsonFormatterResolver formatterResolver);
+
+        private delegate T DeserializeDelegate(ref JsonReader reader, IJsonFormatterResolver formatterResolver);
 
         private static readonly SerializeDelegate Serializer = BuildSerializeDelegate();
+        private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
+
+        private static DeserializeDelegate BuildDeserializeDelegate()
+        {
+            var readerParameter = Expression.Parameter(typeof(JsonReader).MakeByRefType(), "reader");
+            var resolverParameter = Expression.Parameter(typeof(IJsonFormatterResolver), "formatterResolver");
+            var jsonValue = Expression.Variable(typeof(string), "jsonValue");
+            var returnValue = Expression.Variable(typeof(T), "returnValue");
+            var expressions = new List<Expression>
+            {
+                Expression.Assign(jsonValue,
+                    Expression.Call(readerParameter, FindMethod(readerParameter.Type, nameof(JsonReader.ReadString))))
+            };
+            var cases = new List<SwitchCase>();
+            foreach (var value in Enum.GetValues(typeof(T)))
+            {
+                var switchCase = Expression.SwitchCase(Expression.Assign(returnValue, Expression.Constant(value)),
+                    Expression.Constant(value.ToString()));
+                cases.Add(switchCase);
+            }
+
+            var switchExpression = Expression.Switch(typeof(void), jsonValue,
+                Expression.Throw(Expression.Constant(new InvalidOperationException())), null, cases.ToArray());
+            expressions.Add(switchExpression);
+            var returnTarget = Expression.Label(returnValue.Type);
+            var returnLabel = Expression.Label(returnTarget, returnValue);
+            expressions.Add(returnLabel);
+            var blockExpression = Expression.Block(new ParameterExpression[] {jsonValue, returnValue }, expressions);
+            var lambdaExpression =
+                Expression.Lambda<DeserializeDelegate>(blockExpression, readerParameter, resolverParameter);
+            return lambdaExpression.Compile();
+        }
 
         private static SerializeDelegate BuildSerializeDelegate()
         {
@@ -21,7 +56,8 @@ namespace SpanJson.Formatters
             {
                 var switchCase =
                     Expression.SwitchCase(
-                        Expression.Call(writerParameter, FindWriteMethod("WriteString"),
+                        Expression.Call(writerParameter,
+                            FindMethod(writerParameter.Type, nameof(JsonWriter.WriteString)),
                             Expression.Constant(value.ToString())), Expression.Constant(value));
                 cases.Add(switchCase);
             }
@@ -34,9 +70,9 @@ namespace SpanJson.Formatters
             return lambdaExpression.Compile();
         }
 
-        private static MethodInfo FindWriteMethod(string name)
+        private static MethodInfo FindMethod(Type type, string name)
         {
-            return typeof(JsonWriter).GetMethod(name);
+            return type.GetMethod(name);
         }
 
         public static readonly EnumFormatter<T> Default = new EnumFormatter<T>();
@@ -46,24 +82,12 @@ namespace SpanJson.Formatters
 
         public T Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
         {
-            throw new NotImplementedException();
+            return Deserializer(ref reader, formatterResolver);
         }
 
         public void Serialize(ref JsonWriter writer, T value, IJsonFormatterResolver formatterResolver)
         {
             Serializer(ref writer, value, formatterResolver);
-        }
-
-        private static Dictionary<T, string> BuildEnumDictionary()
-        {
-            var result = new Dictionary<T, string>();
-            var values = Enum.GetValues(typeof(T));
-            foreach (T value in values)
-            {
-                result.Add(value, value.ToString());
-            }
-
-            return result;
         }
     }
 }
