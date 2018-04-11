@@ -6,7 +6,7 @@ namespace SpanJson
 {
     public ref struct JsonReader
     {
-        private ReadOnlySpan<char> _chars;
+        private readonly ReadOnlySpan<char> _chars;
         private int _pos;
 
         public JsonReader(ReadOnlySpan<char> input)
