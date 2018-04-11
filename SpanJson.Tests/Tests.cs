@@ -74,11 +74,5 @@ namespace SpanJson.Tests
             Assert.Equal(jilSerialized, serialized);
         }
 
-        [Fact]
-        public void Switcher()
-        {
-            var propertySwitcher = new PropertySwitcher();
-            propertySwitcher.Generate();
-        }
     }
 }

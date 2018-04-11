@@ -11,9 +11,9 @@ namespace SpanJson.Formatters
     public abstract class ComplexFormatter
     {
         protected delegate void SerializeDelegate<in T, in TResolver>(ref JsonWriter writer, T value,
-            TResolver formatterResolver) where TResolver : IJsonFormatterResolver, new();
+            TResolver formatterResolver) where TResolver : IJsonFormatterResolver<TResolver>, new();
 
-        protected delegate T DeserializeDelegate<out T, in TResolver>(ref JsonReader reader, TResolver formatterResolver) where TResolver : IJsonFormatterResolver, new();
+        protected delegate T DeserializeDelegate<out T, in TResolver>(ref JsonReader reader, TResolver formatterResolver) where TResolver : IJsonFormatterResolver<TResolver>, new();
 
         /// <summary>
         /// if the propertyType is object, we need to do it during runtime
@@ -21,11 +21,11 @@ namespace SpanJson.Formatters
         /// if the type is sealed or struct, then the type during generation is the type we can use for static lookup
         /// else we need to do runtime lookup
         /// </summary>
-        protected static SerializeDelegate<T, TResolver> BuildSerializeDelegate<T, TResolver>() where TResolver : IJsonFormatterResolver, new()
+        protected static SerializeDelegate<T, TResolver> BuildSerializeDelegate<T, TResolver>() where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
             var writerParameter = Expression.Parameter(typeof(JsonWriter).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
-            var resolverParameter = Expression.Parameter(typeof(IJsonFormatterResolver), "formatterResolver");
+            var resolverParameter = Expression.Parameter(typeof(TResolver), "formatterResolver");
             var propertyInfos = typeof(T).GetProperties();
             var expressions = new List<Expression>();
             var propertyNameWriterMethodInfo = FindMethod(typeof(JsonWriter), nameof(JsonWriter.WriteName));
@@ -107,10 +107,10 @@ namespace SpanJson.Formatters
         }
 
 
-        protected static DeserializeDelegate<T, TResolver> BuildDeserializeDelegate<T, TResolver>() where TResolver : IJsonFormatterResolver, new()
+        protected static DeserializeDelegate<T, TResolver> BuildDeserializeDelegate<T, TResolver>() where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
             var readerParameter = Expression.Parameter(typeof(JsonReader).MakeByRefType(), "reader");
-            var resolverParameter = Expression.Parameter(typeof(IJsonFormatterResolver), "formatterResolver");
+            var resolverParameter = Expression.Parameter(typeof(TResolver), "formatterResolver");
             var propertyInfos = typeof(T).GetProperties();
             var cases = new List<SwitchCase>();
             var returnValue = Expression.Variable(typeof(T), "result");

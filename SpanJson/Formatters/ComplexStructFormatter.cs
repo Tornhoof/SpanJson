@@ -6,7 +6,7 @@ namespace SpanJson.Formatters
     /// Used for types which are not built-in
     /// </summary>
     public sealed class ComplexStructFormatter<T, TResolver> : ComplexFormatter, IJsonFormatter<T, TResolver>
-        where T : struct where TResolver : IJsonFormatterResolver, new()
+        where T : struct where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
         public static readonly ComplexStructFormatter<T, TResolver>
             Default = new ComplexStructFormatter<T, TResolver>();

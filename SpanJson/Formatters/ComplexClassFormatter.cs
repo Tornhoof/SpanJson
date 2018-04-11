@@ -6,7 +6,7 @@ namespace SpanJson.Formatters
     /// Used for types which are not built-in
     /// </summary>
     public sealed class ComplexClassFormatter<T, TResolver> : ComplexFormatter, IJsonFormatter<T, TResolver>
-        where T : class, new() where TResolver : IJsonFormatterResolver, new()
+        where T : class, new() where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
         public static readonly ComplexClassFormatter<T, TResolver> Default = new ComplexClassFormatter<T, TResolver>();
         private static readonly SerializeDelegate<T, TResolver> Serializer = BuildSerializeDelegate<T, TResolver>();

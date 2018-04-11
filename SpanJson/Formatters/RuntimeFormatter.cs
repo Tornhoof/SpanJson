@@ -5,7 +5,7 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public sealed class RuntimeFormatter<TResolver> : IJsonFormatter<object, TResolver> where TResolver : IJsonFormatterResolver, new()
+    public sealed class RuntimeFormatter<TResolver> : IJsonFormatter<object, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
         private delegate void SerializeDelegate(ref JsonWriter writer, object value,
             TResolver formatterResolver);

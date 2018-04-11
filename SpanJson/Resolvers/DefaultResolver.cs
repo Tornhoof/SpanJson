@@ -17,7 +17,7 @@ namespace SpanJson.Resolvers
             return (IJsonFormatter<T, DefaultResolver>) GetFormatter(typeof(T));
         }
 
-        public IJsonFormatter<T, TResolver> GetFormatter<T, TResolver>() where TResolver : IJsonFormatterResolver, new()
+        public IJsonFormatter<T, TResolver> GetFormatter<T, TResolver>() where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
             return (IJsonFormatter<T, TResolver>) GetFormatter<T>(); // TODO REMOVE
         }
@@ -29,9 +29,10 @@ namespace SpanJson.Resolvers
             // ReSharper restore ConvertClosureToMethodGroup
         }
 
-        private static IJsonFormatter GetDefault(Type type)
+        private static IJsonFormatter GetDefaultOrCreate(Type type)
         {
-            return (IJsonFormatter) type.GetField("Default", BindingFlags.Public | BindingFlags.Static).GetValue(null);
+            return (IJsonFormatter) (type.GetField("Default", BindingFlags.Public | BindingFlags.Static)
+                                         ?.GetValue(null) ?? Activator.CreateInstance(type));
         }
 
         private static IJsonFormatter BuildFormatter(Type type)
@@ -40,25 +41,25 @@ namespace SpanJson.Resolvers
             if (type.IsArray)
             {
                 return GetIntegrated(type) ??
-                       GetDefault(typeof(ArrayFormatter<,>).MakeGenericType(type.GetElementType(),
+                       GetDefaultOrCreate(typeof(ArrayFormatter<,>).MakeGenericType(type.GetElementType(),
                            typeof(DefaultResolver)));
             }
 
             if (type.TryGetListType(out var elementType))
             {
                 return GetIntegrated(type) ??
-                       GetDefault(typeof(ListFormatter<,>).MakeGenericType(elementType, typeof(DefaultResolver)));
+                       GetDefaultOrCreate(typeof(ListFormatter<,>).MakeGenericType(elementType, typeof(DefaultResolver)));
             }
 
             if (type.IsEnum)
             {
-                return GetDefault(typeof(EnumFormatter<,>).MakeGenericType(type));
+                return GetDefaultOrCreate(typeof(EnumFormatter<,>).MakeGenericType(type, typeof(DefaultResolver)));
             }
 
             if (type.TryGetNullableUnderlyingType(out var underlyingType))
             {
                 return GetIntegrated(type) ??
-                       GetDefault(typeof(NullableFormatter<,>).MakeGenericType(underlyingType,
+                       GetDefaultOrCreate(typeof(NullableFormatter<,>).MakeGenericType(underlyingType,
                            typeof(DefaultResolver)));
             }
 
@@ -71,21 +72,38 @@ namespace SpanJson.Resolvers
             // no integrated type, let's build it
             if (type.IsValueType)
             {
-                return GetDefault(typeof(ComplexStructFormatter<,>).MakeGenericType(type, typeof(DefaultResolver)));
+                return GetDefaultOrCreate(typeof(ComplexStructFormatter<,>).MakeGenericType(type, typeof(DefaultResolver)));
             }
 
-            return GetDefault(typeof(ComplexClassFormatter<,>).MakeGenericType(type, typeof(DefaultResolver)));
+            return GetDefaultOrCreate(typeof(ComplexClassFormatter<,>).MakeGenericType(type, typeof(DefaultResolver)));
         }
 
         private static IJsonFormatter GetIntegrated(Type type)
         {
-            var builtInType = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes())
-                .FirstOrDefault(a =>
-                    typeof(IJsonFormatter<,>).MakeGenericType(type, typeof(DefaultResolver)).IsAssignableFrom(a));
-            if (builtInType != null)
+            var allTypes = typeof(DefaultResolver).Assembly.GetTypes();
+            foreach (var allType in allTypes)
             {
-                return GetDefault(builtInType);
+                if (allType.IsGenericTypeDefinition && allType.ContainsGenericParameters && allType.IsGenericType)
+                {
+                    var genericArgs = allType.GetGenericArguments();
+                    if (genericArgs.Length == 1 && typeof(IJsonFormatterResolver).IsAssignableFrom(genericArgs[0]))
+                    {
+                        var iface = typeof(IJsonFormatter<,>).MakeGenericType(type, genericArgs[0]);
+                        if (iface.IsAssignableFrom(allType))
+                        {
+                            return GetDefaultOrCreate(allType.MakeGenericType(typeof(DefaultResolver)));
+                        }
+                    }
+                }
             }
+
+            //var builtInType = allTypes.FirstOrDefault(a =>
+            //    a.IsGenericTypeDefinition && a.ContainsGenericParameters &&
+            //    a.GetGenericArguments().Any(b => b.IsAssignableFrom(typeof(IJsonFormatterResolver))));
+            //if (builtInType != null)
+            //{
+            //    return GetDefaultOrCreate(builtInType);
+            //}
 
             return null;
         }
