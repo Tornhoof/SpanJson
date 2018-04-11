@@ -2,6 +2,6 @@
 {
     public static class StandardResolvers
     {
-        public static readonly IJsonFormatterResolver Default = new DefaultResolver();
+        public static readonly DefaultResolver Default = new DefaultResolver();
     }
 }

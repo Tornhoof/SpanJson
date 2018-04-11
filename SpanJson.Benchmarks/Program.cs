@@ -7,8 +7,6 @@ namespace SpanJson.Benchmarks
     {
         private static void Main(string[] args)
         {
-            var b = new SelectedBenchmarks();
-            var x = b.DeserializeAccessTokenWithSpanJsonSerializer();
             BenchmarkRunner.Run<SelectedBenchmarks>();
         }
     }

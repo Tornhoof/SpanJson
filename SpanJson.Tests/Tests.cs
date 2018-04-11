@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Jil;
 using SpanJson.Benchmarks;
 using SpanJson.Benchmarks.Fixture;
 using SpanJson.Benchmarks.Models;
@@ -30,6 +31,21 @@ namespace SpanJson.Tests
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
             var serialized = JsonSerializer.NonGeneric.Serialize(model);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.NonGeneric.Deserialize(serialized, modelType);
+            Assert.NotNull(deserialized);
+            Assert.IsType(modelType, deserialized);
+            Assert.Equal(model, deserialized, UntypedEqualityComparer.Default);
+        }
+
+
+        [Theory]
+        [MemberData(nameof(GetModels))]
+        public void CanDeserializeAllFromJil(Type modelType)
+        {
+            var fixture = new ExpressionTreeFixture();
+            var model = fixture.Create(modelType);
+            var serialized = JSON.Serialize(model, Options.ISO8601ExcludeNullsIncludeInheritedUtc);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.NonGeneric.Deserialize(serialized, modelType);
             Assert.NotNull(deserialized);

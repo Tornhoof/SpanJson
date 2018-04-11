@@ -104,7 +104,7 @@ namespace SpanJson.Benchmarks
                                         break;
                                 }
                                 break;
-        
+
                         }
                         break;
                     case 'e':
@@ -112,7 +112,7 @@ namespace SpanJson.Benchmarks
                         {
                             //reader.ReadStringSpanInternal();
                             result.expires_on_date = NullableDateTimeFormatter.Default.Deserialize(ref reader, formatterResolver);
-                        }                        
+                        }
                         break;
                     case 's':
                         if (nameSpan.Slice(1).SequenceEqual("cope".AsSpan()))

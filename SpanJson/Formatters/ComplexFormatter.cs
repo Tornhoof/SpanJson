@@ -15,6 +15,12 @@ namespace SpanJson.Formatters
 
         protected delegate T DeserializeDelegate<out T>(ref JsonReader reader, IJsonFormatterResolver formatterResolver);
 
+        /// <summary>
+        /// if the propertyType is object, we need to do it during runtime
+        /// if the type is RuntimeHelpers.IsReferenceOrContainsReferences -> false, we can do everything statically (struct and struct children case) 
+        /// if the type is sealed or struct, then the type during generation is the type we can use for static lookup
+        /// else we need to do runtime lookup
+        /// </summary>
         protected static SerializeDelegate<T> BuildSerializeDelegate<T>()
         {
             var writerParameter = Expression.Parameter(typeof(JsonWriter).MakeByRefType(), "writer");
@@ -25,24 +31,46 @@ namespace SpanJson.Formatters
             var propertyNameWriterMethodInfo = FindMethod(typeof(JsonWriter), nameof(JsonWriter.WriteName));
             var seperatorWriteMethodInfo = FindMethod(typeof(JsonWriter), nameof(JsonWriter.WriteSeparator));
             expressions.Add(Expression.Call(writerParameter, FindMethod(writerParameter.Type, nameof(JsonWriter.WriteObjectStart))));
+            var isNotReferenceOrContainsReference = !RuntimeHelpers.IsReferenceOrContainsReferences<T>();
             for (var i = 0; i < propertyInfos.Length; i++)
             {
                 var propertyInfo = propertyInfos[i];
-                var formatter = DefaultResolver.Default.GetFormatter(propertyInfo.PropertyType);
+                Expression formatterExpression;
+                MethodInfo serializeMethodInfo;
+                if (isNotReferenceOrContainsReference || IsSealedOrStruct(propertyInfo.PropertyType))
+                {
+                    var formatter = DefaultResolver.Default.GetFormatter(propertyInfo.PropertyType);
+                    formatterExpression = Expression.Constant(formatter);
+                    serializeMethodInfo = formatter.GetType().GetMethod("Serialize");
+                }
+                else
+                {
+                    var formatter = RuntimeFormatter.Default;
+                    formatterExpression = Expression.Constant(formatter);
+                    serializeMethodInfo = formatter.GetType().GetMethod("Serialize");
+                }
                 expressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo,
                     Expression.Constant(propertyInfo.Name)));
-                expressions.Add(Expression.Call(Expression.Constant(formatter),
-                    formatter.GetType().GetMethod("Serialize"), writerParameter,
+                expressions.Add(Expression.Call(formatterExpression,
+                    serializeMethodInfo, writerParameter,
                     Expression.Property(valueParameter, propertyInfo),
                     resolverParameter));
                 if (i != propertyInfos.Length - 1)
+                {
                     expressions.Add(Expression.Call(writerParameter, seperatorWriteMethodInfo));
+                }
             }
+
             expressions.Add(Expression.Call(writerParameter, FindMethod(writerParameter.Type, nameof(JsonWriter.WriteObjectEnd))));
             var blockExpression = Expression.Block(expressions);
             var lambda = Expression.Lambda<SerializeDelegate<T>>(blockExpression, writerParameter, valueParameter,
                 resolverParameter);
             return lambda.Compile();
+        }
+
+        private static bool IsSealedOrStruct(Type type)
+        {
+            return type.IsValueType || type.IsSealed;
         }
 
         protected static int EstimateSize<T>()
@@ -127,7 +155,8 @@ namespace SpanJson.Formatters
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsEqual(ReadOnlySpan<char> span, string comparison)
         {
-            return span.Equals(comparison.AsSpan(), StringComparison.Ordinal);
+            //return span.Equals(comparison.AsSpan(), StringComparison.Ordinal);
+            return span.SequenceEqual(comparison.AsSpan());
         }
     }
 }

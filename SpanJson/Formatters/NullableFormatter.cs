@@ -31,7 +31,9 @@ namespace SpanJson.Formatters
             formatter.Serialize(ref writer, value.Value, formatterResolver);
         }
     }
-
+    /// <summary>
+    /// Used for types which are not built-in
+    /// </summary>
     public sealed class NullableFormatter<T> : NullableFormatter, IJsonFormatter<T?> where T : struct
     {
         public static readonly NullableFormatter<T> Default = new NullableFormatter<T>();
@@ -42,7 +44,6 @@ namespace SpanJson.Formatters
             return Deserialize(ref reader, DefaultFormatter, formatterResolver);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Serialize(ref JsonWriter writer, T? value, IJsonFormatterResolver formatterResolver)
         {
             Serialize(ref writer, value, DefaultFormatter, formatterResolver);

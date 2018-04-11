@@ -3,15 +3,16 @@ SpanJson
 Sandbox for playing around with Span and JSON Serialization.
 This is basically the ValueStringBuilder from CoreFx with the TryFormat API for formatting values with Span<char>.
 The number formatting is replaced with UTF8Json (or some other variation) as the CoreCLR version is two times slower.
+The DateTime parser is slow too, but not yet replaced
 The actual serializers are a T4 Template (BclFormatter.tt).
 
 Deserialization works ok.
 
 TO-DO
-* Improve property selection (currently we compare the propertyname for each Switch again, instead of e.g switching on the first char first and then conpare the rest, which should improve Performance
 * Support polymorphic 
-* Many edge cases
+* Improve property selection (currently we compare the propertyname for each Switch again, instead of e.g switching on the first char first and then conpare the rest, which should improve Performance
 * Things like ``[IgnoreSerialize]`` and ``ShouldSerialize``
+* Many edge cases
 * dynamic
 * More Performance work
 * Adding direct utf8 support

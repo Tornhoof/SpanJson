@@ -184,13 +184,13 @@ namespace SpanJson
         public DateTime ReadDateTime()
         {
             var span = ReadStringSpanInternal();
-            return DateTime.Parse(span, CultureInfo.InvariantCulture);
+            return DateTime.Parse(span, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
         }
 
         public DateTimeOffset ReadDateTimeOffset()
         {
             var span = ReadStringSpanInternal();
-            return DateTimeOffset.Parse(span, CultureInfo.InvariantCulture);
+            return DateTimeOffset.Parse(span, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
         }
 
         public TimeSpan ReadTimeSpan()
