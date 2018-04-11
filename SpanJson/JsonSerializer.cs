@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
+using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
 namespace SpanJson
@@ -20,7 +21,6 @@ namespace SpanJson
 
                 public static readonly DeserializeDelegate InnerDeserialize = BuildDeserializeDelegate();
 
-                private static readonly TResolver Default = new TResolver();
 
                 /// <summary>
                 /// This gets us around the runtime decision of allocSize, we know it after init of the formatter
@@ -28,14 +28,15 @@ namespace SpanJson
                 /// </summary>
                 private static SerializeDelegate BuildSerializeDelegate()
                 {
-                    var formatter = Default.GetFormatter<T>();
+                    var resolver = StandardResolvers.GetResolver<TResolver>();
+                    var formatter = resolver.GetFormatter<T, TResolver>();
                     if (formatter.AllocSize <= 256) // todo find better values
                     {
                         string Serialize(T input)
                         {
                             Span<char> span = stackalloc char[formatter.AllocSize];
                             var jsonWriter = new JsonWriter(span);
-                            formatter.Serialize(ref jsonWriter, input, Default);
+                            formatter.Serialize(ref jsonWriter, input, resolver);
                             return jsonWriter.ToString(); // includes Dispose
                         }
 
@@ -46,7 +47,7 @@ namespace SpanJson
                         string Serialize(T input)
                         {
                             var jsonWriter = new JsonWriter(formatter.AllocSize);
-                            formatter.Serialize(ref jsonWriter, input, Default);
+                            formatter.Serialize(ref jsonWriter, input, resolver);
                             var result = jsonWriter.ToString(); // includes Dispose
                             return result;
                         }
@@ -57,12 +58,12 @@ namespace SpanJson
 
                 private static DeserializeDelegate BuildDeserializeDelegate()
                 {
-                    var formatter = Default.GetFormatter<T>();
-
+                    var resolver = StandardResolvers.GetResolver<TResolver>();
+                    var formatter = resolver.GetFormatter<T, TResolver>();
                     T Deserialize(ReadOnlySpan<char> input)
                     {
                         var jsonReader = new JsonReader(input);
-                        return formatter.Deserialize(ref jsonReader, Default);
+                        return formatter.Deserialize(ref jsonReader, resolver);
                     }
 
                     return Deserialize;

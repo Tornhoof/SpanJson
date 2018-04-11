@@ -5,12 +5,12 @@ using System.Reflection;
 
 namespace SpanJson.Formatters
 {
-    public class EnumFormatter<T> : IJsonFormatter<T> where T : struct
+    public class EnumFormatter<T, TResolver> : IJsonFormatter<T, TResolver> where T : struct where TResolver : IJsonFormatterResolver, new()
     {
         private delegate void SerializeDelegate(ref JsonWriter writer, T value,
-            IJsonFormatterResolver formatterResolver);
+            TResolver formatterResolver);
 
-        private delegate T DeserializeDelegate(ref JsonReader reader, IJsonFormatterResolver formatterResolver);
+        private delegate T DeserializeDelegate(ref JsonReader reader, TResolver formatterResolver);
 
         private static readonly SerializeDelegate Serializer = BuildSerializeDelegate();
         private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
@@ -18,7 +18,7 @@ namespace SpanJson.Formatters
         private static DeserializeDelegate BuildDeserializeDelegate()
         {
             var readerParameter = Expression.Parameter(typeof(JsonReader).MakeByRefType(), "reader");
-            var resolverParameter = Expression.Parameter(typeof(IJsonFormatterResolver), "formatterResolver");
+            var resolverParameter = Expression.Parameter(typeof(TResolver), "formatterResolver");
             var jsonValue = Expression.Variable(typeof(string), "jsonValue");
             var returnValue = Expression.Variable(typeof(T), "returnValue");
             var expressions = new List<Expression>
@@ -50,7 +50,7 @@ namespace SpanJson.Formatters
         {
             var writerParameter = Expression.Parameter(typeof(JsonWriter).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
-            var resolverParameter = Expression.Parameter(typeof(IJsonFormatterResolver), "formatterResolver");
+            var resolverParameter = Expression.Parameter(typeof(TResolver), "formatterResolver");
             var cases = new List<SwitchCase>();
             foreach (var value in Enum.GetValues(typeof(T)))
             {
@@ -75,17 +75,17 @@ namespace SpanJson.Formatters
             return type.GetMethod(name);
         }
 
-        public static readonly EnumFormatter<T> Default = new EnumFormatter<T>();
+        public static readonly EnumFormatter<T, TResolver> Default = new EnumFormatter<T, TResolver>();
 
 
         public int AllocSize { get; } = 100;
 
-        public T Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
+        public T Deserialize(ref JsonReader reader, TResolver formatterResolver)
         {
             return Deserializer(ref reader, formatterResolver);
         }
 
-        public void Serialize(ref JsonWriter writer, T value, IJsonFormatterResolver formatterResolver)
+        public void Serialize(ref JsonWriter writer, T value, TResolver formatterResolver)
         {
             Serializer(ref writer, value, formatterResolver);
         }

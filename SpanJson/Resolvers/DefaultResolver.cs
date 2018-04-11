@@ -7,21 +7,26 @@ using SpanJson.Helpers;
 
 namespace SpanJson.Resolvers
 {
-    public sealed class DefaultResolver : IJsonFormatterResolver
+    public sealed class DefaultResolver : IJsonFormatterResolver<DefaultResolver>
     {
         private static readonly ConcurrentDictionary<Type, IJsonFormatter> Formatters =
             new ConcurrentDictionary<Type, IJsonFormatter>();
 
-        public static readonly DefaultResolver Default = new DefaultResolver();
-
-        public IJsonFormatter<T> GetFormatter<T>()
+        public IJsonFormatter<T, DefaultResolver> GetFormatter<T>()
         {
-            return (IJsonFormatter<T>) GetFormatter(typeof(T));
+            return (IJsonFormatter<T, DefaultResolver>) GetFormatter(typeof(T));
+        }
+
+        public IJsonFormatter<T, TResolver> GetFormatter<T, TResolver>() where TResolver : IJsonFormatterResolver, new()
+        {
+            return (IJsonFormatter<T, TResolver>) GetFormatter<T>(); // TODO REMOVE
         }
 
         public IJsonFormatter GetFormatter(Type type)
         {
+            // ReSharper disable ConvertClosureToMethodGroup
             return Formatters.GetOrAdd(type, x => BuildFormatter(x));
+            // ReSharper restore ConvertClosureToMethodGroup
         }
 
         private static IJsonFormatter GetDefault(Type type)
@@ -35,23 +40,26 @@ namespace SpanJson.Resolvers
             if (type.IsArray)
             {
                 return GetIntegrated(type) ??
-                       GetDefault(typeof(ArrayFormatter<>).MakeGenericType(type.GetElementType()));
+                       GetDefault(typeof(ArrayFormatter<,>).MakeGenericType(type.GetElementType(),
+                           typeof(DefaultResolver)));
             }
 
             if (type.TryGetListType(out var elementType))
             {
-                return GetIntegrated(type) ?? GetDefault(typeof(ListFormatter<>).MakeGenericType(elementType));
+                return GetIntegrated(type) ??
+                       GetDefault(typeof(ListFormatter<,>).MakeGenericType(elementType, typeof(DefaultResolver)));
             }
 
             if (type.IsEnum)
             {
-                return GetDefault(typeof(EnumFormatter<>).MakeGenericType(type));
+                return GetDefault(typeof(EnumFormatter<,>).MakeGenericType(type));
             }
 
             if (type.TryGetNullableUnderlyingType(out var underlyingType))
             {
                 return GetIntegrated(type) ??
-                       GetDefault(typeof(NullableFormatter<>).MakeGenericType(underlyingType));
+                       GetDefault(typeof(NullableFormatter<,>).MakeGenericType(underlyingType,
+                           typeof(DefaultResolver)));
             }
 
             var integrated = GetIntegrated(type);
@@ -63,16 +71,17 @@ namespace SpanJson.Resolvers
             // no integrated type, let's build it
             if (type.IsValueType)
             {
-                return GetDefault(typeof(ComplexStructFormatter<>).MakeGenericType(type));
+                return GetDefault(typeof(ComplexStructFormatter<,>).MakeGenericType(type, typeof(DefaultResolver)));
             }
 
-            return GetDefault(typeof(ComplexClassFormatter<>).MakeGenericType(type));
+            return GetDefault(typeof(ComplexClassFormatter<,>).MakeGenericType(type, typeof(DefaultResolver)));
         }
 
         private static IJsonFormatter GetIntegrated(Type type)
         {
             var builtInType = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes())
-                .FirstOrDefault(a => typeof(IJsonFormatter<>).MakeGenericType(type).IsAssignableFrom(a));
+                .FirstOrDefault(a =>
+                    typeof(IJsonFormatter<,>).MakeGenericType(type, typeof(DefaultResolver)).IsAssignableFrom(a));
             if (builtInType != null)
             {
                 return GetDefault(builtInType);

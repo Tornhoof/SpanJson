@@ -49,93 +49,93 @@ namespace SpanJson.Benchmarks
         }
     }
 
-    public sealed class AccessTokenFormatter : ComplexFormatter, IJsonFormatter<AccessToken>
-    {
-        public static readonly AccessTokenFormatter Default = new AccessTokenFormatter();
-        private static readonly SerializeDelegate<AccessToken> Serializer = BuildSerializeDelegate<AccessToken>();
-        private static readonly DeserializeDelegate<AccessToken> Deserializer = BuildDeserializeDelegate<AccessToken>();
+    //public sealed class AccessTokenFormatter : ComplexFormatter, IJsonFormatter<AccessToken>
+    //{
+    //    public static readonly AccessTokenFormatter Default = new AccessTokenFormatter();
+    //    private static readonly SerializeDelegate<AccessToken> Serializer = BuildSerializeDelegate<AccessToken>();
+    //    private static readonly DeserializeDelegate<AccessToken> Deserializer = BuildDeserializeDelegate<AccessToken>();
 
-        public int AllocSize { get; } = EstimateSize<AccessToken>();
+    //    public int AllocSize { get; } = EstimateSize<AccessToken>();
 
-        public AccessToken Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
-        {
-            if (reader.ReadIsNull())
-            {
-                return null;
-            }
+    //    public AccessToken Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
+    //    {
+    //        if (reader.ReadIsNull())
+    //        {
+    //            return null;
+    //        }
 
-            reader.ReadBeginObjectOrThrow();
-            int count = 0;
-            var result = new AccessToken();
-            while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
-            {
-                var nameSpan = reader.ReadNameSpan();
-                switch (nameSpan[0])
-                {
-                    case 'a':
-                        switch (nameSpan[1])
-                        {
-                            case 'c':
-                                switch (nameSpan[2])
-                                {
-                                    case 'c':
-                                        switch (nameSpan[3])
-                                        {
-                                            case 'e':
-                                                if (nameSpan.Slice(4).SequenceEqual("ss_token".AsSpan()))
-                                                {
-                                                    result.access_token =
-                                                        StringFormatter.Default.Deserialize(ref reader,
-                                                            formatterResolver);
-                                                }
+    //        reader.ReadBeginObjectOrThrow();
+    //        int count = 0;
+    //        var result = new AccessToken();
+    //        while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
+    //        {
+    //            var nameSpan = reader.ReadNameSpan();
+    //            switch (nameSpan[0])
+    //            {
+    //                case 'a':
+    //                    switch (nameSpan[1])
+    //                    {
+    //                        case 'c':
+    //                            switch (nameSpan[2])
+    //                            {
+    //                                case 'c':
+    //                                    switch (nameSpan[3])
+    //                                    {
+    //                                        case 'e':
+    //                                            if (nameSpan.Slice(4).SequenceEqual("ss_token".AsSpan()))
+    //                                            {
+    //                                                result.access_token =
+    //                                                    StringFormatter.Default.Deserialize(ref reader,
+    //                                                        formatterResolver);
+    //                                            }
 
-                                                break;
-                                            case 'o':
-                                                if (nameSpan.Slice(4).SequenceEqual("unt_id".AsSpan()))
-                                                {
-                                                    result.account_id =
-                                                        NullableInt32Formatter.Default.Deserialize(ref reader,
-                                                            formatterResolver);
-                                                }
+    //                                            break;
+    //                                        case 'o':
+    //                                            if (nameSpan.Slice(4).SequenceEqual("unt_id".AsSpan()))
+    //                                            {
+    //                                                result.account_id =
+    //                                                    NullableInt32Formatter.Default.Deserialize(ref reader,
+    //                                                        formatterResolver);
+    //                                            }
 
-                                                break;
-                                        }
+    //                                            break;
+    //                                    }
 
-                                        break;
-                                }
-                                break;
+    //                                    break;
+    //                            }
+    //                            break;
 
-                        }
-                        break;
-                    case 'e':
-                        if (nameSpan.Slice(1).SequenceEqual("xpires_on_date".AsSpan()))
-                        {
-                            //reader.ReadStringSpanInternal();
-                            result.expires_on_date = NullableDateTimeFormatter.Default.Deserialize(ref reader, formatterResolver);
-                        }
-                        break;
-                    case 's':
-                        if (nameSpan.Slice(1).SequenceEqual("cope".AsSpan()))
-                        {
-                            result.scope = StringListFormatter.Default.Deserialize(ref reader, formatterResolver);
-                        }
-                        break;
-                }
-            }
+    //                    }
+    //                    break;
+    //                case 'e':
+    //                    if (nameSpan.Slice(1).SequenceEqual("xpires_on_date".AsSpan()))
+    //                    {
+    //                        //reader.ReadStringSpanInternal();
+    //                        result.expires_on_date = NullableDateTimeFormatter.Default.Deserialize(ref reader, formatterResolver);
+    //                    }
+    //                    break;
+    //                case 's':
+    //                    if (nameSpan.Slice(1).SequenceEqual("cope".AsSpan()))
+    //                    {
+    //                        result.scope = StringListFormatter.Default.Deserialize(ref reader, formatterResolver);
+    //                    }
+    //                    break;
+    //            }
+    //        }
 
-            return result;
-        }
+    //        return result;
+    //    }
 
 
-        public void Serialize(ref JsonWriter writer, AccessToken value, IJsonFormatterResolver formatterResolver)
-        {
-            if (value == null)
-            {
-                writer.WriteNull();
-                return;
-            }
+    //    public void Serialize(ref JsonWriter writer, AccessToken value, IJsonFormatterResolver formatterResolver)
+    //    {
+    //        if (value == null)
+    //        {
+    //            writer.WriteNull();
+    //            return;
+    //        }
 
-            Serializer(ref writer, value, formatterResolver);
-        }
-    }
+    //        Serializer(ref writer, value, formatterResolver);
+    //    }
+    //}
 }

@@ -8,14 +8,15 @@ namespace SpanJson.Formatters
     {
         public int AllocSize { get; } = 100;
 
-        protected T[] Deserialize<T>(ref JsonReader reader, IJsonFormatter<T> formatter,
-            IJsonFormatterResolver formatterResolver)
+        protected T[] Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter,
+            TResolver formatterResolver) where TResolver : IJsonFormatterResolver, new()
         {
-            return ListFormatter<T>.Default.Deserialize(ref reader, formatterResolver)?.ToArray(); // TODO improve
+            // TODO improve
+            return ListFormatter<T, TResolver>.Default.Deserialize(ref reader, formatterResolver)?.ToArray();
         }
 
-        protected void Serialize<T>(ref JsonWriter writer, T[] value, IJsonFormatter<T> formatter,
-            IJsonFormatterResolver formatterResolver)
+        protected void Serialize<T, TResolver>(ref JsonWriter writer, T[] value, IJsonFormatter<T, TResolver> formatter,
+            TResolver formatterResolver) where TResolver : IJsonFormatterResolver, new()
         {
             if (value == null)
             {
@@ -42,17 +43,20 @@ namespace SpanJson.Formatters
     /// <summary>
     /// Used for types which are not built-in
     /// </summary>
-    public sealed class ArrayFormatter<T> : ArrayFormatter, IJsonFormatter<T[]>
+    public sealed class ArrayFormatter<T, TResolver> : ArrayFormatter, IJsonFormatter<T[], TResolver>
+        where TResolver : IJsonFormatterResolver, new()
     {
-        public static readonly ArrayFormatter<T> Default = new ArrayFormatter<T>();
-        private static readonly IJsonFormatter<T> DefaultFormatter = DefaultResolver.Default.GetFormatter<T>();
+        public static readonly ArrayFormatter<T, TResolver> Default = new ArrayFormatter<T, TResolver>();
 
-        public T[] Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
+        private static readonly IJsonFormatter<T, TResolver> DefaultFormatter =
+            StandardResolvers.GetResolver<TResolver>().GetFormatter<T, TResolver>();
+
+        public T[] Deserialize(ref JsonReader reader, TResolver formatterResolver)
         {
             return Deserialize(ref reader, DefaultFormatter, formatterResolver);
         }
 
-        public void Serialize(ref JsonWriter writer, T[] value, IJsonFormatterResolver formatterResolver)
+        public void Serialize(ref JsonWriter writer, T[] value, TResolver formatterResolver)
         {
             Serialize(ref writer, value, DefaultFormatter, formatterResolver);
         }

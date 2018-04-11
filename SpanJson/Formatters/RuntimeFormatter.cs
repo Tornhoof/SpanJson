@@ -5,14 +5,15 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public sealed class RuntimeFormatter : IJsonFormatter<object>
+    public sealed class RuntimeFormatter<TResolver> : IJsonFormatter<object, TResolver> where TResolver : IJsonFormatterResolver, new()
     {
         private delegate void SerializeDelegate(ref JsonWriter writer, object value,
-            IJsonFormatterResolver formatterResolver);
+            TResolver formatterResolver);
 
-        private delegate object DeserializeDelegate(ref JsonReader reader, IJsonFormatter formatterResolver);
+        public static readonly RuntimeFormatter<TResolver> Default = new RuntimeFormatter<TResolver>();
+
         private static readonly ConcurrentDictionary<Type, SerializeDelegate> RuntimeSerializerDictionary = new ConcurrentDictionary<Type, SerializeDelegate>();
-        public void Serialize(ref JsonWriter writer, object value, IJsonFormatterResolver formatterResolver)
+        public void Serialize(ref JsonWriter writer, object value, TResolver formatterResolver)
         {
             if (value == null)
             {
@@ -30,8 +31,8 @@ namespace SpanJson.Formatters
         {
             var writerParameter = Expression.Parameter(typeof(JsonWriter).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(object), "value");
-            var resolverParameter = Expression.Parameter(typeof(IJsonFormatterResolver), "formatterResolver");
-            var formatter = DefaultResolver.Default.GetFormatter(type);
+            var resolverParameter = Expression.Parameter(typeof(TResolver), "formatterResolver");
+            var formatter = StandardResolvers.GetResolver<TResolver>().GetFormatter(type);
             var formatterExpression = Expression.Constant(formatter);
             var serializeMethodInfo = formatter.GetType().GetMethod("Serialize");
             var lambda = Expression.Lambda<SerializeDelegate>(
@@ -41,7 +42,7 @@ namespace SpanJson.Formatters
             return lambda.Compile();
         }
 
-        public object Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
+        public object Deserialize(ref JsonReader reader, TResolver formatterResolver)
         {
             if (reader.ReadIsNull())
             {

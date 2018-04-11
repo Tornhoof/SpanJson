@@ -10,10 +10,10 @@ namespace SpanJson.Formatters
 {
     public abstract class ComplexFormatter
     {
-        protected delegate void SerializeDelegate<in T>(ref JsonWriter writer, T value,
-            IJsonFormatterResolver formatterResolver);
+        protected delegate void SerializeDelegate<in T, in TResolver>(ref JsonWriter writer, T value,
+            TResolver formatterResolver) where TResolver : IJsonFormatterResolver, new();
 
-        protected delegate T DeserializeDelegate<out T>(ref JsonReader reader, IJsonFormatterResolver formatterResolver);
+        protected delegate T DeserializeDelegate<out T, in TResolver>(ref JsonReader reader, TResolver formatterResolver) where TResolver : IJsonFormatterResolver, new();
 
         /// <summary>
         /// if the propertyType is object, we need to do it during runtime
@@ -21,7 +21,7 @@ namespace SpanJson.Formatters
         /// if the type is sealed or struct, then the type during generation is the type we can use for static lookup
         /// else we need to do runtime lookup
         /// </summary>
-        protected static SerializeDelegate<T> BuildSerializeDelegate<T>()
+        protected static SerializeDelegate<T, TResolver> BuildSerializeDelegate<T, TResolver>() where TResolver : IJsonFormatterResolver, new()
         {
             var writerParameter = Expression.Parameter(typeof(JsonWriter).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
@@ -39,13 +39,13 @@ namespace SpanJson.Formatters
                 MethodInfo serializeMethodInfo;
                 if (isNotReferenceOrContainsReference || IsSealedOrStruct(propertyInfo.PropertyType))
                 {
-                    var formatter = DefaultResolver.Default.GetFormatter(propertyInfo.PropertyType);
+                    var formatter = StandardResolvers.GetResolver<TResolver>().GetFormatter(propertyInfo.PropertyType);
                     formatterExpression = Expression.Constant(formatter);
                     serializeMethodInfo = formatter.GetType().GetMethod("Serialize");
                 }
                 else
                 {
-                    var formatter = RuntimeFormatter.Default;
+                    var formatter = RuntimeFormatter<TResolver>.Default;
                     formatterExpression = Expression.Constant(formatter);
                     serializeMethodInfo = formatter.GetType().GetMethod("Serialize");
                 }
@@ -63,7 +63,7 @@ namespace SpanJson.Formatters
 
             expressions.Add(Expression.Call(writerParameter, FindMethod(writerParameter.Type, nameof(JsonWriter.WriteObjectEnd))));
             var blockExpression = Expression.Block(expressions);
-            var lambda = Expression.Lambda<SerializeDelegate<T>>(blockExpression, writerParameter, valueParameter,
+            var lambda = Expression.Lambda<SerializeDelegate<T, TResolver>>(blockExpression, writerParameter, valueParameter,
                 resolverParameter);
             return lambda.Compile();
         }
@@ -107,7 +107,7 @@ namespace SpanJson.Formatters
         }
 
 
-        protected static DeserializeDelegate<T> BuildDeserializeDelegate<T>()
+        protected static DeserializeDelegate<T, TResolver> BuildDeserializeDelegate<T, TResolver>() where TResolver : IJsonFormatterResolver, new()
         {
             var readerParameter = Expression.Parameter(typeof(JsonReader).MakeByRefType(), "reader");
             var resolverParameter = Expression.Parameter(typeof(IJsonFormatterResolver), "formatterResolver");
@@ -116,7 +116,7 @@ namespace SpanJson.Formatters
             var returnValue = Expression.Variable(typeof(T), "result");
             foreach (var propertyInfo in propertyInfos.Where(p => p.CanWrite))
             {
-                var formatter = DefaultResolver.Default.GetFormatter(propertyInfo.PropertyType);
+                var formatter = StandardResolvers.GetResolver<TResolver>().GetFormatter(propertyInfo.PropertyType);
                 var switchCase = Expression.SwitchCase(
                     Expression.Assign(Expression.Property(returnValue, propertyInfo.Name),
                         Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"),
@@ -147,7 +147,7 @@ namespace SpanJson.Formatters
                 Expression.Label(returnTarget, returnValue)
             );
 
-            var lambda = Expression.Lambda<DeserializeDelegate<T>>(block, readerParameter,
+            var lambda = Expression.Lambda<DeserializeDelegate<T, TResolver>>(block, readerParameter,
                 resolverParameter);
             return lambda.Compile();
         }        

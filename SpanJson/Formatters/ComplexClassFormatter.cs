@@ -5,25 +5,29 @@ namespace SpanJson.Formatters
     /// <summary>
     /// Used for types which are not built-in
     /// </summary>
-    public sealed class ComplexClassFormatter<T> : ComplexFormatter, IJsonFormatter<T> where T : class, new()
+    public sealed class ComplexClassFormatter<T, TResolver> : ComplexFormatter, IJsonFormatter<T, TResolver>
+        where T : class, new() where TResolver : IJsonFormatterResolver, new()
     {
-        public static readonly ComplexClassFormatter<T> Default = new ComplexClassFormatter<T>();
-        private static readonly SerializeDelegate<T> Serializer = BuildSerializeDelegate<T>();
-        private static readonly DeserializeDelegate<T> Deserializer = BuildDeserializeDelegate<T>();
+        public static readonly ComplexClassFormatter<T, TResolver> Default = new ComplexClassFormatter<T, TResolver>();
+        private static readonly SerializeDelegate<T, TResolver> Serializer = BuildSerializeDelegate<T, TResolver>();
+
+        private static readonly DeserializeDelegate<T, TResolver> Deserializer =
+            BuildDeserializeDelegate<T, TResolver>();
 
         public int AllocSize { get; } = EstimateSize<T>();
 
-        public T Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
+        public T Deserialize(ref JsonReader reader, TResolver formatterResolver)
         {
             if (reader.ReadIsNull())
             {
                 return null;
             }
+
             return Deserializer(ref reader, formatterResolver);
         }
 
 
-        public void Serialize(ref JsonWriter writer, T value, IJsonFormatterResolver formatterResolver)
+        public void Serialize(ref JsonWriter writer, T value, TResolver formatterResolver)
         {
             if (value == null)
             {
