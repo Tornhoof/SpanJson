@@ -1,9 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <RuntimeFrameworkVersion> 2.1.0-preview3-26410-06</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion>2.1.0-preview3-26411-01</RuntimeFrameworkVersion>
   </PropertyGroup>
 
   <ItemGroup>
