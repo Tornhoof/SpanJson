@@ -10,14 +10,14 @@ namespace SpanJson.Benchmarks
     {
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
 
-        private static readonly JilSerializer JilSerializer =
-            new JilSerializer();
+        private static readonly Serializers.JilSerializer JilSerializer =
+            new Serializers.JilSerializer();
 
-        private static readonly SpanJsonSerializer SpanJsonSerializer =
-            new SpanJsonSerializer();
+        private static readonly Serializers.SpanJsonSerializer SpanJsonSerializer =
+            new Serializers.SpanJsonSerializer();
 
-        private static readonly Utf8JsonSerializer Utf8JsonSerializer =
-            new Utf8JsonSerializer();
+        private static readonly Serializers.Utf8JsonSerializer Utf8JsonSerializer =
+            new Serializers.Utf8JsonSerializer();
 
 
         private static readonly AccessToken AccessTokenInput = ExpressionTreeFixture.Create<AccessToken>();
@@ -134,7 +134,7 @@ namespace SpanJson.Benchmarks
 
         private static readonly string AccessTokenOutputOfJilSerializer = JilSerializer.Serialize(AccessTokenInput);
 
-        private static readonly string AccessTokenOutputOfSpanJsonSerializer =
+        private static readonly string AccessTokenOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(AccessTokenInput);
 
         private static readonly byte[] AccessTokenOutputOfUtf8JsonSerializer =
@@ -142,7 +142,7 @@ namespace SpanJson.Benchmarks
 
         private static readonly string AccountMergeOutputOfJilSerializer = JilSerializer.Serialize(AccountMergeInput);
 
-        private static readonly string AccountMergeOutputOfSpanJsonSerializer =
+        private static readonly string AccountMergeOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(AccountMergeInput);
 
         private static readonly byte[] AccountMergeOutputOfUtf8JsonSerializer =
@@ -150,37 +150,37 @@ namespace SpanJson.Benchmarks
 
         private static readonly string AnswerOutputOfJilSerializer = JilSerializer.Serialize(AnswerInput);
 
-        private static readonly string AnswerOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(AnswerInput);
+        private static readonly string AnswerOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(AnswerInput);
 
         private static readonly byte[] AnswerOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(AnswerInput);
 
         private static readonly string BadgeOutputOfJilSerializer = JilSerializer.Serialize(BadgeInput);
 
-        private static readonly string BadgeOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(BadgeInput);
+        private static readonly string BadgeOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(BadgeInput);
 
         private static readonly byte[] BadgeOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(BadgeInput);
 
         private static readonly string CommentOutputOfJilSerializer = JilSerializer.Serialize(CommentInput);
 
-        private static readonly string CommentOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(CommentInput);
+        private static readonly string CommentOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(CommentInput);
 
         private static readonly byte[] CommentOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(CommentInput);
 
         private static readonly string ErrorOutputOfJilSerializer = JilSerializer.Serialize(ErrorInput);
 
-        private static readonly string ErrorOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(ErrorInput);
+        private static readonly string ErrorOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(ErrorInput);
 
         private static readonly byte[] ErrorOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(ErrorInput);
 
         private static readonly string EventOutputOfJilSerializer = JilSerializer.Serialize(EventInput);
 
-        private static readonly string EventOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(EventInput);
+        private static readonly string EventOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(EventInput);
 
         private static readonly byte[] EventOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(EventInput);
 
         private static readonly string MobileFeedOutputOfJilSerializer = JilSerializer.Serialize(MobileFeedInput);
 
-        private static readonly string MobileFeedOutputOfSpanJsonSerializer =
+        private static readonly string MobileFeedOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(MobileFeedInput);
 
         private static readonly byte[] MobileFeedOutputOfUtf8JsonSerializer =
@@ -189,7 +189,7 @@ namespace SpanJson.Benchmarks
         private static readonly string MobileQuestionOutputOfJilSerializer =
             JilSerializer.Serialize(MobileQuestionInput);
 
-        private static readonly string MobileQuestionOutputOfSpanJsonSerializer =
+        private static readonly string MobileQuestionOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(MobileQuestionInput);
 
         private static readonly byte[] MobileQuestionOutputOfUtf8JsonSerializer =
@@ -198,7 +198,7 @@ namespace SpanJson.Benchmarks
         private static readonly string MobileRepChangeOutputOfJilSerializer =
             JilSerializer.Serialize(MobileRepChangeInput);
 
-        private static readonly string MobileRepChangeOutputOfSpanJsonSerializer =
+        private static readonly string MobileRepChangeOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(MobileRepChangeInput);
 
         private static readonly byte[] MobileRepChangeOutputOfUtf8JsonSerializer =
@@ -207,7 +207,7 @@ namespace SpanJson.Benchmarks
         private static readonly string MobileInboxItemOutputOfJilSerializer =
             JilSerializer.Serialize(MobileInboxItemInput);
 
-        private static readonly string MobileInboxItemOutputOfSpanJsonSerializer =
+        private static readonly string MobileInboxItemOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(MobileInboxItemInput);
 
         private static readonly byte[] MobileInboxItemOutputOfUtf8JsonSerializer =
@@ -216,7 +216,7 @@ namespace SpanJson.Benchmarks
         private static readonly string MobileBadgeAwardOutputOfJilSerializer =
             JilSerializer.Serialize(MobileBadgeAwardInput);
 
-        private static readonly string MobileBadgeAwardOutputOfSpanJsonSerializer =
+        private static readonly string MobileBadgeAwardOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(MobileBadgeAwardInput);
 
         private static readonly byte[] MobileBadgeAwardOutputOfUtf8JsonSerializer =
@@ -225,7 +225,7 @@ namespace SpanJson.Benchmarks
         private static readonly string MobilePrivilegeOutputOfJilSerializer =
             JilSerializer.Serialize(MobilePrivilegeInput);
 
-        private static readonly string MobilePrivilegeOutputOfSpanJsonSerializer =
+        private static readonly string MobilePrivilegeOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(MobilePrivilegeInput);
 
         private static readonly byte[] MobilePrivilegeOutputOfUtf8JsonSerializer =
@@ -234,7 +234,7 @@ namespace SpanJson.Benchmarks
         private static readonly string MobileCommunityBulletinOutputOfJilSerializer =
             JilSerializer.Serialize(MobileCommunityBulletinInput);
 
-        private static readonly string MobileCommunityBulletinOutputOfSpanJsonSerializer =
+        private static readonly string MobileCommunityBulletinOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(MobileCommunityBulletinInput);
 
         private static readonly byte[] MobileCommunityBulletinOutputOfUtf8JsonSerializer =
@@ -243,7 +243,7 @@ namespace SpanJson.Benchmarks
         private static readonly string MobileAssociationBonusOutputOfJilSerializer =
             JilSerializer.Serialize(MobileAssociationBonusInput);
 
-        private static readonly string MobileAssociationBonusOutputOfSpanJsonSerializer =
+        private static readonly string MobileAssociationBonusOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(MobileAssociationBonusInput);
 
         private static readonly byte[] MobileAssociationBonusOutputOfUtf8JsonSerializer =
@@ -252,7 +252,7 @@ namespace SpanJson.Benchmarks
         private static readonly string MobileCareersJobAdOutputOfJilSerializer =
             JilSerializer.Serialize(MobileCareersJobAdInput);
 
-        private static readonly string MobileCareersJobAdOutputOfSpanJsonSerializer =
+        private static readonly string MobileCareersJobAdOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(MobileCareersJobAdInput);
 
         private static readonly byte[] MobileCareersJobAdOutputOfUtf8JsonSerializer =
@@ -261,7 +261,7 @@ namespace SpanJson.Benchmarks
         private static readonly string MobileBannerAdOutputOfJilSerializer =
             JilSerializer.Serialize(MobileBannerAdInput);
 
-        private static readonly string MobileBannerAdOutputOfSpanJsonSerializer =
+        private static readonly string MobileBannerAdOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(MobileBannerAdInput);
 
         private static readonly byte[] MobileBannerAdOutputOfUtf8JsonSerializer =
@@ -270,7 +270,7 @@ namespace SpanJson.Benchmarks
         private static readonly string MobileUpdateNoticeOutputOfJilSerializer =
             JilSerializer.Serialize(MobileUpdateNoticeInput);
 
-        private static readonly string MobileUpdateNoticeOutputOfSpanJsonSerializer =
+        private static readonly string MobileUpdateNoticeOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(MobileUpdateNoticeInput);
 
         private static readonly byte[] MobileUpdateNoticeOutputOfUtf8JsonSerializer =
@@ -278,7 +278,7 @@ namespace SpanJson.Benchmarks
 
         private static readonly string FlagOptionOutputOfJilSerializer = JilSerializer.Serialize(FlagOptionInput);
 
-        private static readonly string FlagOptionOutputOfSpanJsonSerializer =
+        private static readonly string FlagOptionOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(FlagOptionInput);
 
         private static readonly byte[] FlagOptionOutputOfUtf8JsonSerializer =
@@ -286,7 +286,7 @@ namespace SpanJson.Benchmarks
 
         private static readonly string InboxItemOutputOfJilSerializer = JilSerializer.Serialize(InboxItemInput);
 
-        private static readonly string InboxItemOutputOfSpanJsonSerializer =
+        private static readonly string InboxItemOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(InboxItemInput);
 
         private static readonly byte[] InboxItemOutputOfUtf8JsonSerializer =
@@ -294,13 +294,13 @@ namespace SpanJson.Benchmarks
 
         private static readonly string InfoOutputOfJilSerializer = JilSerializer.Serialize(InfoInput);
 
-        private static readonly string InfoOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(InfoInput);
+        private static readonly string InfoOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(InfoInput);
 
         private static readonly byte[] InfoOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(InfoInput);
 
         private static readonly string NetworkUserOutputOfJilSerializer = JilSerializer.Serialize(NetworkUserInput);
 
-        private static readonly string NetworkUserOutputOfSpanJsonSerializer =
+        private static readonly string NetworkUserOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(NetworkUserInput);
 
         private static readonly byte[] NetworkUserOutputOfUtf8JsonSerializer =
@@ -308,7 +308,7 @@ namespace SpanJson.Benchmarks
 
         private static readonly string NotificationOutputOfJilSerializer = JilSerializer.Serialize(NotificationInput);
 
-        private static readonly string NotificationOutputOfSpanJsonSerializer =
+        private static readonly string NotificationOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(NotificationInput);
 
         private static readonly byte[] NotificationOutputOfUtf8JsonSerializer =
@@ -316,13 +316,13 @@ namespace SpanJson.Benchmarks
 
         private static readonly string PostOutputOfJilSerializer = JilSerializer.Serialize(PostInput);
 
-        private static readonly string PostOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(PostInput);
+        private static readonly string PostOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(PostInput);
 
         private static readonly byte[] PostOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(PostInput);
 
         private static readonly string PrivilegeOutputOfJilSerializer = JilSerializer.Serialize(PrivilegeInput);
 
-        private static readonly string PrivilegeOutputOfSpanJsonSerializer =
+        private static readonly string PrivilegeOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(PrivilegeInput);
 
         private static readonly byte[] PrivilegeOutputOfUtf8JsonSerializer =
@@ -330,14 +330,14 @@ namespace SpanJson.Benchmarks
 
         private static readonly string QuestionOutputOfJilSerializer = JilSerializer.Serialize(QuestionInput);
 
-        private static readonly string QuestionOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(QuestionInput);
+        private static readonly string QuestionOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(QuestionInput);
 
         private static readonly byte[] QuestionOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(QuestionInput);
 
         private static readonly string QuestionTimelineOutputOfJilSerializer =
             JilSerializer.Serialize(QuestionTimelineInput);
 
-        private static readonly string QuestionTimelineOutputOfSpanJsonSerializer =
+        private static readonly string QuestionTimelineOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(QuestionTimelineInput);
 
         private static readonly byte[] QuestionTimelineOutputOfUtf8JsonSerializer =
@@ -345,7 +345,7 @@ namespace SpanJson.Benchmarks
 
         private static readonly string ReputationOutputOfJilSerializer = JilSerializer.Serialize(ReputationInput);
 
-        private static readonly string ReputationOutputOfSpanJsonSerializer =
+        private static readonly string ReputationOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(ReputationInput);
 
         private static readonly byte[] ReputationOutputOfUtf8JsonSerializer =
@@ -354,7 +354,7 @@ namespace SpanJson.Benchmarks
         private static readonly string ReputationHistoryOutputOfJilSerializer =
             JilSerializer.Serialize(ReputationHistoryInput);
 
-        private static readonly string ReputationHistoryOutputOfSpanJsonSerializer =
+        private static readonly string ReputationHistoryOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(ReputationHistoryInput);
 
         private static readonly byte[] ReputationHistoryOutputOfUtf8JsonSerializer =
@@ -362,13 +362,13 @@ namespace SpanJson.Benchmarks
 
         private static readonly string RevisionOutputOfJilSerializer = JilSerializer.Serialize(RevisionInput);
 
-        private static readonly string RevisionOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(RevisionInput);
+        private static readonly string RevisionOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(RevisionInput);
 
         private static readonly byte[] RevisionOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(RevisionInput);
 
         private static readonly string SearchExcerptOutputOfJilSerializer = JilSerializer.Serialize(SearchExcerptInput);
 
-        private static readonly string SearchExcerptOutputOfSpanJsonSerializer =
+        private static readonly string SearchExcerptOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(SearchExcerptInput);
 
         private static readonly byte[] SearchExcerptOutputOfUtf8JsonSerializer =
@@ -376,7 +376,7 @@ namespace SpanJson.Benchmarks
 
         private static readonly string ShallowUserOutputOfJilSerializer = JilSerializer.Serialize(ShallowUserInput);
 
-        private static readonly string ShallowUserOutputOfSpanJsonSerializer =
+        private static readonly string ShallowUserOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(ShallowUserInput);
 
         private static readonly byte[] ShallowUserOutputOfUtf8JsonSerializer =
@@ -384,7 +384,7 @@ namespace SpanJson.Benchmarks
 
         private static readonly string SuggestedEditOutputOfJilSerializer = JilSerializer.Serialize(SuggestedEditInput);
 
-        private static readonly string SuggestedEditOutputOfSpanJsonSerializer =
+        private static readonly string SuggestedEditOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(SuggestedEditInput);
 
         private static readonly byte[] SuggestedEditOutputOfUtf8JsonSerializer =
@@ -392,19 +392,19 @@ namespace SpanJson.Benchmarks
 
         private static readonly string TagOutputOfJilSerializer = JilSerializer.Serialize(TagInput);
 
-        private static readonly string TagOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(TagInput);
+        private static readonly string TagOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(TagInput);
 
         private static readonly byte[] TagOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(TagInput);
 
         private static readonly string TagScoreOutputOfJilSerializer = JilSerializer.Serialize(TagScoreInput);
 
-        private static readonly string TagScoreOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(TagScoreInput);
+        private static readonly string TagScoreOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(TagScoreInput);
 
         private static readonly byte[] TagScoreOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(TagScoreInput);
 
         private static readonly string TagSynonymOutputOfJilSerializer = JilSerializer.Serialize(TagSynonymInput);
 
-        private static readonly string TagSynonymOutputOfSpanJsonSerializer =
+        private static readonly string TagSynonymOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(TagSynonymInput);
 
         private static readonly byte[] TagSynonymOutputOfUtf8JsonSerializer =
@@ -412,25 +412,25 @@ namespace SpanJson.Benchmarks
 
         private static readonly string TagWikiOutputOfJilSerializer = JilSerializer.Serialize(TagWikiInput);
 
-        private static readonly string TagWikiOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(TagWikiInput);
+        private static readonly string TagWikiOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(TagWikiInput);
 
         private static readonly byte[] TagWikiOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(TagWikiInput);
 
         private static readonly string TopTagOutputOfJilSerializer = JilSerializer.Serialize(TopTagInput);
 
-        private static readonly string TopTagOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(TopTagInput);
+        private static readonly string TopTagOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(TopTagInput);
 
         private static readonly byte[] TopTagOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(TopTagInput);
 
         private static readonly string UserOutputOfJilSerializer = JilSerializer.Serialize(UserInput);
 
-        private static readonly string UserOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(UserInput);
+        private static readonly string UserOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(UserInput);
 
         private static readonly byte[] UserOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(UserInput);
 
         private static readonly string UserTimelineOutputOfJilSerializer = JilSerializer.Serialize(UserTimelineInput);
 
-        private static readonly string UserTimelineOutputOfSpanJsonSerializer =
+        private static readonly string UserTimelineOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(UserTimelineInput);
 
         private static readonly byte[] UserTimelineOutputOfUtf8JsonSerializer =
@@ -439,7 +439,7 @@ namespace SpanJson.Benchmarks
         private static readonly string WritePermissionOutputOfJilSerializer =
             JilSerializer.Serialize(WritePermissionInput);
 
-        private static readonly string WritePermissionOutputOfSpanJsonSerializer =
+        private static readonly string WritePermissionOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(WritePermissionInput);
 
         private static readonly byte[] WritePermissionOutputOfUtf8JsonSerializer =
@@ -448,7 +448,7 @@ namespace SpanJson.Benchmarks
         private static readonly string MobileBannerAdImageOutputOfJilSerializer =
             JilSerializer.Serialize(MobileBannerAdImageInput);
 
-        private static readonly string MobileBannerAdImageOutputOfSpanJsonSerializer =
+        private static readonly string MobileBannerAdImageOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(MobileBannerAdImageInput);
 
         private static readonly byte[] MobileBannerAdImageOutputOfUtf8JsonSerializer =
@@ -456,13 +456,13 @@ namespace SpanJson.Benchmarks
 
         private static readonly string SiteOutputOfJilSerializer = JilSerializer.Serialize(SiteInput);
 
-        private static readonly string SiteOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(SiteInput);
+        private static readonly string SiteOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(SiteInput);
 
         private static readonly byte[] SiteOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(SiteInput);
 
         private static readonly string RelatedSiteOutputOfJilSerializer = JilSerializer.Serialize(RelatedSiteInput);
 
-        private static readonly string RelatedSiteOutputOfSpanJsonSerializer =
+        private static readonly string RelatedSiteOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(RelatedSiteInput);
 
         private static readonly byte[] RelatedSiteOutputOfUtf8JsonSerializer =
@@ -470,7 +470,7 @@ namespace SpanJson.Benchmarks
 
         private static readonly string ClosedDetailsOutputOfJilSerializer = JilSerializer.Serialize(ClosedDetailsInput);
 
-        private static readonly string ClosedDetailsOutputOfSpanJsonSerializer =
+        private static readonly string ClosedDetailsOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(ClosedDetailsInput);
 
         private static readonly byte[] ClosedDetailsOutputOfUtf8JsonSerializer =
@@ -478,13 +478,13 @@ namespace SpanJson.Benchmarks
 
         private static readonly string NoticeOutputOfJilSerializer = JilSerializer.Serialize(NoticeInput);
 
-        private static readonly string NoticeOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(NoticeInput);
+        private static readonly string NoticeOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(NoticeInput);
 
         private static readonly byte[] NoticeOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(NoticeInput);
 
         private static readonly string MigrationInfoOutputOfJilSerializer = JilSerializer.Serialize(MigrationInfoInput);
 
-        private static readonly string MigrationInfoOutputOfSpanJsonSerializer =
+        private static readonly string MigrationInfoOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(MigrationInfoInput);
 
         private static readonly byte[] MigrationInfoOutputOfUtf8JsonSerializer =
@@ -492,7 +492,7 @@ namespace SpanJson.Benchmarks
 
         private static readonly string BadgeCountOutputOfJilSerializer = JilSerializer.Serialize(BadgeCountInput);
 
-        private static readonly string BadgeCountOutputOfSpanJsonSerializer =
+        private static readonly string BadgeCountOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(BadgeCountInput);
 
         private static readonly byte[] BadgeCountOutputOfUtf8JsonSerializer =
@@ -500,23 +500,1067 @@ namespace SpanJson.Benchmarks
 
         private static readonly string StylingOutputOfJilSerializer = JilSerializer.Serialize(StylingInput);
 
-        private static readonly string StylingOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(StylingInput);
+        private static readonly string StylingOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(StylingInput);
 
         private static readonly byte[] StylingOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(StylingInput);
 
         private static readonly string OriginalQuestionOutputOfJilSerializer =
             JilSerializer.Serialize(OriginalQuestionInput);
 
-        private static readonly string OriginalQuestionOutputOfSpanJsonSerializer =
+        private static readonly string OriginalQuestionOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(OriginalQuestionInput);
 
         private static readonly byte[] OriginalQuestionOutputOfUtf8JsonSerializer =
             Utf8JsonSerializer.Serialize(OriginalQuestionInput);
 
+
         [Benchmark]
         public string SerializeAccessTokenWithJilSerializer()
         {
             return JilSerializer.Serialize(AccessTokenInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeAccessTokenWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(AccessTokenInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeAccessTokenWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(AccessTokenInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeAccountMergeWithJilSerializer()
+        {
+            return JilSerializer.Serialize(AccountMergeInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeAccountMergeWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(AccountMergeInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeAccountMergeWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(AccountMergeInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeAnswerWithJilSerializer()
+        {
+            return JilSerializer.Serialize(AnswerInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeAnswerWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(AnswerInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeAnswerWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(AnswerInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeBadgeWithJilSerializer()
+        {
+            return JilSerializer.Serialize(BadgeInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeBadgeWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(BadgeInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeBadgeWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(BadgeInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeCommentWithJilSerializer()
+        {
+            return JilSerializer.Serialize(CommentInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeCommentWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(CommentInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeCommentWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(CommentInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeErrorWithJilSerializer()
+        {
+            return JilSerializer.Serialize(ErrorInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeErrorWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(ErrorInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeErrorWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(ErrorInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeEventWithJilSerializer()
+        {
+            return JilSerializer.Serialize(EventInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeEventWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(EventInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeEventWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(EventInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileFeedWithJilSerializer()
+        {
+            return JilSerializer.Serialize(MobileFeedInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileFeedWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(MobileFeedInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeMobileFeedWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(MobileFeedInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileQuestionWithJilSerializer()
+        {
+            return JilSerializer.Serialize(MobileQuestionInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileQuestionWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(MobileQuestionInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeMobileQuestionWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(MobileQuestionInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileRepChangeWithJilSerializer()
+        {
+            return JilSerializer.Serialize(MobileRepChangeInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileRepChangeWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(MobileRepChangeInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeMobileRepChangeWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(MobileRepChangeInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileInboxItemWithJilSerializer()
+        {
+            return JilSerializer.Serialize(MobileInboxItemInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileInboxItemWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(MobileInboxItemInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeMobileInboxItemWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(MobileInboxItemInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileBadgeAwardWithJilSerializer()
+        {
+            return JilSerializer.Serialize(MobileBadgeAwardInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileBadgeAwardWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(MobileBadgeAwardInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeMobileBadgeAwardWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(MobileBadgeAwardInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobilePrivilegeWithJilSerializer()
+        {
+            return JilSerializer.Serialize(MobilePrivilegeInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobilePrivilegeWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(MobilePrivilegeInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeMobilePrivilegeWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(MobilePrivilegeInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileCommunityBulletinWithJilSerializer()
+        {
+            return JilSerializer.Serialize(MobileCommunityBulletinInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileCommunityBulletinWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(MobileCommunityBulletinInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeMobileCommunityBulletinWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(MobileCommunityBulletinInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileAssociationBonusWithJilSerializer()
+        {
+            return JilSerializer.Serialize(MobileAssociationBonusInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileAssociationBonusWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(MobileAssociationBonusInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeMobileAssociationBonusWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(MobileAssociationBonusInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileCareersJobAdWithJilSerializer()
+        {
+            return JilSerializer.Serialize(MobileCareersJobAdInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileCareersJobAdWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(MobileCareersJobAdInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeMobileCareersJobAdWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(MobileCareersJobAdInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileBannerAdWithJilSerializer()
+        {
+            return JilSerializer.Serialize(MobileBannerAdInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileBannerAdWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(MobileBannerAdInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeMobileBannerAdWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(MobileBannerAdInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileUpdateNoticeWithJilSerializer()
+        {
+            return JilSerializer.Serialize(MobileUpdateNoticeInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileUpdateNoticeWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(MobileUpdateNoticeInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeMobileUpdateNoticeWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(MobileUpdateNoticeInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeFlagOptionWithJilSerializer()
+        {
+            return JilSerializer.Serialize(FlagOptionInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeFlagOptionWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(FlagOptionInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeFlagOptionWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(FlagOptionInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeInboxItemWithJilSerializer()
+        {
+            return JilSerializer.Serialize(InboxItemInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeInboxItemWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(InboxItemInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeInboxItemWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(InboxItemInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeInfoWithJilSerializer()
+        {
+            return JilSerializer.Serialize(InfoInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeInfoWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(InfoInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeInfoWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(InfoInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeNetworkUserWithJilSerializer()
+        {
+            return JilSerializer.Serialize(NetworkUserInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeNetworkUserWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(NetworkUserInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeNetworkUserWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(NetworkUserInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeNotificationWithJilSerializer()
+        {
+            return JilSerializer.Serialize(NotificationInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeNotificationWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(NotificationInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeNotificationWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(NotificationInput);
+        }
+
+
+        [Benchmark]
+        public string SerializePostWithJilSerializer()
+        {
+            return JilSerializer.Serialize(PostInput);
+        }
+
+
+        [Benchmark]
+        public string SerializePostWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(PostInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializePostWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(PostInput);
+        }
+
+
+        [Benchmark]
+        public string SerializePrivilegeWithJilSerializer()
+        {
+            return JilSerializer.Serialize(PrivilegeInput);
+        }
+
+
+        [Benchmark]
+        public string SerializePrivilegeWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(PrivilegeInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializePrivilegeWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(PrivilegeInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeQuestionWithJilSerializer()
+        {
+            return JilSerializer.Serialize(QuestionInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeQuestionWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(QuestionInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeQuestionWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(QuestionInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeQuestionTimelineWithJilSerializer()
+        {
+            return JilSerializer.Serialize(QuestionTimelineInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeQuestionTimelineWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(QuestionTimelineInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeQuestionTimelineWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(QuestionTimelineInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeReputationWithJilSerializer()
+        {
+            return JilSerializer.Serialize(ReputationInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeReputationWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(ReputationInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeReputationWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(ReputationInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeReputationHistoryWithJilSerializer()
+        {
+            return JilSerializer.Serialize(ReputationHistoryInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeReputationHistoryWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(ReputationHistoryInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeReputationHistoryWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(ReputationHistoryInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeRevisionWithJilSerializer()
+        {
+            return JilSerializer.Serialize(RevisionInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeRevisionWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(RevisionInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeRevisionWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(RevisionInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeSearchExcerptWithJilSerializer()
+        {
+            return JilSerializer.Serialize(SearchExcerptInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeSearchExcerptWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(SearchExcerptInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeSearchExcerptWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(SearchExcerptInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeShallowUserWithJilSerializer()
+        {
+            return JilSerializer.Serialize(ShallowUserInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeShallowUserWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(ShallowUserInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeShallowUserWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(ShallowUserInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeSuggestedEditWithJilSerializer()
+        {
+            return JilSerializer.Serialize(SuggestedEditInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeSuggestedEditWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(SuggestedEditInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeSuggestedEditWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(SuggestedEditInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeTagWithJilSerializer()
+        {
+            return JilSerializer.Serialize(TagInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeTagWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(TagInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeTagWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(TagInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeTagScoreWithJilSerializer()
+        {
+            return JilSerializer.Serialize(TagScoreInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeTagScoreWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(TagScoreInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeTagScoreWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(TagScoreInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeTagSynonymWithJilSerializer()
+        {
+            return JilSerializer.Serialize(TagSynonymInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeTagSynonymWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(TagSynonymInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeTagSynonymWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(TagSynonymInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeTagWikiWithJilSerializer()
+        {
+            return JilSerializer.Serialize(TagWikiInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeTagWikiWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(TagWikiInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeTagWikiWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(TagWikiInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeTopTagWithJilSerializer()
+        {
+            return JilSerializer.Serialize(TopTagInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeTopTagWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(TopTagInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeTopTagWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(TopTagInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeUserWithJilSerializer()
+        {
+            return JilSerializer.Serialize(UserInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeUserWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(UserInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeUserWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(UserInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeUserTimelineWithJilSerializer()
+        {
+            return JilSerializer.Serialize(UserTimelineInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeUserTimelineWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(UserTimelineInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeUserTimelineWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(UserTimelineInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeWritePermissionWithJilSerializer()
+        {
+            return JilSerializer.Serialize(WritePermissionInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeWritePermissionWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(WritePermissionInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeWritePermissionWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(WritePermissionInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileBannerAdImageWithJilSerializer()
+        {
+            return JilSerializer.Serialize(MobileBannerAdImageInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMobileBannerAdImageWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(MobileBannerAdImageInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeMobileBannerAdImageWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(MobileBannerAdImageInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeSiteWithJilSerializer()
+        {
+            return JilSerializer.Serialize(SiteInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeSiteWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(SiteInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeSiteWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(SiteInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeRelatedSiteWithJilSerializer()
+        {
+            return JilSerializer.Serialize(RelatedSiteInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeRelatedSiteWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(RelatedSiteInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeRelatedSiteWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(RelatedSiteInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeClosedDetailsWithJilSerializer()
+        {
+            return JilSerializer.Serialize(ClosedDetailsInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeClosedDetailsWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(ClosedDetailsInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeClosedDetailsWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(ClosedDetailsInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeNoticeWithJilSerializer()
+        {
+            return JilSerializer.Serialize(NoticeInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeNoticeWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(NoticeInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeNoticeWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(NoticeInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMigrationInfoWithJilSerializer()
+        {
+            return JilSerializer.Serialize(MigrationInfoInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeMigrationInfoWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(MigrationInfoInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeMigrationInfoWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(MigrationInfoInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeBadgeCountWithJilSerializer()
+        {
+            return JilSerializer.Serialize(BadgeCountInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeBadgeCountWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(BadgeCountInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeBadgeCountWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(BadgeCountInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeStylingWithJilSerializer()
+        {
+            return JilSerializer.Serialize(StylingInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeStylingWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(StylingInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeStylingWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(StylingInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeOriginalQuestionWithJilSerializer()
+        {
+            return JilSerializer.Serialize(OriginalQuestionInput);
+        }
+
+
+        [Benchmark]
+        public string SerializeOriginalQuestionWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Serialize(OriginalQuestionInput);
+        }
+
+
+        [Benchmark]
+        public byte[] SerializeOriginalQuestionWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(OriginalQuestionInput);
         }
 
         [Benchmark]
@@ -526,21 +1570,9 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeAccessTokenWithSpanJsonSerializer()
+        public AccessToken DeserializeAccessTokenWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(AccessTokenInput);
-        }
-
-        [Benchmark]
-        public AccessToken DeserializeAccessTokenWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<AccessToken>(AccessTokenOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeAccessTokenWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(AccessTokenInput);
+            return SpanJsonSerializer.Deserialize<AccessToken>(AccessTokenOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -550,33 +1582,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeAccountMergeWithJilSerializer()
-        {
-            return JilSerializer.Serialize(AccountMergeInput);
-        }
-
-        [Benchmark]
         public AccountMerge DeserializeAccountMergeWithJilSerializer()
         {
             return JilSerializer.Deserialize<AccountMerge>(AccountMergeOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeAccountMergeWithSpanJsonSerializer()
+        public AccountMerge DeserializeAccountMergeWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(AccountMergeInput);
-        }
-
-        [Benchmark]
-        public AccountMerge DeserializeAccountMergeWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<AccountMerge>(AccountMergeOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeAccountMergeWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(AccountMergeInput);
+            return SpanJsonSerializer.Deserialize<AccountMerge>(AccountMergeOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -586,33 +1600,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeAnswerWithJilSerializer()
-        {
-            return JilSerializer.Serialize(AnswerInput);
-        }
-
-        [Benchmark]
         public Answer DeserializeAnswerWithJilSerializer()
         {
             return JilSerializer.Deserialize<Answer>(AnswerOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeAnswerWithSpanJsonSerializer()
+        public Answer DeserializeAnswerWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(AnswerInput);
-        }
-
-        [Benchmark]
-        public Answer DeserializeAnswerWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Answer>(AnswerOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeAnswerWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(AnswerInput);
+            return SpanJsonSerializer.Deserialize<Answer>(AnswerOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -622,33 +1618,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeBadgeWithJilSerializer()
-        {
-            return JilSerializer.Serialize(BadgeInput);
-        }
-
-        [Benchmark]
         public Badge DeserializeBadgeWithJilSerializer()
         {
             return JilSerializer.Deserialize<Badge>(BadgeOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeBadgeWithSpanJsonSerializer()
+        public Badge DeserializeBadgeWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(BadgeInput);
-        }
-
-        [Benchmark]
-        public Badge DeserializeBadgeWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Badge>(BadgeOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeBadgeWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(BadgeInput);
+            return SpanJsonSerializer.Deserialize<Badge>(BadgeOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -658,33 +1636,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeCommentWithJilSerializer()
-        {
-            return JilSerializer.Serialize(CommentInput);
-        }
-
-        [Benchmark]
         public Comment DeserializeCommentWithJilSerializer()
         {
             return JilSerializer.Deserialize<Comment>(CommentOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeCommentWithSpanJsonSerializer()
+        public Comment DeserializeCommentWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(CommentInput);
-        }
-
-        [Benchmark]
-        public Comment DeserializeCommentWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Comment>(CommentOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeCommentWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(CommentInput);
+            return SpanJsonSerializer.Deserialize<Comment>(CommentOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -694,33 +1654,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeErrorWithJilSerializer()
-        {
-            return JilSerializer.Serialize(ErrorInput);
-        }
-
-        [Benchmark]
         public Error DeserializeErrorWithJilSerializer()
         {
             return JilSerializer.Deserialize<Error>(ErrorOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeErrorWithSpanJsonSerializer()
+        public Error DeserializeErrorWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(ErrorInput);
-        }
-
-        [Benchmark]
-        public Error DeserializeErrorWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Error>(ErrorOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeErrorWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(ErrorInput);
+            return SpanJsonSerializer.Deserialize<Error>(ErrorOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -730,33 +1672,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeEventWithJilSerializer()
-        {
-            return JilSerializer.Serialize(EventInput);
-        }
-
-        [Benchmark]
         public Event DeserializeEventWithJilSerializer()
         {
             return JilSerializer.Deserialize<Event>(EventOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeEventWithSpanJsonSerializer()
+        public Event DeserializeEventWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(EventInput);
-        }
-
-        [Benchmark]
-        public Event DeserializeEventWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Event>(EventOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeEventWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(EventInput);
+            return SpanJsonSerializer.Deserialize<Event>(EventOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -766,33 +1690,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeMobileFeedWithJilSerializer()
-        {
-            return JilSerializer.Serialize(MobileFeedInput);
-        }
-
-        [Benchmark]
         public MobileFeed DeserializeMobileFeedWithJilSerializer()
         {
             return JilSerializer.Deserialize<MobileFeed>(MobileFeedOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeMobileFeedWithSpanJsonSerializer()
+        public MobileFeed DeserializeMobileFeedWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(MobileFeedInput);
-        }
-
-        [Benchmark]
-        public MobileFeed DeserializeMobileFeedWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<MobileFeed>(MobileFeedOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeMobileFeedWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(MobileFeedInput);
+            return SpanJsonSerializer.Deserialize<MobileFeed>(MobileFeedOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -802,33 +1708,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeMobileQuestionWithJilSerializer()
-        {
-            return JilSerializer.Serialize(MobileQuestionInput);
-        }
-
-        [Benchmark]
         public MobileQuestion DeserializeMobileQuestionWithJilSerializer()
         {
             return JilSerializer.Deserialize<MobileQuestion>(MobileQuestionOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeMobileQuestionWithSpanJsonSerializer()
+        public MobileQuestion DeserializeMobileQuestionWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(MobileQuestionInput);
-        }
-
-        [Benchmark]
-        public MobileQuestion DeserializeMobileQuestionWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<MobileQuestion>(MobileQuestionOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeMobileQuestionWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(MobileQuestionInput);
+            return SpanJsonSerializer.Deserialize<MobileQuestion>(MobileQuestionOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -838,33 +1726,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeMobileRepChangeWithJilSerializer()
-        {
-            return JilSerializer.Serialize(MobileRepChangeInput);
-        }
-
-        [Benchmark]
         public MobileRepChange DeserializeMobileRepChangeWithJilSerializer()
         {
             return JilSerializer.Deserialize<MobileRepChange>(MobileRepChangeOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeMobileRepChangeWithSpanJsonSerializer()
+        public MobileRepChange DeserializeMobileRepChangeWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(MobileRepChangeInput);
-        }
-
-        [Benchmark]
-        public MobileRepChange DeserializeMobileRepChangeWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<MobileRepChange>(MobileRepChangeOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeMobileRepChangeWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(MobileRepChangeInput);
+            return SpanJsonSerializer.Deserialize<MobileRepChange>(MobileRepChangeOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -874,33 +1744,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeMobileInboxItemWithJilSerializer()
-        {
-            return JilSerializer.Serialize(MobileInboxItemInput);
-        }
-
-        [Benchmark]
         public MobileInboxItem DeserializeMobileInboxItemWithJilSerializer()
         {
             return JilSerializer.Deserialize<MobileInboxItem>(MobileInboxItemOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeMobileInboxItemWithSpanJsonSerializer()
+        public MobileInboxItem DeserializeMobileInboxItemWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(MobileInboxItemInput);
-        }
-
-        [Benchmark]
-        public MobileInboxItem DeserializeMobileInboxItemWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<MobileInboxItem>(MobileInboxItemOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeMobileInboxItemWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(MobileInboxItemInput);
+            return SpanJsonSerializer.Deserialize<MobileInboxItem>(MobileInboxItemOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -910,33 +1762,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeMobileBadgeAwardWithJilSerializer()
-        {
-            return JilSerializer.Serialize(MobileBadgeAwardInput);
-        }
-
-        [Benchmark]
         public MobileBadgeAward DeserializeMobileBadgeAwardWithJilSerializer()
         {
             return JilSerializer.Deserialize<MobileBadgeAward>(MobileBadgeAwardOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeMobileBadgeAwardWithSpanJsonSerializer()
+        public MobileBadgeAward DeserializeMobileBadgeAwardWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(MobileBadgeAwardInput);
-        }
-
-        [Benchmark]
-        public MobileBadgeAward DeserializeMobileBadgeAwardWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<MobileBadgeAward>(MobileBadgeAwardOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeMobileBadgeAwardWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(MobileBadgeAwardInput);
+            return SpanJsonSerializer.Deserialize<MobileBadgeAward>(MobileBadgeAwardOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -946,33 +1780,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeMobilePrivilegeWithJilSerializer()
-        {
-            return JilSerializer.Serialize(MobilePrivilegeInput);
-        }
-
-        [Benchmark]
         public MobilePrivilege DeserializeMobilePrivilegeWithJilSerializer()
         {
             return JilSerializer.Deserialize<MobilePrivilege>(MobilePrivilegeOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeMobilePrivilegeWithSpanJsonSerializer()
+        public MobilePrivilege DeserializeMobilePrivilegeWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(MobilePrivilegeInput);
-        }
-
-        [Benchmark]
-        public MobilePrivilege DeserializeMobilePrivilegeWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<MobilePrivilege>(MobilePrivilegeOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeMobilePrivilegeWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(MobilePrivilegeInput);
+            return SpanJsonSerializer.Deserialize<MobilePrivilege>(MobilePrivilegeOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -982,34 +1798,16 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeMobileCommunityBulletinWithJilSerializer()
-        {
-            return JilSerializer.Serialize(MobileCommunityBulletinInput);
-        }
-
-        [Benchmark]
         public MobileCommunityBulletin DeserializeMobileCommunityBulletinWithJilSerializer()
         {
             return JilSerializer.Deserialize<MobileCommunityBulletin>(MobileCommunityBulletinOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeMobileCommunityBulletinWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(MobileCommunityBulletinInput);
-        }
-
-        [Benchmark]
-        public MobileCommunityBulletin DeserializeMobileCommunityBulletinWithSpanJsonSerializer()
+        public MobileCommunityBulletin DeserializeMobileCommunityBulletinWithJsonSpanSerializer()
         {
             return SpanJsonSerializer.Deserialize<MobileCommunityBulletin>(
-                MobileCommunityBulletinOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeMobileCommunityBulletinWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(MobileCommunityBulletinInput);
+                MobileCommunityBulletinOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1020,34 +1818,16 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeMobileAssociationBonusWithJilSerializer()
-        {
-            return JilSerializer.Serialize(MobileAssociationBonusInput);
-        }
-
-        [Benchmark]
         public MobileAssociationBonus DeserializeMobileAssociationBonusWithJilSerializer()
         {
             return JilSerializer.Deserialize<MobileAssociationBonus>(MobileAssociationBonusOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeMobileAssociationBonusWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(MobileAssociationBonusInput);
-        }
-
-        [Benchmark]
-        public MobileAssociationBonus DeserializeMobileAssociationBonusWithSpanJsonSerializer()
+        public MobileAssociationBonus DeserializeMobileAssociationBonusWithJsonSpanSerializer()
         {
             return SpanJsonSerializer.Deserialize<MobileAssociationBonus>(
-                MobileAssociationBonusOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeMobileAssociationBonusWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(MobileAssociationBonusInput);
+                MobileAssociationBonusOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1058,33 +1838,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeMobileCareersJobAdWithJilSerializer()
-        {
-            return JilSerializer.Serialize(MobileCareersJobAdInput);
-        }
-
-        [Benchmark]
         public MobileCareersJobAd DeserializeMobileCareersJobAdWithJilSerializer()
         {
             return JilSerializer.Deserialize<MobileCareersJobAd>(MobileCareersJobAdOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeMobileCareersJobAdWithSpanJsonSerializer()
+        public MobileCareersJobAd DeserializeMobileCareersJobAdWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(MobileCareersJobAdInput);
-        }
-
-        [Benchmark]
-        public MobileCareersJobAd DeserializeMobileCareersJobAdWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<MobileCareersJobAd>(MobileCareersJobAdOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeMobileCareersJobAdWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(MobileCareersJobAdInput);
+            return SpanJsonSerializer.Deserialize<MobileCareersJobAd>(MobileCareersJobAdOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1094,33 +1856,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeMobileBannerAdWithJilSerializer()
-        {
-            return JilSerializer.Serialize(MobileBannerAdInput);
-        }
-
-        [Benchmark]
         public MobileBannerAd DeserializeMobileBannerAdWithJilSerializer()
         {
             return JilSerializer.Deserialize<MobileBannerAd>(MobileBannerAdOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeMobileBannerAdWithSpanJsonSerializer()
+        public MobileBannerAd DeserializeMobileBannerAdWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(MobileBannerAdInput);
-        }
-
-        [Benchmark]
-        public MobileBannerAd DeserializeMobileBannerAdWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<MobileBannerAd>(MobileBannerAdOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeMobileBannerAdWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(MobileBannerAdInput);
+            return SpanJsonSerializer.Deserialize<MobileBannerAd>(MobileBannerAdOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1130,33 +1874,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeMobileUpdateNoticeWithJilSerializer()
-        {
-            return JilSerializer.Serialize(MobileUpdateNoticeInput);
-        }
-
-        [Benchmark]
         public MobileUpdateNotice DeserializeMobileUpdateNoticeWithJilSerializer()
         {
             return JilSerializer.Deserialize<MobileUpdateNotice>(MobileUpdateNoticeOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeMobileUpdateNoticeWithSpanJsonSerializer()
+        public MobileUpdateNotice DeserializeMobileUpdateNoticeWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(MobileUpdateNoticeInput);
-        }
-
-        [Benchmark]
-        public MobileUpdateNotice DeserializeMobileUpdateNoticeWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<MobileUpdateNotice>(MobileUpdateNoticeOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeMobileUpdateNoticeWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(MobileUpdateNoticeInput);
+            return SpanJsonSerializer.Deserialize<MobileUpdateNotice>(MobileUpdateNoticeOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1166,33 +1892,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeFlagOptionWithJilSerializer()
-        {
-            return JilSerializer.Serialize(FlagOptionInput);
-        }
-
-        [Benchmark]
         public FlagOption DeserializeFlagOptionWithJilSerializer()
         {
             return JilSerializer.Deserialize<FlagOption>(FlagOptionOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeFlagOptionWithSpanJsonSerializer()
+        public FlagOption DeserializeFlagOptionWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(FlagOptionInput);
-        }
-
-        [Benchmark]
-        public FlagOption DeserializeFlagOptionWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<FlagOption>(FlagOptionOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeFlagOptionWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(FlagOptionInput);
+            return SpanJsonSerializer.Deserialize<FlagOption>(FlagOptionOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1202,33 +1910,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeInboxItemWithJilSerializer()
-        {
-            return JilSerializer.Serialize(InboxItemInput);
-        }
-
-        [Benchmark]
         public InboxItem DeserializeInboxItemWithJilSerializer()
         {
             return JilSerializer.Deserialize<InboxItem>(InboxItemOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeInboxItemWithSpanJsonSerializer()
+        public InboxItem DeserializeInboxItemWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(InboxItemInput);
-        }
-
-        [Benchmark]
-        public InboxItem DeserializeInboxItemWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<InboxItem>(InboxItemOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeInboxItemWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(InboxItemInput);
+            return SpanJsonSerializer.Deserialize<InboxItem>(InboxItemOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1238,33 +1928,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeInfoWithJilSerializer()
-        {
-            return JilSerializer.Serialize(InfoInput);
-        }
-
-        [Benchmark]
         public Info DeserializeInfoWithJilSerializer()
         {
             return JilSerializer.Deserialize<Info>(InfoOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeInfoWithSpanJsonSerializer()
+        public Info DeserializeInfoWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(InfoInput);
-        }
-
-        [Benchmark]
-        public Info DeserializeInfoWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Info>(InfoOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeInfoWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(InfoInput);
+            return SpanJsonSerializer.Deserialize<Info>(InfoOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1274,33 +1946,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeNetworkUserWithJilSerializer()
-        {
-            return JilSerializer.Serialize(NetworkUserInput);
-        }
-
-        [Benchmark]
         public NetworkUser DeserializeNetworkUserWithJilSerializer()
         {
             return JilSerializer.Deserialize<NetworkUser>(NetworkUserOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeNetworkUserWithSpanJsonSerializer()
+        public NetworkUser DeserializeNetworkUserWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(NetworkUserInput);
-        }
-
-        [Benchmark]
-        public NetworkUser DeserializeNetworkUserWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<NetworkUser>(NetworkUserOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeNetworkUserWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(NetworkUserInput);
+            return SpanJsonSerializer.Deserialize<NetworkUser>(NetworkUserOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1310,33 +1964,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeNotificationWithJilSerializer()
-        {
-            return JilSerializer.Serialize(NotificationInput);
-        }
-
-        [Benchmark]
         public Notification DeserializeNotificationWithJilSerializer()
         {
             return JilSerializer.Deserialize<Notification>(NotificationOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeNotificationWithSpanJsonSerializer()
+        public Notification DeserializeNotificationWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(NotificationInput);
-        }
-
-        [Benchmark]
-        public Notification DeserializeNotificationWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Notification>(NotificationOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeNotificationWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(NotificationInput);
+            return SpanJsonSerializer.Deserialize<Notification>(NotificationOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1346,33 +1982,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializePostWithJilSerializer()
-        {
-            return JilSerializer.Serialize(PostInput);
-        }
-
-        [Benchmark]
         public Post DeserializePostWithJilSerializer()
         {
             return JilSerializer.Deserialize<Post>(PostOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializePostWithSpanJsonSerializer()
+        public Post DeserializePostWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(PostInput);
-        }
-
-        [Benchmark]
-        public Post DeserializePostWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Post>(PostOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializePostWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(PostInput);
+            return SpanJsonSerializer.Deserialize<Post>(PostOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1382,33 +2000,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializePrivilegeWithJilSerializer()
-        {
-            return JilSerializer.Serialize(PrivilegeInput);
-        }
-
-        [Benchmark]
         public Privilege DeserializePrivilegeWithJilSerializer()
         {
             return JilSerializer.Deserialize<Privilege>(PrivilegeOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializePrivilegeWithSpanJsonSerializer()
+        public Privilege DeserializePrivilegeWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(PrivilegeInput);
-        }
-
-        [Benchmark]
-        public Privilege DeserializePrivilegeWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Privilege>(PrivilegeOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializePrivilegeWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(PrivilegeInput);
+            return SpanJsonSerializer.Deserialize<Privilege>(PrivilegeOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1418,33 +2018,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeQuestionWithJilSerializer()
-        {
-            return JilSerializer.Serialize(QuestionInput);
-        }
-
-        [Benchmark]
         public Question DeserializeQuestionWithJilSerializer()
         {
             return JilSerializer.Deserialize<Question>(QuestionOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeQuestionWithSpanJsonSerializer()
+        public Question DeserializeQuestionWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(QuestionInput);
-        }
-
-        [Benchmark]
-        public Question DeserializeQuestionWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Question>(QuestionOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeQuestionWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(QuestionInput);
+            return SpanJsonSerializer.Deserialize<Question>(QuestionOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1454,33 +2036,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeQuestionTimelineWithJilSerializer()
-        {
-            return JilSerializer.Serialize(QuestionTimelineInput);
-        }
-
-        [Benchmark]
         public QuestionTimeline DeserializeQuestionTimelineWithJilSerializer()
         {
             return JilSerializer.Deserialize<QuestionTimeline>(QuestionTimelineOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeQuestionTimelineWithSpanJsonSerializer()
+        public QuestionTimeline DeserializeQuestionTimelineWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(QuestionTimelineInput);
-        }
-
-        [Benchmark]
-        public QuestionTimeline DeserializeQuestionTimelineWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<QuestionTimeline>(QuestionTimelineOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeQuestionTimelineWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(QuestionTimelineInput);
+            return SpanJsonSerializer.Deserialize<QuestionTimeline>(QuestionTimelineOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1490,33 +2054,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeReputationWithJilSerializer()
-        {
-            return JilSerializer.Serialize(ReputationInput);
-        }
-
-        [Benchmark]
         public Reputation DeserializeReputationWithJilSerializer()
         {
             return JilSerializer.Deserialize<Reputation>(ReputationOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeReputationWithSpanJsonSerializer()
+        public Reputation DeserializeReputationWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(ReputationInput);
-        }
-
-        [Benchmark]
-        public Reputation DeserializeReputationWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Reputation>(ReputationOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeReputationWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(ReputationInput);
+            return SpanJsonSerializer.Deserialize<Reputation>(ReputationOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1526,33 +2072,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeReputationHistoryWithJilSerializer()
-        {
-            return JilSerializer.Serialize(ReputationHistoryInput);
-        }
-
-        [Benchmark]
         public ReputationHistory DeserializeReputationHistoryWithJilSerializer()
         {
             return JilSerializer.Deserialize<ReputationHistory>(ReputationHistoryOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeReputationHistoryWithSpanJsonSerializer()
+        public ReputationHistory DeserializeReputationHistoryWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(ReputationHistoryInput);
-        }
-
-        [Benchmark]
-        public ReputationHistory DeserializeReputationHistoryWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<ReputationHistory>(ReputationHistoryOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeReputationHistoryWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(ReputationHistoryInput);
+            return SpanJsonSerializer.Deserialize<ReputationHistory>(ReputationHistoryOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1562,33 +2090,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeRevisionWithJilSerializer()
-        {
-            return JilSerializer.Serialize(RevisionInput);
-        }
-
-        [Benchmark]
         public Revision DeserializeRevisionWithJilSerializer()
         {
             return JilSerializer.Deserialize<Revision>(RevisionOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeRevisionWithSpanJsonSerializer()
+        public Revision DeserializeRevisionWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(RevisionInput);
-        }
-
-        [Benchmark]
-        public Revision DeserializeRevisionWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Revision>(RevisionOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeRevisionWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(RevisionInput);
+            return SpanJsonSerializer.Deserialize<Revision>(RevisionOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1598,33 +2108,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeSearchExcerptWithJilSerializer()
-        {
-            return JilSerializer.Serialize(SearchExcerptInput);
-        }
-
-        [Benchmark]
         public SearchExcerpt DeserializeSearchExcerptWithJilSerializer()
         {
             return JilSerializer.Deserialize<SearchExcerpt>(SearchExcerptOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeSearchExcerptWithSpanJsonSerializer()
+        public SearchExcerpt DeserializeSearchExcerptWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(SearchExcerptInput);
-        }
-
-        [Benchmark]
-        public SearchExcerpt DeserializeSearchExcerptWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<SearchExcerpt>(SearchExcerptOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeSearchExcerptWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(SearchExcerptInput);
+            return SpanJsonSerializer.Deserialize<SearchExcerpt>(SearchExcerptOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1634,33 +2126,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeShallowUserWithJilSerializer()
-        {
-            return JilSerializer.Serialize(ShallowUserInput);
-        }
-
-        [Benchmark]
         public ShallowUser DeserializeShallowUserWithJilSerializer()
         {
             return JilSerializer.Deserialize<ShallowUser>(ShallowUserOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeShallowUserWithSpanJsonSerializer()
+        public ShallowUser DeserializeShallowUserWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(ShallowUserInput);
-        }
-
-        [Benchmark]
-        public ShallowUser DeserializeShallowUserWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<ShallowUser>(ShallowUserOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeShallowUserWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(ShallowUserInput);
+            return SpanJsonSerializer.Deserialize<ShallowUser>(ShallowUserOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1670,33 +2144,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeSuggestedEditWithJilSerializer()
-        {
-            return JilSerializer.Serialize(SuggestedEditInput);
-        }
-
-        [Benchmark]
         public SuggestedEdit DeserializeSuggestedEditWithJilSerializer()
         {
             return JilSerializer.Deserialize<SuggestedEdit>(SuggestedEditOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeSuggestedEditWithSpanJsonSerializer()
+        public SuggestedEdit DeserializeSuggestedEditWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(SuggestedEditInput);
-        }
-
-        [Benchmark]
-        public SuggestedEdit DeserializeSuggestedEditWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<SuggestedEdit>(SuggestedEditOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeSuggestedEditWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(SuggestedEditInput);
+            return SpanJsonSerializer.Deserialize<SuggestedEdit>(SuggestedEditOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1706,33 +2162,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeTagWithJilSerializer()
-        {
-            return JilSerializer.Serialize(TagInput);
-        }
-
-        [Benchmark]
         public Tag DeserializeTagWithJilSerializer()
         {
             return JilSerializer.Deserialize<Tag>(TagOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeTagWithSpanJsonSerializer()
+        public Tag DeserializeTagWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(TagInput);
-        }
-
-        [Benchmark]
-        public Tag DeserializeTagWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Tag>(TagOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeTagWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(TagInput);
+            return SpanJsonSerializer.Deserialize<Tag>(TagOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1742,33 +2180,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeTagScoreWithJilSerializer()
-        {
-            return JilSerializer.Serialize(TagScoreInput);
-        }
-
-        [Benchmark]
         public TagScore DeserializeTagScoreWithJilSerializer()
         {
             return JilSerializer.Deserialize<TagScore>(TagScoreOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeTagScoreWithSpanJsonSerializer()
+        public TagScore DeserializeTagScoreWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(TagScoreInput);
-        }
-
-        [Benchmark]
-        public TagScore DeserializeTagScoreWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<TagScore>(TagScoreOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeTagScoreWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(TagScoreInput);
+            return SpanJsonSerializer.Deserialize<TagScore>(TagScoreOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1778,33 +2198,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeTagSynonymWithJilSerializer()
-        {
-            return JilSerializer.Serialize(TagSynonymInput);
-        }
-
-        [Benchmark]
         public TagSynonym DeserializeTagSynonymWithJilSerializer()
         {
             return JilSerializer.Deserialize<TagSynonym>(TagSynonymOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeTagSynonymWithSpanJsonSerializer()
+        public TagSynonym DeserializeTagSynonymWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(TagSynonymInput);
-        }
-
-        [Benchmark]
-        public TagSynonym DeserializeTagSynonymWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<TagSynonym>(TagSynonymOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeTagSynonymWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(TagSynonymInput);
+            return SpanJsonSerializer.Deserialize<TagSynonym>(TagSynonymOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1814,33 +2216,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeTagWikiWithJilSerializer()
-        {
-            return JilSerializer.Serialize(TagWikiInput);
-        }
-
-        [Benchmark]
         public TagWiki DeserializeTagWikiWithJilSerializer()
         {
             return JilSerializer.Deserialize<TagWiki>(TagWikiOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeTagWikiWithSpanJsonSerializer()
+        public TagWiki DeserializeTagWikiWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(TagWikiInput);
-        }
-
-        [Benchmark]
-        public TagWiki DeserializeTagWikiWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<TagWiki>(TagWikiOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeTagWikiWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(TagWikiInput);
+            return SpanJsonSerializer.Deserialize<TagWiki>(TagWikiOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1850,33 +2234,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeTopTagWithJilSerializer()
-        {
-            return JilSerializer.Serialize(TopTagInput);
-        }
-
-        [Benchmark]
         public TopTag DeserializeTopTagWithJilSerializer()
         {
             return JilSerializer.Deserialize<TopTag>(TopTagOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeTopTagWithSpanJsonSerializer()
+        public TopTag DeserializeTopTagWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(TopTagInput);
-        }
-
-        [Benchmark]
-        public TopTag DeserializeTopTagWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<TopTag>(TopTagOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeTopTagWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(TopTagInput);
+            return SpanJsonSerializer.Deserialize<TopTag>(TopTagOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1886,33 +2252,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeUserWithJilSerializer()
-        {
-            return JilSerializer.Serialize(UserInput);
-        }
-
-        [Benchmark]
         public User DeserializeUserWithJilSerializer()
         {
             return JilSerializer.Deserialize<User>(UserOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeUserWithSpanJsonSerializer()
+        public User DeserializeUserWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(UserInput);
-        }
-
-        [Benchmark]
-        public User DeserializeUserWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<User>(UserOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeUserWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(UserInput);
+            return SpanJsonSerializer.Deserialize<User>(UserOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1922,33 +2270,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeUserTimelineWithJilSerializer()
-        {
-            return JilSerializer.Serialize(UserTimelineInput);
-        }
-
-        [Benchmark]
         public UserTimeline DeserializeUserTimelineWithJilSerializer()
         {
             return JilSerializer.Deserialize<UserTimeline>(UserTimelineOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeUserTimelineWithSpanJsonSerializer()
+        public UserTimeline DeserializeUserTimelineWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(UserTimelineInput);
-        }
-
-        [Benchmark]
-        public UserTimeline DeserializeUserTimelineWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<UserTimeline>(UserTimelineOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeUserTimelineWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(UserTimelineInput);
+            return SpanJsonSerializer.Deserialize<UserTimeline>(UserTimelineOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -1958,45 +2288,21 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeWritePermissionWithJilSerializer()
-        {
-            return JilSerializer.Serialize(WritePermissionInput);
-        }
-
-        [Benchmark]
         public WritePermission DeserializeWritePermissionWithJilSerializer()
         {
             return JilSerializer.Deserialize<WritePermission>(WritePermissionOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeWritePermissionWithSpanJsonSerializer()
+        public WritePermission DeserializeWritePermissionWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(WritePermissionInput);
-        }
-
-        [Benchmark]
-        public WritePermission DeserializeWritePermissionWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<WritePermission>(WritePermissionOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeWritePermissionWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(WritePermissionInput);
+            return SpanJsonSerializer.Deserialize<WritePermission>(WritePermissionOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
         public WritePermission DeserializeWritePermissionWithUtf8JsonSerializer()
         {
             return Utf8JsonSerializer.Deserialize<WritePermission>(WritePermissionOutputOfUtf8JsonSerializer);
-        }
-
-        [Benchmark]
-        public string SerializeMobileBannerAdImageWithJilSerializer()
-        {
-            return JilSerializer.Serialize(MobileBannerAdImageInput);
         }
 
         [Benchmark]
@@ -2007,22 +2313,10 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeMobileBannerAdImageWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(MobileBannerAdImageInput);
-        }
-
-        [Benchmark]
-        public MobileBannerAd.MobileBannerAdImage DeserializeMobileBannerAdImageWithSpanJsonSerializer()
+        public MobileBannerAd.MobileBannerAdImage DeserializeMobileBannerAdImageWithJsonSpanSerializer()
         {
             return SpanJsonSerializer.Deserialize<MobileBannerAd.MobileBannerAdImage>(
-                MobileBannerAdImageOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeMobileBannerAdImageWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(MobileBannerAdImageInput);
+                MobileBannerAdImageOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -2033,33 +2327,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeSiteWithJilSerializer()
-        {
-            return JilSerializer.Serialize(SiteInput);
-        }
-
-        [Benchmark]
         public Info.Site DeserializeSiteWithJilSerializer()
         {
             return JilSerializer.Deserialize<Info.Site>(SiteOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeSiteWithSpanJsonSerializer()
+        public Info.Site DeserializeSiteWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(SiteInput);
-        }
-
-        [Benchmark]
-        public Info.Site DeserializeSiteWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Info.Site>(SiteOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeSiteWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(SiteInput);
+            return SpanJsonSerializer.Deserialize<Info.Site>(SiteOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -2069,33 +2345,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeRelatedSiteWithJilSerializer()
-        {
-            return JilSerializer.Serialize(RelatedSiteInput);
-        }
-
-        [Benchmark]
         public Info.RelatedSite DeserializeRelatedSiteWithJilSerializer()
         {
             return JilSerializer.Deserialize<Info.RelatedSite>(RelatedSiteOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeRelatedSiteWithSpanJsonSerializer()
+        public Info.RelatedSite DeserializeRelatedSiteWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(RelatedSiteInput);
-        }
-
-        [Benchmark]
-        public Info.RelatedSite DeserializeRelatedSiteWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Info.RelatedSite>(RelatedSiteOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeRelatedSiteWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(RelatedSiteInput);
+            return SpanJsonSerializer.Deserialize<Info.RelatedSite>(RelatedSiteOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -2105,33 +2363,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeClosedDetailsWithJilSerializer()
-        {
-            return JilSerializer.Serialize(ClosedDetailsInput);
-        }
-
-        [Benchmark]
         public Question.ClosedDetails DeserializeClosedDetailsWithJilSerializer()
         {
             return JilSerializer.Deserialize<Question.ClosedDetails>(ClosedDetailsOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeClosedDetailsWithSpanJsonSerializer()
+        public Question.ClosedDetails DeserializeClosedDetailsWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(ClosedDetailsInput);
-        }
-
-        [Benchmark]
-        public Question.ClosedDetails DeserializeClosedDetailsWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Question.ClosedDetails>(ClosedDetailsOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeClosedDetailsWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(ClosedDetailsInput);
+            return SpanJsonSerializer.Deserialize<Question.ClosedDetails>(ClosedDetailsOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -2141,33 +2381,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeNoticeWithJilSerializer()
-        {
-            return JilSerializer.Serialize(NoticeInput);
-        }
-
-        [Benchmark]
         public Question.Notice DeserializeNoticeWithJilSerializer()
         {
             return JilSerializer.Deserialize<Question.Notice>(NoticeOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeNoticeWithSpanJsonSerializer()
+        public Question.Notice DeserializeNoticeWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(NoticeInput);
-        }
-
-        [Benchmark]
-        public Question.Notice DeserializeNoticeWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Question.Notice>(NoticeOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeNoticeWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(NoticeInput);
+            return SpanJsonSerializer.Deserialize<Question.Notice>(NoticeOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -2177,33 +2399,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeMigrationInfoWithJilSerializer()
-        {
-            return JilSerializer.Serialize(MigrationInfoInput);
-        }
-
-        [Benchmark]
         public Question.MigrationInfo DeserializeMigrationInfoWithJilSerializer()
         {
             return JilSerializer.Deserialize<Question.MigrationInfo>(MigrationInfoOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeMigrationInfoWithSpanJsonSerializer()
+        public Question.MigrationInfo DeserializeMigrationInfoWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(MigrationInfoInput);
-        }
-
-        [Benchmark]
-        public Question.MigrationInfo DeserializeMigrationInfoWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Question.MigrationInfo>(MigrationInfoOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeMigrationInfoWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(MigrationInfoInput);
+            return SpanJsonSerializer.Deserialize<Question.MigrationInfo>(MigrationInfoOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -2213,33 +2417,15 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeBadgeCountWithJilSerializer()
-        {
-            return JilSerializer.Serialize(BadgeCountInput);
-        }
-
-        [Benchmark]
         public User.BadgeCount DeserializeBadgeCountWithJilSerializer()
         {
             return JilSerializer.Deserialize<User.BadgeCount>(BadgeCountOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeBadgeCountWithSpanJsonSerializer()
+        public User.BadgeCount DeserializeBadgeCountWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(BadgeCountInput);
-        }
-
-        [Benchmark]
-        public User.BadgeCount DeserializeBadgeCountWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<User.BadgeCount>(BadgeCountOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeBadgeCountWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(BadgeCountInput);
+            return SpanJsonSerializer.Deserialize<User.BadgeCount>(BadgeCountOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
@@ -2249,45 +2435,21 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeStylingWithJilSerializer()
-        {
-            return JilSerializer.Serialize(StylingInput);
-        }
-
-        [Benchmark]
         public Info.Site.Styling DeserializeStylingWithJilSerializer()
         {
             return JilSerializer.Deserialize<Info.Site.Styling>(StylingOutputOfJilSerializer);
         }
 
         [Benchmark]
-        public string SerializeStylingWithSpanJsonSerializer()
+        public Info.Site.Styling DeserializeStylingWithJsonSpanSerializer()
         {
-            return SpanJsonSerializer.Serialize(StylingInput);
-        }
-
-        [Benchmark]
-        public Info.Site.Styling DeserializeStylingWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Info.Site.Styling>(StylingOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeStylingWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(StylingInput);
+            return SpanJsonSerializer.Deserialize<Info.Site.Styling>(StylingOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
         public Info.Site.Styling DeserializeStylingWithUtf8JsonSerializer()
         {
             return Utf8JsonSerializer.Deserialize<Info.Site.Styling>(StylingOutputOfUtf8JsonSerializer);
-        }
-
-        [Benchmark]
-        public string SerializeOriginalQuestionWithJilSerializer()
-        {
-            return JilSerializer.Serialize(OriginalQuestionInput);
         }
 
         [Benchmark]
@@ -2298,22 +2460,10 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public string SerializeOriginalQuestionWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(OriginalQuestionInput);
-        }
-
-        [Benchmark]
-        public Question.ClosedDetails.OriginalQuestion DeserializeOriginalQuestionWithSpanJsonSerializer()
+        public Question.ClosedDetails.OriginalQuestion DeserializeOriginalQuestionWithJsonSpanSerializer()
         {
             return SpanJsonSerializer.Deserialize<Question.ClosedDetails.OriginalQuestion>(
-                OriginalQuestionOutputOfSpanJsonSerializer);
-        }
-
-        [Benchmark]
-        public byte[] SerializeOriginalQuestionWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(OriginalQuestionInput);
+                OriginalQuestionOutputOfJsonSpanSerializer);
         }
 
         [Benchmark]
