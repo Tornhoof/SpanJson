@@ -7,7 +7,7 @@ namespace SpanJson.Helpers
 {
     public static class FormatterUtils
     {
-        private static readonly ulong[] Powers10 = new[]
+        private static readonly ulong[] Powers10 =
         {
             1UL,
             10UL,
@@ -84,24 +84,24 @@ namespace SpanJson.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int CountDigits(ulong value)
         {
-            int digits = 1;
+            var digits = 1;
             uint part;
             if (value >= 10000000)
             {
                 if (value >= 100000000000000)
                 {
-                    part = (uint)(value / 100000000000000);
+                    part = (uint) (value / 100000000000000);
                     digits += 14;
                 }
                 else
                 {
-                    part = (uint)(value / 10000000);
+                    part = (uint) (value / 10000000);
                     digits += 7;
                 }
             }
             else
             {
-                part = (uint)value;
+                part = (uint) value;
             }
 
             if (part < 10)

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using BenchmarkDotNet.Attributes;
 using SpanJson.Benchmarks.Fixture;
 using SpanJson.Benchmarks.Models;
 using SpanJson.Benchmarks.Serializers;
-using SpanJson.Formatters;
-using SpanJson.Formatters.Generated;
 
 namespace SpanJson.Benchmarks
 {

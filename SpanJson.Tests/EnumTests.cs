@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Xunit;
+﻿using Xunit;
 
 namespace SpanJson.Tests
 {
@@ -11,7 +8,7 @@ namespace SpanJson.Tests
         {
             Hello,
             World,
-            Universe,
+            Universe
         }
 
         [Theory]

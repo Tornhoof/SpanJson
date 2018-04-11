@@ -5,20 +5,31 @@ using System.Reflection;
 
 namespace SpanJson.Formatters
 {
-    public class EnumFormatter<T, TResolver> : IJsonFormatter<T, TResolver> where T : struct where TResolver : IJsonFormatterResolver<TResolver>, new()
+    public class EnumFormatter<T, TResolver> : IJsonFormatter<T, TResolver> where T : struct
+        where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
-        private delegate void SerializeDelegate(ref JsonWriter writer, T value,
-            TResolver formatterResolver);
-
-        private delegate T DeserializeDelegate(ref JsonReader reader, TResolver formatterResolver);
-
         private static readonly SerializeDelegate Serializer = BuildSerializeDelegate();
         private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
+
+        public static readonly EnumFormatter<T, TResolver> Default = new EnumFormatter<T, TResolver>();
+
+
+        public int AllocSize { get; } = 100;
+
+        public T Deserialize(ref JsonReader reader)
+        {
+            return Deserializer(ref reader);
+        }
+
+        public void Serialize(ref JsonWriter writer, T value)
+        {
+            Serializer(ref writer, value);
+        }
 
         private static DeserializeDelegate BuildDeserializeDelegate()
         {
             var readerParameter = Expression.Parameter(typeof(JsonReader).MakeByRefType(), "reader");
-            var resolverParameter = Expression.Parameter(typeof(TResolver), "formatterResolver");
+
             var jsonValue = Expression.Variable(typeof(string), "jsonValue");
             var returnValue = Expression.Variable(typeof(T), "returnValue");
             var expressions = new List<Expression>
@@ -40,9 +51,9 @@ namespace SpanJson.Formatters
             var returnTarget = Expression.Label(returnValue.Type);
             var returnLabel = Expression.Label(returnTarget, returnValue);
             expressions.Add(returnLabel);
-            var blockExpression = Expression.Block(new ParameterExpression[] {jsonValue, returnValue }, expressions);
+            var blockExpression = Expression.Block(new[] {jsonValue, returnValue}, expressions);
             var lambdaExpression =
-                Expression.Lambda<DeserializeDelegate>(blockExpression, readerParameter, resolverParameter);
+                Expression.Lambda<DeserializeDelegate>(blockExpression, readerParameter);
             return lambdaExpression.Compile();
         }
 
@@ -50,7 +61,7 @@ namespace SpanJson.Formatters
         {
             var writerParameter = Expression.Parameter(typeof(JsonWriter).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
-            var resolverParameter = Expression.Parameter(typeof(TResolver), "formatterResolver");
+
             var cases = new List<SwitchCase>();
             foreach (var value in Enum.GetValues(typeof(T)))
             {
@@ -65,8 +76,8 @@ namespace SpanJson.Formatters
             var switchExpression = Expression.Switch(valueParameter,
                 Expression.Throw(Expression.Constant(new InvalidOperationException())), cases.ToArray());
 
-            var lambdaExpression = Expression.Lambda<SerializeDelegate>(switchExpression, writerParameter,
-                valueParameter, resolverParameter);
+            var lambdaExpression =
+                Expression.Lambda<SerializeDelegate>(switchExpression, writerParameter, valueParameter);
             return lambdaExpression.Compile();
         }
 
@@ -75,19 +86,8 @@ namespace SpanJson.Formatters
             return type.GetMethod(name);
         }
 
-        public static readonly EnumFormatter<T, TResolver> Default = new EnumFormatter<T, TResolver>();
+        private delegate void SerializeDelegate(ref JsonWriter writer, T value);
 
-
-        public int AllocSize { get; } = 100;
-
-        public T Deserialize(ref JsonReader reader, TResolver formatterResolver)
-        {
-            return Deserializer(ref reader, formatterResolver);
-        }
-
-        public void Serialize(ref JsonWriter writer, T value, TResolver formatterResolver)
-        {
-            Serializer(ref writer, value, formatterResolver);
-        }
+        private delegate T DeserializeDelegate(ref JsonReader reader);
     }
 }

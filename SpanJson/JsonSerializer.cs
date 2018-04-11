@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
-using System.Reflection;
-using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
 namespace SpanJson
@@ -11,66 +9,6 @@ namespace SpanJson
     {
         public static class Generic
         {
-            private static class Inner<T, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
-            {
-                internal delegate string SerializeDelegate(T input);
-
-                internal static readonly SerializeDelegate InnerSerialize = BuildSerializeDelegate();
-
-                internal delegate T DeserializeDelegate(ReadOnlySpan<char> input);
-
-                internal static readonly DeserializeDelegate InnerDeserialize = BuildDeserializeDelegate();
-
-
-                /// <summary>
-                /// This gets us around the runtime decision of allocSize, we know it after init of the formatter
-                /// A delegate to a local method
-                /// </summary>
-                private static SerializeDelegate BuildSerializeDelegate()
-                {
-                    var resolver = StandardResolvers.GetResolver<TResolver>();
-                    var formatter = resolver.GetFormatter<T>();
-                    if (formatter.AllocSize <= 256) // todo find better values
-                    {
-                        string Serialize(T input)
-                        {
-                            Span<char> span = stackalloc char[formatter.AllocSize];
-                            var jsonWriter = new JsonWriter(span);
-                            formatter.Serialize(ref jsonWriter, input, resolver);
-                            return jsonWriter.ToString(); // includes Dispose
-                        }
-
-                        return Serialize;
-                    }
-                    else
-                    {
-                        string Serialize(T input)
-                        {
-                            var jsonWriter = new JsonWriter(formatter.AllocSize);
-                            formatter.Serialize(ref jsonWriter, input, resolver);
-                            var result = jsonWriter.ToString(); // includes Dispose
-                            return result;
-                        }
-
-                        return Serialize;
-                    }
-                }
-
-                private static DeserializeDelegate BuildDeserializeDelegate()
-                {
-                    var resolver = StandardResolvers.GetResolver<TResolver>();
-                    var formatter = resolver.GetFormatter<T>();
-
-                    T Deserialize(ReadOnlySpan<char> input)
-                    {
-                        var jsonReader = new JsonReader(input);
-                        return formatter.Deserialize(ref jsonReader, resolver);
-                    }
-
-                    return Deserialize;
-                }
-            }
-
             public static string Serialize<T>(T input)
             {
                 return Serialize<T, DefaultResolver>(input);
@@ -92,10 +30,81 @@ namespace SpanJson
             {
                 return Inner<T, TResolver>.InnerDeserialize(input);
             }
+
+            private static class Inner<T, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
+            {
+                internal static readonly SerializeDelegate InnerSerialize = BuildSerializeDelegate();
+
+                internal static readonly DeserializeDelegate InnerDeserialize = BuildDeserializeDelegate();
+
+
+                /// <summary>
+                ///     This gets us around the runtime decision of allocSize, we know it after init of the formatter
+                ///     A delegate to a local method
+                /// </summary>
+                private static SerializeDelegate BuildSerializeDelegate()
+                {
+                    var resolver = StandardResolvers.GetResolver<TResolver>();
+                    var formatter = resolver.GetFormatter<T>();
+                    if (formatter.AllocSize <= 256) // todo find better values
+                    {
+                        string Serialize(T input)
+                        {
+                            Span<char> span = stackalloc char[formatter.AllocSize];
+                            var jsonWriter = new JsonWriter(span);
+                            formatter.Serialize(ref jsonWriter, input);
+                            return jsonWriter.ToString(); // includes Dispose
+                        }
+
+                        return Serialize;
+                    }
+                    else
+                    {
+                        string Serialize(T input)
+                        {
+                            var jsonWriter = new JsonWriter(formatter.AllocSize);
+                            formatter.Serialize(ref jsonWriter, input);
+                            var result = jsonWriter.ToString(); // includes Dispose
+                            return result;
+                        }
+
+                        return Serialize;
+                    }
+                }
+
+                private static DeserializeDelegate BuildDeserializeDelegate()
+                {
+                    var resolver = StandardResolvers.GetResolver<TResolver>();
+                    var formatter = resolver.GetFormatter<T>();
+
+                    T Deserialize(ReadOnlySpan<char> input)
+                    {
+                        var jsonReader = new JsonReader(input);
+                        return formatter.Deserialize(ref jsonReader);
+                    }
+
+                    return Deserialize;
+                }
+
+                internal delegate string SerializeDelegate(T input);
+
+                internal delegate T DeserializeDelegate(ReadOnlySpan<char> input);
+            }
         }
 
         public static class NonGeneric
         {
+            public static string Serialize(object input)
+            {
+                return Inner<DefaultResolver>.Serialize(input);
+            }
+
+
+            public static object Deserialize(ReadOnlySpan<char> input, Type type)
+            {
+                return Inner<DefaultResolver>.Deserialize(input, type);
+            }
+
             private class Inner<TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
             {
                 private static readonly ConcurrentDictionary<Type, Invoker> Invokers =
@@ -140,7 +149,7 @@ namespace SpanJson
                     var lambdaExpression =
                         Expression.Lambda<SerializeDelegate>(
                             Expression.Call(typeof(Generic), nameof(Generic.Serialize),
-                                new Type[] {type, typeof(TResolver)}, typedInputParam),
+                                new[] {type, typeof(TResolver)}, typedInputParam),
                             inputParam);
                     return lambdaExpression.Compile();
                 }
@@ -151,7 +160,7 @@ namespace SpanJson
                     var lambdaExpression =
                         Expression.Lambda<DeserializeDelegate>(
                             Expression.Call(typeof(Generic), nameof(Generic.Deserialize),
-                                new Type[] {type, typeof(TResolver)}, inputParam),
+                                new[] {type, typeof(TResolver)}, inputParam),
                             inputParam);
                     return lambdaExpression.Compile();
                 }
@@ -171,17 +180,6 @@ namespace SpanJson
                     public readonly SerializeDelegate Serializer;
                     public readonly DeserializeDelegate Deserializer;
                 }
-            }
-
-            public static string Serialize(object input)
-            {
-                return Inner<DefaultResolver>.Serialize(input);
-            }
-
-
-            public static object Deserialize(ReadOnlySpan<char> input, Type type)
-            {
-                return Inner<DefaultResolver>.Deserialize(input, type);
             }
         }
     }

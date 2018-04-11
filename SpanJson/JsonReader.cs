@@ -210,18 +210,19 @@ namespace SpanJson
             var span = ReadStringSpanInternal();
             if (_chars[_pos++] != ':')
             {
-               ThrowInvalidOperationException();
+                ThrowInvalidOperationException();
             }
 
             return span.ToString();
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<char> ReadNameSpan()
         {
             var span = ReadStringSpanInternal();
             if (_chars[_pos++] != ':')
             {
-               ThrowInvalidOperationException();
+                ThrowInvalidOperationException();
             }
 
             return span;
@@ -238,6 +239,7 @@ namespace SpanJson
             var span = ReadStringSpanInternal();
             return span.ToString();
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<char> ReadStringSpanInternal()
         {
@@ -246,7 +248,7 @@ namespace SpanJson
                 ThrowInvalidOperationException();
             }
 
-            for (int i = _pos; i < _chars.Length; i++)
+            for (var i = _pos; i < _chars.Length; i++)
             {
                 var c = _chars[i];
                 if (c == '"')
@@ -257,7 +259,6 @@ namespace SpanJson
                         var result = _chars.Slice(_pos, length);
                         _pos += length + 1; // we skip the '"' too
                         return result;
-
                     }
                 }
             }
@@ -279,17 +280,17 @@ namespace SpanJson
             {
                 if (_chars[_pos + 1] != 'u')
                 {
-                   ThrowInvalidOperationException();
+                    ThrowInvalidOperationException();
                 }
 
                 if (_chars[_pos + 2] != 'l')
                 {
-                   ThrowInvalidOperationException();
+                    ThrowInvalidOperationException();
                 }
 
                 if (_chars[_pos + 3] != 'l')
                 {
-                   ThrowInvalidOperationException();
+                    ThrowInvalidOperationException();
                 }
 
                 _pos += 4;
@@ -300,7 +301,7 @@ namespace SpanJson
         }
 
         /// <summary>
-        /// Make sure we don't increase the pointer too much
+        ///     Make sure we don't increase the pointer too much
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SkipWhitespace()
@@ -320,12 +321,13 @@ namespace SpanJson
                 }
             } while (_pos++ < _chars.Length);
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReadBeginArrayOrThrow()
         {
             if (!ReadBeginArray())
             {
-               ThrowInvalidOperationException();
+                ThrowInvalidOperationException();
             }
         }
 
@@ -341,6 +343,7 @@ namespace SpanJson
 
             return false;
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryReadIsEndArrayOrValueSeparator(ref int count)
         {
@@ -358,6 +361,7 @@ namespace SpanJson
 
             return false;
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ReadIsValueSeparator()
         {
@@ -385,12 +389,13 @@ namespace SpanJson
 
             return false;
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReadBeginObjectOrThrow()
         {
             if (!ReadIsBeginObject())
             {
-               ThrowInvalidOperationException();
+                ThrowInvalidOperationException();
             }
         }
 
@@ -399,14 +404,14 @@ namespace SpanJson
         {
             if (!ReadIsEndObject())
             {
-               ThrowInvalidOperationException();
+                ThrowInvalidOperationException();
             }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void ThrowInvalidOperationException()
         {
-           throw new InvalidOperationException();
+            throw new InvalidOperationException();
         }
 
 
@@ -429,6 +434,7 @@ namespace SpanJson
 
             return false;
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryReadIsEndObjectOrValueSeparator(ref int count)
         {

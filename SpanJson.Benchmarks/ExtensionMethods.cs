@@ -28,6 +28,7 @@ namespace SpanJson.Benchmarks
             {
                 return true;
             }
+
             return a.SequenceEqual(b);
         }
 
@@ -37,6 +38,7 @@ namespace SpanJson.Benchmarks
             {
                 return true;
             }
+
             return a == b;
         }
 
@@ -68,6 +70,7 @@ namespace SpanJson.Benchmarks
             {
                 return true;
             }
+
             if (ReferenceEquals(a, null) && ReferenceEquals(b, null))
             {
                 return true;
@@ -93,6 +96,7 @@ namespace SpanJson.Benchmarks
             {
                 return true;
             }
+
             return a.SequenceEqual(b, GenericEqualityComparer<T>.Default);
         }
 
@@ -103,6 +107,7 @@ namespace SpanJson.Benchmarks
             {
                 return true;
             }
+
             if (ReferenceEquals(a, null) && ReferenceEquals(b, null))
             {
                 return true;

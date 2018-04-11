@@ -6,26 +6,19 @@ namespace SpanJson.Benchmarks.Models
     [ProtoContract]
     public class TagWiki : IGenericEquality<TagWiki>
     {
-        [ProtoMember(1)]
-        public string tag_name { get; set; }
+        [ProtoMember(1)] public string tag_name { get; set; }
 
-        [ProtoMember(2)]
-        public string body { get; set; }
+        [ProtoMember(2)] public string body { get; set; }
 
-        [ProtoMember(3)]
-        public string excerpt { get; set; }
+        [ProtoMember(3)] public string excerpt { get; set; }
 
-        [ProtoMember(4)]
-        public DateTime? body_last_edit_date { get; set; }
+        [ProtoMember(4)] public DateTime? body_last_edit_date { get; set; }
 
-        [ProtoMember(5)]
-        public DateTime? excerpt_last_edit_date { get; set; }
+        [ProtoMember(5)] public DateTime? excerpt_last_edit_date { get; set; }
 
-        [ProtoMember(6)]
-        public ShallowUser last_body_editor { get; set; }
+        [ProtoMember(6)] public ShallowUser last_body_editor { get; set; }
 
-        [ProtoMember(7)]
-        public ShallowUser last_excerpt_editor { get; set; }
+        [ProtoMember(7)] public ShallowUser last_excerpt_editor { get; set; }
 
         public bool Equals(TagWiki obj)
         {

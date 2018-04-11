@@ -1,9 +1,7 @@
-﻿using System;
-
-namespace SpanJson.Formatters
+﻿namespace SpanJson.Formatters
 {
     /// <summary>
-    /// Used for types which are not built-in
+    ///     Used for types which are not built-in
     /// </summary>
     public sealed class ComplexStructFormatter<T, TResolver> : ComplexFormatter, IJsonFormatter<T, TResolver>
         where T : struct where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -18,11 +16,15 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = EstimateSize<T>();
 
-        public T Deserialize(ref JsonReader reader, TResolver formatterResolver) =>
-            Deserializer(ref reader, formatterResolver);
+        public T Deserialize(ref JsonReader reader)
+        {
+            return Deserializer(ref reader);
+        }
 
 
-        public void Serialize(ref JsonWriter writer, T value, TResolver formatterResolver) =>
-            Serializer(ref writer, value, formatterResolver);
+        public void Serialize(ref JsonWriter writer, T value)
+        {
+            Serializer(ref writer, value);
+        }
     }
 }

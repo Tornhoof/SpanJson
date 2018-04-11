@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reflection.Metadata.Ecma335;
-using SpanJson.Resolvers;
+﻿using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
@@ -8,15 +6,15 @@ namespace SpanJson.Formatters
     {
         public int AllocSize { get; } = 100;
 
-        protected T[] Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter,
-            TResolver formatterResolver) where TResolver : IJsonFormatterResolver<TResolver>, new()
+        protected T[] Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
+            where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
             // TODO improve
-            return ListFormatter<T, TResolver>.Default.Deserialize(ref reader, formatterResolver)?.ToArray();
+            return ListFormatter<T, TResolver>.Default.Deserialize(ref reader)?.ToArray();
         }
 
-        protected void Serialize<T, TResolver>(ref JsonWriter writer, T[] value, IJsonFormatter<T, TResolver> formatter,
-            TResolver formatterResolver) where TResolver : IJsonFormatterResolver<TResolver>, new()
+        protected void Serialize<T, TResolver>(ref JsonWriter writer, T[] value, IJsonFormatter<T, TResolver> formatter)
+            where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
             if (value == null)
             {
@@ -28,11 +26,11 @@ namespace SpanJson.Formatters
             writer.WriteArrayStart();
             if (valueLength > 0)
             {
-                formatter.Serialize(ref writer, value[0], formatterResolver);
+                formatter.Serialize(ref writer, value[0]);
                 for (var i = 1; i < valueLength; i++)
                 {
                     writer.WriteSeparator();
-                    formatter.Serialize(ref writer, value[i], formatterResolver);
+                    formatter.Serialize(ref writer, value[i]);
                 }
             }
 
@@ -41,7 +39,7 @@ namespace SpanJson.Formatters
     }
 
     /// <summary>
-    /// Used for types which are not built-in
+    ///     Used for types which are not built-in
     /// </summary>
     public sealed class ArrayFormatter<T, TResolver> : ArrayFormatter, IJsonFormatter<T[], TResolver>
         where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -51,14 +49,14 @@ namespace SpanJson.Formatters
         private static readonly IJsonFormatter<T, TResolver> DefaultFormatter =
             StandardResolvers.GetResolver<TResolver>().GetFormatter<T>();
 
-        public T[] Deserialize(ref JsonReader reader, TResolver formatterResolver)
+        public T[] Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, DefaultFormatter, formatterResolver);
+            return Deserialize(ref reader, DefaultFormatter);
         }
 
-        public void Serialize(ref JsonWriter writer, T[] value, TResolver formatterResolver)
+        public void Serialize(ref JsonWriter writer, T[] value)
         {
-            Serialize(ref writer, value, DefaultFormatter, formatterResolver);
+            Serialize(ref writer, value, DefaultFormatter);
         }
     }
 }

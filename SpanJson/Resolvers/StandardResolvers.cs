@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SpanJson.Resolvers
+﻿namespace SpanJson.Resolvers
 {
     public static class StandardResolvers
     {

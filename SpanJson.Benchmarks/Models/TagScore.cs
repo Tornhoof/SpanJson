@@ -5,14 +5,11 @@ namespace SpanJson.Benchmarks.Models
     [ProtoContract]
     public class TagScore : IGenericEquality<TagScore>
     {
-        [ProtoMember(1)]
-        public ShallowUser user { get; set; }
+        [ProtoMember(1)] public ShallowUser user { get; set; }
 
-        [ProtoMember(2)]
-        public int? score { get; set; }
+        [ProtoMember(2)] public int? score { get; set; }
 
-        [ProtoMember(3)]
-        public int? post_count { get; set; }
+        [ProtoMember(3)] public int? post_count { get; set; }
 
         public bool Equals(TagScore obj)
         {

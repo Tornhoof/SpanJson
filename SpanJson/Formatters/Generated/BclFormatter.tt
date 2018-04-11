@@ -36,16 +36,16 @@ using SpanJson.Formatters;
 namespace SpanJson.Formatters.Generated
 {
 <# foreach(var t in types) {  #>
-    public sealed class <#= t.Name #>Formatter<TResolver> : IJsonFormatter<<#= t.Name #>, TResolver>  where TResolver : IJsonFormatterResolver<TResolver>, new()
+    public sealed class <#= t.Name #>Formatter<TResolver> : IJsonFormatter<<#= t.Name #>, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
         public static readonly <#= t.Name #>Formatter<TResolver> Default = new <#= t.Name #>Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter writer, <#= t.Name #> value, TResolver formatterResolver)
+        public void Serialize(ref JsonWriter writer, <#= t.Name #> value)
         {
             writer.Write<#= t.Name #>(value);
         }
 
-        public <#= t.Name #> Deserialize(ref JsonReader reader, TResolver formatterResolver)
+        public <#= t.Name #> Deserialize(ref JsonReader reader)
         {
             return reader.Read<#= t.Name #>();
         }
@@ -53,49 +53,49 @@ namespace SpanJson.Formatters.Generated
 		public int AllocSize {get;} = 100;
 	} 
 <# if(t.IsValueType) { #>
-	public sealed class Nullable<#= t.Name #>Formatter<TResolver> : NullableFormatter, IJsonFormatter<<#= t.Name #>?, TResolver>  where TResolver : IJsonFormatterResolver<TResolver>, new()
+	public sealed class Nullable<#= t.Name #>Formatter<TResolver> : NullableFormatter, IJsonFormatter<<#= t.Name #>?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
         public static readonly Nullable<#= t.Name #>Formatter<TResolver> Default = new Nullable<#= t.Name #>Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter writer, <#= t.Name #>? value, TResolver formatterResolver)
+        public void Serialize(ref JsonWriter writer, <#= t.Name #>? value)
         {
-            Serialize(ref writer, value, <#= t.Name #>Formatter<TResolver>.Default, formatterResolver);
+            Serialize(ref writer, value, <#= t.Name #>Formatter<TResolver>.Default);
         }
 
-        public <#= t.Name #>? Deserialize(ref JsonReader reader, TResolver formatterResolver)
+        public <#= t.Name #>? Deserialize(ref JsonReader reader)
         {
-			return Deserialize(ref reader, <#= t.Name #>Formatter<TResolver>.Default, formatterResolver);
+			return Deserialize(ref reader, <#= t.Name #>Formatter<TResolver>.Default);
         }
 	}
 <# } #>
 
-    public sealed class <#= t.Name #>ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<<#= t.Name #>[], TResolver>  where TResolver : IJsonFormatterResolver<TResolver>, new()
+    public sealed class <#= t.Name #>ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<<#= t.Name #>[], TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
         public static readonly <#= t.Name #>ArrayFormatter<TResolver> Default = new <#= t.Name #>ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter writer, <#= t.Name #>[] value, TResolver formatterResolver)
+        public void Serialize(ref JsonWriter writer, <#= t.Name #>[] value)
         {
-			Serialize(ref writer, value, <#= t.Name #>Formatter<TResolver>.Default, formatterResolver);
+			Serialize(ref writer, value, <#= t.Name #>Formatter<TResolver>.Default);
         }
 
-        public <#= t.Name #>[] Deserialize(ref JsonReader reader, TResolver formatterResolver)
+        public <#= t.Name #>[] Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, <#= t.Name #>Formatter<TResolver>.Default, formatterResolver);
+            return Deserialize(ref reader, <#= t.Name #>Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class <#= t.Name #>ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<<#= t.Name #>>, TResolver>  where TResolver : IJsonFormatterResolver<TResolver>, new()
+	public sealed class <#= t.Name #>ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<<#= t.Name #>>, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
         public static readonly <#= t.Name #>ListFormatter<TResolver> Default = new <#= t.Name #>ListFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter writer, List<<#= t.Name #>> value, TResolver formatterResolver)
+        public void Serialize(ref JsonWriter writer, List<<#= t.Name #>> value)
         {
-			Serialize(ref writer, value, <#= t.Name #>Formatter<TResolver>.Default, formatterResolver);
+			Serialize(ref writer, value, <#= t.Name #>Formatter<TResolver>.Default);
         }
 
-        public List<<#= t.Name #>> Deserialize(ref JsonReader reader, TResolver formatterResolver)
+        public List<<#= t.Name #>> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, <#= t.Name #>Formatter<TResolver>.Default, formatterResolver);
+            return Deserialize(ref reader, <#= t.Name #>Formatter<TResolver>.Default);
         }	
 	}
 <# } #>

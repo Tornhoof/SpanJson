@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
@@ -8,8 +7,8 @@ namespace SpanJson.Formatters
     {
         public int AllocSize { get; } = 100;
 
-        protected List<T> Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter,
-            TResolver formatterResolver) where TResolver : IJsonFormatterResolver<TResolver>, new()
+        protected List<T> Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
+            where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
             if (reader.ReadIsNull())
             {
@@ -18,17 +17,17 @@ namespace SpanJson.Formatters
 
             reader.ReadBeginArrayOrThrow();
             var list = new List<T>();
-            int count = 0;
+            var count = 0;
             while (!reader.TryReadIsEndArrayOrValueSeparator(ref count))
             {
-                list.Add(formatter.Deserialize(ref reader, formatterResolver));
+                list.Add(formatter.Deserialize(ref reader));
             }
 
             return list;
         }
 
-        protected void Serialize<T, TResolver>(ref JsonWriter writer, List<T> value, IJsonFormatter<T, TResolver> formatter,
-            TResolver formatterResolver) where TResolver : IJsonFormatterResolver<TResolver>, new()
+        protected void Serialize<T, TResolver>(ref JsonWriter writer, List<T> value,
+            IJsonFormatter<T, TResolver> formatter) where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
             if (value == null)
             {
@@ -40,11 +39,11 @@ namespace SpanJson.Formatters
             writer.WriteArrayStart();
             if (valueLength > 0)
             {
-                formatter.Serialize(ref writer, value[0], formatterResolver);
+                formatter.Serialize(ref writer, value[0]);
                 for (var i = 1; i < valueLength; i++)
                 {
                     writer.WriteSeparator();
-                    formatter.Serialize(ref writer, value[i], formatterResolver);
+                    formatter.Serialize(ref writer, value[i]);
                 }
             }
 
@@ -53,21 +52,24 @@ namespace SpanJson.Formatters
     }
 
     /// <summary>
-    /// Used for types which are not built-in
+    ///     Used for types which are not built-in
     /// </summary>
-    public sealed class ListFormatter<T, TResolver> : ListFormatter, IJsonFormatter<List<T>, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
+    public sealed class ListFormatter<T, TResolver> : ListFormatter, IJsonFormatter<List<T>, TResolver>
+        where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
         public static readonly ListFormatter<T, TResolver> Default = new ListFormatter<T, TResolver>();
-        private static readonly IJsonFormatter<T, TResolver> DefaultFormatter = StandardResolvers.GetResolver<TResolver>().GetFormatter<T>();
 
-        public List<T> Deserialize(ref JsonReader reader, TResolver formatterResolver)
+        private static readonly IJsonFormatter<T, TResolver> DefaultFormatter =
+            StandardResolvers.GetResolver<TResolver>().GetFormatter<T>();
+
+        public List<T> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, DefaultFormatter, formatterResolver);
+            return Deserialize(ref reader, DefaultFormatter);
         }
 
-        public void Serialize(ref JsonWriter writer, List<T> value, TResolver formatterResolver)
+        public void Serialize(ref JsonWriter writer, List<T> value)
         {
-            Serialize(ref writer, value, DefaultFormatter, formatterResolver);
+            Serialize(ref writer, value, DefaultFormatter);
         }
     }
 }

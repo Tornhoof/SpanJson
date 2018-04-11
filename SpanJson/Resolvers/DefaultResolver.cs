@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Linq;
 using System.Reflection;
 using SpanJson.Formatters;
 using SpanJson.Helpers;
@@ -15,11 +14,6 @@ namespace SpanJson.Resolvers
         public IJsonFormatter<T, DefaultResolver> GetFormatter<T>()
         {
             return (IJsonFormatter<T, DefaultResolver>) GetFormatter(typeof(T));
-        }
-
-        public IJsonFormatter<T, TResolver> GetFormatter<T, TResolver>() where TResolver : IJsonFormatterResolver<TResolver>, new()
-        {
-            return (IJsonFormatter<T, TResolver>) GetFormatter<T>(); // TODO REMOVE
         }
 
         public IJsonFormatter GetFormatter(Type type)
@@ -48,7 +42,8 @@ namespace SpanJson.Resolvers
             if (type.TryGetListType(out var elementType))
             {
                 return GetIntegrated(type) ??
-                       GetDefaultOrCreate(typeof(ListFormatter<,>).MakeGenericType(elementType, typeof(DefaultResolver)));
+                       GetDefaultOrCreate(
+                           typeof(ListFormatter<,>).MakeGenericType(elementType, typeof(DefaultResolver)));
             }
 
             if (type.IsEnum)
@@ -72,7 +67,8 @@ namespace SpanJson.Resolvers
             // no integrated type, let's build it
             if (type.IsValueType)
             {
-                return GetDefaultOrCreate(typeof(ComplexStructFormatter<,>).MakeGenericType(type, typeof(DefaultResolver)));
+                return GetDefaultOrCreate(
+                    typeof(ComplexStructFormatter<,>).MakeGenericType(type, typeof(DefaultResolver)));
             }
 
             return GetDefaultOrCreate(typeof(ComplexClassFormatter<,>).MakeGenericType(type, typeof(DefaultResolver)));

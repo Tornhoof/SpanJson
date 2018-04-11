@@ -8,8 +8,9 @@ namespace SpanJson.Tests
     public sealed class UntypedEqualityComparer : IEqualityComparer<object>
     {
         public static readonly UntypedEqualityComparer Default = new UntypedEqualityComparer();
-        private delegate bool TypedEqualityComparer(object x, object y);
-        private static readonly ConcurrentDictionary<Type, TypedEqualityComparer> Comparers = new ConcurrentDictionary<Type, TypedEqualityComparer>();
+
+        private static readonly ConcurrentDictionary<Type, TypedEqualityComparer> Comparers =
+            new ConcurrentDictionary<Type, TypedEqualityComparer>();
 
         public new bool Equals(object x, object y)
         {
@@ -41,6 +42,11 @@ namespace SpanJson.Tests
             return typedComparer(x, y);
         }
 
+        public int GetHashCode(object obj)
+        {
+            return 0;
+        }
+
         private TypedEqualityComparer BuildTypedComparer(Type type)
         {
             var xParameter = Expression.Parameter(typeof(object), "x");
@@ -49,13 +55,10 @@ namespace SpanJson.Tests
             var typedYParameter = Expression.Convert(yParameter, type);
 
             return Expression.Lambda<TypedEqualityComparer>(
-                Expression.Call(typedXParameter, type.GetMethod("Equals", new Type[] {type}), typedYParameter),
+                Expression.Call(typedXParameter, type.GetMethod("Equals", new[] {type}), typedYParameter),
                 xParameter, yParameter).Compile();
         }
 
-        public int GetHashCode(object obj)
-        {
-            return 0;
-        }
+        private delegate bool TypedEqualityComparer(object x, object y);
     }
 }

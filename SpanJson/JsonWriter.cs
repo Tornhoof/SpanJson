@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics.X86;
-using System.Text;
 using SpanJson.Helpers;
 
 namespace SpanJson
@@ -158,13 +156,25 @@ namespace SpanJson
             }
         }
 
-        public void WriteSByte(sbyte value) => WriteInt64Internal(value);
+        public void WriteSByte(sbyte value)
+        {
+            WriteInt64Internal(value);
+        }
 
-        public void WriteInt16(short value) => WriteInt64Internal(value);
+        public void WriteInt16(short value)
+        {
+            WriteInt64Internal(value);
+        }
 
-        public void WriteInt32(int value) => WriteInt64Internal(value);
+        public void WriteInt32(int value)
+        {
+            WriteInt64Internal(value);
+        }
 
-        public void WriteInt64(long value) => WriteInt64Internal(value);
+        public void WriteInt64(long value)
+        {
+            WriteInt64Internal(value);
+        }
 
         private static readonly char[] LongMinValue = long.MinValue.ToString().ToCharArray();
 
@@ -196,7 +206,7 @@ namespace SpanJson
             WriteUInt64Internal((ulong) value);
         }
 
-        private static readonly ulong[] Powers10 = new[]
+        private static readonly ulong[] Powers10 =
         {
             1UL,
             10UL,
@@ -221,7 +231,7 @@ namespace SpanJson
 //   1234567890123456789
         };
 
-        private static readonly byte[] Tab64 = new byte[]
+        private static readonly byte[] Tab64 =
         {
             63, 0, 58, 1, 59, 47, 53, 2,
             60, 39, 48, 27, 54, 33, 42, 3,
@@ -242,7 +252,7 @@ namespace SpanJson
             value |= value >> 8;
             value |= value >> 16;
             value |= value >> 32;
-            return Tab64[(value - (value >> 1)) * 0x07EDD5E59A4E28C2 >> 58];
+            return Tab64[((value - (value >> 1)) * 0x07EDD5E59A4E28C2) >> 58];
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -271,7 +281,7 @@ namespace SpanJson
             {
                 var temp = '0' + value;
                 value /= 10;
-                _chars[pos + i - 1] = (char) (temp - (value * 10));
+                _chars[pos + i - 1] = (char) (temp - value * 10);
             }
 
             pos += digits;
@@ -462,13 +472,25 @@ namespace SpanJson
         //    _chars[_pos++] = (char) ('0' + (num1));
         //}
 
-        public void WriteByte(byte value) => WriteUInt64Internal(value);
+        public void WriteByte(byte value)
+        {
+            WriteUInt64Internal(value);
+        }
 
-        public void WriteUInt16(ushort value) => WriteUInt64Internal(value);
+        public void WriteUInt16(ushort value)
+        {
+            WriteUInt64Internal(value);
+        }
 
-        public void WriteUInt32(uint value) => WriteUInt64Internal(value);
+        public void WriteUInt32(uint value)
+        {
+            WriteUInt64Internal(value);
+        }
 
-        public void WriteUInt64(ulong value) => WriteUInt64Internal(value);
+        public void WriteUInt64(ulong value)
+        {
+            WriteUInt64Internal(value);
+        }
 
         public void WriteSingle(float value)
         {
@@ -702,8 +724,8 @@ namespace SpanJson
             }
 
             WriteDoubleQuote();
-            ReadOnlySpan<char> remaining = value.AsSpan();
-            for (int i = 0; i < remaining.Length; i++)
+            var remaining = value.AsSpan();
+            for (var i = 0; i < remaining.Length; i++)
             {
                 var c = remaining[i];
                 switch (c)

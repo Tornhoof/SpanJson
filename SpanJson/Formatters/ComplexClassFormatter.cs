@@ -1,9 +1,7 @@
-﻿using System;
-
-namespace SpanJson.Formatters
+﻿namespace SpanJson.Formatters
 {
     /// <summary>
-    /// Used for types which are not built-in
+    ///     Used for types which are not built-in
     /// </summary>
     public sealed class ComplexClassFormatter<T, TResolver> : ComplexFormatter, IJsonFormatter<T, TResolver>
         where T : class, new() where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -16,18 +14,18 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = EstimateSize<T>();
 
-        public T Deserialize(ref JsonReader reader, TResolver formatterResolver)
+        public T Deserialize(ref JsonReader reader)
         {
             if (reader.ReadIsNull())
             {
                 return null;
             }
 
-            return Deserializer(ref reader, formatterResolver);
+            return Deserializer(ref reader);
         }
 
 
-        public void Serialize(ref JsonWriter writer, T value, TResolver formatterResolver)
+        public void Serialize(ref JsonWriter writer, T value)
         {
             if (value == null)
             {
@@ -35,7 +33,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            Serializer(ref writer, value, formatterResolver);
+            Serializer(ref writer, value);
         }
     }
 }

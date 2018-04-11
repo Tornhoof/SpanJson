@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Running;
-using SpanJson.Benchmarks.Models;
 
 namespace SpanJson.Benchmarks
 {

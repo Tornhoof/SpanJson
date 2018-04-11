@@ -43,20 +43,15 @@ namespace SpanJson.Benchmarks.Models
             user_deleted = 23
         }
 
-        [ProtoMember(1)]
-        public int? user_id { get; set; }
+        [ProtoMember(1)] public int? user_id { get; set; }
 
-        [ProtoMember(2)]
-        public DateTime? creation_date { get; set; }
+        [ProtoMember(2)] public DateTime? creation_date { get; set; }
 
-        [ProtoMember(3)]
-        public int? post_id { get; set; }
+        [ProtoMember(3)] public int? post_id { get; set; }
 
-        [ProtoMember(4)]
-        public int? reputation_change { get; set; }
+        [ProtoMember(4)] public int? reputation_change { get; set; }
 
-        [ProtoMember(5)]
-        public ReputationHistoryType? reputation_history_type { get; set; }
+        [ProtoMember(5)] public ReputationHistoryType? reputation_history_type { get; set; }
 
         public bool Equals(ReputationHistory obj)
         {
