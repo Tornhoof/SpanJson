@@ -1,4 +1,5 @@
-﻿using SpanJson.Resolvers;
+﻿using System.Runtime.CompilerServices;
+using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
@@ -6,6 +7,7 @@ namespace SpanJson.Formatters
     {
         public int AllocSize { get; } = 100;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected T? Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
             where T : struct where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
@@ -16,7 +18,7 @@ namespace SpanJson.Formatters
 
             return formatter.Deserialize(ref reader);
         }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void Serialize<T, TResolver>(ref JsonWriter writer, T? value, IJsonFormatter<T, TResolver> formatter)
             where T : struct where TResolver : IJsonFormatterResolver<TResolver>, new()
         {

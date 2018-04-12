@@ -43,6 +43,31 @@ namespace SpanJson.Benchmarks
         {
             return Utf8JsonSerializer.Deserialize<AccessToken>(AccessTokenSerializedByteArray);
         }
+
+
+        //private static readonly string UserSerializedString =
+        //    SpanJsonSerializer.Serialize(ExpressionTreeFixture.Create<User>());
+
+        //private static readonly byte[] UserSerializedByteArray =
+        //    Encoding.UTF8.GetBytes(UserSerializedString);
+
+        //[Benchmark]
+        //public User DeserializeUserWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Deserialize<User>(UserSerializedString);
+        //}
+
+        //[Benchmark]
+        //public User DeserializeUserWithJilSerializer()
+        //{
+        //    return JilSerializer.Deserialize<User>(UserSerializedString);
+        //}
+
+        //[Benchmark]
+        //public User DeserializeUserWithUtf8JsonSerializer()
+        //{
+        //    return Utf8JsonSerializer.Deserialize<User>(UserSerializedByteArray);
+        //}
     }
 
     //public sealed class AccessTokenFormatter : ComplexFormatter, IJsonFormatter<AccessToken>

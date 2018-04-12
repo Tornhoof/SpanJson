@@ -18,42 +18,42 @@ namespace SpanJson
 
         public sbyte ReadSByte()
         {
-            return sbyte.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
+            return (sbyte) ReadNumberInt64();
         }
 
         public short ReadInt16()
         {
-            return short.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
+            return (short) ReadNumberInt64();
         }
 
         public int ReadInt32()
         {
-            return int.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
+            return (int) ReadNumberInt64();
         }
 
         public long ReadInt64()
         {
-            return long.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
+            return ReadNumberInt64();
         }
 
         public byte ReadByte()
         {
-            return byte.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
+            return (byte) ReadNumberUInt64();
         }
 
         public ushort ReadUInt16()
         {
-            return ushort.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
+            return (ushort)ReadNumberUInt64();
         }
 
         public uint ReadUInt32()
         {
-            return uint.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
+            return (uint) ReadNumberUInt64();
         }
 
         public ulong ReadUInt64()
         {
-            return ulong.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
+            return ReadNumberUInt64();
         }
 
         public float ReadSingle()
@@ -67,7 +67,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ReadOnlySpan<char> ReadNumberInternal()
+        private ReadOnlySpan<char> ReadNumberInternal()
         {
             SkipWhitespace();
             int i;
@@ -89,6 +89,78 @@ namespace SpanJson
 
             ThrowInvalidOperationException();
             return null;
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private long ReadNumberInt64()
+        {
+            SkipWhitespace();
+            if (!IsAvailable)
+            {
+                ThrowInvalidOperationException();
+                return default;
+            }
+            ref var pos = ref _pos;
+            var firstChar = _chars[pos];
+            var neg = false;
+            switch (firstChar)
+            {
+                case '-':
+                    neg = true;
+                    pos++;
+                    break;
+                case '+':
+                    pos++;
+                    break;
+            }
+            if (!IsAvailable)
+            {
+                ThrowInvalidOperationException();
+                return default;
+            }
+            var result = _chars[pos++] - 48L;
+            uint value;
+            while ((value = _chars[pos] - 48U) <= 9)
+            {
+                result = unchecked(result * 10 + value);
+                pos++;
+            }
+
+            return neg ? unchecked(-result) : result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ulong ReadNumberUInt64()
+        {
+            SkipWhitespace();
+            if (!IsAvailable)
+            {
+                ThrowInvalidOperationException();
+                return default;
+            }
+
+            ref var pos = ref _pos;
+            var firstChar = _chars[pos];
+            if (firstChar == '+')
+            {
+                pos++;
+            }
+            var result = _chars[pos++] - 48UL;
+            if (result > 9)
+            {
+                ThrowInvalidOperationException();
+                return default;
+            }
+
+            uint value;
+            while ((value = _chars[pos] - 48U) <= 9)
+            {
+                result = checked(result * 10 + value);
+                pos++;
+            }
+
+            return result;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
