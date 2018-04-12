@@ -11,14 +11,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Formatters\Generated\BclFormatter.tt">
+    <None Update="Formatters\BclFormatter.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BclFormatter.cs</LastGenOutput>
     </None>
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Formatters\Generated\BclFormatter.cs">
+    <Compile Update="Formatters\BclFormatter.cs">
       <DependentUpon>BclFormatter.tt</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

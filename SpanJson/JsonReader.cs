@@ -535,5 +535,17 @@ namespace SpanJson
 
             return false;
         }
+
+        public Version ReadVersion()
+        {
+            var span = ReadString();
+            return Version.Parse(span);
+        }
+
+        public Uri ReadUri()
+        {
+            var span = ReadString();
+            return new Uri(span);
+        }
     }
 }

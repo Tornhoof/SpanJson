@@ -11,12 +11,12 @@ namespace SpanJson
         {
             public static string Serialize<T>(T input)
             {
-                return Serialize<T, DefaultResolver>(input);
+                return Serialize<T, ExcludeNullsOriginalCaseResolver>(input);
             }
 
             public static T Deserialize<T>(ReadOnlySpan<char> input)
             {
-                return Deserialize<T, DefaultResolver>(input);
+                return Deserialize<T, ExcludeNullsOriginalCaseResolver>(input);
             }
 
             public static string Serialize<T, TResolver>(T input)
@@ -96,13 +96,13 @@ namespace SpanJson
         {
             public static string Serialize(object input)
             {
-                return Inner<DefaultResolver>.Serialize(input);
+                return Inner<ExcludeNullsOriginalCaseResolver>.Serialize(input);
             }
 
 
             public static object Deserialize(ReadOnlySpan<char> input, Type type)
             {
-                return Inner<DefaultResolver>.Deserialize(input, type);
+                return Inner<ExcludeNullsOriginalCaseResolver>.Deserialize(input, type);
             }
 
             private class Inner<TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()

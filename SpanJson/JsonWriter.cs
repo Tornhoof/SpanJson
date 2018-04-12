@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using SpanJson.Helpers;
 
 namespace SpanJson
@@ -624,6 +625,28 @@ namespace SpanJson
         private void WriteDoubleQuote()
         {
             _chars[_pos++] = '"';
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteVersion(Version value)
+        {
+            ref var pos = ref _pos;
+            const int versionLength = 45; // 4 * int + 3 . + 2 double quote
+            if (pos > _chars.Length - versionLength)
+            {
+                Grow(versionLength);
+            }
+
+            value.TryFormat(_chars.Slice(pos), out var written);
+            pos += written;
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteUri(Uri value)
+        {
+            WriteStringSlow(value.ToString()); // Uri does not implement ISpanFormattable
         }
     }
 }
