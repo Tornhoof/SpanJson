@@ -42,6 +42,7 @@ namespace SpanJson.Benchmarks
             return a == b;
         }
 
+
         public static bool TrueEquals<T>(this T? a, T? b)
             where T : struct
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using SpanJson.Helpers;
 
 namespace SpanJson
 {
@@ -184,13 +185,23 @@ namespace SpanJson
         public DateTime ReadDateTime()
         {
             var span = ReadStringSpanInternal();
-            return DateTime.Parse(span, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+            if (DateTimeParser.TryParseDateTime(span, out var value, out var charsConsumed))
+            {
+                return value;
+            }
+            ThrowInvalidOperationException();
+            return default;
         }
 
         public DateTimeOffset ReadDateTimeOffset()
         {
             var span = ReadStringSpanInternal();
-            return DateTimeOffset.Parse(span, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var charsConsumed))
+            {
+                return value;
+            }
+            ThrowInvalidOperationException();
+            return default;
         }
 
         public TimeSpan ReadTimeSpan()
