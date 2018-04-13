@@ -61,6 +61,10 @@ namespace SpanJson.Resolvers
                 if (!IsIgnored(memberInfo))
                 {
                     var name = Escape(GetAttributeName(memberInfo) ?? memberInfo.Name);
+                    if (_namingConventions == NamingConventions.CamelCase)
+                    {
+                        name = MakeCamelCase(name);
+                    }
                     var shouldSerialize = type.GetMethod($"ShouldSerialize{memberInfo.Name}");
                     var memberType = memberInfo is FieldInfo fi ? fi.FieldType :
                         memberInfo is PropertyInfo pi ? pi.PropertyType : null;
@@ -70,6 +74,16 @@ namespace SpanJson.Resolvers
             }
 
             return result.ToArray();
+        }
+
+        private string MakeCamelCase(string name)
+        {
+            if (char.IsLower(name[0]))
+            {
+                return name;
+            }
+
+            return string.Concat(char.ToLowerInvariant(name[0]), name.Substring(1));
         }
 
         private string Escape(string input)

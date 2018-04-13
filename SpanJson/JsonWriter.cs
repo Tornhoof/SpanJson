@@ -29,103 +29,11 @@ namespace SpanJson
             _pos = 0;
         }
 
-        public int Length
-        {
-            get => _pos;
-            set
-            {
-                Debug.Assert(value >= 0);
-                Debug.Assert(value <= _chars.Length);
-                _pos = value;
-            }
-        }
-
-        public int Capacity => _chars.Length;
-
-        public void EnsureCapacity(int capacity)
-        {
-            if (capacity > _chars.Length)
-            {
-                Grow(capacity - _chars.Length);
-            }
-        }
-
-        /// <summary>
-        ///     Get a pinnable reference to the builder.
-        /// </summary>
-        /// <param name="terminate">Ensures that the builder has a null char after <see cref="Length" /></param>
-        public ref char GetPinnableReference(bool terminate = false)
-        {
-            if (terminate)
-            {
-                EnsureCapacity(Length + 1);
-                _chars[Length] = '\0';
-            }
-
-            return ref MemoryMarshal.GetReference(_chars);
-        }
-
-        public ref char this[int index]
-        {
-            get
-            {
-                Debug.Assert(index < _pos);
-                return ref _chars[index];
-            }
-        }
-
         public override string ToString()
         {
             var s = new string(_chars.Slice(0, _pos));
             Dispose();
             return s;
-        }
-
-        /// <summary>Returns the underlying storage of the builder.</summary>
-        public Span<char> RawChars => _chars;
-
-        /// <summary>
-        ///     Returns a span around the contents of the builder.
-        /// </summary>
-        /// <param name="terminate">Ensures that the builder has a null char after <see cref="Length" /></param>
-        public ReadOnlySpan<char> AsSpan(bool terminate)
-        {
-            if (terminate)
-            {
-                EnsureCapacity(Length + 1);
-                _chars[Length] = '\0';
-            }
-
-            return _chars.Slice(0, _pos);
-        }
-
-        public ReadOnlySpan<char> AsSpan()
-        {
-            return _chars.Slice(0, _pos);
-        }
-
-        public ReadOnlySpan<char> AsSpan(int start)
-        {
-            return _chars.Slice(start, _pos - start);
-        }
-
-        public ReadOnlySpan<char> AsSpan(int start, int length)
-        {
-            return _chars.Slice(start, length);
-        }
-
-        public bool TryCopyTo(Span<char> destination, out int charsWritten)
-        {
-            if (_chars.Slice(0, _pos).TryCopyTo(destination))
-            {
-                charsWritten = _pos;
-                Dispose();
-                return true;
-            }
-
-            charsWritten = 0;
-            Dispose();
-            return false;
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -312,7 +220,7 @@ namespace SpanJson
                     Grow(trueLength);
                 }
 
-                _chars[pos++] = 't';
+                _chars[pos++] = JsonConstant.True;
                 _chars[pos++] = 'r';
                 _chars[pos++] = 'u';
                 _chars[pos++] = 'e';
@@ -325,7 +233,7 @@ namespace SpanJson
                     Grow(falseLength);
                 }
 
-                _chars[pos++] = 'f';
+                _chars[pos++] = JsonConstant.False;
                 _chars[pos++] = 'a';
                 _chars[pos++] = 'l';
                 _chars[pos++] = 's';
@@ -469,7 +377,7 @@ namespace SpanJson
             value.AsSpan().CopyTo(_chars.Slice(pos));
             pos += value.Length;
             WriteDoubleQuote();
-            _chars[pos++] = ':';
+            _chars[pos++] = JsonConstant.NameSeparator;
         }
 
         /// <summary>
@@ -500,7 +408,7 @@ namespace SpanJson
                 Grow(1);
             }
 
-            _chars[pos++] = '{';
+            _chars[pos++] = JsonConstant.BeginObject;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -512,7 +420,7 @@ namespace SpanJson
                 Grow(1);
             }
 
-            _chars[pos++] = '}';
+            _chars[pos++] =JsonConstant.EndObject;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -524,7 +432,7 @@ namespace SpanJson
                 Grow(1);
             }
 
-            _chars[pos++] = '[';
+            _chars[pos++] = JsonConstant.BeginArray;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -536,11 +444,11 @@ namespace SpanJson
                 Grow(1);
             }
 
-            _chars[pos++] = ']';
+            _chars[pos++] = JsonConstant.EndArray;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteSeparator()
+        public void WriteValueSeparator()
         {
             ref var pos = ref _pos;
             if (pos > _chars.Length - 1)
@@ -548,7 +456,7 @@ namespace SpanJson
                 Grow(1);
             }
 
-            _chars[pos++] = ',';
+            _chars[pos++] = JsonConstant.ValueSeparator;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -561,7 +469,7 @@ namespace SpanJson
                 Grow(nullLength);
             }
 
-            _chars[pos++] = 'n';
+            _chars[pos++] = JsonConstant.Null;
             _chars[pos++] = 'u';
             _chars[pos++] = 'l';
             _chars[pos++] = 'l';
@@ -570,7 +478,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteDoubleQuote()
         {
-            _chars[_pos++] = '"';
+            _chars[_pos++] = JsonConstant.String;
         }
 
 

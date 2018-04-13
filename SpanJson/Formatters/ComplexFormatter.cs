@@ -25,7 +25,7 @@ namespace SpanJson.Formatters
 
             var expressions = new List<Expression>();
             var propertyNameWriterMethodInfo = FindMethod(typeof(JsonWriter), nameof(JsonWriter.WriteName));
-            var seperatorWriteMethodInfo = FindMethod(typeof(JsonWriter), nameof(JsonWriter.WriteSeparator));
+            var seperatorWriteMethodInfo = FindMethod(typeof(JsonWriter), nameof(JsonWriter.WriteValueSeparator));
             expressions.Add(Expression.Call(writerParameter,
                 FindMethod(writerParameter.Type, nameof(JsonWriter.WriteObjectStart))));
             var isNotReferenceOrContainsReference = !RuntimeHelpers.IsReferenceOrContainsReferences<T>();
@@ -146,24 +146,25 @@ namespace SpanJson.Formatters
         {
             var readerParameter = Expression.Parameter(typeof(JsonReader).MakeByRefType(), "reader");
 
-            var propertyInfos = typeof(T).GetProperties();
+            var resolver = StandardResolvers.GetResolver<TResolver>();
+            var memberInfos = resolver.GetMemberInfos<T>();
             var cases = new List<SwitchCase>();
             var returnValue = Expression.Variable(typeof(T), "result");
-            foreach (var propertyInfo in propertyInfos.Where(p => p.CanWrite))
+            foreach (var memberInfo in memberInfos)
             {
-                var formatter = StandardResolvers.GetResolver<TResolver>().GetFormatter(propertyInfo.PropertyType);
+                var formatter = resolver.GetFormatter(memberInfo.MemberType);
                 var switchCase = Expression.SwitchCase(
-                    Expression.Assign(Expression.Property(returnValue, propertyInfo.Name),
+                    Expression.Assign(Expression.PropertyOrField(returnValue, memberInfo.MemberName),
                         Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"),
                             readerParameter)),
-                    Expression.Constant(propertyInfo.Name));
+                    Expression.Constant(memberInfo.Name));
                 cases.Add(switchCase);
             }
 
             var equalityMethod =
                 typeof(ComplexFormatter).GetMethod(nameof(IsEqual), BindingFlags.NonPublic | BindingFlags.Static);
             var switchExpression = Expression.Switch(typeof(void),
-                Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader.ReadNameSpan))), null,
+                Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader.ReadNameSpan))), Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader.ReadNextSegment))),
                 equalityMethod, cases.ToArray());
             var countExpression = Expression.Parameter(typeof(int), "count");
             var abortExpression = Expression.IsTrue(Expression.Call(readerParameter,

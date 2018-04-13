@@ -51,6 +51,9 @@ namespace SpanJson.Tests
             }
         }
 
+        /// <summary>
+        ///     To make sure the fractions are properly parsed
+        /// </summary>
         [Theory]
         [InlineData("2017-06-12T05:30:45.1000000Z")]
         [InlineData("2017-06-12T05:30:45.0100000Z")]
@@ -67,7 +70,8 @@ namespace SpanJson.Tests
         }
 
 
-        private void AssertDateTime(in DateTime dateTime, int year, int month, int day, int hour, int minute, int second, int fraction)
+        private void AssertDateTime(in DateTime dateTime, int year, int month, int day, int hour, int minute,
+            int second, int fraction)
         {
             var comparison = new DateTime(year, month, day, hour, minute, second).AddTicks(fraction);
             Assert.Equal(comparison, dateTime);

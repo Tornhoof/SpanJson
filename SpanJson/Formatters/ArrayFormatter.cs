@@ -29,7 +29,7 @@ namespace SpanJson.Formatters
                 formatter.Serialize(ref writer, value[0]);
                 for (var i = 1; i < valueLength; i++)
                 {
-                    writer.WriteSeparator();
+                    writer.WriteValueSeparator();
                     formatter.Serialize(ref writer, value[i]);
                 }
             }
