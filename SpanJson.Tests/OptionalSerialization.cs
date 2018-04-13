@@ -52,8 +52,7 @@ namespace SpanJson.Tests
             public string ExcludeNull { get; set; }
             public string OnlyIfHelloWorld { get; set; }
 
-            [DataMember(Name =  "AnotherName")]
-            public string DifferentName { get; set; }
+            [DataMember(Name = "AnotherName")] public string DifferentName;
 
             public bool ShouldSerializeOnlyIfHelloWorld()
             {
