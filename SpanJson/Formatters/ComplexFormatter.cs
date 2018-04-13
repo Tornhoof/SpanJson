@@ -23,21 +23,22 @@ namespace SpanJson.Formatters
             var writerParameter = Expression.Parameter(typeof(JsonWriter).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
 
-            var propertyInfos = typeof(T).GetProperties();
             var expressions = new List<Expression>();
             var propertyNameWriterMethodInfo = FindMethod(typeof(JsonWriter), nameof(JsonWriter.WriteName));
             var seperatorWriteMethodInfo = FindMethod(typeof(JsonWriter), nameof(JsonWriter.WriteSeparator));
             expressions.Add(Expression.Call(writerParameter,
                 FindMethod(writerParameter.Type, nameof(JsonWriter.WriteObjectStart))));
             var isNotReferenceOrContainsReference = !RuntimeHelpers.IsReferenceOrContainsReferences<T>();
-            for (var i = 0; i < propertyInfos.Length; i++)
+            var resolver = StandardResolvers.GetResolver<TResolver>();
+            var memberInfos = resolver.GetMemberInfos<T>();
+            for (var i = 0; i < memberInfos.Length; i++)
             {
-                var propertyInfo = propertyInfos[i];
+                var memberInfo = memberInfos[i];
                 Expression formatterExpression;
                 MethodInfo serializeMethodInfo;
-                if (isNotReferenceOrContainsReference || IsSealedOrStruct(propertyInfo.PropertyType))
+                if (isNotReferenceOrContainsReference || IsSealedOrStruct(memberInfo.MemberType))
                 {
-                    var formatter = StandardResolvers.GetResolver<TResolver>().GetFormatter(propertyInfo.PropertyType);
+                    var formatter = resolver.GetFormatter(memberInfo.MemberType);
                     formatterExpression = Expression.Constant(formatter);
                     serializeMethodInfo = formatter.GetType().GetMethod("Serialize");
                 }
@@ -48,14 +49,48 @@ namespace SpanJson.Formatters
                     serializeMethodInfo = formatter.GetType().GetMethod("Serialize");
                 }
 
-                expressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo,
-                    Expression.Constant(propertyInfo.Name)));
-                expressions.Add(Expression.Call(formatterExpression,
-                    serializeMethodInfo, writerParameter,
-                    Expression.Property(valueParameter, propertyInfo)));
-                if (i != propertyInfos.Length - 1)
+                var valueExpressions = new List<Expression>
                 {
-                    expressions.Add(Expression.Call(writerParameter, seperatorWriteMethodInfo));
+                    Expression.Call(writerParameter, propertyNameWriterMethodInfo,
+                        Expression.Constant(memberInfo.Name)),
+                    Expression.Call(formatterExpression,
+                        serializeMethodInfo, writerParameter,
+                        Expression.PropertyOrField(valueParameter, memberInfo.MemberName))
+                };
+                if (i != memberInfos.Length - 1)
+                {
+                    valueExpressions.Add(Expression.Call(writerParameter, seperatorWriteMethodInfo));
+                }
+
+                var testNullExpression = memberInfo.ExcludeNull
+                    ? Expression.ReferenceNotEqual(
+                        Expression.PropertyOrField(valueParameter, memberInfo.MemberName),
+                        Expression.Constant(null))
+                    : null;
+                var shouldSerializeExpression = memberInfo.ShouldSerialize != null
+                    ? Expression.IsTrue(Expression.Call(valueParameter, memberInfo.ShouldSerialize))
+                    : null;
+                Expression testExpression = null;
+                if (testNullExpression != null && shouldSerializeExpression != null)
+                {
+                    testExpression = Expression.AndAlso(testNullExpression, shouldSerializeExpression);
+                }
+                else if (testNullExpression != null)
+                {
+                    testExpression = testNullExpression;
+                }
+                else if (shouldSerializeExpression != null)
+                {
+                    testExpression = shouldSerializeExpression;
+                }
+
+                if (testExpression != null)
+                {
+                    expressions.Add(Expression.IfThen(testExpression, Expression.Block(valueExpressions)));
+                }
+                else
+                {
+                    expressions.AddRange(valueExpressions);
                 }
             }
 

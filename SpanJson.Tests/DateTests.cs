@@ -19,7 +19,10 @@ namespace SpanJson.Tests
         [InlineData("2017-06-12T05:30:45+01:00", 25, 2017, 6, 12, 5, 30, 45, 0, false, 1, 0, DateTimeKind.Local)]
         [InlineData("2017-06-12T05:30:45Z", 20, 2017, 6, 12, 5, 30, 45, 0, false, 0, 0, DateTimeKind.Utc)]
         [InlineData("2017-06-12T05:30:45", 19, 2017, 6, 12, 5, 30, 45, 0, false, 0, 0, DateTimeKind.Unspecified)]
-        public void Parser(string input, int length, int year, int month, int day, int hour, int minute,
+        [InlineData("2017-06-12T05:30:45.0010+01:00", 30, 2017, 6, 12, 5, 30, 45, 10, false, 1, 0, DateTimeKind.Local)]
+        [InlineData("2017-06-12T05:30:45.0010Z", 25, 2017, 6, 12, 5, 30, 45, 10, false, 0, 0, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.0010", 24, 2017, 6, 12, 5, 30, 45, 10, false, 0, 0, DateTimeKind.Unspecified)]
+        public void Parse(string input, int length, int year, int month, int day, int hour, int minute,
             int second, int fraction, bool negative, int offsethours, int offsetminutes, DateTimeKind kind)
         {
             Assert.True(DateTimeParser.TryParseDateTimeOffset(input.AsSpan(), out var dtoValue, out var dtoConsumed));
@@ -48,12 +51,26 @@ namespace SpanJson.Tests
             }
         }
 
+        [Theory]
+        [InlineData("2017-06-12T05:30:45.1000000Z")]
+        [InlineData("2017-06-12T05:30:45.0100000Z")]
+        [InlineData("2017-06-12T05:30:45.0010000Z")]
+        [InlineData("2017-06-12T05:30:45.0001000Z")]
+        [InlineData("2017-06-12T05:30:45.0000100Z")]
+        [InlineData("2017-06-12T05:30:45.0000010Z")]
+        [InlineData("2017-06-12T05:30:45.0000001Z")]
+        public void AgainstBcl(string input)
+        {
+            Assert.True(DateTimeParser.TryParseDateTimeOffset(input.AsSpan(), out var dtoValue, out var dtoConsumed));
+            var dto = DateTimeOffset.ParseExact(input.AsSpan(), "O", CultureInfo.InvariantCulture);
+            Assert.Equal(dto, dtoValue);
+        }
 
 
         private void AssertDateTime(in DateTime dateTime, int year, int month, int day, int hour, int minute, int second, int fraction)
         {
             var comparison = new DateTime(year, month, day, hour, minute, second).AddTicks(fraction);
-            Assert.Equal(dateTime, comparison);
+            Assert.Equal(comparison, dateTime);
         }
     }
 }

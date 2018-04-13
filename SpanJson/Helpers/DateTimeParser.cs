@@ -221,7 +221,7 @@ namespace SpanJson.Helpers
                     return false;
                 }
 
-                var maxDigits = Math.Min(7, source.Length - currentOffset); // max 7 fraction digits
+                var maxDigits = Math.Min(6, source.Length - currentOffset); // max 6 remaining fraction digits
                 for (var i = 0; i < maxDigits; i++)
                 {
                     var digit = source[currentOffset] - 48U;

@@ -121,7 +121,7 @@ namespace SpanJson
             }
             var result = _chars[pos++] - 48L;
             uint value;
-            while ((value = _chars[pos] - 48U) <= 9)
+            while (IsAvailable && (value = _chars[pos] - 48U) <= 9)
             {
                 result = unchecked(result * 10 + value);
                 pos++;
@@ -154,7 +154,7 @@ namespace SpanJson
             }
 
             uint value;
-            while ((value = _chars[pos] - 48U) <= 9)
+            while (IsAvailable && (value = _chars[pos] - 48U) <= 9)
             {
                 result = checked(result * 10 + value);
                 pos++;

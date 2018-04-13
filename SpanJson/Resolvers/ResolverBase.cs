@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using SpanJson.Formatters;
 using SpanJson.Helpers;
 
@@ -13,8 +15,8 @@ namespace SpanJson.Resolvers
         // ReSharper disable StaticMemberInGenericType
         private static readonly ConcurrentDictionary<Type, IJsonFormatter> Formatters =
             new ConcurrentDictionary<Type, IJsonFormatter>();
-        private static readonly ConcurrentDictionary<Type, IReadOnlyList<JsonMemberInfo>> Members =
-            new ConcurrentDictionary<Type, IReadOnlyList<JsonMemberInfo>>();
+        private static readonly ConcurrentDictionary<Type, JsonMemberInfo[]> Members =
+            new ConcurrentDictionary<Type, JsonMemberInfo[]>();
         // ReSharper restore StaticMemberInGenericType
 
         private readonly NamingConventions _namingConventions;
@@ -38,21 +40,51 @@ namespace SpanJson.Resolvers
             // ReSharper restore ConvertClosureToMethodGroup
         }
 
-        public IReadOnlyList<JsonMemberInfo> GetMembers<T>()
+        public JsonMemberInfo[] GetMemberInfos<T>()
         {
-            return GetMembers(typeof(T));
+            return GetMemberInfos(typeof(T));
         }
 
-        public IReadOnlyList<JsonMemberInfo> GetMembers(Type type)
+        public JsonMemberInfo[] GetMemberInfos(Type type)
         {
             // ReSharper disable ConvertClosureToMethodGroup
             return Members.GetOrAdd(type, x => BuildMembers(x));
             // ReSharper restore ConvertClosureToMethodGroup
         }
 
-        protected virtual IReadOnlyList<JsonMemberInfo> BuildMembers(Type type)
+        protected virtual JsonMemberInfo[] BuildMembers(Type type)
         {
-            return null;
+            var publicMembers = type.GetFields().Cast<MemberInfo>().Concat(type.GetProperties());
+            var result = new List<JsonMemberInfo>();
+            foreach (var memberInfo in publicMembers)
+            {
+                if (!IsIgnored(memberInfo))
+                {
+                    var name = Escape(GetAttributeName(memberInfo) ?? memberInfo.Name);
+                    var shouldSerialize = type.GetMethod($"ShouldSerialize{memberInfo.Name}");
+                    var memberType = memberInfo is FieldInfo fi ? fi.FieldType :
+                        memberInfo is PropertyInfo pi ? pi.PropertyType : null;
+                    result.Add(new JsonMemberInfo(memberInfo.Name, memberType, shouldSerialize, name,
+                        _nullOptions == NullOptions.ExcludeNulls));
+                }
+            }
+
+            return result.ToArray();
+        }
+
+        private string Escape(string input)
+        {
+            return input; // todo later
+        }
+
+        private bool IsIgnored(MemberInfo memberInfo)
+        {
+            return memberInfo.GetCustomAttribute<IgnoreDataMemberAttribute>() != null;
+        }
+
+        private string GetAttributeName(MemberInfo memberInfo)
+        {
+            return memberInfo.GetCustomAttribute<DataMemberAttribute>()?.Name;
         }
 
         private static IJsonFormatter GetDefaultOrCreate(Type type)

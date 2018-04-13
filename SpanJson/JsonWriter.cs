@@ -407,81 +407,7 @@ namespace SpanJson
             WriteDoubleQuote();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteString(string value)
-        {
-            ref var pos = ref _pos;
-            // very common case, e.g. appending strings from NumberFormatInfo like separators, percent symbols, etc.
-            if (value.Length == 1 && pos < _chars.Length + 3
-            ) // technically we only need 2, but escaped char might be the case
-            {
-                WriteDoubleQuote();
-                var c = value[0];
-                switch (c)
-                {
-                    case '"':
-                        _chars[pos++] = '\\';
-                        _chars[pos++] = '"';
-                        break;
-                    case '\\':
-                        _chars[pos++] = '\\';
-                        _chars[pos++] = '\\';
-                        break;
-                    case '\b':
-                        _chars[pos++] = '\\';
-                        _chars[pos++] = 'b';
-                        break;
-                    case '\f':
-                        _chars[pos++] = '\\';
-                        _chars[pos++] = 'f';
-                        break;
-                    case '\n':
-                        _chars[pos++] = '\\';
-                        ;
-                        _chars[pos++] = 'n';
-                        break;
-                    case '\r':
-                        _chars[pos++] = '\\';
-                        _chars[pos++] = 'r';
-                        break;
-                    case '\t':
-                        _chars[pos++] = '\\';
-                        _chars[pos++] = 't';
-                        break;
-                    default:
-                        _chars[pos++] = c;
-                        break;
-                }
-
-                WriteDoubleQuote();
-            }
-            else
-            {
-                WriteStringSlow(value);
-            }
-        }
-
-        /// <summary>
-        ///     The value should already be properly escaped
-        /// </summary>
-        /// <param name="value"></param>
-        public void WriteName(string value)
-        {
-            ref var pos = ref _pos;
-            var sLength = value.Length + 3;
-            if (pos > _chars.Length - sLength)
-            {
-                Grow(sLength);
-            }
-
-            WriteDoubleQuote();
-            value.AsSpan().CopyTo(_chars.Slice(pos));
-            pos += value.Length;
-            WriteDoubleQuote();
-            _chars[pos++] = ':';
-        }
-
-        private void WriteStringSlow(string value)
         {
             ref var pos = ref _pos;
             var sLength = value.Length + 2;
@@ -498,7 +424,7 @@ namespace SpanJson
                 switch (c)
                 {
                     case '"':
-                        CopyAndEscape(ref remaining, ref i, '"');
+                        CopyAndEscape(ref remaining, ref i, '\"');
                         break;
                     case '\\':
                         CopyAndEscape(ref remaining, ref i, '\\');
@@ -524,6 +450,26 @@ namespace SpanJson
             remaining.CopyTo(_chars.Slice(pos)); // if there is still something to copy we continue here
             pos += remaining.Length;
             WriteDoubleQuote();
+        }
+
+        /// <summary>
+        ///     The value should already be properly escaped
+        /// </summary>
+        /// <param name="value"></param>
+        public void WriteName(string value)
+        {
+            ref var pos = ref _pos;
+            var sLength = value.Length + 3;
+            if (pos > _chars.Length - sLength)
+            {
+                Grow(sLength);
+            }
+
+            WriteDoubleQuote();
+            value.AsSpan().CopyTo(_chars.Slice(pos));
+            pos += value.Length;
+            WriteDoubleQuote();
+            _chars[pos++] = ':';
         }
 
         /// <summary>
@@ -646,7 +592,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUri(Uri value)
         {
-            WriteStringSlow(value.ToString()); // Uri does not implement ISpanFormattable
+            WriteString(value.ToString()); // Uri does not implement ISpanFormattable
         }
     }
 }
