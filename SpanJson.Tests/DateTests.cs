@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using SpanJson.Benchmarks.Fixture;
 using SpanJson.Helpers;
 using Xunit;
 
@@ -75,6 +76,16 @@ namespace SpanJson.Tests
         {
             var comparison = new DateTime(year, month, day, hour, minute, second).AddTicks(fraction);
             Assert.Equal(comparison, dateTime);
+        }
+
+        [Fact]
+        public void SerializeDeserialize()
+        {
+            var fixture = new ExpressionTreeFixture();
+            var dt = fixture.Create<DateTime>();
+            var serialized = JsonSerializer.Generic.Serialize(dt);
+            var deserialized = JsonSerializer.Generic.Deserialize<DateTime>(serialized);
+            Assert.Equal(dt, deserialized);
         }
     }
 }

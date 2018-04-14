@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using BenchmarkDotNet.Attributes;
 using SpanJson.Benchmarks.Fixture;
 using SpanJson.Benchmarks.Models;
@@ -20,54 +21,87 @@ namespace SpanJson.Benchmarks
         private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
 
 
-        private static readonly string AccessTokenSerializedString =
-            SpanJsonSerializer.Serialize(ExpressionTreeFixture.Create<AccessToken>());
+        //private static readonly string AccessTokenSerializedString =
+        //    SpanJsonSerializer.Serialize(ExpressionTreeFixture.Create<AccessToken>());
 
-        private static readonly byte[] AccessTokenSerializedByteArray =
-            Encoding.UTF8.GetBytes(AccessTokenSerializedString);
-
-        [Benchmark]
-        public AccessToken DeserializeAccessTokenWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<AccessToken>(AccessTokenSerializedString);
-        }
-
-        [Benchmark]
-        public AccessToken DeserializeAccessTokenWithJilSerializer()
-        {
-            return JilSerializer.Deserialize<AccessToken>(AccessTokenSerializedString);
-        }
-
-        [Benchmark]
-        public AccessToken DeserializeAccessTokenWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Deserialize<AccessToken>(AccessTokenSerializedByteArray);
-        }
-
-
-        //private static readonly string UserSerializedString =
-        //    SpanJsonSerializer.Serialize(ExpressionTreeFixture.Create<User>());
-
-        //private static readonly byte[] UserSerializedByteArray =
-        //    Encoding.UTF8.GetBytes(UserSerializedString);
+        //private static readonly byte[] AccessTokenSerializedByteArray =
+        //    Encoding.UTF8.GetBytes(AccessTokenSerializedString);
 
         //[Benchmark]
-        //public User DeserializeUserWithSpanJsonSerializer()
+        //public AccessToken DeserializeAccessTokenWithSpanJsonSerializer()
         //{
-        //    return SpanJsonSerializer.Deserialize<User>(UserSerializedString);
+        //    return SpanJsonSerializer.Deserialize<AccessToken>(AccessTokenSerializedString);
         //}
 
         //[Benchmark]
-        //public User DeserializeUserWithJilSerializer()
+        //public AccessToken DeserializeAccessTokenWithJilSerializer()
         //{
-        //    return JilSerializer.Deserialize<User>(UserSerializedString);
+        //    return JilSerializer.Deserialize<AccessToken>(AccessTokenSerializedString);
         //}
 
         //[Benchmark]
-        //public User DeserializeUserWithUtf8JsonSerializer()
+        //public AccessToken DeserializeAccessTokenWithUtf8JsonSerializer()
         //{
-        //    return Utf8JsonSerializer.Deserialize<User>(UserSerializedByteArray);
+        //    return Utf8JsonSerializer.Deserialize<AccessToken>(AccessTokenSerializedByteArray);
         //}
+
+
+
+        private static readonly DateTime DateTimeInput = ExpressionTreeFixture.Create<DateTime>();
+
+        private static readonly DateTimeOffset DateTimeOffsetInput = ExpressionTreeFixture.Create<DateTimeOffset>();
+
+        private static readonly string DateTimeOutputOfJilSerializer = JilSerializer.Serialize(DateTimeInput);
+
+        private static readonly string DateTimeOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(DateTimeInput);
+
+        private static readonly byte[] DateTimeOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(DateTimeInput);
+
+        private static readonly string DateTimeOffsetOutputOfJilSerializer =
+            JilSerializer.Serialize(DateTimeOffsetInput);
+
+        private static readonly string DateTimeOffsetOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(DateTimeOffsetInput);
+
+        private static readonly byte[] DateTimeOffsetOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(DateTimeOffsetInput);
+
+        [Benchmark]
+        public DateTime DeserializeDateTimeWithJilSerializer()
+        {
+            return JilSerializer.Deserialize<DateTime>(DateTimeOutputOfJilSerializer);
+        }
+
+        [Benchmark]
+        public DateTime DeserializeDateTimeWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Deserialize<DateTime>(DateTimeOutputOfJsonSpanSerializer);
+        }
+
+        [Benchmark]
+        public DateTime DeserializeDateTimeWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Deserialize<DateTime>(DateTimeOutputOfUtf8JsonSerializer);
+        }
+
+        [Benchmark]
+        public DateTimeOffset DeserializeDateTimeOffsetWithJilSerializer()
+        {
+            return JilSerializer.Deserialize<DateTimeOffset>(DateTimeOffsetOutputOfJilSerializer);
+        }
+
+        [Benchmark]
+        public DateTimeOffset DeserializeDateTimeOffsetWithJsonSpanSerializer()
+        {
+            return SpanJsonSerializer.Deserialize<DateTimeOffset>(DateTimeOffsetOutputOfJsonSpanSerializer);
+        }
+
+        [Benchmark]
+        public DateTimeOffset DeserializeDateTimeOffsetWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Deserialize<DateTimeOffset>(DateTimeOffsetOutputOfUtf8JsonSerializer);
+        }
+
     }
 
     //public sealed class AccessTokenFormatter : ComplexFormatter, IJsonFormatter<AccessToken>
