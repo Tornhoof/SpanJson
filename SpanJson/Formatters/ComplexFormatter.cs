@@ -140,6 +140,9 @@ namespace SpanJson.Formatters
             return type.GetMethod(name);
         }
 
+        /// <summary>
+        /// We group the field names by the nth character and nest the switch tables to find the appropriate field/property to assign to
+        /// </summary>
         private static Expression BuildPropertyComparisonSwitchExpression<TResolver>(TResolver resolver, JsonMemberInfo[] memberInfos, string prefix, int index,
             ParameterExpression switchValue,
             Expression returnValue, Expression readerParameter) where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -157,7 +160,7 @@ namespace SpanJson.Formatters
             foreach (var groupedMemberInfos in group)
             {
                 var memberInfosPerChar = groupedMemberInfos.Count();
-                if (memberInfosPerChar == 1) // only one hit
+                if (memberInfosPerChar == 1) // only one hit, we compare the remaining name and and assign the field if true
                 {
                     var memberInfo = groupedMemberInfos.Single();
                     var formatter = resolver.GetFormatter(memberInfo.MemberType);
@@ -172,17 +175,17 @@ namespace SpanJson.Formatters
                             Expression.Constant(groupedMemberInfos.Key));
                     cases.Add(switchCase);
                 }
-                else
+                else // Either we have found an exact match for the name or we need to build a further level of nested switch tables
                 {
                     var nextPrefix = prefix + groupedMemberInfos.Key;
                     var nextSwitch =
                         BuildPropertyComparisonSwitchExpression(resolver, memberInfos, nextPrefix, index + 1, switchValue, returnValue, readerParameter);
-                    var directMatch = groupedMemberInfos.SingleOrDefault(a => a.Name == nextPrefix);
+                    var exactMatch = groupedMemberInfos.SingleOrDefault(a => a.Name == nextPrefix);
                     Expression directMatchExpression = null;
-                    if (directMatch != null)
+                    if (exactMatch != null)
                     {
-                        var formatter = resolver.GetFormatter(directMatch.MemberType);
-                        var matchExpression = Expression.Assign(Expression.PropertyOrField(returnValue, directMatch.MemberName),
+                        var formatter = resolver.GetFormatter(exactMatch.MemberType);
+                        var matchExpression = Expression.Assign(Expression.PropertyOrField(returnValue, exactMatch.MemberName),
                             Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"), readerParameter));
                         var testExpression = Expression.Equal(Expression.Property(switchValue, "Length"), Expression.Constant(nextPrefix.Length));
                         directMatchExpression = Expression.IfThenElse(testExpression, matchExpression, nextSwitch);
@@ -200,7 +203,6 @@ namespace SpanJson.Formatters
             var switchExpression = Expression.Switch(typeof(void), indexedSwitchValue, defaultValue, null, cases.ToArray());
             return switchExpression;
         }
-
 
         protected static DeserializeDelegate<T, TResolver> BuildDeserializeDelegate<T, TResolver>()
             where TResolver : IJsonFormatterResolver<TResolver>, new()
