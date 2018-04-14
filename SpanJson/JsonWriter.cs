@@ -244,7 +244,7 @@ namespace SpanJson
         public void WriteChar(char value)
         {
             ref var pos = ref _pos;
-            const int size = 4; // 1-2 chars + two '"'
+            const int size = 6; // 1-6 chars + two '"'
             if (pos > _chars.Length - size)
             {
                 Grow(size);
@@ -254,32 +254,106 @@ namespace SpanJson
             switch (value)
             {
                 case '"':
-                    _chars[pos++] = '\\';
-                    _chars[pos++] = '"';
+                    WriteSingleEscapedChar('"');
                     break;
                 case '\\':
-                    _chars[pos++] = '\\';
-                    _chars[pos++] = '\\';
+                    WriteSingleEscapedChar('\\');
                     break;
                 case '\b':
-                    _chars[pos++] = '\\';
-                    _chars[pos++] = 'b';
+                    WriteSingleEscapedChar('b');
                     break;
                 case '\f':
-                    _chars[pos++] = '\\';
-                    _chars[pos++] = 'f';
+                    WriteSingleEscapedChar('f');
                     break;
                 case '\n':
-                    _chars[pos++] = '\\';
-                    _chars[pos++] = 'n';
+                    WriteSingleEscapedChar('n');
                     break;
                 case '\r':
-                    _chars[pos++] = '\\';
-                    _chars[pos++] = 'r';
+                    WriteSingleEscapedChar('r');
                     break;
                 case '\t':
-                    _chars[pos++] = '\\';
-                    _chars[pos++] = 't';
+                    WriteSingleEscapedChar('t');
+                    break;
+                case '\x0':
+                    WriteDoubleEscapedCar('0', '0');
+                    break;
+                case '\x1':
+                    WriteDoubleEscapedCar('0', '1');
+                    break;
+                case '\x2':
+                    WriteDoubleEscapedCar('0', '2');
+                    break;
+                case '\x3':
+                    WriteDoubleEscapedCar('0', '3');
+                    break;
+                case '\x4':
+                    WriteDoubleEscapedCar('0', '4');
+                    break;
+                case '\x5':
+                    WriteDoubleEscapedCar('0', '5');
+                    break;
+                case '\x6':
+                    WriteDoubleEscapedCar('0', '6');
+                    break;
+                case '\x7':
+                    WriteDoubleEscapedCar('0', '7');
+                    break;
+                case '\xB':
+                    WriteDoubleEscapedCar('0', 'B');
+                    break;
+                case '\xE':
+                    WriteDoubleEscapedCar('0', 'E');
+                    break;
+                case '\xF':
+                    WriteDoubleEscapedCar('0', 'F');
+                    break;
+                case '\x10':
+                    WriteDoubleEscapedCar('1', '0');
+                    break;
+                case '\x11':
+                    WriteDoubleEscapedCar('1', '1');
+                    break;
+                case '\x12':
+                    WriteDoubleEscapedCar('1', '2');
+                    break;
+                case '\x13':
+                    WriteDoubleEscapedCar('1', '3');
+                    break;
+                case '\x14':
+                    WriteDoubleEscapedCar('1', '4');
+                    break;
+                case '\x15':
+                    WriteDoubleEscapedCar('1', '5');
+                    break;
+                case '\x16':
+                    WriteDoubleEscapedCar('1', '6');
+                    break;
+                case '\x17':
+                    WriteDoubleEscapedCar('1', '7');
+                    break;
+                case '\x18':
+                    WriteDoubleEscapedCar('1', '8');
+                    break;
+                case '\x19':
+                    WriteDoubleEscapedCar('1', '9');
+                    break;
+                case '\x1A':
+                    WriteDoubleEscapedCar('1', 'A');
+                    break;
+                case '\x1B':
+                    WriteDoubleEscapedCar('1', 'B');
+                    break;
+                case '\x1C':
+                    WriteDoubleEscapedCar('1', 'C');
+                    break;
+                case '\x1D':
+                    WriteDoubleEscapedCar('1', 'D');
+                    break;
+                case '\x1E':
+                    WriteDoubleEscapedCar('1', 'E');
+                    break;
+                case '\x1F':
+                    WriteDoubleEscapedCar('1', 'F');
                     break;
                 default:
                     _chars[pos++] = value;
@@ -386,6 +460,87 @@ namespace SpanJson
                     case '\t':
                         CopyAndEscape(ref remaining, ref i, 't');
                         break;
+                    case '\x0':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '0', '0');
+                        break;
+                    case '\x1':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '0', '1');
+                        break;
+                    case '\x2':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '0', '2');
+                        break;
+                    case '\x3':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '0', '3');
+                        break;
+                    case '\x4':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '0', '4');
+                        break;
+                    case '\x5':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '0', '5');
+                        break;
+                    case '\x6':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '0', '6');
+                        break;
+                    case '\x7':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '0', '7');
+                        break;
+                    case '\xB':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '0', 'B');
+                        break;
+                    case '\xE':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '0', 'E');
+                        break;
+                    case '\xF':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '0', 'F');
+                        break;
+                    case '\x10':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '1', '0');
+                        break;
+                    case '\x11':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '1', '1');
+                        break;
+                    case '\x12':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '1', '2');
+                        break;
+                    case '\x13':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '1', '3');
+                        break;
+                    case '\x14':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '1', '4');
+                        break;
+                    case '\x15':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '1', '5');
+                        break;
+                    case '\x16':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '1', '6');
+                        break;
+                    case '\x17':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '1', '7');
+                        break;
+                    case '\x18':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '1', '8');
+                        break;
+                    case '\x19':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '1', '9');
+                        break;
+                    case '\x1A':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '1', 'A');
+                        break;
+                    case '\x1B':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '1', 'B');
+                        break;
+                    case '\x1C':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '1', 'C');
+                        break;
+                    case '\x1D':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '1', 'D');
+                        break;
+                    case '\x1E':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '1', 'E');
+                        break;
+                    case '\x1F':
+                        CopyAndEscapeUnicode(ref remaining, ref i, '1', 'F');
+                        break;
                 }
             }
 
@@ -420,17 +575,48 @@ namespace SpanJson
         /// </summary>
         private void CopyAndEscape(ref ReadOnlySpan<char> remaining, ref int i, char toEscape)
         {
-            remaining.Slice(0, i).CopyTo(_chars.Slice(_pos));
-            _pos += i;
-            if (_pos > _chars.Length - 1) // one more now
+            ref var pos = ref _pos;
+            remaining.Slice(0, i).CopyTo(_chars.Slice(pos));
+            pos += i;
+            if (pos > _chars.Length - 1) // one more now
             {
                 Grow(1);
             }
-
-            _chars[_pos++] = '\\';
-            _chars[_pos++] = toEscape;
+            WriteSingleEscapedChar(toEscape);
             remaining = remaining.Slice(i + 1); // continuing after the escaped char
             i = 0;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void WriteSingleEscapedChar(char toEscape)
+        {
+            _chars[_pos++] = '\\';
+            _chars[_pos++] = toEscape;
+        }
+
+        private void CopyAndEscapeUnicode(ref ReadOnlySpan<char> remaining, ref int i, char firstToEscape, char secondToEscape)
+        {
+            ref var pos = ref _pos;
+            remaining.Slice(0, i).CopyTo(_chars.Slice(pos));
+            pos += i;
+            const int length = 6;
+            if (pos > _chars.Length - length) // one more now
+            {
+                Grow(length);            }
+
+            WriteDoubleEscapedCar(firstToEscape, secondToEscape);
+            remaining = remaining.Slice(i + 1); // continuing after the escaped char
+            i = 0;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void WriteDoubleEscapedCar(char firstToEscape, char secondToEscape)
+        {
+            _chars[_pos++] = '\\';
+            _chars[_pos++] = 'u';
+            _chars[_pos++] = '0';
+            _chars[_pos++] = '0';
+            _chars[_pos++] = firstToEscape;
+            _chars[_pos++] = secondToEscape;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
