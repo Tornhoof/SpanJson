@@ -244,14 +244,48 @@ namespace SpanJson
         public void WriteChar(char value)
         {
             ref var pos = ref _pos;
-            const int size = 3; // 1 char + two '"'
+            const int size = 4; // 1-2 chars + two '"'
             if (pos > _chars.Length - size)
             {
                 Grow(size);
             }
 
             WriteDoubleQuote();
-            _chars[pos++] = value;
+            switch (value)
+            {
+                case '"':
+                    _chars[pos++] = '\\';
+                    _chars[pos++] = '"';
+                    break;
+                case '\\':
+                    _chars[pos++] = '\\';
+                    _chars[pos++] = '\\';
+                    break;
+                case '\b':
+                    _chars[pos++] = '\\';
+                    _chars[pos++] = 'b';
+                    break;
+                case '\f':
+                    _chars[pos++] = '\\';
+                    _chars[pos++] = 'f';
+                    break;
+                case '\n':
+                    _chars[pos++] = '\\';
+                    _chars[pos++] = 'n';
+                    break;
+                case '\r':
+                    _chars[pos++] = '\\';
+                    _chars[pos++] = 'r';
+                    break;
+                case '\t':
+                    _chars[pos++] = '\\';
+                    _chars[pos++] = 't';
+                    break;
+                default:
+                    _chars[pos++] = value;
+                    break;
+            }
+
             WriteDoubleQuote();
         }
 
@@ -295,7 +329,7 @@ namespace SpanJson
             }
 
             WriteDoubleQuote();
-            value.TryFormat(_chars.Slice(pos), out var written, "O", CultureInfo.InvariantCulture);
+            value.TryFormat(_chars.Slice(pos), out var written, "c", CultureInfo.InvariantCulture);
             pos += written;
             WriteDoubleQuote();
         }
@@ -491,9 +525,10 @@ namespace SpanJson
             {
                 Grow(versionLength);
             }
-
+            WriteDoubleQuote();
             value.TryFormat(_chars.Slice(pos), out var written);
             pos += written;
+            WriteDoubleQuote();
         }
 
 

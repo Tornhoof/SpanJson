@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 using SpanJson.Helpers;
 
 namespace SpanJson
@@ -8,8 +9,8 @@ namespace SpanJson
     public ref struct JsonReader
     {
         private readonly ReadOnlySpan<char> _chars;
+        private static readonly char[] NullTerminator = new[] {'\0'};
         private int _pos;
-
         public JsonReader(ReadOnlySpan<char> input)
         {
             _chars = input;
@@ -58,36 +59,25 @@ namespace SpanJson
 
         public float ReadSingle()
         {
-            return float.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
+            return float.Parse(ReadNumberInternal(), NumberStyles.Float, CultureInfo.InvariantCulture);
         }
 
         public double ReadDouble()
         {
-            return double.Parse(ReadNumberInternal(), provider: CultureInfo.InvariantCulture);
+            return double.Parse(ReadNumberInternal(), NumberStyles.Float, CultureInfo.InvariantCulture);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ReadOnlySpan<char> ReadNumberInternal()
         {
             SkipWhitespace();
-            int i;
             ref var pos = ref _pos;
-            for (i = pos; i < _chars.Length; i++)
+            if (TryFindEndOfNumber(pos, out var charsConsumed))
             {
-                ref readonly var c = ref _chars[i];
-                if (!IsNumericSymbol(c))
-                {
-                    break;
-                }
-            }
-
-            if (i > pos)
-            {
-                var result = _chars.Slice(pos, i - pos);
-                pos = i;
+                var result = _chars.Slice(pos, charsConsumed);
+                pos += charsConsumed;
                 return result;
             }
-
             ThrowInvalidOperationException();
             return null;
         }
@@ -257,12 +247,43 @@ namespace SpanJson
 
         public char ReadChar()
         {
-            return _chars[_pos++];
+            var span = ReadStringSpan();
+            if (span.Length == 1)
+            {
+                return span[0];
+            }
+            if(span[0] == '\\')
+            {
+                switch (span[1])
+                {
+                    case '"':
+                        return '"';                        
+                    case '\\':
+                        return '\\';
+                    case 'b':
+                        return '\b';
+                    case 'f':
+                        return '\f';
+                    case 'n':
+                        return '\n';
+                    case 'r':
+                        return '\r';
+                    case 't':
+                        return '\t';
+                    default:
+                    {
+                        // todo handle U+
+                        break;
+                    }
+                }
+            }
+            ThrowInvalidOperationException();
+            return default;
         }
 
         public DateTime ReadDateTime()
         {
-            var span = ReadStringSpanInternal();
+            var span = ReadStringSpan();
             if (DateTimeParser.TryParseDateTime(span, out var value, out var charsConsumed))
             {
                 return value;
@@ -273,8 +294,8 @@ namespace SpanJson
         }
 
         public DateTimeOffset ReadDateTimeOffset()
-        {
-            var span = ReadStringSpanInternal();
+        {            
+            var span = ReadStringSpan();
             if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var charsConsumed))
             {
                 return value;
@@ -286,20 +307,20 @@ namespace SpanJson
 
         public TimeSpan ReadTimeSpan()
         {
-            var span = ReadStringSpanInternal();
+            var span = ReadStringSpan();
             return TimeSpan.Parse(span, CultureInfo.InvariantCulture);
         }
 
         public Guid ReadGuid()
         {
-            var span = ReadStringSpanInternal();
+            var span = ReadStringSpan();
             return Guid.Parse(span);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<char> ReadNameSpan()
         {
-            var span = ReadStringSpanInternal();
+            var span = ReadStringSpan();
             if (_chars[_pos++] != JsonConstant.NameSeparator)
             {
                 ThrowInvalidOperationException();
@@ -320,6 +341,15 @@ namespace SpanJson
             return span.ToString();
         }
 
+        public ReadOnlySpan<char> ReadStringSpan()
+        {
+            if (ReadIsNull())
+            {
+                return NullTerminator;
+            }
+            return ReadStringSpanInternal();
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ReadOnlySpan<char> ReadStringSpanInternal()
         {
@@ -329,19 +359,11 @@ namespace SpanJson
                 ThrowInvalidOperationException();
             }
 
-            for (var i = pos; i < _chars.Length; i++)
+            if (TryFindEndOfString(pos, out var charsConsumed))
             {
-                ref readonly char c = ref _chars[i];
-                if (c == JsonConstant.String)
-                {
-                    if (_chars[i - 1] != '\\')
-                    {
-                        var length = i - pos;
-                        var result = _chars.Slice(pos, length);
-                        pos += length + 1; // we skip the '"' too
-                        return result;
-                    }
-                }
+                var result = _chars.Slice(pos, charsConsumed);
+                pos += charsConsumed + 1; // skip the '"' too
+                return result;
             }
 
             ThrowInvalidOperationException();
@@ -538,15 +560,23 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Version ReadVersion()
         {
-            var span = ReadString();
-            return Version.Parse(span);
+            var stringValue = ReadString();
+            if (stringValue == null)
+            {
+                return default;
+            }
+            return Version.Parse(stringValue);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Uri ReadUri()
         {
-            var span = ReadString();
-            return new Uri(span);
+            var stringValue = ReadString();
+            if (stringValue == null)
+            {
+                return default;
+            }
+            return new Uri(stringValue);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -622,31 +652,19 @@ namespace SpanJson
                     break;
                 case JsonToken.Number:
                 {
-                    for (var i = pos; i < _chars.Length; i++)
+                    if (TryFindEndOfNumber(pos, out var charsConsumed))
                     {
-                        ref readonly var c = ref _chars[i];
-                        if (!IsNumericSymbol(c))
-                        {
-                            pos = i;
-                            break;
-                        }
+                        pos += charsConsumed;
                     }
 
                     break;
                 }
                 case JsonToken.String:
                 {
-                    for (var i = pos + 1; i < _chars.Length; i++)
+                    if (TryFindEndOfString(pos, out var charsConsumed))
                     {
-                        ref readonly var c = ref _chars[i];
-                        if (c == JsonConstant.String)
-                        {
-                            if (_chars[i - 1] != '\\')
-                            {
-                                pos = i + 1;
-                                return;
-                            }
-                        }
+                        pos += charsConsumed + 1; // skip '"' too
+                        return;
                     }
 
                     ThrowInvalidOperationException();
@@ -660,6 +678,48 @@ namespace SpanJson
                     pos += 5;
                     break;
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool TryFindEndOfNumber(int pos, out int charsConsumed)
+        {
+            for (var i = pos; i < _chars.Length; i++)
+            {
+                ref readonly var c = ref _chars[i];
+                if (!IsNumericSymbol(c))
+                {
+                    charsConsumed = i - pos;
+                    return true;
+                }
+            }
+
+            charsConsumed = default;
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool TryFindEndOfString(int pos, out int charsConsumed)
+        {
+            for (var i = pos + 1; i < _chars.Length; i++)
+            {
+                ref readonly var c = ref _chars[i];
+                if (c == JsonConstant.String)
+                {
+                    if (_chars[i - 1] == '\\') // now it could be just an escaped '"'
+                    {
+                        if (i - 2 > 0 && _chars[i - 2] != '\\') // it's an escaped string and not just an escaped '\\'
+                        {
+                            continue;
+                        }
+                    }
+
+                    charsConsumed = i - pos;
+                    return true;
+                }
+            }
+
+            charsConsumed = default;
+            return false;
         }
 
         private JsonToken ReadNextToken()
@@ -704,6 +764,7 @@ namespace SpanJson
                 case '7':
                 case '8':
                 case '9':
+                case '0':
                     return JsonToken.Number;
                 default:
                     return JsonToken.None;

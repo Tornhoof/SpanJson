@@ -40,6 +40,20 @@ namespace SpanJson.Benchmarks.Fixture
             _valueFixtures.Add(byteFixture.Type, byteFixture);
             var shortFixture = new ShortValueFixture();
             _valueFixtures.Add(shortFixture.Type, shortFixture);
+            var versionFixture = new VersionFixture();
+            _valueFixtures.Add(versionFixture.Type, versionFixture);
+            var uriFixture = new UriFixture();
+            _valueFixtures.Add(uriFixture.Type, uriFixture);
+            var sbyteFixture = new SByteValueFixture();
+            _valueFixtures.Add(sbyteFixture.Type, sbyteFixture);
+            var uintFixture = new UintValueFixture();
+            _valueFixtures.Add(uintFixture.Type, uintFixture);
+            var ushortFixture = new UshortValueFixture();
+            _valueFixtures.Add(ushortFixture.Type, ushortFixture);
+            var ulongFixture = new UlongValueFixture();
+            _valueFixtures.Add(ulongFixture.Type, ulongFixture);
+            var timespanFixture = new TimespanFixture();
+            _valueFixtures.Add(timespanFixture.Type, timespanFixture);
         }
 
         public object Create(Type type, int repeatCount = 1, int recursiveCount = 1)
