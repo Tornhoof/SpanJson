@@ -35,6 +35,10 @@ namespace SpanJson.Tests
         }
 
 
+        /// <summary>
+        /// Jil's fraction handling is wrong
+        /// </summary>
+        /// <param name="modelType"></param>
         [Theory]
         [MemberData(nameof(GetModels))]
         public void CanDeserializeAllFromJil(Type modelType)

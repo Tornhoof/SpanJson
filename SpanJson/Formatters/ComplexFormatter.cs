@@ -140,6 +140,67 @@ namespace SpanJson.Formatters
             return type.GetMethod(name);
         }
 
+        private static Expression BuildPropertyComparisonSwitchExpression<TResolver>(TResolver resolver, JsonMemberInfo[] memberInfos, string prefix, int index,
+            ParameterExpression switchValue,
+            Expression returnValue, Expression readerParameter) where TResolver : IJsonFormatterResolver<TResolver>, new()
+        {
+            var group = memberInfos.Where(a =>(prefix == null || a.Name.StartsWith(prefix)) && a.Name.Length > index ).GroupBy(a => a.Name[index]).ToList();
+            if (!group.Any())
+            {
+                return null;
+            }
+
+            var cases = new List<SwitchCase>();
+            var equalityMethod =
+                typeof(ComplexFormatter).GetMethod(nameof(StringEquals), BindingFlags.NonPublic | BindingFlags.Static);
+            var defaultValue = Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader.ReadNextSegment)));
+            foreach (var groupedMemberInfos in group)
+            {
+                var memberInfosPerChar = groupedMemberInfos.Count();
+                if (memberInfosPerChar == 1) // only one hit
+                {
+                    var memberInfo = groupedMemberInfos.Single();
+                    var formatter = resolver.GetFormatter(memberInfo.MemberType);
+                    var checkLength = (prefix?.Length ?? 0) + 1;
+                    var testExpression = Expression.Call(equalityMethod, switchValue, Expression.Constant(checkLength),
+                        Expression.Constant(memberInfo.Name.Substring(checkLength)));
+                    var matchExpression = Expression.Assign(Expression.PropertyOrField(returnValue, memberInfo.MemberName),
+                        Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"), readerParameter));
+                    var switchCase =
+                        Expression.SwitchCase(
+                            Expression.IfThenElse(testExpression, matchExpression, defaultValue),
+                            Expression.Constant(groupedMemberInfos.Key));
+                    cases.Add(switchCase);
+                }
+                else
+                {
+                    var nextPrefix = prefix + groupedMemberInfos.Key;
+                    var nextSwitch =
+                        BuildPropertyComparisonSwitchExpression(resolver, memberInfos, nextPrefix, index + 1, switchValue, returnValue, readerParameter);
+                    var directMatch = groupedMemberInfos.SingleOrDefault(a => a.Name == nextPrefix);
+                    Expression directMatchExpression = null;
+                    if (directMatch != null)
+                    {
+                        var formatter = resolver.GetFormatter(directMatch.MemberType);
+                        var matchExpression = Expression.Assign(Expression.PropertyOrField(returnValue, directMatch.MemberName),
+                            Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"), readerParameter));
+                        var testExpression = Expression.Equal(Expression.Property(switchValue, "Length"), Expression.Constant(nextPrefix.Length));
+                        directMatchExpression = Expression.IfThenElse(testExpression, matchExpression, nextSwitch);
+                    }
+
+                    var switchCase =
+                        Expression.SwitchCase(directMatchExpression ?? nextSwitch,
+                            Expression.Constant(groupedMemberInfos.Key));
+                    cases.Add(switchCase);
+                }
+            }
+
+            var indexedSwitchValue = Expression.Call(typeof(ComplexFormatter).GetMethod(nameof(GetChar), BindingFlags.NonPublic | BindingFlags.Static),
+                switchValue, Expression.Constant(index));
+            var switchExpression = Expression.Switch(typeof(void), indexedSwitchValue, defaultValue, null, cases.ToArray());
+            return switchExpression;
+        }
+
 
         protected static DeserializeDelegate<T, TResolver> BuildDeserializeDelegate<T, TResolver>()
             where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -148,24 +209,12 @@ namespace SpanJson.Formatters
 
             var resolver = StandardResolvers.GetResolver<TResolver>();
             var memberInfos = resolver.GetMemberInfos<T>();
-            var cases = new List<SwitchCase>();
             var returnValue = Expression.Variable(typeof(T), "result");
-            foreach (var memberInfo in memberInfos)
-            {
-                var formatter = resolver.GetFormatter(memberInfo.MemberType);
-                var switchCase = Expression.SwitchCase(
-                    Expression.Assign(Expression.PropertyOrField(returnValue, memberInfo.MemberName),
-                        Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"),
-                            readerParameter)),
-                    Expression.Constant(memberInfo.Name));
-                cases.Add(switchCase);
-            }
-
-            var equalityMethod =
-                typeof(ComplexFormatter).GetMethod(nameof(IsEqual), BindingFlags.NonPublic | BindingFlags.Static);
-            var switchExpression = Expression.Switch(typeof(void),
-                Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader.ReadNameSpan))), Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader.ReadNextSegment))),
-                equalityMethod, cases.ToArray());
+            var switchValue = Expression.Variable(typeof(ReadOnlySpan<char>), "switchValue");
+            var switchValueAssignExpression = Expression.Assign(switchValue,
+                Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader.ReadNameSpan))));
+            var switchExpression = Expression.Block(new[] {switchValue}, switchValueAssignExpression,
+                BuildPropertyComparisonSwitchExpression(resolver, memberInfos, null, 0, switchValue, returnValue, readerParameter));
             var countExpression = Expression.Parameter(typeof(int), "count");
             var abortExpression = Expression.IsTrue(Expression.Call(readerParameter,
                 readerParameter.Type.GetMethod(nameof(JsonReader.TryReadIsEndObjectOrValueSeparator)),
@@ -188,11 +237,20 @@ namespace SpanJson.Formatters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsEqual(ReadOnlySpan<char> span, string comparison)
+        private static bool StringEquals(ReadOnlySpan<char> span, int offset, string comparison)
         {
-            //return span.Equals(comparison.AsSpan(), StringComparison.Ordinal);
-            return span.SequenceEqual(comparison.AsSpan());
+            return span.Slice(offset).SequenceEqual(comparison.AsSpan());
         }
+
+        /// <summary>
+        /// Couldn't get it working with Expression Trees,ref return lvalues do not work yet
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static char GetChar(in ReadOnlySpan<char> span, int index)
+        {
+            return span[index];
+        }
+
 
         protected delegate void SerializeDelegate<in T, in TResolver>(ref JsonWriter writer, T value)
             where TResolver : IJsonFormatterResolver<TResolver>, new();

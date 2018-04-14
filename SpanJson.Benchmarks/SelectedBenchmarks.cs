@@ -21,176 +21,31 @@ namespace SpanJson.Benchmarks
         private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
 
 
-        //private static readonly string AccessTokenSerializedString =
-        //    SpanJsonSerializer.Serialize(ExpressionTreeFixture.Create<AccessToken>());
 
-        //private static readonly byte[] AccessTokenSerializedByteArray =
-        //    Encoding.UTF8.GetBytes(AccessTokenSerializedString);
+        private static readonly string AnswerSerializedString =
+            SpanJsonSerializer.Serialize(ExpressionTreeFixture.Create<Answer>());
 
-        //[Benchmark]
-        //public AccessToken DeserializeAccessTokenWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Deserialize<AccessToken>(AccessTokenSerializedString);
-        //}
-
-        //[Benchmark]
-        //public AccessToken DeserializeAccessTokenWithJilSerializer()
-        //{
-        //    return JilSerializer.Deserialize<AccessToken>(AccessTokenSerializedString);
-        //}
-
-        //[Benchmark]
-        //public AccessToken DeserializeAccessTokenWithUtf8JsonSerializer()
-        //{
-        //    return Utf8JsonSerializer.Deserialize<AccessToken>(AccessTokenSerializedByteArray);
-        //}
-
-
-
-        private static readonly DateTime DateTimeInput = ExpressionTreeFixture.Create<DateTime>();
-
-        private static readonly DateTimeOffset DateTimeOffsetInput = ExpressionTreeFixture.Create<DateTimeOffset>();
-
-        private static readonly string DateTimeOutputOfJilSerializer = JilSerializer.Serialize(DateTimeInput);
-
-        private static readonly string DateTimeOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(DateTimeInput);
-
-        private static readonly byte[] DateTimeOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(DateTimeInput);
-
-        private static readonly string DateTimeOffsetOutputOfJilSerializer =
-            JilSerializer.Serialize(DateTimeOffsetInput);
-
-        private static readonly string DateTimeOffsetOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(DateTimeOffsetInput);
-
-        private static readonly byte[] DateTimeOffsetOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(DateTimeOffsetInput);
-
-        //[Benchmark]
-        //public DateTime DeserializeDateTimeWithJilSerializer()
-        //{
-        //    return JilSerializer.Deserialize<DateTime>(DateTimeOutputOfJilSerializer);
-        //}
+        private static readonly byte[] AnswerSerializedByteArray =
+            Encoding.UTF8.GetBytes(AnswerSerializedString);
 
         [Benchmark]
-        public DateTime DeserializeDateTimeWithJsonSpanSerializer()
+        public Answer DeserializeAnswerWithSpanJsonSerializer()
         {
-            return SpanJsonSerializer.Deserialize<DateTime>(DateTimeOutputOfJsonSpanSerializer);
+            return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
         }
-
-        //[Benchmark]
-        //public DateTime DeserializeDateTimeWithUtf8JsonSerializer()
-        //{
-        //    return Utf8JsonSerializer.Deserialize<DateTime>(DateTimeOutputOfUtf8JsonSerializer);
-        //}
-
-        //[Benchmark]
-        //public DateTimeOffset DeserializeDateTimeOffsetWithJilSerializer()
-        //{
-        //    return JilSerializer.Deserialize<DateTimeOffset>(DateTimeOffsetOutputOfJilSerializer);
-        //}
 
         [Benchmark]
-        public DateTimeOffset DeserializeDateTimeOffsetWithJsonSpanSerializer()
+        public Answer DeserializeAnswerWithJilSerializer()
         {
-            return SpanJsonSerializer.Deserialize<DateTimeOffset>(DateTimeOffsetOutputOfJsonSpanSerializer);
+            return JilSerializer.Deserialize<Answer>(AnswerSerializedString);
         }
 
-        //[Benchmark]
-        //public DateTimeOffset DeserializeDateTimeOffsetWithUtf8JsonSerializer()
-        //{
-        //    return Utf8JsonSerializer.Deserialize<DateTimeOffset>(DateTimeOffsetOutputOfUtf8JsonSerializer);
-        //}
+        [Benchmark]
+        public Answer DeserializeAnswerWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Deserialize<Answer>(AnswerSerializedByteArray);
+        }
+
 
     }
-
-    //public sealed class AccessTokenFormatter : ComplexFormatter, IJsonFormatter<AccessToken>
-    //{
-    //    public static readonly AccessTokenFormatter Default = new AccessTokenFormatter();
-    //    private static readonly SerializeDelegate<AccessToken> Serializer = BuildSerializeDelegate<AccessToken>();
-    //    private static readonly DeserializeDelegate<AccessToken> Deserializer = BuildDeserializeDelegate<AccessToken>();
-
-    //    public int AllocSize { get; } = EstimateSize<AccessToken>();
-
-    //    public AccessToken Deserialize(ref JsonReader reader, IJsonFormatterResolver formatterResolver)
-    //    {
-    //        if (reader.ReadIsNull())
-    //        {
-    //            return null;
-    //        }
-
-    //        reader.ReadBeginObjectOrThrow();
-    //        int count = 0;
-    //        var result = new AccessToken();
-    //        while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
-    //        {
-    //            var nameSpan = reader.ReadNameSpan();
-    //            switch (nameSpan[0])
-    //            {
-    //                case 'a':
-    //                    switch (nameSpan[1])
-    //                    {
-    //                        case 'c':
-    //                            switch (nameSpan[2])
-    //                            {
-    //                                case 'c':
-    //                                    switch (nameSpan[3])
-    //                                    {
-    //                                        case 'e':
-    //                                            if (nameSpan.Slice(4).SequenceEqual("ss_token".AsSpan()))
-    //                                            {
-    //                                                result.access_token =
-    //                                                    StringFormatter.Default.Deserialize(ref reader,
-    //                                                        formatterResolver);
-    //                                            }
-
-    //                                            break;
-    //                                        case 'o':
-    //                                            if (nameSpan.Slice(4).SequenceEqual("unt_id".AsSpan()))
-    //                                            {
-    //                                                result.account_id =
-    //                                                    NullableInt32Formatter.Default.Deserialize(ref reader,
-    //                                                        formatterResolver);
-    //                                            }
-
-    //                                            break;
-    //                                    }
-
-    //                                    break;
-    //                            }
-    //                            break;
-
-    //                    }
-    //                    break;
-    //                case 'e':
-    //                    if (nameSpan.Slice(1).SequenceEqual("xpires_on_date".AsSpan()))
-    //                    {
-    //                        //reader.ReadStringSpanInternal();
-    //                        result.expires_on_date = NullableDateTimeFormatter.Default.Deserialize(ref reader, formatterResolver);
-    //                    }
-    //                    break;
-    //                case 's':
-    //                    if (nameSpan.Slice(1).SequenceEqual("cope".AsSpan()))
-    //                    {
-    //                        result.scope = StringListFormatter.Default.Deserialize(ref reader, formatterResolver);
-    //                    }
-    //                    break;
-    //            }
-    //        }
-
-    //        return result;
-    //    }
-
-
-    //    public void Serialize(ref JsonWriter writer, AccessToken value, IJsonFormatterResolver formatterResolver)
-    //    {
-    //        if (value == null)
-    //        {
-    //            writer.WriteNull();
-    //            return;
-    //        }
-
-    //        Serializer(ref writer, value, formatterResolver);
-    //    }
-    //}
 }

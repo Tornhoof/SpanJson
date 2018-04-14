@@ -9,12 +9,8 @@ Performance Issues:
 * Integer Parsing: derived from UTF8Json
 * DateTime/DateTimeOffset Parser: derived from UTf8Parser with modifications to support less than 7 digit fractions
 
-Still a few missing
-
-
 TO-DO
-* Improve property selection (currently we compare the propertyname for each Switch again, instead of e.g switching on the first char first and then conpare the rest, which should improve performance)
-* Things like ``[IgnoreSerialize]`` and ``ShouldSerialize``
+
 * Many edge cases
 * dynamic
 * More Performance work
