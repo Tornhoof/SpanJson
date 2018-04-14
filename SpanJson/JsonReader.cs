@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Buffers;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using SpanJson.Helpers;
 
@@ -248,16 +250,25 @@ namespace SpanJson
         public char ReadChar()
         {
             var span = ReadStringSpan();
+            var pos = 0;
+            return ReadCharInternal(span, ref pos);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static char ReadCharInternal(ReadOnlySpan<char> span, ref int pos)
+        {
             if (span.Length == 1)
             {
-                return span[0];
+                return span[pos++];
             }
-            if(span[0] == '\\')
+
+            if (span[pos] == '\\')
             {
-                switch (span[1])
+                pos++;
+                switch (span[pos++])
                 {
                     case '"':
-                        return '"';                        
+                        return '"';
                     case '\\':
                         return '\\';
                     case 'b':
@@ -270,13 +281,19 @@ namespace SpanJson
                         return '\r';
                     case 't':
                         return '\t';
-                    default:
-                    {
-                        // todo handle U+
+                    case 'U':
+                    case 'u':
+                        if (span.Length == 6)
+                        {
+                            var result = (char) int.Parse(span.Slice(2, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture);
+                            pos += 4;
+                            return result;
+                        }
+
                         break;
-                    }
                 }
             }
+
             ThrowInvalidOperationException();
             return default;
         }
@@ -338,9 +355,85 @@ namespace SpanJson
             }
 
             var span = ReadStringSpanInternal();
-            return span.ToString();
+            return Unescape(span);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static string Unescape(in ReadOnlySpan<char> span)
+        {
+            var escapedChars = 0;
+            for (var i = 0; i < span.Length; i++)
+            {
+                if (span[i] == '\\')
+                {
+                    escapedChars++;
+                    i++;
+                    if (i < span.Length && span[i] == 'u')
+                    {
+                        escapedChars += 4; //4 hex digits
+                        i += 4;
+                    }
+                }
+            }
+
+            if (escapedChars == 0)
+            {
+                return span.ToString();
+            }
+
+            var unescapedLength = span.Length - escapedChars;
+            var result = new string('\0', unescapedLength);
+            ref var c = ref MemoryMarshal.GetReference(result.AsSpan());
+            var unescapedIndex = 0;
+            var index = 0;
+            while (index < span.Length)
+            {
+                var current = span[index++];
+                if (current == '\\')
+                {
+                    current = span[index++];
+                    switch (current)
+                    {
+                        case '"':
+                            current = '"';
+                            break;
+                        case '\\':
+                            current = '\\';
+                            break;
+                        case 'b':
+                            current = '\b';
+                            break;
+                        case 'f':
+                            current = '\f';
+                            break;
+                        case 'n':
+                            current = '\n';
+                            break;
+                        case 'r':
+                            current = '\r';
+                            break;
+                        case 't':
+                            current = '\t';
+                            break;
+                        case 'U':
+                        case 'u':
+                        {
+                            current = (char) int.Parse(span.Slice(index, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture);
+                            index += 4;
+                            break;
+                        }
+                    }
+                }
+                Unsafe.Add(ref c, unescapedIndex++) = current;
+            }
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// Not escaped
+        /// </summary>
         public ReadOnlySpan<char> ReadStringSpan()
         {
             if (ReadIsNull())
@@ -707,7 +800,7 @@ namespace SpanJson
                 {
                     if (_chars[i - 1] == '\\') // now it could be just an escaped '"'
                     {
-                        if (i - 2 > 0 && _chars[i - 2] != '\\') // it's an escaped string and not just an escaped '\\'
+                        if (i - 2 >= 0 && _chars[i - 2] != '\\') // it's an escaped string and not just an escaped '\\'
                         {
                             continue;
                         }
