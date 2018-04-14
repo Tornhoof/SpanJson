@@ -66,11 +66,11 @@ namespace SpanJson.Benchmarks
         private static readonly byte[] DateTimeOffsetOutputOfUtf8JsonSerializer =
             Utf8JsonSerializer.Serialize(DateTimeOffsetInput);
 
-        [Benchmark]
-        public DateTime DeserializeDateTimeWithJilSerializer()
-        {
-            return JilSerializer.Deserialize<DateTime>(DateTimeOutputOfJilSerializer);
-        }
+        //[Benchmark]
+        //public DateTime DeserializeDateTimeWithJilSerializer()
+        //{
+        //    return JilSerializer.Deserialize<DateTime>(DateTimeOutputOfJilSerializer);
+        //}
 
         [Benchmark]
         public DateTime DeserializeDateTimeWithJsonSpanSerializer()
@@ -78,17 +78,17 @@ namespace SpanJson.Benchmarks
             return SpanJsonSerializer.Deserialize<DateTime>(DateTimeOutputOfJsonSpanSerializer);
         }
 
-        [Benchmark]
-        public DateTime DeserializeDateTimeWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Deserialize<DateTime>(DateTimeOutputOfUtf8JsonSerializer);
-        }
+        //[Benchmark]
+        //public DateTime DeserializeDateTimeWithUtf8JsonSerializer()
+        //{
+        //    return Utf8JsonSerializer.Deserialize<DateTime>(DateTimeOutputOfUtf8JsonSerializer);
+        //}
 
-        [Benchmark]
-        public DateTimeOffset DeserializeDateTimeOffsetWithJilSerializer()
-        {
-            return JilSerializer.Deserialize<DateTimeOffset>(DateTimeOffsetOutputOfJilSerializer);
-        }
+        //[Benchmark]
+        //public DateTimeOffset DeserializeDateTimeOffsetWithJilSerializer()
+        //{
+        //    return JilSerializer.Deserialize<DateTimeOffset>(DateTimeOffsetOutputOfJilSerializer);
+        //}
 
         [Benchmark]
         public DateTimeOffset DeserializeDateTimeOffsetWithJsonSpanSerializer()
@@ -96,11 +96,11 @@ namespace SpanJson.Benchmarks
             return SpanJsonSerializer.Deserialize<DateTimeOffset>(DateTimeOffsetOutputOfJsonSpanSerializer);
         }
 
-        [Benchmark]
-        public DateTimeOffset DeserializeDateTimeOffsetWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Deserialize<DateTimeOffset>(DateTimeOffsetOutputOfUtf8JsonSerializer);
-        }
+        //[Benchmark]
+        //public DateTimeOffset DeserializeDateTimeOffsetWithUtf8JsonSerializer()
+        //{
+        //    return Utf8JsonSerializer.Deserialize<DateTimeOffset>(DateTimeOffsetOutputOfUtf8JsonSerializer);
+        //}
 
     }
 

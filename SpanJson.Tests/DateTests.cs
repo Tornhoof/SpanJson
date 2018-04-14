@@ -79,12 +79,22 @@ namespace SpanJson.Tests
         }
 
         [Fact]
-        public void SerializeDeserialize()
+        public void SerializeDeserializeDateTime()
         {
             var fixture = new ExpressionTreeFixture();
             var dt = fixture.Create<DateTime>();
             var serialized = JsonSerializer.Generic.Serialize(dt);
             var deserialized = JsonSerializer.Generic.Deserialize<DateTime>(serialized);
+            Assert.Equal(dt, deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeDateTimeOffset()
+        {
+            var fixture = new ExpressionTreeFixture();
+            var dt = fixture.Create<DateTimeOffset>();
+            var serialized = JsonSerializer.Generic.Serialize(dt);
+            var deserialized = JsonSerializer.Generic.Deserialize<DateTimeOffset>(serialized);
             Assert.Equal(dt, deserialized);
         }
     }

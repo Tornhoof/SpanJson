@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace SpanJson.Helpers
 {
@@ -7,36 +8,65 @@ namespace SpanJson.Helpers
     /// Largely based on https://raw.githubusercontent.com/dotnet/corefx/f5d31619f821e7b4a0bcf7f648fe1dc2e4e2f09f/src/System.Memory/src/System/Buffers/Text/Utf8Parser/Utf8Parser.Date.O.cs
     /// Copyright (c) .NET Foundation and Contributors
     /// Modified to work for char and removed the 7 fractions requirement
+    /// Non-UTC is slow, as it needs to go through the timezone stuff to get the right offset
     /// </summary>
     public static class DateTimeParser
     {
-
-        public static bool TryParseDateTimeOffset(ReadOnlySpan<char> source, out DateTimeOffset value,
-            out int charsConsumed)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryParseDateTimeOffset(ReadOnlySpan<char> source, out DateTimeOffset value, out int charsConsumed)
         {
-            return TryParseDateTimeOffsetIso8601(source, out value, out charsConsumed, out var kind);
+            if (TryParseDate(source, out var date, out charsConsumed))
+            {
+                switch (date.Kind)
+                {
+                    // for local/unspecified we go through datetime to make sure we get the offsets correct
+                    case DateTimeKind.Local:
+                    {
+                        value = new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second,
+                            date.Kind).AddTicks(date.Fraction);
+                        return true;
+                    }
+                    case DateTimeKind.Unspecified:
+                    {
+                        value = new DateTimeOffset(new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second,
+                            date.Kind).AddTicks(date.Fraction), date.Offset);
+                        return true;
+                    }
+                    case DateTimeKind.Utc:
+                    {
+                        value = new DateTimeOffset(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second,
+                            date.Offset).AddTicks(date.Fraction);
+                        return true;
+                    }
+                }
+            }
+
+            value = default;
+            charsConsumed = 0;
+            return false;
         }
 
-        public static bool TryParseDateTime(ReadOnlySpan<char> source, out DateTime value,
-            out int charsConsumed)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryParseDateTime(ReadOnlySpan<char> source, out DateTime value, out int charsConsumed)
         {
-            if (TryParseDateTimeOffsetIso8601(source, out var dto, out charsConsumed, out var kind))
+            if (TryParseDate(source, out var date, out charsConsumed))
             {
-                switch (kind)
+                value = new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second, date.Kind)
+                    .AddTicks(date.Fraction);
+                switch (date.Kind)
                 {
+                    case DateTimeKind.Unspecified:
+                    {
+                        var offset = TimeZoneInfo.Local.GetUtcOffset(value) - date.Offset;
+                        value = value.Add(offset);
+                        return true;
+                    }
                     case DateTimeKind.Local:
-                        value = dto.LocalDateTime;
-                        break;
                     case DateTimeKind.Utc:
-                        value = dto.UtcDateTime;
-                        break;
-                    default:
-                        value = dto.DateTime;
-                        break;
-
+                    {
+                        return true;
+                    }
                 }
-
-                return true;
             }
 
             value = default;
@@ -55,15 +85,13 @@ namespace SpanJson.Helpers
         ///  2017-06-12T05:30:45Z
         ///  2017-06-12T05:30:45 (local)
         /// </summary>
-        private static bool TryParseDateTimeOffsetIso8601(ReadOnlySpan<char> source, out DateTimeOffset value,
-            out int charsConsumed, out DateTimeKind kind)
+        private static bool TryParseDate(ReadOnlySpan<char> source, out Date value,
+            out int charsConsumed)
         {
-
             if (source.Length < 19)
             {
                 value = default;
                 charsConsumed = 0;
-                kind = default;
                 return false;
             }
 
@@ -78,7 +106,6 @@ namespace SpanJson.Helpers
                 {
                     value = default;
                     charsConsumed = 0;
-                    kind = default;
                     return false;
                 }
 
@@ -89,7 +116,6 @@ namespace SpanJson.Helpers
             {
                 value = default;
                 charsConsumed = 0;
-                kind = default;
                 return false;
             }
 
@@ -102,7 +128,6 @@ namespace SpanJson.Helpers
                 {
                     value = default;
                     charsConsumed = 0;
-                    kind = default;
                     return false;
                 }
 
@@ -113,7 +138,6 @@ namespace SpanJson.Helpers
             {
                 value = default;
                 charsConsumed = 0;
-                kind = default;
                 return false;
             }
 
@@ -126,7 +150,6 @@ namespace SpanJson.Helpers
                 {
                     value = default;
                     charsConsumed = 0;
-                    kind = default;
                     return false;
                 }
 
@@ -137,7 +160,6 @@ namespace SpanJson.Helpers
             {
                 value = default;
                 charsConsumed = 0;
-                kind = default;
                 return false;
             }
 
@@ -150,7 +172,6 @@ namespace SpanJson.Helpers
                 {
                     value = default;
                     charsConsumed = 0;
-                    kind = default;
                     return false;
                 }
 
@@ -161,7 +182,6 @@ namespace SpanJson.Helpers
             {
                 value = default;
                 charsConsumed = 0;
-                kind = default;
                 return false;
             }
 
@@ -174,7 +194,6 @@ namespace SpanJson.Helpers
                 {
                     value = default;
                     charsConsumed = 0;
-                    kind = default;
                     return false;
                 }
 
@@ -185,7 +204,6 @@ namespace SpanJson.Helpers
             {
                 value = default;
                 charsConsumed = 0;
-                kind = default;
                 return false;
             }
 
@@ -198,7 +216,6 @@ namespace SpanJson.Helpers
                 {
                     value = default;
                     charsConsumed = 0;
-                    kind = default;
                     return false;
                 }
 
@@ -217,7 +234,6 @@ namespace SpanJson.Helpers
                 {
                     value = default;
                     charsConsumed = 0;
-                    kind = default;
                     return false;
                 }
 
@@ -240,34 +256,15 @@ namespace SpanJson.Helpers
             var offsetChar = source.Length <= currentOffset ? default : source[currentOffset++];
             if (offsetChar != 'Z' && offsetChar != '+' && offsetChar != '-')
             {
-                if (!TryCreateDateTime(year, month, day, hour, minute, second, fraction, DateTimeKind.Local,
-                    out var dt))
-                {
-                    value = default;
-                    charsConsumed = 0;
-                    kind = default;
-                    return false;
-                }
-
-                value = dt;
+                value = new Date(year, month, day, hour, minute, second, fraction, DateTimeKind.Local, TimeSpan.Zero);
                 charsConsumed = currentOffset;
-                kind = DateTimeKind.Unspecified;
                 return true;
             }
 
             if (offsetChar == 'Z')
             {
-                if (!TryCreateDateTimeOffset(year, month, day, hour, minute, second, fraction,
-                    TimeSpan.Zero, out value))
-                {
-                    value = default;
-                    charsConsumed = 0;
-                    kind = default;
-                    return false;
-                }
-
+                value = new Date(year, month, day, hour, minute, second, fraction, DateTimeKind.Utc, TimeSpan.Zero);
                 charsConsumed = currentOffset;
-                kind = DateTimeKind.Utc;
                 return true;
             }
 
@@ -281,7 +278,6 @@ namespace SpanJson.Helpers
                 {
                     value = default;
                     charsConsumed = 0;
-                    kind = default;
                     return false;
                 }
 
@@ -292,7 +288,6 @@ namespace SpanJson.Helpers
             {
                 value = default;
                 charsConsumed = 0;
-                kind = default;
                 return false;
             }
 
@@ -305,56 +300,46 @@ namespace SpanJson.Helpers
                 {
                     value = default;
                     charsConsumed = 0;
-                    kind = default;
                     return false;
                 }
 
                 offsetMinutes = (int) (digit1 * 10 + digit2);
             }
-            offsetHours = offsetChar == '-' ? -1 * offsetHours : offsetHours;
-            if (!TryCreateDateTimeOffset(year, month, day, hour, minute, second, fraction,
-                new TimeSpan(offsetHours, offsetMinutes, 0), out value))
-            {
-                value = default;
-                charsConsumed = 0;
-                kind = default;
-                return false;
-            }
+            offsetHours = offsetChar == '-' ? -offsetHours : offsetHours;
+            var timeSpan = new TimeSpan(offsetHours, offsetMinutes, 0);
+            value = timeSpan == TimeSpan.Zero
+                ? new Date(year, month, day, hour, minute, second, fraction, DateTimeKind.Utc, timeSpan)
+                : new Date(year, month, day, hour, minute, second, fraction, DateTimeKind.Unspecified, timeSpan);
 
             charsConsumed = currentOffset;
-            kind = DateTimeKind.Local;
             return true;
         }
 
-        private static bool TryCreateDateTime(int year, int month, int day, int hour, int minute, int second, int fraction, DateTimeKind kind, out DateTime value)
+        private readonly ref struct Date
         {
-            try
-            {
-                value = new DateTime(year, month, day, hour, minute, second, kind).AddTicks(fraction);
-                return true;
-            }
-            catch (ArgumentException)
-            {
-            }
+            public readonly int Year;
+            public readonly int Month;
+            public readonly int Day;
+            public readonly int Hour;
+            public readonly int Minute;
+            public readonly int Second;
+            public readonly int Fraction;
+            public readonly DateTimeKind Kind;
+            public readonly TimeSpan Offset;
 
-            value = default;
-            return false;
-        }
-
-        private static bool TryCreateDateTimeOffset(int year, int month, int day, int hour, int minute, int second,
-            int fraction, TimeSpan offset, out DateTimeOffset value)
-        {
-            try
+            public Date(int year, int month, int day, int hour, int minute, int second, int fraction, DateTimeKind kind,
+                TimeSpan offset)
             {
-                value = new DateTimeOffset(year, month, day, hour, minute, second, offset).AddTicks(fraction);
-                return true;
+                Year = year;
+                Month = month;
+                Day = day;
+                Hour = hour;
+                Minute = minute;
+                Second = second;
+                Fraction = fraction;
+                Kind = kind;
+                Offset = offset;
             }
-            catch (ArgumentException)
-            {
-            }
-
-            value = default;
-            return false;
         }
     }
 }
