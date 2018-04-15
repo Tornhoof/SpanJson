@@ -244,7 +244,7 @@ namespace SpanJson
         public void WriteChar(char value)
         {
             ref var pos = ref _pos;
-            const int size = 6; // 1-6 chars + two '"'
+            const int size = 6; // 1-6 chars + two JsonConstant.DoubleQuote
             if (pos > _chars.Length - size)
             {
                 Grow(size);
@@ -253,11 +253,11 @@ namespace SpanJson
             WriteDoubleQuote();
             switch (value)
             {
-                case '"':
-                    WriteSingleEscapedChar('"');
+                case JsonConstant.DoubleQuote:
+                    WriteSingleEscapedChar(JsonConstant.DoubleQuote);
                     break;
-                case '\\':
-                    WriteSingleEscapedChar('\\');
+                case JsonConstant.Escape:
+                    WriteSingleEscapedChar(JsonConstant.Escape);
                     break;
                 case '\b':
                     WriteSingleEscapedChar('b');
@@ -366,7 +366,7 @@ namespace SpanJson
         public void WriteDateTime(DateTime value)
         {
             ref var pos = ref _pos;
-            const int dtSize = 35; // Form o + two '"'
+            const int dtSize = 35; // Form o + two JsonConstant.DoubleQuote
             if (pos > _chars.Length - dtSize)
             {
                 Grow(dtSize);
@@ -381,7 +381,7 @@ namespace SpanJson
         public void WriteDateTimeOffset(DateTimeOffset value)
         {
             ref var pos = ref _pos;
-            const int dtSize = 35; // Form o + two '"'
+            const int dtSize = 35; // Form o + two JsonConstant.DoubleQuote
             if (pos > _chars.Length - dtSize)
             {
                 Grow(dtSize);
@@ -396,7 +396,7 @@ namespace SpanJson
         public void WriteTimeSpan(TimeSpan value)
         {
             ref var pos = ref _pos;
-            const int dtSize = 20; // Form o + two '"'
+            const int dtSize = 20; // Form o + two JsonConstant.DoubleQuote
             if (pos > _chars.Length - dtSize)
             {
                 Grow(dtSize);
@@ -411,7 +411,7 @@ namespace SpanJson
         public void WriteGuid(Guid value)
         {
             ref var pos = ref _pos;
-            const int guidSize = 42; // Format D + two '"';
+            const int guidSize = 42; // Format D + two JsonConstant.DoubleQuote;
             if (pos > _chars.Length - guidSize)
             {
                 Grow(guidSize);
@@ -439,11 +439,11 @@ namespace SpanJson
                 var c = remaining[i];
                 switch (c)
                 {
-                    case '"':
-                        CopyAndEscape(ref remaining, ref i, '\"');
+                    case JsonConstant.DoubleQuote:
+                        CopyAndEscape(ref remaining, ref i, JsonConstant.DoubleQuote);
                         break;
-                    case '\\':
-                        CopyAndEscape(ref remaining, ref i, '\\');
+                    case JsonConstant.Escape:
+                        CopyAndEscape(ref remaining, ref i, JsonConstant.Escape);
                         break;
                     case '\b':
                         CopyAndEscape(ref remaining, ref i, 'b');
@@ -590,7 +590,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteSingleEscapedChar(char toEscape)
         {
-            _chars[_pos++] = '\\';
+            _chars[_pos++] = JsonConstant.Escape;
             _chars[_pos++] = toEscape;
         }
 
@@ -611,7 +611,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteDoubleEscapedCar(char firstToEscape, char secondToEscape)
         {
-            _chars[_pos++] = '\\';
+            _chars[_pos++] = JsonConstant.Escape;
             _chars[_pos++] = 'u';
             _chars[_pos++] = '0';
             _chars[_pos++] = '0';

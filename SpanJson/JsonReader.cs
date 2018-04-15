@@ -262,15 +262,15 @@ namespace SpanJson
                 return span[pos++];
             }
 
-            if (span[pos] == '\\')
+            if (span[pos] == JsonConstant.Escape)
             {
                 pos++;
                 switch (span[pos++])
                 {
-                    case '"':
-                        return '"';
-                    case '\\':
-                        return '\\';
+                    case JsonConstant.DoubleQuote:
+                        return JsonConstant.DoubleQuote;
+                    case JsonConstant.Escape:
+                        return JsonConstant.Escape;
                     case 'b':
                         return '\b';
                     case 'f':
@@ -346,7 +346,7 @@ namespace SpanJson
             return span;
         }
 
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ReadString()
         {
             if (ReadIsNull())
@@ -354,33 +354,12 @@ namespace SpanJson
                 return null;
             }
 
-            var span = ReadStringSpanInternal();
-            return Unescape(span);
+            var span = ReadStringSpanInternal(out var escapedChars);
+            return escapedChars == 0 ? span.ToString() : Unescape(span, escapedChars);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static string Unescape(in ReadOnlySpan<char> span)
+        private static string Unescape(in ReadOnlySpan<char> span, int escapedChars)
         {
-            var escapedChars = 0;
-            for (var i = 0; i < span.Length; i++)
-            {
-                if (span[i] == '\\')
-                {
-                    escapedChars++;
-                    i++;
-                    if (i < span.Length && span[i] == 'u')
-                    {
-                        escapedChars += 4; //4 hex digits
-                        i += 4;
-                    }
-                }
-            }
-
-            if (escapedChars == 0)
-            {
-                return span.ToString();
-            }
-
             var unescapedLength = span.Length - escapedChars;
             var result = new string('\0', unescapedLength);
             ref var c = ref MemoryMarshal.GetReference(result.AsSpan());
@@ -389,16 +368,16 @@ namespace SpanJson
             while (index < span.Length)
             {
                 var current = span[index++];
-                if (current == '\\')
+                if (current == JsonConstant.Escape)
                 {
                     current = span[index++];
                     switch (current)
                     {
-                        case '"':
-                            current = '"';
+                        case JsonConstant.DoubleQuote:
+                            current = JsonConstant.DoubleQuote;
                             break;
-                        case '\\':
-                            current = '\\';
+                        case JsonConstant.Escape:
+                            current = JsonConstant.Escape;
                             break;
                         case 'b':
                             current = '\b';
@@ -440,11 +419,11 @@ namespace SpanJson
             {
                 return NullTerminator;
             }
-            return ReadStringSpanInternal();
+            return ReadStringSpanInternal(out _);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ReadOnlySpan<char> ReadStringSpanInternal()
+        private ReadOnlySpan<char> ReadStringSpanInternal(out int escapedChars)
         {
             ref var pos = ref _pos;
             if (_chars[pos++] != JsonConstant.String)
@@ -452,10 +431,11 @@ namespace SpanJson
                 ThrowInvalidOperationException();
             }
 
-            if (TryFindEndOfString(pos, out var charsConsumed))
+            // We should also get info about how many escaped chars exist from here
+            if (TryFindEndOfString(pos, out var charsConsumed, out escapedChars))
             {
                 var result = _chars.Slice(pos, charsConsumed);
-                pos += charsConsumed + 1; // skip the '"' too
+                pos += charsConsumed + 1; // skip the JsonConstant.DoubleQuote too
                 return result;
             }
 
@@ -754,9 +734,9 @@ namespace SpanJson
                 }
                 case JsonToken.String:
                 {
-                    if (TryFindEndOfString(pos, out var charsConsumed))
+                    if (TryFindEndOfString(pos, out var charsConsumed, out _))
                     {
-                        pos += charsConsumed + 1; // skip '"' too
+                        pos += charsConsumed + 1; // skip JsonConstant.DoubleQuote too
                         return;
                     }
 
@@ -791,16 +771,26 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool TryFindEndOfString(int pos, out int charsConsumed)
+        private bool TryFindEndOfString(int pos, out int charsConsumed, out int escapedChars)
         {
+            escapedChars = 0;
             for (var i = pos + 1; i < _chars.Length; i++)
             {
                 ref readonly var c = ref _chars[i];
-                if (c == JsonConstant.String)
+                if (c == JsonConstant.Escape)
                 {
-                    if (_chars[i - 1] == '\\') // now it could be just an escaped '"'
+                    escapedChars++;
+                    var nextChar = _chars[i + 1];
+                    if (nextChar == 'u' || nextChar == 'U')
                     {
-                        if (i - 2 >= 0 && _chars[i - 2] != '\\') // it's an escaped string and not just an escaped '\\'
+                        escapedChars += 4; // add only 4 and not 5 as we still need one unescaped char
+                    }
+                }
+                else if (c == JsonConstant.String)
+                {
+                    if (_chars[i - 1] == JsonConstant.Escape) // now it could be just an escaped JsonConstant.DoubleQuote
+                    {
+                        if (i - 2 >= 0 && _chars[i - 2] != JsonConstant.Escape) // it's an escaped string and not just an escaped JsonConstant.Escape
                         {
                             continue;
                         }
@@ -863,5 +853,7 @@ namespace SpanJson
                     return JsonToken.None;
             }
         }
+
+
     }
 }

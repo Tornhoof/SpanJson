@@ -12,5 +12,7 @@
         public const char Null = 'n';
         public const char ValueSeparator = ',';
         public const char NameSeparator = ':';
+        public const char Escape = '\\';
+        public const char DoubleQuote = '"';
     }
 }
