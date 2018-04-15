@@ -80,7 +80,7 @@ namespace SpanJson
                 pos += charsConsumed;
                 return result;
             }
-            ThrowInvalidOperationException();
+            ThrowJsonFormatException(JsonFormatException.FormatError.EndOfData);
             return null;
         }
 
@@ -91,7 +91,7 @@ namespace SpanJson
             SkipWhitespace();
             if (!IsAvailable)
             {
-                ThrowInvalidOperationException();
+                ThrowJsonFormatException(JsonFormatException.FormatError.EndOfData);
                 return default;
             }
 
@@ -111,7 +111,7 @@ namespace SpanJson
 
             if (!IsAvailable)
             {
-                ThrowInvalidOperationException();
+                ThrowJsonFormatException(JsonFormatException.FormatError.EndOfData);
                 return default;
             }
 
@@ -132,7 +132,7 @@ namespace SpanJson
             SkipWhitespace();
             if (!IsAvailable)
             {
-                ThrowInvalidOperationException();
+                ThrowJsonFormatException(JsonFormatException.FormatError.EndOfData);
                 return default;
             }
 
@@ -146,7 +146,7 @@ namespace SpanJson
             var result = _chars[pos++] - 48UL;
             if (result > 9)
             {
-                ThrowInvalidOperationException();
+                ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
                 return default;
             }
 
@@ -158,12 +158,6 @@ namespace SpanJson
             }
 
             return result;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsNumber(char c)
-        {
-            return '0' <= c && c <= '9';
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -200,17 +194,17 @@ namespace SpanJson
             {
                 if (_chars[pos + 1] != 'r')
                 {
-                    ThrowInvalidOperationException();
+                    ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(bool));
                 }
 
                 if (_chars[pos + 2] != 'u')
                 {
-                    ThrowInvalidOperationException();
+                    ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(bool));
                 }
 
                 if (_chars[pos + 3] != 'e')
                 {
-                    ThrowInvalidOperationException();
+                    ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(bool));
                 }
 
                 pos += 4;
@@ -221,29 +215,29 @@ namespace SpanJson
             {
                 if (_chars[pos + 1] != 'a')
                 {
-                    ThrowInvalidOperationException();
+                    ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(bool));
                 }
 
                 if (_chars[pos + 2] != 'l')
                 {
-                    ThrowInvalidOperationException();
+                    ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(bool));
                 }
 
                 if (_chars[pos + 3] != 's')
                 {
-                    ThrowInvalidOperationException();
+                    ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(bool));
                 }
 
                 if (_chars[pos + 4] != 'e')
                 {
-                    ThrowInvalidOperationException();
+                    ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(bool));
                 }
 
                 pos += 5;
                 return false;
             }
 
-            ThrowInvalidOperationException();
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(bool));
             return false;
         }
 
@@ -255,7 +249,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static char ReadCharInternal(ReadOnlySpan<char> span, ref int pos)
+        private char ReadCharInternal(ReadOnlySpan<char> span, ref int pos)
         {
             if (span.Length == 1)
             {
@@ -294,7 +288,7 @@ namespace SpanJson
                 }
             }
 
-            ThrowInvalidOperationException();
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(char));
             return default;
         }
 
@@ -306,7 +300,7 @@ namespace SpanJson
                 return value;
             }
 
-            ThrowInvalidOperationException();
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(DateTime));
             return default;
         }
 
@@ -318,20 +312,30 @@ namespace SpanJson
                 return value;
             }
 
-            ThrowInvalidOperationException();
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(DateTimeOffset));
             return default;
         }
 
         public TimeSpan ReadTimeSpan()
         {
             var span = ReadStringSpan();
-            return TimeSpan.Parse(span, CultureInfo.InvariantCulture);
+            if (TimeSpan.TryParse(span, CultureInfo.InvariantCulture, out var result))
+            {
+                return result;
+            }
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(TimeSpan));
+            return default;
         }
 
         public Guid ReadGuid()
         {
             var span = ReadStringSpan();
-            return Guid.Parse(span);
+            if(Guid.TryParse(span, out var result))
+            {
+                return result;
+            }
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(Guid));
+            return default;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -340,7 +344,7 @@ namespace SpanJson
             var span = ReadStringSpan();
             if (_chars[_pos++] != JsonConstant.NameSeparator)
             {
-                ThrowInvalidOperationException();
+                ThrowJsonFormatException(JsonFormatException.FormatError.ExpectedDoubleQuote);
             }
 
             return span;
@@ -358,7 +362,7 @@ namespace SpanJson
             return escapedChars == 0 ? span.ToString() : Unescape(span, escapedChars);
         }
 
-        private static string Unescape(in ReadOnlySpan<char> span, int escapedChars)
+        private string Unescape(in ReadOnlySpan<char> span, int escapedChars)
         {
             var unescapedLength = span.Length - escapedChars;
             var result = new string('\0', unescapedLength);
@@ -396,11 +400,15 @@ namespace SpanJson
                             break;
                         case 'U':
                         case 'u':
-                        {
-                            current = (char) int.Parse(span.Slice(index, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture);
-                            index += 4;
+                            {
+                                current = (char)int.Parse(span.Slice(index, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture);
+                                index += 4;
+                                break;
+                            }
+
+                        default:
+                            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol);
                             break;
-                        }
                     }
                 }
                 Unsafe.Add(ref c, unescapedIndex++) = current;
@@ -428,7 +436,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             if (_chars[pos++] != JsonConstant.String)
             {
-                ThrowInvalidOperationException();
+                ThrowJsonFormatException(JsonFormatException.FormatError.ExpectedDoubleQuote);
             }
 
             // We should also get info about how many escaped chars exist from here
@@ -439,7 +447,7 @@ namespace SpanJson
                 return result;
             }
 
-            ThrowInvalidOperationException();
+            ThrowJsonFormatException(JsonFormatException.FormatError.ExpectedDoubleQuote);
             return null;
         }
 
@@ -457,17 +465,17 @@ namespace SpanJson
             {
                 if (_chars[pos + 1] != 'u')
                 {
-                    ThrowInvalidOperationException();
+                    ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol);
                 }
 
                 if (_chars[pos + 2] != 'l')
                 {
-                    ThrowInvalidOperationException();
+                    ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol);
                 }
 
                 if (_chars[pos + 3] != 'l')
                 {
-                    ThrowInvalidOperationException();
+                    ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol);
                 }
 
                 pos += 4;
@@ -505,7 +513,7 @@ namespace SpanJson
         {
             if (!ReadBeginArray())
             {
-                ThrowInvalidOperationException();
+                ThrowJsonFormatException(JsonFormatException.FormatError.ExpectedBeginArray);
             }
         }
 
@@ -577,7 +585,7 @@ namespace SpanJson
         {
             if (!ReadIsBeginObject())
             {
-                ThrowInvalidOperationException();
+                ThrowJsonFormatException(JsonFormatException.FormatError.ExpectedBeginObject);
             }
         }
 
@@ -586,14 +594,20 @@ namespace SpanJson
         {
             if (!ReadIsEndObject())
             {
-                ThrowInvalidOperationException();
+                ThrowJsonFormatException(JsonFormatException.FormatError.ExpectedEndObject);
             }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void ThrowInvalidOperationException()
+        private void ThrowJsonFormatException(JsonFormatException.FormatError error, Type type)
         {
-            throw new InvalidOperationException();
+            throw new JsonFormatException(error, type, _pos);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void ThrowJsonFormatException(JsonFormatException.FormatError error)
+        {
+            throw new JsonFormatException(error, _pos);
         }
 
 
@@ -740,7 +754,7 @@ namespace SpanJson
                         return;
                     }
 
-                    ThrowInvalidOperationException();
+                    ThrowJsonFormatException(JsonFormatException.FormatError.ExpectedDoubleQuote);
                     break;
                 }
                 case JsonToken.Null:
