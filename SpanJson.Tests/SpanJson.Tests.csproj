@@ -8,6 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Jil" Version="2.15.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.6.2" />
     <PackageReference Include="xunit" Version="2.3.1" />
@@ -17,6 +20,22 @@
   <ItemGroup>
     <ProjectReference Include="..\SpanJson.Benchmarks\SpanJson.Benchmarks.csproj" />
     <ProjectReference Include="..\SpanJson\SpanJson.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="BclTests.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>BclTests.cs</LastGenOutput>
+    </None>
+    <Compile Update="BclTests.cs">
+      <DesignTime>false</DesignTime>
+      <AutoGen>false</AutoGen>
+      <DependentUpon>BclTests.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 
 </Project>

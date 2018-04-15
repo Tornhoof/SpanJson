@@ -157,11 +157,14 @@ namespace SpanJson
                 private static DeserializeDelegate BuildDeserializer(Type type)
                 {
                     var inputParam = Expression.Parameter(typeof(ReadOnlySpan<char>), "input");
-                    var lambdaExpression =
-                        Expression.Lambda<DeserializeDelegate>(
-                            Expression.Call(typeof(Generic), nameof(Generic.Deserialize),
-                                new[] {type, typeof(TResolver)}, inputParam),
-                            inputParam);
+                    Expression genericCall = Expression.Call(typeof(Generic), nameof(Generic.Deserialize),
+                        new[] {type, typeof(TResolver)}, inputParam);
+                    if (type.IsValueType)
+                    {
+                        genericCall = Expression.Convert(genericCall, typeof(object));
+                    }
+
+                    var lambdaExpression = Expression.Lambda<DeserializeDelegate>(genericCall, inputParam);
                     return lambdaExpression.Compile();
                 }
 

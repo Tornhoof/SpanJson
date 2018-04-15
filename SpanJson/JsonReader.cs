@@ -773,7 +773,7 @@ namespace SpanJson
             for (var i = pos; i < _chars.Length; i++)
             {
                 ref readonly var c = ref _chars[i];
-                if (!IsNumericSymbol(c))
+                if (!IsNumericSymbol(c) || i == _chars.Length - 1)
                 {
                     charsConsumed = i - pos;
                     return true;

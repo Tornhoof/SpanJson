@@ -141,6 +141,19 @@ namespace SpanJson.Benchmarks.Fixture
                     Expression.Convert(Expression.Call(Expression.Constant(valueFixture), generateMethodInfo),
                         generatedValue.Type)));
             }
+            else if (type.IsArray)
+            {
+                var elementType = type.GetElementType();
+                var index = Expression.Parameter(typeof(int), "i");
+                var arrayList = new List<Expression>
+                {
+                    Expression.Assign(generatedValue, Expression.NewArrayBounds(elementType, repeatCount)),
+                    ForLoop(index, repeatCount,
+                        GenerateValue(Expression.ArrayAccess(generatedValue, index), repeatCount, recursiveCount,
+                            elementType))
+                };
+                result.Add(MakeIfExpression(recursiveCount, arrayList));
+            }
             else if (type.IsTypedList())
             {
                 var expressionList = new List<Expression>();
@@ -162,25 +175,12 @@ namespace SpanJson.Benchmarks.Fixture
 
                 result.Add(MakeIfExpression(recursiveCount, expressionList));
             }
-            else if (type.IsArray)
-            {
-                var elementType = type.GetElementType();
-                var index = Expression.Parameter(typeof(int), "i");
-                var arrayList = new List<Expression>
-                {
-                    Expression.Assign(generatedValue, Expression.NewArrayBounds(elementType, repeatCount)),
-                    ForLoop(index, repeatCount,
-                        GenerateValue(Expression.ArrayAccess(generatedValue, index), repeatCount, recursiveCount,
-                            elementType))
-                };
-                result.Add(MakeIfExpression(recursiveCount, arrayList));
-            }
             else if (Nullable.GetUnderlyingType(type) != null)
             {
                 var elementType = Nullable.GetUnderlyingType(type);
                 result.Add(GenerateValue(generatedValue, repeatCount, recursiveCount, elementType));
             }
-            else if (type.GetTypeInfo().IsEnum)
+            else if (type.IsEnum)
             {
                 if (!_valueFixtures.TryGetValue(type, out valueFixture))
                 {
