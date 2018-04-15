@@ -25,7 +25,7 @@ namespace SpanJson.Tests
                 }
                 else if (name.ToString() == "Name")
                 {
-                    reader.ReadNextSegment();
+                    reader.SkipNextSegment();
                 }
                 else
                 {

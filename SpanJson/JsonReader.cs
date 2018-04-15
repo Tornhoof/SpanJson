@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -667,12 +669,12 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ReadNextSegment()
+        public void SkipNextSegment()
         {
-            ReadNextSegment(0);
+            SkipNextSegment(0);
         }
 
-        private void ReadNextSegment(int stack)
+        private void SkipNextSegment(int stack)
         {
             ref var pos = ref _pos;
             var token = ReadNextToken();
@@ -684,7 +686,7 @@ namespace SpanJson
                 case JsonToken.BeginObject:
                 {
                     pos++;
-                    ReadNextSegment(stack + 1);
+                    SkipNextSegment(stack + 1);
                     break;
                 }
                 case JsonToken.EndObject:
@@ -693,7 +695,7 @@ namespace SpanJson
                     pos++;
                     if (stack > 0)
                     {
-                        ReadNextSegment(stack - 1);
+                        SkipNextSegment(stack - 1);
                     }
 
                     break;
@@ -708,13 +710,13 @@ namespace SpanJson
                 {
                     do
                     {
-                        ReadNextValue(token);
+                        SkipNextValue(token);
                         token = ReadNextToken();
                     } while (stack > 0 && (byte) token > 4); // No None or the Begin/End-Array/Object tokens
 
                     if (stack > 0)
                     {
-                        ReadNextSegment(stack);
+                        SkipNextSegment(stack);
                     }
 
                     break;
@@ -722,7 +724,7 @@ namespace SpanJson
             }
         }
 
-        private void ReadNextValue(JsonToken token)
+        private void SkipNextValue(JsonToken token)
         {
             ref var pos = ref _pos;
             switch (token)
@@ -817,6 +819,63 @@ namespace SpanJson
 
             charsConsumed = default;
             return false;
+        }
+
+        public object ReadDynamic()
+        {
+            ref var pos = ref _pos;
+            var nextToken = ReadNextToken();
+            switch (nextToken)
+            {
+                case JsonToken.Null:
+                    return null;
+                case JsonToken.False:
+                case JsonToken.True:
+                {
+                    return ReadBoolean();
+                }
+                case JsonToken.Number:
+                {
+                    return new SpanJsonDynamicNumber(ReadNumberInternal());
+                }
+                case JsonToken.String:
+                {
+                    var span = ReadStringSpanInternal(out var escapedChars);
+                    return new SpanJsonDynamicString(span, escapedChars);
+                }
+                case JsonToken.BeginObject:
+                {
+                    pos++;
+                    var count = 0;
+                    var dictionary = new Dictionary<string, object>();
+                    while (!TryReadIsEndObjectOrValueSeparator(ref count))
+                    {
+                        var name = ReadNameSpan().ToString();
+                        var value = ReadDynamic();
+                        dictionary.Add(name, value);
+                    }
+
+                    return new SpanJsonDynamicObject(dictionary);
+                }
+                case JsonToken.BeginArray:
+                {
+                    pos++;
+                    var count = 0;
+                    var list = new List<object>();
+                    while (!TryReadIsEndArrayOrValueSeparator(ref count))
+                    {
+                        var value = ReadDynamic();
+                        list.Add(value);
+                    }
+
+                    return new SpanJsonDynamicArray(list.ToArray());
+                }
+                default:
+                {
+                    ThrowJsonFormatException(JsonFormatException.FormatError.EndOfData);
+                    return default;
+                }
+            }
         }
 
         private JsonToken ReadNextToken()

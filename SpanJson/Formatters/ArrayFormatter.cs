@@ -6,14 +6,14 @@ namespace SpanJson.Formatters
     {
         public int AllocSize { get; } = 100;
 
-        protected T[] Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
+        protected static T[] Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
             where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
             // TODO improve
             return ListFormatter<T, TResolver>.Default.Deserialize(ref reader)?.ToArray();
         }
 
-        protected void Serialize<T, TResolver>(ref JsonWriter writer, T[] value, IJsonFormatter<T, TResolver> formatter)
+        protected static void Serialize<T, TResolver>(ref JsonWriter writer, T[] value, IJsonFormatter<T, TResolver> formatter)
             where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
             if (value == null)

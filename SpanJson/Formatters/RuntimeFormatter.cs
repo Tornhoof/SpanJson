@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
+using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
@@ -29,17 +30,12 @@ namespace SpanJson.Formatters
 
         public object Deserialize(ref JsonReader reader)
         {
-            if (reader.ReadIsNull())
-            {
-                return null;
-            }
-
-            throw new NotImplementedException(); // does not work like thise
+            return reader.ReadDynamic();
         }
 
         public int AllocSize { get; } = 100;
 
-        private SerializeDelegate BuildSerializeDelegate(Type type)
+        private static SerializeDelegate BuildSerializeDelegate(Type type)
         {
             var writerParameter = Expression.Parameter(typeof(JsonWriter).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(object), "value");

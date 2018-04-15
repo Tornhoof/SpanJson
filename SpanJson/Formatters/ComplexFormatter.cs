@@ -156,7 +156,7 @@ namespace SpanJson.Formatters
             var cases = new List<SwitchCase>();
             var equalityMethod =
                 typeof(ComplexFormatter).GetMethod(nameof(StringEquals), BindingFlags.NonPublic | BindingFlags.Static);
-            var defaultValue = Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader.ReadNextSegment)));
+            var defaultValue = Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader.SkipNextSegment)));
             foreach (var groupedMemberInfos in group)
             {
                 var memberInfosPerChar = groupedMemberInfos.Count();
