@@ -28,21 +28,17 @@ namespace SpanJson.Helpers
                     if (parameters[0].ParameterType == typeof(ReadOnlySpan<char>).MakeByRefType() && parameters[1].IsOut)
                     {
                         var spanExpression = Expression.Parameter(parameters[0].ParameterType, "span");
-                        var tempExpression = Expression.Parameter(parameters[1].ParameterType.GetElementType(), "temp");
-                        var outExpression = Expression.Parameter(typeof(object));
+                        var tempExpression = Expression.Parameter(parameters[1].ParameterType, "temp");
+                        var outExpression = Expression.Parameter(typeof(object).MakeByRefType());
                         var callExpression = Expression.Call(null, staticMethod, spanExpression, tempExpression);
                         var resultExpression = Expression.Parameter(typeof(bool), "result");
                         var returnTarget = Expression.Label(resultExpression.Type);
                         var variables = new ParameterExpression[] {outExpression, tempExpression, resultExpression };
                         var block = Expression.Block(variables,
-                            Expression.IfThenElse(
-                                callExpression,
-                                Expression.Block(variables,
-                                    Expression.Assign(outExpression, Expression.Convert(tempExpression, typeof(object))),
-                                    Expression.Assign(resultExpression, Expression.Constant(true))),
-                                Expression.Block(variables,
-                                    Expression.Assign(outExpression, Expression.Constant(null)),
-                                    Expression.Assign(resultExpression, Expression.Constant(false)))),
+                            Expression.Assign(resultExpression, callExpression),
+                            Expression.IfThenElse(resultExpression,
+                                Expression.Assign(outExpression, Expression.Convert(tempExpression, typeof(object))),
+                                Expression.Assign(outExpression, Expression.Constant(null))),
                             Expression.Label(returnTarget, resultExpression)
                         );
                         var lambda = Expression.Lambda<ConvertDelegate>(block, spanExpression,

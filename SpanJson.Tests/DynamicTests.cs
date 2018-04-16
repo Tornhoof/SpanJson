@@ -21,6 +21,7 @@ namespace SpanJson.Tests
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
+            var answer_id = (int?)deserialized.answer_id;
             var dt = (DateTime?) deserialized.locked_date;
             Assert.NotNull(dt);
             foreach (var comment in deserialized.comments)
