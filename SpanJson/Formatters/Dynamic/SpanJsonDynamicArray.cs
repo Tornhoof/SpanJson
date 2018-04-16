@@ -5,9 +5,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Dynamic;
 using System.Linq.Expressions;
-using System.Reflection;
 
-namespace SpanJson.Helpers
+namespace SpanJson.Formatters.Dynamic
 {
     public sealed class SpanJsonDynamicArray : DynamicObject, IReadOnlyList<object>
     {

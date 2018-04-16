@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Dynamic;
 using System.Globalization;
+using SpanJson.Helpers;
 
-namespace SpanJson.Helpers
+namespace SpanJson.Formatters.Dynamic
 {
     [TypeConverter(typeof(DynamicTypeConverter))]
-    public sealed class SpanJsonDynamicString : DynamicObject
+    public sealed class SpanJsonDynamicNumber : DynamicObject
     {
         public sealed class DynamicTypeConverter : TypeConverter
         {
             private static readonly Dictionary<Type, ConvertDelegate> Converters =
-                ConvertDelegateHelper.BuildConverters(typeof(StringParser));
+                ConvertDelegateHelper.BuildConverters(typeof(NumberParser));
 
             public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
             {
@@ -24,11 +25,6 @@ namespace SpanJson.Helpers
                 return false;
             }
 
-            public override bool IsValid(ITypeDescriptorContext context, object value)
-            {
-                return true;
-            }
-
             public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
             {
                 return IsSupported(destinationType);
@@ -37,7 +33,7 @@ namespace SpanJson.Helpers
             public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
                 Type destinationType)
             {
-                var input = (SpanJsonDynamicString) value;
+                var input = (SpanJsonDynamicNumber) value;
                 if (TryConvertTo(destinationType, input._chars, out var temp))
                 {
                     return temp;
@@ -50,42 +46,26 @@ namespace SpanJson.Helpers
             {
                 if (Converters.TryGetValue(destinationType, out var del))
                 {
-                    return del(span, out value);
-                }
-
-                if (destinationType == typeof(string))
-                {
-                    value = new string(span);
-                    return true;
-                }
-
-                if (destinationType.IsEnum)
-                {
-                    return StringParser.TryParseEnum(span, destinationType, out value);
+                    var result = del(span, out value);
+                    return result;
                 }
 
                 value = default;
                 return false;
             }
 
-            public static bool IsSupported(Type type)
-            {
-                return Converters.ContainsKey(type) || type == typeof(string) ||
-                       type.IsEnum;
-            }
+            public static bool IsSupported(Type type) => Converters.ContainsKey(type);
         }
 
 
-        private readonly int _escapedChars;
         private readonly char[] _chars;
 
         private static readonly DynamicTypeConverter Converter =
-            (DynamicTypeConverter) TypeDescriptor.GetConverter(typeof(SpanJsonDynamicString));
+            (DynamicTypeConverter) TypeDescriptor.GetConverter(typeof(SpanJsonDynamicNumber));
 
-        public SpanJsonDynamicString(ReadOnlySpan<char> span, int escapedChars)
+        public SpanJsonDynamicNumber(ReadOnlySpan<char> span)
         {
             _chars = span.ToArray();
-            _escapedChars = escapedChars;
         }
 
         public override bool TryConvert(ConvertBinder binder, out object result)
@@ -96,7 +76,7 @@ namespace SpanJson.Helpers
 
         public override string ToString()
         {
-            return $"\"{new string(_chars)}\"";
+            return new string(_chars);
         }
     }
 }

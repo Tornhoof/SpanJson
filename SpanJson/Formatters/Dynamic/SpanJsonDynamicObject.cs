@@ -1,10 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 
-namespace SpanJson.Helpers
+namespace SpanJson.Formatters.Dynamic
 {
     public sealed class SpanJsonDynamicObject : DynamicObject, IReadOnlyDictionary<string, object>
     {

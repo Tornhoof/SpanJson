@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using SpanJson.Formatters.Dynamic;
 using SpanJson.Helpers;
 
 namespace SpanJson
@@ -23,53 +24,124 @@ namespace SpanJson
 
         public sbyte ReadSByte()
         {
-            return (sbyte) ReadNumberInt64();
+            var number = ReadNumberInternal();
+            if (NumberParser.TryParseSbyte(number, out var result))
+            {
+                return result;
+            }
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
+            return default;
         }
 
         public short ReadInt16()
         {
-            return (short) ReadNumberInt64();
+            var number = ReadNumberInternal();
+            if (NumberParser.TryParseInt16(number, out var result))
+            {
+                return result;
+            }
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
+            return default;
         }
 
         public int ReadInt32()
         {
-            return (int) ReadNumberInt64();
+            var number = ReadNumberInternal();
+            if (NumberParser.TryParseInt32(number, out var result))
+            {
+                return result;
+            }
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
+            return default;
         }
 
         public long ReadInt64()
         {
-            return ReadNumberInt64();
+            var number = ReadNumberInternal();
+            if (NumberParser.TryParseInt64(number, out var result))
+            {
+                return result;
+            }
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
+            return default;
         }
 
         public byte ReadByte()
         {
-            return (byte) ReadNumberUInt64();
+            var number = ReadNumberInternal();
+            if (NumberParser.TryParseByte(number, out var result))
+            {
+                return result;
+            }
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
+            return default;
         }
 
         public ushort ReadUInt16()
         {
-            return (ushort) ReadNumberUInt64();
+            var number = ReadNumberInternal();
+            if (NumberParser.TryParseUInt16(number, out var result))
+            {
+                return result;
+            }
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
+            return default;
         }
 
         public uint ReadUInt32()
         {
-            return (uint) ReadNumberUInt64();
+            var number = ReadNumberInternal();
+            if (NumberParser.TryParseUInt32(number, out var result))
+            {
+                return result;
+            }
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
+            return default;
         }
 
         public ulong ReadUInt64()
         {
-            return ReadNumberUInt64();
+            var number = ReadNumberInternal();
+            if (NumberParser.TryParseUInt64(number, out var result))
+            {
+                return result;
+            }
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
+            return default;
         }
 
         public float ReadSingle()
         {
-            return float.Parse(ReadNumberInternal(), NumberStyles.Float, CultureInfo.InvariantCulture);
+            var number = ReadNumberInternal();
+            if (NumberParser.TryParseSingle(number, out var result))
+            {
+                return result;
+            }
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
+            return default;
         }
 
         public double ReadDouble()
         {
-            return double.Parse(ReadNumberInternal(), NumberStyles.Float, CultureInfo.InvariantCulture);
+            var number = ReadNumberInternal();
+            if (NumberParser.TryParseDouble(number, out var result))
+            {
+                return result;
+            }
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
+            return default;
         }
+        public decimal ReadDecimal()
+        {
+            var number = ReadNumberInternal();
+            if (NumberParser.TryParseDecimal(number, out var result))
+            {
+                return result;
+            }
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
+            return default;
+        }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ReadOnlySpan<char> ReadNumberInternal()
@@ -86,86 +158,6 @@ namespace SpanJson
             return null;
         }
 
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private long ReadNumberInt64()
-        {
-            SkipWhitespace();
-            if (!IsAvailable)
-            {
-                ThrowJsonFormatException(JsonFormatException.FormatError.EndOfData);
-                return default;
-            }
-
-            ref var pos = ref _pos;
-            ref readonly var firstChar = ref _chars[pos];
-            var neg = false;
-            switch (firstChar)
-            {
-                case '-':
-                    neg = true;
-                    pos++;
-                    break;
-                case '+':
-                    pos++;
-                    break;
-            }
-
-            if (!IsAvailable)
-            {
-                ThrowJsonFormatException(JsonFormatException.FormatError.EndOfData);
-                return default;
-            }
-
-            var result = _chars[pos++] - 48L;
-            uint value;
-            while (IsAvailable && (value = _chars[pos] - 48U) <= 9)
-            {
-                result = unchecked(result * 10 + value);
-                pos++;
-            }
-
-            return neg ? unchecked(-result) : result;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ulong ReadNumberUInt64()
-        {
-            SkipWhitespace();
-            if (!IsAvailable)
-            {
-                ThrowJsonFormatException(JsonFormatException.FormatError.EndOfData);
-                return default;
-            }
-
-            ref var pos = ref _pos;
-            ref readonly var firstChar = ref _chars[pos];
-            if (firstChar == '+')
-            {
-                pos++;
-            }
-            else if (firstChar == '-')
-            {
-                ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
-                return default;
-            }
-
-            var result = _chars[pos++] - 48UL;
-            if (result > 9)
-            {
-                ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
-                return default;
-            }
-
-            uint value;
-            while (IsAvailable && (value = _chars[pos] - 48U) <= 9)
-            {
-                result = checked(result * 10 + value);
-                pos++;
-            }
-
-            return result;
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsNumericSymbol(char c)
@@ -251,50 +243,10 @@ namespace SpanJson
         public char ReadChar()
         {
             var span = ReadStringSpan();
-            var pos = 0;
-            return ReadCharInternal(span, ref pos);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private char ReadCharInternal(ReadOnlySpan<char> span, ref int pos)
-        {
-            if (span.Length == 1)
+            if (StringParser.TryParseChar(span, out var value))
             {
-                return span[pos++];
+                return value;
             }
-
-            if (span[pos] == JsonConstant.Escape)
-            {
-                pos++;
-                switch (span[pos++])
-                {
-                    case JsonConstant.DoubleQuote:
-                        return JsonConstant.DoubleQuote;
-                    case JsonConstant.Escape:
-                        return JsonConstant.Escape;
-                    case 'b':
-                        return '\b';
-                    case 'f':
-                        return '\f';
-                    case 'n':
-                        return '\n';
-                    case 'r':
-                        return '\r';
-                    case 't':
-                        return '\t';
-                    case 'U':
-                    case 'u':
-                        if (span.Length == 6)
-                        {
-                            var result = (char) int.Parse(span.Slice(2, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture);
-                            pos += 4;
-                            return result;
-                        }
-
-                        break;
-                }
-            }
-
             ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(char));
             return default;
         }
@@ -302,7 +254,7 @@ namespace SpanJson
         public DateTime ReadDateTime()
         {
             var span = ReadStringSpan();
-            if (DateTimeParser.TryParseDateTime(span, out var value, out var charsConsumed))
+            if (StringParser.TryParseDateTime(span, out var value))
             {
                 return value;
             }
@@ -314,7 +266,7 @@ namespace SpanJson
         public DateTimeOffset ReadDateTimeOffset()
         {            
             var span = ReadStringSpan();
-            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var charsConsumed))
+            if (StringParser.TryParseDateTimeOffset(span, out var value))
             {
                 return value;
             }
@@ -326,9 +278,9 @@ namespace SpanJson
         public TimeSpan ReadTimeSpan()
         {
             var span = ReadStringSpan();
-            if (TimeSpan.TryParse(span, CultureInfo.InvariantCulture, out var result))
+            if (StringParser.TryParseTimeSpan(span, out var value))
             {
-                return result;
+                return value;
             }
             ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(TimeSpan));
             return default;
@@ -337,9 +289,9 @@ namespace SpanJson
         public Guid ReadGuid()
         {
             var span = ReadStringSpan();
-            if(Guid.TryParse(span, out var result))
+            if(StringParser.TryParseGuid(span, out var value))
             {
-                return result;
+                return value;
             }
             ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(Guid));
             return default;
@@ -456,11 +408,6 @@ namespace SpanJson
 
             ThrowJsonFormatException(JsonFormatException.FormatError.ExpectedDoubleQuote);
             return null;
-        }
-
-        public decimal ReadDecimal()
-        {
-            return decimal.Parse(ReadNumberInternal(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -651,26 +598,26 @@ namespace SpanJson
             return false;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Version ReadVersion()
         {
-            var stringValue = ReadString();
-            if (stringValue == null)
+            var span = ReadStringSpan();
+            if (StringParser.TryParseVersion(span, out var value))
             {
-                return default;
+                return value;
             }
-            return Version.Parse(stringValue);
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(Guid));
+            return default;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Uri ReadUri()
         {
-            var stringValue = ReadString();
-            if (stringValue == null)
+            var span = ReadStringSpan();
+            if (StringParser.TryParseUri(span, out var value))
             {
-                return default;
+                return value;
             }
-            return new Uri(stringValue);
+            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(Guid));
+            return default;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -777,14 +724,21 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool TryFindEndOfNumber(int pos, out int charsConsumed)
         {
-            for (var i = pos; i < _chars.Length; i++)
+            var i = pos;
+            for (; i < _chars.Length; i++)
             {
                 ref readonly var c = ref _chars[i];
-                if (!IsNumericSymbol(c) || i == _chars.Length - 1)
+                if (!IsNumericSymbol(c))
                 {
                     charsConsumed = i - pos;
                     return true;
                 }
+            }
+
+            if (i == _chars.Length) // full length of the string
+            {
+                charsConsumed = i - pos;
+                return true;
             }
 
             charsConsumed = default;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace SpanJson.Helpers
@@ -8,10 +9,49 @@ namespace SpanJson.Helpers
     {
         public static bool TryParseChar(in ReadOnlySpan<char> span, out char value)
         {
+            var pos = 0;
             if (span.Length == 1)
             {
                 value = span[0];
                 return true;
+            }
+
+            if (span[pos] == JsonConstant.Escape)
+            {
+                switch (span[pos + 1])
+                {
+                    case JsonConstant.DoubleQuote:
+                        value = JsonConstant.DoubleQuote;
+                        return true;
+                    case JsonConstant.Escape:
+                        value = JsonConstant.Escape;
+                        return true;
+                    case 'b':
+                        value = '\b';
+                        return true;
+                    case 'f':
+                        value = '\f';
+                        return true;
+                    case 'n':
+                        value = '\n';
+                        return true;
+                    case 'r':
+                        value = '\r';
+                        return true;
+                    case 't':
+                        value = '\t';
+                        return true;
+                    case 'U':
+                    case 'u':
+                        if (span.Length == 6)
+                        {
+                            value = (char) int.Parse(span.Slice(2, 4), NumberStyles.AllowHexSpecifier,
+                                CultureInfo.InvariantCulture);
+                            return true;
+                        }
+
+                        break;
+                }
             }
 
             value = default;

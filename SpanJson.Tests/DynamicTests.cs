@@ -30,7 +30,7 @@ namespace SpanJson.Tests
                 Assert.NotNull(comment);                
             }
 
-            for (int i = 0; i < deserialized.comments.Length;i++)
+            for (int i = 0; i < deserialized.comments.Count;i++)
             {
                 var comment = deserialized.comments[i];
 
