@@ -144,6 +144,11 @@ namespace SpanJson
             {
                 pos++;
             }
+            else if (firstChar == '-')
+            {
+                ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
+                return default;
+            }
 
             var result = _chars[pos++] - 48UL;
             if (result > 9)

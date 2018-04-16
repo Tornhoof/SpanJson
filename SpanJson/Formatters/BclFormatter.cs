@@ -896,6 +896,95 @@ namespace SpanJson.Formatters
             return Deserialize(ref reader, DoubleFormatter<TResolver>.Default);
         }	
 	}
+    public sealed class DecimalFormatter<TResolver> : IJsonFormatter<Decimal, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
+    {
+        public static readonly DecimalFormatter<TResolver> Default = new DecimalFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter writer, Decimal value)
+        {
+            writer.WriteDecimal(value);
+        }
+
+        public Decimal Deserialize(ref JsonReader reader)
+        {
+            return reader.ReadDecimal();
+        }
+
+		public int AllocSize {get;} = 100;
+	} 
+	public sealed class NullableDecimalFormatter<TResolver> : NullableFormatter, IJsonFormatter<Decimal?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
+    {
+        public static readonly NullableDecimalFormatter<TResolver> Default = new NullableDecimalFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter writer, Decimal? value)
+        {
+            Serialize(ref writer, value, DecimalFormatter<TResolver>.Default);
+        }
+
+        public Decimal? Deserialize(ref JsonReader reader)
+        {
+			return Deserialize(ref reader, DecimalFormatter<TResolver>.Default);
+        }
+	}
+    public sealed class NullableDecimalArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Decimal?[], TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
+    {
+        public static readonly NullableDecimalArrayFormatter<TResolver> Default = new NullableDecimalArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter writer, Decimal?[] value)
+        {
+			Serialize(ref writer, value, NullableDecimalFormatter<TResolver>.Default);
+        }
+
+        public Decimal?[] Deserialize(ref JsonReader reader)
+        {
+            return Deserialize(ref reader, NullableDecimalFormatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class NullableDecimalListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Decimal?>, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
+    {
+        public static readonly NullableDecimalListFormatter<TResolver> Default = new NullableDecimalListFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter writer, List<Decimal?> value)
+        {
+			Serialize(ref writer, value, NullableDecimalFormatter<TResolver>.Default);
+        }
+
+        public List<Decimal?> Deserialize(ref JsonReader reader)
+        {
+            return Deserialize(ref reader, NullableDecimalFormatter<TResolver>.Default);
+        }	
+	}
+
+    public sealed class DecimalArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Decimal[], TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
+    {
+        public static readonly DecimalArrayFormatter<TResolver> Default = new DecimalArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter writer, Decimal[] value)
+        {
+			Serialize(ref writer, value, DecimalFormatter<TResolver>.Default);
+        }
+
+        public Decimal[] Deserialize(ref JsonReader reader)
+        {
+            return Deserialize(ref reader, DecimalFormatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class DecimalListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Decimal>, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
+    {
+        public static readonly DecimalListFormatter<TResolver> Default = new DecimalListFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter writer, List<Decimal> value)
+        {
+			Serialize(ref writer, value, DecimalFormatter<TResolver>.Default);
+        }
+
+        public List<Decimal> Deserialize(ref JsonReader reader)
+        {
+            return Deserialize(ref reader, DecimalFormatter<TResolver>.Default);
+        }	
+	}
     public sealed class BooleanFormatter<TResolver> : IJsonFormatter<Boolean, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
         public static readonly BooleanFormatter<TResolver> Default = new BooleanFormatter<TResolver>();
@@ -1474,95 +1563,6 @@ namespace SpanJson.Formatters
         public List<String> Deserialize(ref JsonReader reader)
         {
             return Deserialize(ref reader, StringFormatter<TResolver>.Default);
-        }	
-	}
-    public sealed class DecimalFormatter<TResolver> : IJsonFormatter<Decimal, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
-    {
-        public static readonly DecimalFormatter<TResolver> Default = new DecimalFormatter<TResolver>();
-
-        public void Serialize(ref JsonWriter writer, Decimal value)
-        {
-            writer.WriteDecimal(value);
-        }
-
-        public Decimal Deserialize(ref JsonReader reader)
-        {
-            return reader.ReadDecimal();
-        }
-
-		public int AllocSize {get;} = 100;
-	} 
-	public sealed class NullableDecimalFormatter<TResolver> : NullableFormatter, IJsonFormatter<Decimal?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
-    {
-        public static readonly NullableDecimalFormatter<TResolver> Default = new NullableDecimalFormatter<TResolver>();
-
-        public void Serialize(ref JsonWriter writer, Decimal? value)
-        {
-            Serialize(ref writer, value, DecimalFormatter<TResolver>.Default);
-        }
-
-        public Decimal? Deserialize(ref JsonReader reader)
-        {
-			return Deserialize(ref reader, DecimalFormatter<TResolver>.Default);
-        }
-	}
-    public sealed class NullableDecimalArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Decimal?[], TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
-    {
-        public static readonly NullableDecimalArrayFormatter<TResolver> Default = new NullableDecimalArrayFormatter<TResolver>();
-
-        public void Serialize(ref JsonWriter writer, Decimal?[] value)
-        {
-			Serialize(ref writer, value, NullableDecimalFormatter<TResolver>.Default);
-        }
-
-        public Decimal?[] Deserialize(ref JsonReader reader)
-        {
-            return Deserialize(ref reader, NullableDecimalFormatter<TResolver>.Default);
-        }
-	}
-
-	public sealed class NullableDecimalListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Decimal?>, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
-    {
-        public static readonly NullableDecimalListFormatter<TResolver> Default = new NullableDecimalListFormatter<TResolver>();
-
-        public void Serialize(ref JsonWriter writer, List<Decimal?> value)
-        {
-			Serialize(ref writer, value, NullableDecimalFormatter<TResolver>.Default);
-        }
-
-        public List<Decimal?> Deserialize(ref JsonReader reader)
-        {
-            return Deserialize(ref reader, NullableDecimalFormatter<TResolver>.Default);
-        }	
-	}
-
-    public sealed class DecimalArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Decimal[], TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
-    {
-        public static readonly DecimalArrayFormatter<TResolver> Default = new DecimalArrayFormatter<TResolver>();
-
-        public void Serialize(ref JsonWriter writer, Decimal[] value)
-        {
-			Serialize(ref writer, value, DecimalFormatter<TResolver>.Default);
-        }
-
-        public Decimal[] Deserialize(ref JsonReader reader)
-        {
-            return Deserialize(ref reader, DecimalFormatter<TResolver>.Default);
-        }
-	}
-
-	public sealed class DecimalListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Decimal>, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
-    {
-        public static readonly DecimalListFormatter<TResolver> Default = new DecimalListFormatter<TResolver>();
-
-        public void Serialize(ref JsonWriter writer, List<Decimal> value)
-        {
-			Serialize(ref writer, value, DecimalFormatter<TResolver>.Default);
-        }
-
-        public List<Decimal> Deserialize(ref JsonReader reader)
-        {
-            return Deserialize(ref reader, DecimalFormatter<TResolver>.Default);
         }	
 	}
     public sealed class VersionFormatter<TResolver> : IJsonFormatter<Version, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()

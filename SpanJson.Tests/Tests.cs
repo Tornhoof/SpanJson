@@ -31,7 +31,7 @@ namespace SpanJson.Tests
             var deserialized = JsonSerializer.NonGeneric.Deserialize(serialized, modelType);
             Assert.NotNull(deserialized);
             Assert.IsType(modelType, deserialized);
-            Assert.Equal(model, deserialized, UntypedEqualityComparer.Default);
+            Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
         }
 
 
@@ -50,7 +50,7 @@ namespace SpanJson.Tests
             var deserialized = JsonSerializer.NonGeneric.Deserialize(serialized, modelType);
             Assert.NotNull(deserialized);
             Assert.IsType(modelType, deserialized);
-            Assert.Equal(model, deserialized, UntypedEqualityComparer.Default);
+            Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
         }
 
         public static IEnumerable<object[]> GetModels()

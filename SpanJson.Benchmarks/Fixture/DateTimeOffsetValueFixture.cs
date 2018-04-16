@@ -9,7 +9,7 @@ namespace SpanJson.Benchmarks.Fixture
 
         public object Generate()
         {
-            _lastValue += 1000;
+            _lastValue += TimeSpan.TicksPerSecond;
             return DateTimeOffset.FromUnixTimeMilliseconds(_lastValue);
         }
     }

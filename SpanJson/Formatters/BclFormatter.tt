@@ -15,8 +15,9 @@
         typeof(UInt16),
         typeof(UInt32),
         typeof(UInt64),
-        typeof(Single),
+		typeof(Single),
         typeof(Double),
+		typeof(decimal),
         typeof(bool), 
 		typeof(char),
 		typeof(DateTime),
@@ -24,7 +25,6 @@
 		typeof(TimeSpan),
 		typeof(Guid),
 		typeof(string),
-		typeof(decimal),
 		typeof(Version),
 		typeof(Uri)
     };

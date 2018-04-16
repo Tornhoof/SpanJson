@@ -48,7 +48,7 @@ namespace SpanJson.Benchmarks.Models
                 requires_comment.TrueEquals((bool?) obj.requires_comment) &&
                 requires_question_id.TrueEquals((bool?) obj.requires_question_id) &&
                 requires_site.TrueEquals((bool?) obj.requires_site) &&
-                sub_options.TrueEqualsListDynamic((IEnumerable<dynamic>) obj.sub_options) &&
+                sub_options != null && obj.sub_options != null && sub_options.TrueEqualsListDynamic((IEnumerable<dynamic>) obj.sub_options) &&
                 title.TrueEqualsString((string) obj.title);
         }
     }
