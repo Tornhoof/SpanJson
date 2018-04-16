@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BenchmarkDotNet.Validators;
+using Jil;
 using SpanJson.Benchmarks.Fixture;
 using SpanJson.Benchmarks.Models;
 using SpanJson.Helpers;
 using Xunit;
+using Xunit.Sdk;
 
 namespace SpanJson.Tests
 {
@@ -21,7 +23,6 @@ namespace SpanJson.Tests
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
-            var answer_id = (int?)deserialized.answer_id;
             var dt = (DateTime?) deserialized.locked_date;
             Assert.NotNull(dt);
             foreach (var comment in deserialized.comments)
@@ -38,10 +39,9 @@ namespace SpanJson.Tests
         }
 
         [Theory]
-        [MemberData(nameof(GetModels))]
+        [MemberData(nameof(GetModels))]        
         public void CanDeserializeAllDynamic(Type modelType)
         {
-            SpanJsonDynamicNumber s = new SpanJsonDynamicNumber(new []{'0'});
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
             var serialized = JsonSerializer.NonGeneric.Serialize(model);

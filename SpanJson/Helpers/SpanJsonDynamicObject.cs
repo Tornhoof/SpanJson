@@ -1,11 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
+using System.Linq;
 
 namespace SpanJson.Helpers
 {
     public sealed class SpanJsonDynamicObject : DynamicObject, IReadOnlyDictionary<string, object>
     {
+        public override string ToString()
+        {
+            return $"{{{string.Join(", ", _dictionary.Select(a => $"\"{a.Key}\": {a.Value}"))}}}";
+        }
+
         private readonly Dictionary<string, object> _dictionary;
 
         internal SpanJsonDynamicObject(Dictionary<string, object> dictionary)
@@ -17,6 +24,7 @@ namespace SpanJson.Helpers
         {
             return _dictionary.TryGetValue(binder.Name, out result);
         }
+
 
         public override IEnumerable<string> GetDynamicMemberNames()
         {

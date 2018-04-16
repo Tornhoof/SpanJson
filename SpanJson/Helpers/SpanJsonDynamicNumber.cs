@@ -9,52 +9,13 @@ using System.Reflection;
 
 namespace SpanJson.Helpers
 {
-    //[TypeConverter(typeof(DynamicTypeConverter))]
+    [TypeConverter(typeof(DynamicTypeConverter))]
     public sealed class SpanJsonDynamicNumber : DynamicObject
     {
-        private class DynamicTypeConverter : TypeConverter
+        public sealed class DynamicTypeConverter : TypeConverter
         {
-            private readonly SpanJsonDynamicNumber _dynamicNumber;
-            private static readonly Dictionary<Type, ConvertDelegate> Converters = BuildConverters();
-
-            private static Dictionary<Type, ConvertDelegate> BuildConverters()
-            {
-                var result = new Dictionary<Type, ConvertDelegate>();
-                var staticMethods = typeof(NumberParser).GetMethods(BindingFlags.Public | BindingFlags.Static);
-                foreach (var staticMethod in staticMethods.Where(a =>
-                    a.Name.StartsWith("TryParse") && a.ReturnType == typeof(bool) && a.GetParameters().Length == 2))
-                {
-                    var parameters = staticMethod.GetParameters();
-                    if (parameters[0].ParameterType == typeof(ReadOnlySpan<char>).MakeByRefType() && parameters[1].IsOut)
-                    {
-                        var spanExpression = Expression.Parameter(parameters[0].ParameterType, "span");
-                        var tempExpression = Expression.Parameter(parameters[1].ParameterType, "temp");
-                        var outExpression = Expression.Parameter(typeof(object).MakeByRefType());
-                        var callExpression = Expression.Call(null, staticMethod, spanExpression, tempExpression);
-                        var resultExpression = Expression.Parameter(typeof(bool), "result");
-                        var returnTarget = Expression.Label(resultExpression.Type);
-                        var variables = new ParameterExpression[] {outExpression, tempExpression, resultExpression };
-                        var block = Expression.Block(variables,
-                            Expression.Assign(resultExpression, callExpression),
-                            Expression.IfThenElse(resultExpression,
-                                Expression.Assign(outExpression, Expression.Convert(tempExpression, typeof(object))),
-                                Expression.Assign(outExpression, Expression.Constant(null))),
-                            Expression.Label(returnTarget, resultExpression)
-                        );
-                        var lambda = Expression.Lambda<ConvertDelegate>(block, spanExpression,
-                            outExpression);
-                        result.Add(tempExpression.Type, lambda.Compile());
-                    }
-                }
-                return result;
-            }
-
-            private delegate bool ConvertDelegate(in ReadOnlySpan<char> span, out object value);
-
-            public DynamicTypeConverter(SpanJsonDynamicNumber dynamicNumber)
-            {
-                _dynamicNumber = dynamicNumber;
-            }
+            private static readonly Dictionary<Type, ConvertDelegate> Converters =
+                ConvertDelegateHelper.BuildConverters(typeof(NumberParser));
 
             public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
             {
@@ -68,12 +29,14 @@ namespace SpanJson.Helpers
 
             public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
             {
-                return Converters.ContainsKey(destinationType);
+                return IsSupported(destinationType);
             }
 
-            public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+            public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
+                Type destinationType)
             {
-                if (TryConvertTo(destinationType, out var temp))
+                var input = (SpanJsonDynamicNumber) value;
+                if (TryConvertTo(destinationType, input._chars, out var temp))
                 {
                     return temp;
                 }
@@ -81,33 +44,41 @@ namespace SpanJson.Helpers
                 throw new InvalidCastException();
             }
 
-            public bool TryConvertTo(Type destinationType, out object value)
+            public bool TryConvertTo(Type destinationType, in ReadOnlySpan<char> span, out object value)
             {
                 if (Converters.TryGetValue(destinationType, out var del))
                 {
-                    var result =  del(_dynamicNumber._chars, out value);
+                    var result = del(span, out value);
                     return result;
                 }
 
                 value = default;
                 return false;
             }
+
+            public static bool IsSupported(Type type) => Converters.ContainsKey(type);
         }
 
 
         private readonly char[] _chars;
-        private readonly DynamicTypeConverter _typeConverter;
+
+        private static readonly DynamicTypeConverter Converter =
+            (DynamicTypeConverter) TypeDescriptor.GetConverter(typeof(SpanJsonDynamicNumber));
 
         public SpanJsonDynamicNumber(ReadOnlySpan<char> span)
         {
             _chars = span.ToArray();
-            _typeConverter = new DynamicTypeConverter(this);
         }
 
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
             var returnType = Nullable.GetUnderlyingType(binder.ReturnType) ?? binder.ReturnType;
-            return _typeConverter.TryConvertTo(returnType, out result);
+            return Converter.TryConvertTo(returnType, _chars, out result);
+        }
+
+        public override string ToString()
+        {
+            return new string(_chars);
         }
     }
 }
