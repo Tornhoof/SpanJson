@@ -10,10 +10,24 @@ namespace SpanJson.Formatters.Dynamic
     [TypeConverter(typeof(DynamicTypeConverter))]
     public sealed class SpanJsonDynamicString : DynamicObject
     {
-        public sealed class DynamicTypeConverter : TypeConverter
+        public sealed class DynamicTypeConverter : BaseDynamicTypeConverter
         {
-            private static readonly Dictionary<Type, ConvertDelegate> Converters =
-                ConvertDelegateHelper.BuildConverters(typeof(StringParser));
+            private static readonly Dictionary<Type, ConvertDelegate> Converters = BuildDelegates();
+
+            private static Dictionary<Type, ConvertDelegate> BuildDelegates()
+            {
+                var allowedTypes = new Type[] {
+                    typeof(char),
+                    typeof(DateTime),
+                    typeof(DateTimeOffset),
+                    typeof(TimeSpan),
+                    typeof(Guid),
+                    typeof(string),
+                    typeof(Version),
+                    typeof(Uri)
+                };
+                return BuildDelegates(allowedTypes);
+            }
 
             public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
             {
@@ -38,7 +52,7 @@ namespace SpanJson.Formatters.Dynamic
             public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
                 Type destinationType)
             {
-                var input = (SpanJsonDynamicString) value;
+                var input = (SpanJsonDynamicString)value;
                 if (TryConvertTo(destinationType, input._chars, out var temp))
                 {
                     return temp;
@@ -49,20 +63,29 @@ namespace SpanJson.Formatters.Dynamic
 
             public bool TryConvertTo(Type destinationType, in ReadOnlySpan<char> span, out object value)
             {
+                var reader = new JsonReader(span);
                 if (Converters.TryGetValue(destinationType, out var del))
                 {
-                    return del(span, out value);
-                }
-
-                if (destinationType == typeof(string))
-                {
-                    value = new string(span);
+                    value = del(reader);
                     return true;
                 }
-
-                if (destinationType.IsEnum)
+                else if (destinationType == typeof(string))
                 {
-                    return StringParser.TryParseEnum(span, destinationType, out value);
+                    value = reader.ReadString();
+                    return true;
+                }
+                else if (destinationType.IsEnum)
+                {
+                    // TODO: Optimize
+                    var data = reader.ReadString();
+                    if (Enum.TryParse(destinationType, data, out var enumValue))
+                    {
+                        value = enumValue;
+                        return true;
+                    }
+
+                    value = default;
+                    return false;
                 }
 
                 value = default;
@@ -81,7 +104,7 @@ namespace SpanJson.Formatters.Dynamic
         private readonly char[] _chars;
 
         private static readonly DynamicTypeConverter Converter =
-            (DynamicTypeConverter) TypeDescriptor.GetConverter(typeof(SpanJsonDynamicString));
+            (DynamicTypeConverter)TypeDescriptor.GetConverter(typeof(SpanJsonDynamicString));
 
         public SpanJsonDynamicString(ReadOnlySpan<char> span, int escapedChars)
         {
@@ -97,7 +120,7 @@ namespace SpanJson.Formatters.Dynamic
 
         public override string ToString()
         {
-            return $"\"{new string(_chars)}\"";
+            return new string(_chars);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace SpanJson
     public ref struct JsonReader
     {
         private readonly ReadOnlySpan<char> _chars;
-        private static readonly char[] NullTerminator = new[] {'\0'};
+        private static readonly char[] NullTerminator = new[] { '\0' };
         private int _pos;
         public JsonReader(ReadOnlySpan<char> input)
         {
@@ -24,124 +24,53 @@ namespace SpanJson
 
         public sbyte ReadSByte()
         {
-            var number = ReadNumberInternal();
-            if (NumberParser.TryParseSbyte(number, out var result))
-            {
-                return result;
-            }
-            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
-            return default;
+            return (sbyte)ReadNumberInt64();
         }
 
         public short ReadInt16()
         {
-            var number = ReadNumberInternal();
-            if (NumberParser.TryParseInt16(number, out var result))
-            {
-                return result;
-            }
-            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
-            return default;
+            return (short)ReadNumberInt64();
         }
 
         public int ReadInt32()
         {
-            var number = ReadNumberInternal();
-            if (NumberParser.TryParseInt32(number, out var result))
-            {
-                return result;
-            }
-            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
-            return default;
+            return (int)ReadNumberInt64();
         }
 
         public long ReadInt64()
         {
-            var number = ReadNumberInternal();
-            if (NumberParser.TryParseInt64(number, out var result))
-            {
-                return result;
-            }
-            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
-            return default;
+            return ReadNumberInt64();
         }
 
         public byte ReadByte()
         {
-            var number = ReadNumberInternal();
-            if (NumberParser.TryParseByte(number, out var result))
-            {
-                return result;
-            }
-            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
-            return default;
+            return (byte)ReadNumberUInt64();
         }
 
         public ushort ReadUInt16()
         {
-            var number = ReadNumberInternal();
-            if (NumberParser.TryParseUInt16(number, out var result))
-            {
-                return result;
-            }
-            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
-            return default;
+            return (ushort)ReadNumberUInt64();
         }
 
         public uint ReadUInt32()
         {
-            var number = ReadNumberInternal();
-            if (NumberParser.TryParseUInt32(number, out var result))
-            {
-                return result;
-            }
-            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
-            return default;
+            return (uint)ReadNumberUInt64();
         }
 
         public ulong ReadUInt64()
         {
-            var number = ReadNumberInternal();
-            if (NumberParser.TryParseUInt64(number, out var result))
-            {
-                return result;
-            }
-            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
-            return default;
+            return ReadNumberUInt64();
         }
 
         public float ReadSingle()
         {
-            var number = ReadNumberInternal();
-            if (NumberParser.TryParseSingle(number, out var result))
-            {
-                return result;
-            }
-            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
-            return default;
+            return float.Parse(ReadNumberInternal(), NumberStyles.Float, CultureInfo.InvariantCulture);
         }
 
         public double ReadDouble()
         {
-            var number = ReadNumberInternal();
-            if (NumberParser.TryParseDouble(number, out var result))
-            {
-                return result;
-            }
-            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
-            return default;
+            return double.Parse(ReadNumberInternal(), NumberStyles.Float, CultureInfo.InvariantCulture);
         }
-        public decimal ReadDecimal()
-        {
-            var number = ReadNumberInternal();
-            if (NumberParser.TryParseDecimal(number, out var result))
-            {
-                return result;
-            }
-            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
-            return default;
-        }
-
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ReadOnlySpan<char> ReadNumberInternal()
@@ -158,6 +87,76 @@ namespace SpanJson
             return null;
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private long ReadNumberInt64()
+        {
+            SkipWhitespace();
+            if (!IsAvailable)
+            {
+                ThrowJsonFormatException(JsonFormatException.FormatError.EndOfData);
+                return default;
+            }
+
+            ref var pos = ref _pos;
+            ref readonly var firstChar = ref _chars[pos];
+            var neg = false;
+            if (firstChar == '-')
+            {                
+                pos++;
+                neg = true;
+            }
+            if (!IsAvailable)
+            {
+                ThrowJsonFormatException(JsonFormatException.FormatError.EndOfData);
+                return default;
+            }
+
+            var result = _chars[pos++] - 48L;
+            uint value;
+            while (IsAvailable && (value = _chars[pos] - 48U) <= 9)
+            {
+                result = unchecked(result * 10 + value);
+                pos++;
+            }
+
+            return neg ? unchecked(-result) : result;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ulong ReadNumberUInt64()
+        {
+            SkipWhitespace();
+            if (!IsAvailable)
+            {
+                ThrowJsonFormatException(JsonFormatException.FormatError.EndOfData);
+                return default;
+            }
+
+            ref var pos = ref _pos;
+            ref readonly var firstChar = ref _chars[pos];
+            if (firstChar == '-')
+            {
+                ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
+                return default;
+            }
+
+            var result = _chars[pos++] - 48UL;
+            if (result > 9)
+            {
+                ThrowJsonFormatException(JsonFormatException.FormatError.InvalidNumberFormat);
+                return default;
+            }
+
+            uint value;
+            while (IsAvailable && (value = _chars[pos] - 48U) <= 9)
+            {
+                result = checked(result * 10 + value);
+                pos++;
+            }
+
+            return result;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsNumericSymbol(char c)
@@ -243,10 +242,50 @@ namespace SpanJson
         public char ReadChar()
         {
             var span = ReadStringSpan();
-            if (StringParser.TryParseChar(span, out var value))
+            var pos = 0;
+            return ReadCharInternal(span, ref pos);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private char ReadCharInternal(ReadOnlySpan<char> span, ref int pos)
+        {
+            if (span.Length == 1)
             {
-                return value;
+                return span[pos++];
             }
+
+            if (span[pos] == JsonConstant.Escape)
+            {
+                pos++;
+                switch (span[pos++])
+                {
+                    case JsonConstant.DoubleQuote:
+                        return JsonConstant.DoubleQuote;
+                    case JsonConstant.Escape:
+                        return JsonConstant.Escape;
+                    case 'b':
+                        return '\b';
+                    case 'f':
+                        return '\f';
+                    case 'n':
+                        return '\n';
+                    case 'r':
+                        return '\r';
+                    case 't':
+                        return '\t';
+                    case 'U':
+                    case 'u':
+                        if (span.Length == 6)
+                        {
+                            var result = (char)int.Parse(span.Slice(2, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture);
+                            pos += 4;
+                            return result;
+                        }
+
+                        break;
+                }
+            }
+
             ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(char));
             return default;
         }
@@ -254,7 +293,7 @@ namespace SpanJson
         public DateTime ReadDateTime()
         {
             var span = ReadStringSpan();
-            if (StringParser.TryParseDateTime(span, out var value))
+            if (DateTimeParser.TryParseDateTime(span, out var value, out var charsConsumed))
             {
                 return value;
             }
@@ -264,9 +303,9 @@ namespace SpanJson
         }
 
         public DateTimeOffset ReadDateTimeOffset()
-        {            
+        {
             var span = ReadStringSpan();
-            if (StringParser.TryParseDateTimeOffset(span, out var value))
+            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var charsConsumed))
             {
                 return value;
             }
@@ -278,9 +317,9 @@ namespace SpanJson
         public TimeSpan ReadTimeSpan()
         {
             var span = ReadStringSpan();
-            if (StringParser.TryParseTimeSpan(span, out var value))
+            if (TimeSpan.TryParse(span, CultureInfo.InvariantCulture, out var result))
             {
-                return value;
+                return result;
             }
             ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(TimeSpan));
             return default;
@@ -289,9 +328,9 @@ namespace SpanJson
         public Guid ReadGuid()
         {
             var span = ReadStringSpan();
-            if(StringParser.TryParseGuid(span, out var value))
+            if (Guid.TryParse(span, out var result))
             {
-                return value;
+                return result;
             }
             ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(Guid));
             return default;
@@ -408,6 +447,35 @@ namespace SpanJson
 
             ThrowJsonFormatException(JsonFormatException.FormatError.ExpectedDoubleQuote);
             return null;
+        }
+
+        /// <summary>
+        /// Includes the quotes on each end
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ReadOnlySpan<char> ReadStringSpanWithQuotes(out int escapedChars)
+        {
+            ref var pos = ref _pos;
+            if (_chars[pos] != JsonConstant.String)
+            {
+                ThrowJsonFormatException(JsonFormatException.FormatError.ExpectedDoubleQuote);
+            }
+
+            // We should also get info about how many escaped chars exist from here
+            if (TryFindEndOfString(pos + 1, out var charsConsumed, out escapedChars))
+            {
+                var result = _chars.Slice(pos, charsConsumed + 2); // we include quotes in this version
+                pos += charsConsumed +2;  // skip both JsonConstant.DoubleQuote too 
+                return result;
+            }
+
+            ThrowJsonFormatException(JsonFormatException.FormatError.ExpectedDoubleQuote);
+            return null;
+        }
+
+        public decimal ReadDecimal()
+        {
+            return decimal.Parse(ReadNumberInternal(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -598,26 +666,26 @@ namespace SpanJson
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Version ReadVersion()
         {
-            var span = ReadStringSpan();
-            if (StringParser.TryParseVersion(span, out var value))
+            var stringValue = ReadString();
+            if (stringValue == null)
             {
-                return value;
+                return default;
             }
-            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(Guid));
-            return default;
+            return Version.Parse(stringValue);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Uri ReadUri()
         {
-            var span = ReadStringSpan();
-            if (StringParser.TryParseUri(span, out var value))
+            var stringValue = ReadString();
+            if (stringValue == null)
             {
-                return value;
+                return default;
             }
-            ThrowJsonFormatException(JsonFormatException.FormatError.InvalidSymbol, typeof(Guid));
-            return default;
+            return new Uri(stringValue);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -636,22 +704,22 @@ namespace SpanJson
                     break;
                 case JsonToken.BeginArray:
                 case JsonToken.BeginObject:
-                {
-                    pos++;
-                    SkipNextSegment(stack + 1);
-                    break;
-                }
+                    {
+                        pos++;
+                        SkipNextSegment(stack + 1);
+                        break;
+                    }
                 case JsonToken.EndObject:
                 case JsonToken.EndArray:
-                {
-                    pos++;
-                    if (stack > 0)
                     {
-                        SkipNextSegment(stack - 1);
-                    }
+                        pos++;
+                        if (stack > 0)
+                        {
+                            SkipNextSegment(stack - 1);
+                        }
 
-                    break;
-                }
+                        break;
+                    }
                 case JsonToken.Number:
                 case JsonToken.String:
                 case JsonToken.True:
@@ -659,20 +727,20 @@ namespace SpanJson
                 case JsonToken.Null:
                 case JsonToken.ValueSeparator:
                 case JsonToken.NameSeparator:
-                {
-                    do
                     {
-                        SkipNextValue(token);
-                        token = ReadNextToken();
-                    } while (stack > 0 && (byte) token > 4); // No None or the Begin/End-Array/Object tokens
+                        do
+                        {
+                            SkipNextValue(token);
+                            token = ReadNextToken();
+                        } while (stack > 0 && (byte)token > 4); // No None or the Begin/End-Array/Object tokens
 
-                    if (stack > 0)
-                    {
-                        SkipNextSegment(stack);
+                        if (stack > 0)
+                        {
+                            SkipNextSegment(stack);
+                        }
+
+                        break;
                     }
-
-                    break;
-                }
             }
         }
 
@@ -692,25 +760,25 @@ namespace SpanJson
                     pos++;
                     break;
                 case JsonToken.Number:
-                {
-                    if (TryFindEndOfNumber(pos, out var charsConsumed))
                     {
-                        pos += charsConsumed;
-                    }
+                        if (TryFindEndOfNumber(pos, out var charsConsumed))
+                        {
+                            pos += charsConsumed;
+                        }
 
-                    break;
-                }
+                        break;
+                    }
                 case JsonToken.String:
-                {
-                    if (TryFindEndOfString(pos, out var charsConsumed, out _))
                     {
-                        pos += charsConsumed + 1; // skip JsonConstant.DoubleQuote too
-                        return;
-                    }
+                        if (TryFindEndOfString(pos, out var charsConsumed, out _))
+                        {
+                            pos += charsConsumed + 1; // skip JsonConstant.DoubleQuote too
+                            return;
+                        }
 
-                    ThrowJsonFormatException(JsonFormatException.FormatError.ExpectedDoubleQuote);
-                    break;
-                }
+                        ThrowJsonFormatException(JsonFormatException.FormatError.ExpectedDoubleQuote);
+                        break;
+                    }
                 case JsonToken.Null:
                 case JsonToken.True:
                     pos += 4;
@@ -725,17 +793,17 @@ namespace SpanJson
         private bool TryFindEndOfNumber(int pos, out int charsConsumed)
         {
             var i = pos;
-            for (; i < _chars.Length; i++)
+            var length = _chars.Length;
+            for (; i < length; i++)
             {
                 ref readonly var c = ref _chars[i];
                 if (!IsNumericSymbol(c))
                 {
-                    charsConsumed = i - pos;
-                    return true;
+                    break;
                 }
             }
 
-            if (i == _chars.Length) // full length of the string
+            if (i > pos)
             {
                 charsConsumed = i - pos;
                 return true;
@@ -790,50 +858,50 @@ namespace SpanJson
                     return null;
                 case JsonToken.False:
                 case JsonToken.True:
-                {
-                    return ReadBoolean();
-                }
+                    {
+                        return ReadBoolean();
+                    }
                 case JsonToken.Number:
-                {
-                    return new SpanJsonDynamicNumber(ReadNumberInternal());
-                }
+                    {
+                        return new SpanJsonDynamicNumber(ReadNumberInternal());
+                    }
                 case JsonToken.String:
-                {
-                    var span = ReadStringSpanInternal(out var escapedChars);
-                    return new SpanJsonDynamicString(span, escapedChars);
-                }
+                    {
+                        var span = ReadStringSpanWithQuotes(out var escapedChars);
+                        return new SpanJsonDynamicString(span, escapedChars);
+                    }
                 case JsonToken.BeginObject:
-                {
-                    pos++;
-                    var count = 0;
-                    var dictionary = new Dictionary<string, object>();
-                    while (!TryReadIsEndObjectOrValueSeparator(ref count))
                     {
-                        var name = ReadNameSpan().ToString();
-                        var value = ReadDynamic();
-                        dictionary.Add(name, value);
-                    }
+                        pos++;
+                        var count = 0;
+                        var dictionary = new Dictionary<string, object>();
+                        while (!TryReadIsEndObjectOrValueSeparator(ref count))
+                        {
+                            var name = ReadNameSpan().ToString();
+                            var value = ReadDynamic();
+                            dictionary.Add(name, value);
+                        }
 
-                    return new SpanJsonDynamicObject(dictionary);
-                }
+                        return new SpanJsonDynamicObject(dictionary);
+                    }
                 case JsonToken.BeginArray:
-                {
-                    pos++;
-                    var count = 0;
-                    var list = new List<object>();
-                    while (!TryReadIsEndArrayOrValueSeparator(ref count))
                     {
-                        var value = ReadDynamic();
-                        list.Add(value);
-                    }
+                        pos++;
+                        var count = 0;
+                        var list = new List<object>();
+                        while (!TryReadIsEndArrayOrValueSeparator(ref count))
+                        {
+                            var value = ReadDynamic();
+                            list.Add(value);
+                        }
 
-                    return new SpanJsonDynamicArray(list.ToArray());
-                }
+                        return new SpanJsonDynamicArray(list.ToArray());
+                    }
                 default:
-                {
-                    ThrowJsonFormatException(JsonFormatException.FormatError.EndOfData);
-                    return default;
-                }
+                    {
+                        ThrowJsonFormatException(JsonFormatException.FormatError.EndOfData);
+                        return default;
+                    }
             }
         }
 

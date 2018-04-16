@@ -10,10 +10,27 @@ namespace SpanJson.Formatters.Dynamic
     [TypeConverter(typeof(DynamicTypeConverter))]
     public sealed class SpanJsonDynamicNumber : DynamicObject
     {
-        public sealed class DynamicTypeConverter : TypeConverter
+        public sealed class DynamicTypeConverter : BaseDynamicTypeConverter
         {
-            private static readonly Dictionary<Type, ConvertDelegate> Converters =
-                ConvertDelegateHelper.BuildConverters(typeof(NumberParser));
+            private static readonly Dictionary<Type, ConvertDelegate> Converters = BuildDelegates();
+
+            private static Dictionary<Type, ConvertDelegate> BuildDelegates()
+            {
+                var allowedTypes = new Type[] {
+                    typeof(sbyte),
+                    typeof(Int16),
+                    typeof(Int32),
+                    typeof(Int64),
+                    typeof(byte),
+                    typeof(UInt16),
+                    typeof(UInt32),
+                    typeof(UInt64),
+                    typeof(Single),
+                    typeof(Double),
+                    typeof(decimal)
+                };
+                return BuildDelegates(allowedTypes);
+            }
 
             public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
             {
@@ -46,10 +63,10 @@ namespace SpanJson.Formatters.Dynamic
             {
                 if (Converters.TryGetValue(destinationType, out var del))
                 {
-                    var result = del(span, out value);
-                    return result;
+                    var reader = new JsonReader(span);
+                    value = del(reader);
+                    return true;
                 }
-
                 value = default;
                 return false;
             }
