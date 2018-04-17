@@ -354,6 +354,18 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string ReadEscapedName()
+        {
+            var span = ReadStringSpanInternal(out var escapedChars);
+            if (_chars[_pos++] != JsonConstant.NameSeparator)
+            {
+                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
+            }
+
+            return escapedChars == 0 ? span.ToString() : Unescape(span, escapedChars);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ReadString()
         {
             if (ReadIsNull())

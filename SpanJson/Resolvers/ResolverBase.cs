@@ -53,6 +53,13 @@ namespace SpanJson.Resolvers
             {
                 if (!IsIgnored(memberInfo))
                 {
+                    bool canRead = true;
+                    bool canWrite = true;
+                    if (memberInfo is PropertyInfo propertyInfo)
+                    {
+                        canRead = propertyInfo.CanRead;
+                        canWrite = propertyInfo.CanWrite;
+                    }
                     var name = Escape(GetAttributeName(memberInfo) ?? memberInfo.Name);
                     if (_namingConventions == NamingConventions.CamelCase)
                     {
@@ -63,7 +70,7 @@ namespace SpanJson.Resolvers
                     var memberType = memberInfo is FieldInfo fi ? fi.FieldType :
                         memberInfo is PropertyInfo pi ? pi.PropertyType : null;
                     result.Add(new JsonMemberInfo(memberInfo.Name, memberType, shouldSerialize, name,
-                        _nullOptions == NullOptions.ExcludeNulls));
+                        _nullOptions == NullOptions.ExcludeNulls, canRead, canWrite));
                 }
             }
 
@@ -109,6 +116,16 @@ namespace SpanJson.Resolvers
                 return GetIntegrated(type) ??
                        GetDefaultOrCreate(typeof(ArrayFormatter<,>).MakeGenericType(type.GetElementType(),
                            typeof(TResolver)));
+            }
+
+            if (type.TryGetDictionaryType(out var keyType, out var valueType))
+            {
+                if (keyType != typeof(string))
+                {
+                    throw new NotImplementedException($"{keyType} is not supported a Key for Dictionary.");
+                }
+
+                return GetIntegrated(type) ?? GetDefaultOrCreate(typeof(DictionaryFormatter<,>).MakeGenericType(valueType, typeof(TResolver)));
             }
 
             if (type.TryGetListType(out var elementType))

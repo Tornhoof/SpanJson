@@ -4,7 +4,7 @@
     ///     Used for types which are not built-in
     /// </summary>
     public sealed class ComplexClassFormatter<T, TResolver> : ComplexFormatter, IJsonFormatter<T, TResolver>
-        where T : class, new() where TResolver : IJsonFormatterResolver<TResolver>, new()
+        where T : class where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
         public static readonly ComplexClassFormatter<T, TResolver> Default = new ComplexClassFormatter<T, TResolver>();
 

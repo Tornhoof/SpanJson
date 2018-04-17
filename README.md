@@ -14,9 +14,8 @@ Serialization/Deserialization of objects composed of basic base class library ty
 
 Todo:
 
-* Support more types directly (e.g. Dictionary, anonymous types)
-* Adding direct utf8 support
 * Streams
+* Adding direct utf8 support
 
 ``` ini
 

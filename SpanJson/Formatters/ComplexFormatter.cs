@@ -20,6 +20,8 @@ namespace SpanJson.Formatters
         protected static SerializeDelegate<T, TResolver> BuildSerializeDelegate<T, TResolver>()
             where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
+            var resolver = StandardResolvers.GetResolver<TResolver>();
+            var memberInfos = resolver.GetMemberInfos<T>().Where(a => a.CanRead).ToList();
             var writerParameter = Expression.Parameter(typeof(JsonWriter).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
 
@@ -29,9 +31,7 @@ namespace SpanJson.Formatters
             expressions.Add(Expression.Call(writerParameter,
                 FindMethod(writerParameter.Type, nameof(JsonWriter.WriteObjectStart))));
             var isNotReferenceOrContainsReference = !RuntimeHelpers.IsReferenceOrContainsReferences<T>();
-            var resolver = StandardResolvers.GetResolver<TResolver>();
-            var memberInfos = resolver.GetMemberInfos<T>();
-            for (var i = 0; i < memberInfos.Length; i++)
+            for (var i = 0; i < memberInfos.Count; i++)
             {
                 var memberInfo = memberInfos[i];
                 Expression formatterExpression;
@@ -57,7 +57,7 @@ namespace SpanJson.Formatters
                         serializeMethodInfo, writerParameter,
                         Expression.PropertyOrField(valueParameter, memberInfo.MemberName))
                 };
-                if (i != memberInfos.Length - 1)
+                if (i != memberInfos.Count - 1)
                 {
                     valueExpressions.Add(Expression.Call(writerParameter, seperatorWriteMethodInfo));
                 }
@@ -133,10 +133,14 @@ namespace SpanJson.Formatters
         protected static DeserializeDelegate<T, TResolver> BuildDeserializeDelegate<T, TResolver>()
             where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
-            var readerParameter = Expression.Parameter(typeof(JsonParser).MakeByRefType(), "reader");
-
             var resolver = StandardResolvers.GetResolver<TResolver>();
-            var memberInfos = resolver.GetMemberInfos<T>();
+            var memberInfos = resolver.GetMemberInfos<T>().Where(a => a.CanWrite).ToList();
+            if (memberInfos.Count == 0)
+            {
+                return (ref JsonParser parser) => default;
+            }
+
+            var readerParameter = Expression.Parameter(typeof(JsonParser).MakeByRefType(), "reader");
             var returnValue = Expression.Variable(typeof(T), "result");
             var switchValue = Expression.Variable(typeof(ReadOnlySpan<char>), "switchValue");
             var switchValueAssignExpression = Expression.Assign(switchValue,
@@ -178,7 +182,7 @@ namespace SpanJson.Formatters
         ///     We group the field names by the nth character and nest the switch tables to find the appropriate field/property to
         ///     assign to
         /// </summary>
-        private static Expression BuildPropertyComparisonSwitchExpression<TResolver>(TResolver resolver, JsonMemberInfo[] memberInfos, string prefix, int index,
+        private static Expression BuildPropertyComparisonSwitchExpression<TResolver>(TResolver resolver, ICollection<JsonMemberInfo> memberInfos, string prefix, int index,
             ParameterExpression switchValue,
             Expression returnValue, Expression readerParameter) where TResolver : IJsonFormatterResolver<TResolver>, new()
         {

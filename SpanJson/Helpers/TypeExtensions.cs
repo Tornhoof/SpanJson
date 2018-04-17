@@ -13,7 +13,7 @@ namespace SpanJson.Helpers
                 return underlingType != null;
             }
 
-            underlingType = null;
+            underlingType = default;
             return false;
         }
 
@@ -25,7 +25,21 @@ namespace SpanJson.Helpers
                 return true;
             }
 
-            elementType = null;
+            elementType = default;
+            return false;
+        }
+
+        public static bool TryGetDictionaryType(this Type type, out Type keyType, out Type valueType)
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>)) // todo extend to other dictionaries
+            {
+                keyType = type.GetGenericArguments()[0];
+                valueType = type.GetGenericArguments()[1];
+                return true;
+            }
+
+            keyType = default;
+            valueType = default;
             return false;
         }
     }
