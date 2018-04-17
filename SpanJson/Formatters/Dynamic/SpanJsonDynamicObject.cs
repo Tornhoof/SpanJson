@@ -51,7 +51,6 @@ namespace SpanJson.Formatters.Dynamic
             return _dictionary.TryGetValue(binder.Name, out result);
         }
 
-
         public override IEnumerable<string> GetDynamicMemberNames()
         {
             return _dictionary.Keys;

@@ -28,13 +28,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="BclTests.tt">
+    <None Update="Generated\BclTests.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BclTests.cs</LastGenOutput>
     </None>
-    <Compile Update="BclTests.cs">
-      <DesignTime>false</DesignTime>
-      <AutoGen>false</AutoGen>
+    <Compile Update="Generated\BclTests.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
       <DependentUpon>BclTests.tt</DependentUpon>
     </Compile>
   </ItemGroup>

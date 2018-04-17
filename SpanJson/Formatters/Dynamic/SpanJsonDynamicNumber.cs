@@ -35,18 +35,20 @@ namespace SpanJson.Formatters.Dynamic
             private static readonly Dictionary<Type, ConvertDelegate> Converters = BuildDelegates();
 
 
-            public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
-            {
-                return IsSupported(destinationType);
-            }
-
             public override bool TryConvertTo(Type destinationType, in ReadOnlySpan<char> span, out object value)
             {
-                if (Converters.TryGetValue(destinationType, out var del))
+                try
                 {
-                    var reader = new JsonParser(span);
-                    value = del(reader);
-                    return true;
+
+                    if (Converters.TryGetValue(destinationType, out var del))
+                    {
+                        var reader = new JsonParser(span);
+                        value = del(reader);
+                        return true;
+                    }
+                }
+                catch
+                {
                 }
 
                 value = default;

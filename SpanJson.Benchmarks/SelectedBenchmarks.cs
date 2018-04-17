@@ -8,7 +8,6 @@ namespace SpanJson.Benchmarks
 {
     [MemoryDiagnoser]
     //[ShortRunJob]
-    [DisassemblyDiagnoser(true, recursiveDepth: 2)]
     public class SelectedBenchmarks
     {
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();

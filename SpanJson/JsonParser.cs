@@ -12,12 +12,14 @@ namespace SpanJson
     public ref struct JsonParser
     {
         private readonly ReadOnlySpan<char> _chars;
+        private readonly int _length;
         private static readonly char[] NullTerminator = {'\0'};
         private int _pos;
 
         public JsonParser(ReadOnlySpan<char> input)
         {
             _chars = input;
+            _length = input.Length;
             _pos = 0;
         }
 
@@ -92,13 +94,12 @@ namespace SpanJson
         private long ReadNumberInt64()
         {
             SkipWhitespace();
-            if (!IsAvailable)
+            ref var pos = ref _pos;
+            if (pos >= _length)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
                 return default;
             }
-
-            ref var pos = ref _pos;
             ref readonly var firstChar = ref _chars[pos];
             var neg = false;
             if (firstChar == '-')
@@ -107,7 +108,7 @@ namespace SpanJson
                 neg = true;
             }
 
-            if (!IsAvailable)
+            if (pos >= _length)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
                 return default;
@@ -115,7 +116,7 @@ namespace SpanJson
 
             var result = _chars[pos++] - 48L;
             uint value;
-            while (IsAvailable && (value = _chars[pos] - 48U) <= 9)
+            while (pos < _length && (value = _chars[pos] - 48U) <= 9)
             {
                 result = unchecked(result * 10 + value);
                 pos++;
@@ -128,13 +129,12 @@ namespace SpanJson
         private ulong ReadNumberUInt64()
         {
             SkipWhitespace();
-            if (!IsAvailable)
+            ref var pos = ref _pos;
+            if (pos >= _length)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
                 return default;
             }
-
-            ref var pos = ref _pos;
             ref readonly var firstChar = ref _chars[pos];
             if (firstChar == '-')
             {
@@ -150,7 +150,7 @@ namespace SpanJson
             }
 
             uint value;
-            while (IsAvailable && (value = _chars[pos] - 48U) <= 9)
+            while (pos < _length && (value = _chars[pos] - 48U) <= 9)
             {
                 result = checked(result * 10 + value);
                 pos++;
@@ -264,6 +264,8 @@ namespace SpanJson
                         return JsonConstant.DoubleQuote;
                     case JsonConstant.ReverseSolidus:
                         return JsonConstant.ReverseSolidus;
+                    case JsonConstant.Solidus:
+                        return JsonConstant.Solidus;
                     case 'b':
                         return '\b';
                     case 'f':
@@ -492,7 +494,7 @@ namespace SpanJson
         {
             SkipWhitespace();
             ref var pos = ref _pos;
-            if (IsAvailable && _chars[pos] == JsonConstant.Null) // just peek the char
+            if (pos < _length && _chars[pos] == JsonConstant.Null) // just peek the char
             {
                 if (_chars[pos + 1] != 'u')
                 {
@@ -525,12 +527,35 @@ namespace SpanJson
             }
         }
 
+        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //private void SkipWhitespace()
+        //{
+        //    ref var pos = ref _pos;
+        //    while (pos < _length)
+        //    {
+        //        ref readonly var c = ref _chars[pos];
+        //        switch (c)
+        //        {
+        //            case ' ':
+        //            case '\t':
+        //            case '\r':
+        //            case '\n':
+        //                {
+        //                    pos++;
+        //                    continue;
+        //                }
+        //            default:
+        //                return;
+        //        }
+        //    }
+        //}
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SkipWhitespace()
         {
             ref var pos = ref _pos;
-            while(IsAvailable)
-            { 
+            while (pos < _length)
+            {
                 ref readonly var c = ref _chars[pos];
                 switch (c)
                 {
@@ -548,6 +573,7 @@ namespace SpanJson
             }
         }
 
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReadBeginArrayOrThrow()
         {
@@ -562,7 +588,7 @@ namespace SpanJson
         {
             SkipWhitespace();
             ref var pos = ref _pos;
-            if (IsAvailable && _chars[pos] == JsonConstant.BeginArray)
+            if (pos < _length && _chars[pos] == JsonConstant.BeginArray)
             {
                 pos++;
                 return true;
@@ -576,7 +602,7 @@ namespace SpanJson
         {
             SkipWhitespace();
             ref var pos = ref _pos;
-            if (IsAvailable && _chars[pos] == JsonConstant.EndArray)
+            if (pos < _length && _chars[pos] == JsonConstant.EndArray)
             {
                 pos++;
                 return true;
@@ -584,7 +610,7 @@ namespace SpanJson
 
             if (count++ > 0)
             {
-                if (IsAvailable && _chars[pos] == JsonConstant.ValueSeparator)
+                if (pos < _length && _chars[pos] == JsonConstant.ValueSeparator)
                 {
                     pos++;
                     return false;
@@ -595,8 +621,6 @@ namespace SpanJson
 
             return false;
         }
-
-        public bool IsAvailable => _pos < _chars.Length;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ReadIsBeginObject()
@@ -662,7 +686,7 @@ namespace SpanJson
         {
             SkipWhitespace();
             ref var pos = ref _pos;
-            if (IsAvailable && _chars[pos] == JsonConstant.EndObject)
+            if (pos < _length && _chars[pos] == JsonConstant.EndObject)
             {
                 pos++;
                 return true;
@@ -842,7 +866,7 @@ namespace SpanJson
                 if (c == JsonConstant.ReverseSolidus)
                 {
                     escapedChars++;
-                    var nextChar = _chars[i + 1];
+                    ref readonly var nextChar = ref _chars[i + 1];
                     if (nextChar == 'u' || nextChar == 'U')
                     {
                         escapedChars += 4; // add only 4 and not 5 as we still need one unescaped char
@@ -899,7 +923,7 @@ namespace SpanJson
                 case JsonToken.String:
                 {
                     var span = ReadStringSpanWithQuotes(out var escapedChars);
-                    return new SpanJsonDynamicString(span, escapedChars);
+                    return new SpanJsonDynamicString(span);
                 }
                 case JsonToken.BeginObject:
                 {

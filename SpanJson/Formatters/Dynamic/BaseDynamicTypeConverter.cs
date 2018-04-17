@@ -23,6 +23,7 @@ namespace SpanJson.Formatters.Dynamic
             return true;
         }
 
+
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
         {
             return IsSupported(destinationType);
@@ -39,6 +40,7 @@ namespace SpanJson.Formatters.Dynamic
 
             throw new InvalidCastException();
         }
+
 
         public abstract bool TryConvertTo(Type destinationType, in ReadOnlySpan<char> span, out object value);
 

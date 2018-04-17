@@ -11,13 +11,9 @@ namespace SpanJson.Formatters.Dynamic
         private static readonly DynamicTypeConverter Converter =
             (DynamicTypeConverter) TypeDescriptor.GetConverter(typeof(SpanJsonDynamicString));
 
-
-        private readonly int _escapedChars;
-
-        public SpanJsonDynamicString(ReadOnlySpan<char> span, int escapedChars)
+        public SpanJsonDynamicString(ReadOnlySpan<char> span)
         {
             Chars = span.ToArray();
-            _escapedChars = escapedChars;
         }
 
         public char[] Chars { get; }
@@ -39,31 +35,35 @@ namespace SpanJson.Formatters.Dynamic
 
             public override bool TryConvertTo(Type destinationType, in ReadOnlySpan<char> span, out object value)
             {
-                var reader = new JsonParser(span);
-                if (Converters.TryGetValue(destinationType, out var del))
+                try
                 {
-                    value = del(reader);
-                    return true;
-                }
-
-                if (destinationType == typeof(string))
-                {
-                    value = reader.ReadString();
-                    return true;
-                }
-
-                if (destinationType.IsEnum)
-                {
-                    // TODO: Optimize
-                    var data = reader.ReadString();
-                    if (Enum.TryParse(destinationType, data, out var enumValue))
+                    var reader = new JsonParser(span);
+                    if (Converters.TryGetValue(destinationType, out var del))
                     {
-                        value = enumValue;
+                        value = del(reader);
                         return true;
                     }
 
-                    value = default;
-                    return false;
+                    if (destinationType == typeof(string))
+                    {
+                        value = reader.ReadString();
+                        return true;
+                    }
+
+                    if (destinationType.IsEnum)
+                    {
+                        // TODO: Optimize
+                        var data = reader.ReadString();
+                        if (Enum.TryParse(destinationType, data, out var enumValue))
+                        {
+                            value = enumValue;
+                            return true;
+                        }
+
+                    }
+                }
+                catch (Exception)
+                {
                 }
 
                 value = default;
