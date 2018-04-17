@@ -10,19 +10,31 @@ namespace SpanJson.Formatters.Dynamic
 {
     public sealed class SpanJsonDynamicArray : DynamicObject, IReadOnlyList<object>
     {
+        private static readonly ConcurrentDictionary<Type, Func<object[], IEnumerable>> Enumerables =
+            new ConcurrentDictionary<Type, Func<object[], IEnumerable>>();
+
         private readonly object[] _input;
-        private static ConcurrentDictionary<Type, Func<object[], IEnumerable>> Enumerables = new ConcurrentDictionary<Type, Func<object[], IEnumerable>>();
+
         internal SpanJsonDynamicArray(object[] input)
         {
             _input = input;
         }
 
+        public int Count => _input.Length;
+
+        public object this[int index] => _input[index];
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         /// <summary>
-        ///  Always works
+        ///     Always works
         /// </summary>
         public IEnumerator<object> GetEnumerator()
         {
-            for (int i = 0; i < _input.Length; i++)
+            for (var i = 0; i < _input.Length; i++)
             {
                 yield return _input[i];
             }
@@ -30,7 +42,9 @@ namespace SpanJson.Formatters.Dynamic
 
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
-            var enumerator = GetOrAddEnumerable(binder.ReturnType);
+            // ReSharper disable ConvertClosureToMethodGroup
+            var enumerator = Enumerables.GetOrAdd(binder.ReturnType, x => CreateEnumerable(x));
+            // ReSharper restore ConvertClosureToMethodGroup
             if (enumerator != null)
             {
                 result = enumerator(_input);
@@ -46,11 +60,11 @@ namespace SpanJson.Formatters.Dynamic
             return $"[{string.Join(", ", _input)}]";
         }
 
-        private static Func<object[], IEnumerable> GetOrAddEnumerable(Type type)
+        private static Func<object[], IEnumerable> CreateEnumerable(Type type)
         {
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
             {
-                var ctor = typeof(Enumerable<>).MakeGenericType(type.GetGenericArguments()[0]).GetConstructor(new Type[] {typeof(object[])});
+                var ctor = typeof(Enumerable<>).MakeGenericType(type.GetGenericArguments()[0]).GetConstructor(new[] {typeof(object[])});
                 var paramExpression = Expression.Parameter(typeof(object[]), "input");
                 var lambda =
                     Expression.Lambda<Func<object[], IEnumerable>>(
@@ -62,16 +76,7 @@ namespace SpanJson.Formatters.Dynamic
             return null;
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public int Count => _input.Length;
-
-        public object this[int index] => _input[index];
-
-        struct Enumerable<TOutput> : IEnumerable<TOutput>
+        private struct Enumerable<TOutput> : IEnumerable<TOutput>
         {
             private readonly object[] _input;
 
@@ -79,16 +84,14 @@ namespace SpanJson.Formatters.Dynamic
             {
                 _input = input;
             }
+
             public IEnumerator<TOutput> GetEnumerator()
             {
-                if (SpanJsonDynamicString.DynamicTypeConverter.IsSupported(typeof(TOutput)))
-                {
-                    return new Enumerator<SpanJsonDynamicString.DynamicTypeConverter, TOutput>(_input);
-                }
-                if (SpanJsonDynamicNumber.DynamicTypeConverter.IsSupported(typeof(TOutput)))
-                {
-                    return new Enumerator<SpanJsonDynamicNumber.DynamicTypeConverter, TOutput>(_input);
-                }
+                var stringConverter = new SpanJsonDynamicString.DynamicTypeConverter();
+                if (stringConverter.IsSupported(typeof(TOutput))) return new Enumerator<SpanJsonDynamicString.DynamicTypeConverter, TOutput>(_input);
+
+                var numberConverter = new SpanJsonDynamicNumber.DynamicTypeConverter();
+                if (numberConverter.IsSupported(typeof(TOutput))) return new Enumerator<SpanJsonDynamicNumber.DynamicTypeConverter, TOutput>(_input);
 
                 return null;
             }
@@ -99,7 +102,7 @@ namespace SpanJson.Formatters.Dynamic
             }
         }
 
-        struct Enumerator<TConverter, TOutput> : IEnumerator<TOutput> where TConverter : TypeConverter, new()
+        private struct Enumerator<TConverter, TOutput> : IEnumerator<TOutput> where TConverter : TypeConverter, new()
         {
             private static readonly TConverter Converter = new TConverter();
             private readonly object[] _input;
@@ -116,10 +119,7 @@ namespace SpanJson.Formatters.Dynamic
 
             public bool MoveNext()
             {
-                if (_index >= _length)
-                {
-                    return false;
-                }
+                if (_index >= _length) return false;
 
                 Current = (TOutput) Converter.ConvertTo(_input[_index++], typeof(TOutput));
                 return true;

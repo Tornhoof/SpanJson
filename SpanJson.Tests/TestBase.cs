@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Jil;
 using SpanJson.Benchmarks.Fixture;
-using SpanJson.Benchmarks.Serializers;
-using SpanJson.Resolvers;
 using Xunit;
 
 namespace SpanJson.Tests
@@ -84,12 +79,10 @@ namespace SpanJson.Tests
 
     public abstract class NullableListTestBase<T> : ListTestBase<T?> where T : struct
     {
-
     }
 
     public abstract class NullableArrayTestBase<T> : ArrayTestBase<T?> where T : struct
     {
-
     }
 
     public abstract class NullableTestBase<T> : TestBase where T : struct
@@ -101,7 +94,7 @@ namespace SpanJson.Tests
             var serialized = JsonSerializer.Generic.Serialize<T?>(null);
             Assert.Equal(input, serialized);
             var deserialized = JsonSerializer.Generic.Deserialize<T?>(input);
-            Assert.Null(deserialized);            
+            Assert.Null(deserialized);
         }
     }
 }

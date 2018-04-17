@@ -17,21 +17,29 @@ namespace SpanJson.Benchmarks.Models
     [ProtoContract]
     public class Reputation : IGenericEquality<Reputation>
     {
-        [ProtoMember(1)] public int? user_id { get; set; }
+        [ProtoMember(1)]
+        public int? user_id { get; set; }
 
-        [ProtoMember(2)] public int? post_id { get; set; }
+        [ProtoMember(2)]
+        public int? post_id { get; set; }
 
-        [ProtoMember(3)] public PostType? post_type { get; set; }
+        [ProtoMember(3)]
+        public PostType? post_type { get; set; }
 
-        [ProtoMember(4)] public VoteType? vote_type { get; set; }
+        [ProtoMember(4)]
+        public VoteType? vote_type { get; set; }
 
-        [ProtoMember(5)] public string title { get; set; }
+        [ProtoMember(5)]
+        public string title { get; set; }
 
-        [ProtoMember(6)] public string link { get; set; }
+        [ProtoMember(6)]
+        public string link { get; set; }
 
-        [ProtoMember(7)] public int? reputation_change { get; set; }
+        [ProtoMember(7)]
+        public int? reputation_change { get; set; }
 
-        [ProtoMember(8)] public DateTime? on_date { get; set; }
+        [ProtoMember(8)]
+        public DateTime? on_date { get; set; }
 
         public bool Equals(Reputation obj)
         {

@@ -10,10 +10,7 @@ namespace SpanJson.Formatters
         protected static List<T> Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
             where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
-            if (reader.ReadIsNull())
-            {
-                return null;
-            }
+            if (reader.ReadIsNull()) return null;
 
             reader.ReadBeginArrayOrThrow();
             var list = new List<T>();

@@ -24,20 +24,14 @@ namespace SpanJson.Benchmarks
     {
         public static bool TrueEqualsString(this IEnumerable<string> a, IEnumerable<string> b)
         {
-            if (ReferenceEquals(a, b))
-            {
-                return true;
-            }
+            if (ReferenceEquals(a, b)) return true;
 
             return a.SequenceEqual(b);
         }
 
         public static bool TrueEqualsString(this string a, string b)
         {
-            if (ReferenceEquals(a, b))
-            {
-                return true;
-            }
+            if (ReferenceEquals(a, b)) return true;
 
             return a == b;
         }
@@ -46,20 +40,11 @@ namespace SpanJson.Benchmarks
         public static bool TrueEquals<T>(this T? a, T? b)
             where T : struct
         {
-            if (ReferenceEquals(a, b))
-            {
-                return true;
-            }
+            if (ReferenceEquals(a, b)) return true;
 
-            if (!a.HasValue)
-            {
-                return false;
-            }
+            if (!a.HasValue) return false;
 
-            if (!b.HasValue)
-            {
-                return false;
-            }
+            if (!b.HasValue) return false;
 
             return a.Value.Equals(b.Value);
         }
@@ -67,25 +52,13 @@ namespace SpanJson.Benchmarks
         public static bool TrueEquals<T>(this T a, T b)
             where T : class, IGenericEquality<T>
         {
-            if (ReferenceEquals(a, b))
-            {
-                return true;
-            }
+            if (ReferenceEquals(a, b)) return true;
 
-            if (ReferenceEquals(a, null) && ReferenceEquals(b, null))
-            {
-                return true;
-            }
+            if (ReferenceEquals(a, null) && ReferenceEquals(b, null)) return true;
 
-            if (ReferenceEquals(a, null))
-            {
-                return false;
-            }
+            if (ReferenceEquals(a, null)) return false;
 
-            if (ReferenceEquals(b, null))
-            {
-                return false;
-            }
+            if (ReferenceEquals(b, null)) return false;
 
             return a.Equals(b);
         }
@@ -93,10 +66,7 @@ namespace SpanJson.Benchmarks
         public static bool TrueEqualsList<T>(this IEnumerable<T> a, IEnumerable<T> b)
             where T : class, IGenericEquality<T>
         {
-            if (ReferenceEquals(a, b))
-            {
-                return true;
-            }
+            if (ReferenceEquals(a, b)) return true;
 
             return a.SequenceEqual(b, GenericEqualityComparer<T>.Default);
         }
@@ -104,25 +74,13 @@ namespace SpanJson.Benchmarks
         public static bool TrueEqualsListDynamic<T>(this IEnumerable<T> a, IEnumerable<dynamic> b)
             where T : class, IGenericEquality<T>
         {
-            if (ReferenceEquals(a, b))
-            {
-                return true;
-            }
+            if (ReferenceEquals(a, b)) return true;
 
-            if (ReferenceEquals(a, null) && ReferenceEquals(b, null))
-            {
-                return true;
-            }
+            if (ReferenceEquals(a, null) && ReferenceEquals(b, null)) return true;
 
-            if (ReferenceEquals(a, null))
-            {
-                return false;
-            }
+            if (ReferenceEquals(a, null)) return false;
 
-            if (ReferenceEquals(b, null))
-            {
-                return false;
-            }
+            if (ReferenceEquals(b, null)) return false;
 
             using (var e1 = a.GetEnumerator())
             using (var e2 = b.GetEnumerator())
@@ -131,33 +89,18 @@ namespace SpanJson.Benchmarks
                 {
                     var e1Next = e1.MoveNext();
                     var e2Next = e2.MoveNext();
-                    if (e1Next != e2Next)
-                    {
-                        return false;
-                    }
+                    if (e1Next != e2Next) return false;
 
-                    if (!e1Next && !e2Next)
-                    {
-                        break;
-                    }
+                    if (!e1Next && !e2Next) break;
 
                     var c1 = e1.Current;
                     var c2 = e2.Current;
 
-                    if (c1 == null && c2 != null)
-                    {
-                        return false;
-                    }
+                    if (c1 == null && c2 != null) return false;
 
-                    if (c2 == null && c1 != null)
-                    {
-                        return false;
-                    }
+                    if (c2 == null && c1 != null) return false;
 
-                    if (!c1.EqualsDynamic(c2))
-                    {
-                        return false;
-                    }
+                    if (!c1.EqualsDynamic(c2)) return false;
                 }
             }
 

@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace SpanJson.Benchmarks.Fixture
 {
@@ -62,6 +61,43 @@ namespace SpanJson.Benchmarks.Fixture
             return functor(repeatCount, recursiveCount);
         }
 
+        public T Create<T>(int repeatCount = 1, int recursiveCount = 1)
+        {
+            return (T) Create(typeof(T), repeatCount, recursiveCount);
+        }
+
+        public IEnumerable<T> CreateMany<T>(int count, int repeatCount = 1, int recursiveCount = 1)
+        {
+            return CreateMany(typeof(T), count, repeatCount, recursiveCount).Cast<T>();
+        }
+
+        public IEnumerable<object> CreateMany(Type type, int count, int repeatCount = 1, int recursiveCount = 1)
+        {
+            var functor = _functorCache.GetOrAdd(type, AddFunctor);
+            for (var i = 0; i < count; i++)
+            {
+                yield return functor(repeatCount, recursiveCount);
+            }
+        }
+
+        public static Expression ForLoop(ParameterExpression index, Expression lengthExpression, Expression loopContent)
+        {
+            var breakLabel = Expression.Label("LoopBreak");
+            var length = Expression.Variable(typeof(int), "length");
+            var block = Expression.Block(new[] {index, length},
+                Expression.Assign(index, Expression.Constant(0)),
+                Expression.Assign(length, lengthExpression),
+                Expression.Loop(
+                    Expression.IfThenElse(
+                        Expression.LessThan(index, length),
+                        Expression.Block(loopContent, Expression.PostIncrementAssign(index)),
+                        Expression.Break(breakLabel)
+                    ),
+                    breakLabel)
+            );
+            return block;
+        }
+
         private Func<int, int, object> AddFunctor(Type type)
         {
             var repeatCount = Expression.Parameter(typeof(int), "repeatCount");
@@ -80,10 +116,7 @@ namespace SpanJson.Benchmarks.Fixture
                 var typeProps = type.GetProperties();
                 foreach (var propertyInfo in typeProps)
                 {
-                    if (!propertyInfo.CanWrite)
-                    {
-                        continue;
-                    }
+                    if (!propertyInfo.CanWrite) continue;
 
                     var propertyType = propertyInfo.PropertyType;
                     var isRecursion = IsRecursion(type, propertyType) || IsRecursion(propertyType, type);
@@ -104,10 +137,7 @@ namespace SpanJson.Benchmarks.Fixture
 
         private bool IsRecursion(Type parentType, Type type)
         {
-            if (type == parentType)
-            {
-                return true;
-            }
+            if (type == parentType) return true;
 
             if (parentType.IsTypedList())
             {
@@ -222,43 +252,6 @@ namespace SpanJson.Benchmarks.Fixture
         {
             return Expression.IfThen(Expression.GreaterThanOrEqual(recursiveCount, Expression.Constant(0)),
                 input.Count > 1 ? Expression.Block(input) : input.Single());
-        }
-
-        public T Create<T>(int repeatCount = 1, int recursiveCount = 1)
-        {
-            return (T) Create(typeof(T), repeatCount, recursiveCount);
-        }
-
-        public IEnumerable<T> CreateMany<T>(int count, int repeatCount = 1, int recursiveCount = 1)
-        {
-            return CreateMany(typeof(T), count, repeatCount, recursiveCount).Cast<T>();
-        }
-
-        public IEnumerable<object> CreateMany(Type type, int count, int repeatCount = 1, int recursiveCount = 1)
-        {
-            var functor = _functorCache.GetOrAdd(type, AddFunctor);
-            for (var i = 0; i < count; i++)
-            {
-                yield return functor(repeatCount, recursiveCount);
-            }
-        }
-
-        public static Expression ForLoop(ParameterExpression index, Expression lengthExpression, Expression loopContent)
-        {
-            var breakLabel = Expression.Label("LoopBreak");
-            var length = Expression.Variable(typeof(int), "length");
-            var block = Expression.Block(new[] {index, length},
-                Expression.Assign(index, Expression.Constant(0)),
-                Expression.Assign(length, lengthExpression),
-                Expression.Loop(
-                    Expression.IfThenElse(
-                        Expression.LessThan(index, length),
-                        Expression.Block(loopContent, Expression.PostIncrementAssign(index)),
-                        Expression.Break(breakLabel)
-                    ),
-                    breakLabel)
-            );
-            return block;
         }
     }
 }

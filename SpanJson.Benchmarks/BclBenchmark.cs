@@ -9,78 +9,18 @@ namespace SpanJson.Benchmarks
     public class BclBenchmark
     {
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
-
-        private static readonly JilSerializer JilSerializer = new JilSerializer();
-
-        private static readonly SpanJsonSerializer SpanJsonSerializer = new SpanJsonSerializer();
-
-        private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
-
-
-        private static readonly sbyte SByteInput = ExpressionTreeFixture.Create<sbyte>();
-
-        private static readonly short Int16Input = ExpressionTreeFixture.Create<short>();
-
-        private static readonly int Int32Input = ExpressionTreeFixture.Create<int>();
-
-        private static readonly long Int64Input = ExpressionTreeFixture.Create<long>();
-
-        private static readonly byte ByteInput = ExpressionTreeFixture.Create<byte>();
-
-        private static readonly ushort UInt16Input = ExpressionTreeFixture.Create<ushort>();
-
-        private static readonly uint UInt32Input = ExpressionTreeFixture.Create<uint>();
-
-        private static readonly ulong UInt64Input = ExpressionTreeFixture.Create<ulong>();
-
-        private static readonly float SingleInput = ExpressionTreeFixture.Create<float>();
-
-        private static readonly double DoubleInput = ExpressionTreeFixture.Create<double>();
-
         private static readonly bool BooleanInput = ExpressionTreeFixture.Create<bool>();
 
-        private static readonly char CharInput = ExpressionTreeFixture.Create<char>();
+        private static readonly JilSerializer JilSerializer = new JilSerializer();
+        private static readonly string BooleanOutputOfJilSerializer = JilSerializer.Serialize(BooleanInput);
 
-        private static readonly DateTime DateTimeInput = ExpressionTreeFixture.Create<DateTime>();
+        private static readonly SpanJsonSerializer SpanJsonSerializer = new SpanJsonSerializer();
+        private static readonly string BooleanOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(BooleanInput);
 
-        private static readonly DateTimeOffset DateTimeOffsetInput = ExpressionTreeFixture.Create<DateTimeOffset>();
+        private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
+        private static readonly byte[] BooleanOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(BooleanInput);
 
-        private static readonly TimeSpan TimeSpanInput = ExpressionTreeFixture.Create<TimeSpan>();
-
-        private static readonly Guid GuidInput = ExpressionTreeFixture.Create<Guid>();
-
-        private static readonly string StringInput = ExpressionTreeFixture.Create<string>();
-
-        private static readonly decimal DecimalInput = ExpressionTreeFixture.Create<decimal>();
-
-        private static readonly Version VersionInput = ExpressionTreeFixture.Create<Version>();
-
-        private static readonly Uri UriInput = ExpressionTreeFixture.Create<Uri>();
-
-
-        private static readonly string SByteOutputOfJilSerializer = JilSerializer.Serialize(SByteInput);
-
-        private static readonly string SByteOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(SByteInput);
-
-        private static readonly byte[] SByteOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(SByteInput);
-
-        private static readonly string Int16OutputOfJilSerializer = JilSerializer.Serialize(Int16Input);
-
-        private static readonly string Int16OutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(Int16Input);
-
-        private static readonly byte[] Int16OutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(Int16Input);
-
-        private static readonly string Int32OutputOfJilSerializer = JilSerializer.Serialize(Int32Input);
-
-        private static readonly string Int32OutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(Int32Input);
-
-        private static readonly byte[] Int32OutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(Int32Input);
-
-        private static readonly string Int64OutputOfJilSerializer = JilSerializer.Serialize(Int64Input);
-
-        private static readonly string Int64OutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(Int64Input);
-
-        private static readonly byte[] Int64OutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(Int64Input);
+        private static readonly byte ByteInput = ExpressionTreeFixture.Create<byte>();
 
         private static readonly string ByteOutputOfJilSerializer = JilSerializer.Serialize(ByteInput);
 
@@ -88,41 +28,7 @@ namespace SpanJson.Benchmarks
 
         private static readonly byte[] ByteOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(ByteInput);
 
-        private static readonly string UInt16OutputOfJilSerializer = JilSerializer.Serialize(UInt16Input);
-
-        private static readonly string UInt16OutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(UInt16Input);
-
-        private static readonly byte[] UInt16OutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(UInt16Input);
-
-        private static readonly string UInt32OutputOfJilSerializer = JilSerializer.Serialize(UInt32Input);
-
-        private static readonly string UInt32OutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(UInt32Input);
-
-        private static readonly byte[] UInt32OutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(UInt32Input);
-
-        private static readonly string UInt64OutputOfJilSerializer = JilSerializer.Serialize(UInt64Input);
-
-        private static readonly string UInt64OutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(UInt64Input);
-
-        private static readonly byte[] UInt64OutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(UInt64Input);
-
-        private static readonly string SingleOutputOfJilSerializer = JilSerializer.Serialize(SingleInput);
-
-        private static readonly string SingleOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(SingleInput);
-
-        private static readonly byte[] SingleOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(SingleInput);
-
-        private static readonly string DoubleOutputOfJilSerializer = JilSerializer.Serialize(DoubleInput);
-
-        private static readonly string DoubleOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(DoubleInput);
-
-        private static readonly byte[] DoubleOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(DoubleInput);
-
-        private static readonly string BooleanOutputOfJilSerializer = JilSerializer.Serialize(BooleanInput);
-
-        private static readonly string BooleanOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(BooleanInput);
-
-        private static readonly byte[] BooleanOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(BooleanInput);
+        private static readonly char CharInput = ExpressionTreeFixture.Create<char>();
 
         private static readonly string CharOutputOfJilSerializer = JilSerializer.Serialize(CharInput);
 
@@ -130,11 +36,9 @@ namespace SpanJson.Benchmarks
 
         private static readonly byte[] CharOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(CharInput);
 
-        private static readonly string DateTimeOutputOfJilSerializer = JilSerializer.Serialize(DateTimeInput);
+        private static readonly DateTime DateTimeInput = ExpressionTreeFixture.Create<DateTime>();
 
-        private static readonly string DateTimeOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(DateTimeInput);
-
-        private static readonly byte[] DateTimeOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(DateTimeInput);
+        private static readonly DateTimeOffset DateTimeOffsetInput = ExpressionTreeFixture.Create<DateTimeOffset>();
 
         private static readonly string DateTimeOffsetOutputOfJilSerializer =
             JilSerializer.Serialize(DateTimeOffsetInput);
@@ -145,23 +49,13 @@ namespace SpanJson.Benchmarks
         private static readonly byte[] DateTimeOffsetOutputOfUtf8JsonSerializer =
             Utf8JsonSerializer.Serialize(DateTimeOffsetInput);
 
-        private static readonly string TimeSpanOutputOfJilSerializer = JilSerializer.Serialize(TimeSpanInput);
+        private static readonly string DateTimeOutputOfJilSerializer = JilSerializer.Serialize(DateTimeInput);
 
-        private static readonly string TimeSpanOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(TimeSpanInput);
+        private static readonly string DateTimeOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(DateTimeInput);
 
-        private static readonly byte[] TimeSpanOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(TimeSpanInput);
+        private static readonly byte[] DateTimeOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(DateTimeInput);
 
-        private static readonly string GuidOutputOfJilSerializer = JilSerializer.Serialize(GuidInput);
-
-        private static readonly string GuidOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(GuidInput);
-
-        private static readonly byte[] GuidOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(GuidInput);
-
-        private static readonly string StringOutputOfJilSerializer = JilSerializer.Serialize(StringInput);
-
-        private static readonly string StringOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(StringInput);
-
-        private static readonly byte[] StringOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(StringInput);
+        private static readonly decimal DecimalInput = ExpressionTreeFixture.Create<decimal>();
 
         private static readonly string DecimalOutputOfJilSerializer = JilSerializer.Serialize(DecimalInput);
 
@@ -169,17 +63,122 @@ namespace SpanJson.Benchmarks
 
         private static readonly byte[] DecimalOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(DecimalInput);
 
-        private static readonly string VersionOutputOfJilSerializer = JilSerializer.Serialize(VersionInput);
+        private static readonly double DoubleInput = ExpressionTreeFixture.Create<double>();
 
-        private static readonly string VersionOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(VersionInput);
+        private static readonly string DoubleOutputOfJilSerializer = JilSerializer.Serialize(DoubleInput);
 
-        private static readonly byte[] VersionOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(VersionInput);
+        private static readonly string DoubleOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(DoubleInput);
+
+        private static readonly byte[] DoubleOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(DoubleInput);
+
+
+        private static readonly Guid GuidInput = ExpressionTreeFixture.Create<Guid>();
+
+        private static readonly string GuidOutputOfJilSerializer = JilSerializer.Serialize(GuidInput);
+
+        private static readonly string GuidOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(GuidInput);
+
+        private static readonly byte[] GuidOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(GuidInput);
+
+        private static readonly short Int16Input = ExpressionTreeFixture.Create<short>();
+
+        private static readonly string Int16OutputOfJilSerializer = JilSerializer.Serialize(Int16Input);
+
+        private static readonly string Int16OutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(Int16Input);
+
+        private static readonly byte[] Int16OutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(Int16Input);
+
+        private static readonly int Int32Input = ExpressionTreeFixture.Create<int>();
+
+        private static readonly string Int32OutputOfJilSerializer = JilSerializer.Serialize(Int32Input);
+
+        private static readonly string Int32OutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(Int32Input);
+
+        private static readonly byte[] Int32OutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(Int32Input);
+
+        private static readonly long Int64Input = ExpressionTreeFixture.Create<long>();
+
+        private static readonly string Int64OutputOfJilSerializer = JilSerializer.Serialize(Int64Input);
+
+        private static readonly string Int64OutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(Int64Input);
+
+        private static readonly byte[] Int64OutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(Int64Input);
+
+
+        private static readonly sbyte SByteInput = ExpressionTreeFixture.Create<sbyte>();
+
+
+        private static readonly string SByteOutputOfJilSerializer = JilSerializer.Serialize(SByteInput);
+
+        private static readonly string SByteOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(SByteInput);
+
+        private static readonly byte[] SByteOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(SByteInput);
+
+        private static readonly float SingleInput = ExpressionTreeFixture.Create<float>();
+
+        private static readonly string SingleOutputOfJilSerializer = JilSerializer.Serialize(SingleInput);
+
+        private static readonly string SingleOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(SingleInput);
+
+        private static readonly byte[] SingleOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(SingleInput);
+
+
+        private static readonly string StringInput = ExpressionTreeFixture.Create<string>();
+
+        private static readonly string StringOutputOfJilSerializer = JilSerializer.Serialize(StringInput);
+
+        private static readonly string StringOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(StringInput);
+
+        private static readonly byte[] StringOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(StringInput);
+
+        private static readonly TimeSpan TimeSpanInput = ExpressionTreeFixture.Create<TimeSpan>();
+
+        private static readonly string TimeSpanOutputOfJilSerializer = JilSerializer.Serialize(TimeSpanInput);
+
+        private static readonly string TimeSpanOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(TimeSpanInput);
+
+        private static readonly byte[] TimeSpanOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(TimeSpanInput);
+
+        private static readonly ushort UInt16Input = ExpressionTreeFixture.Create<ushort>();
+
+        private static readonly string UInt16OutputOfJilSerializer = JilSerializer.Serialize(UInt16Input);
+
+        private static readonly string UInt16OutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(UInt16Input);
+
+        private static readonly byte[] UInt16OutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(UInt16Input);
+
+        private static readonly uint UInt32Input = ExpressionTreeFixture.Create<uint>();
+
+        private static readonly string UInt32OutputOfJilSerializer = JilSerializer.Serialize(UInt32Input);
+
+        private static readonly string UInt32OutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(UInt32Input);
+
+        private static readonly byte[] UInt32OutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(UInt32Input);
+
+        private static readonly ulong UInt64Input = ExpressionTreeFixture.Create<ulong>();
+
+        private static readonly string UInt64OutputOfJilSerializer = JilSerializer.Serialize(UInt64Input);
+
+        private static readonly string UInt64OutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(UInt64Input);
+
+        private static readonly byte[] UInt64OutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(UInt64Input);
+
+        private static readonly Uri UriInput = ExpressionTreeFixture.Create<Uri>();
 
         private static readonly string UriOutputOfJilSerializer = JilSerializer.Serialize(UriInput);
 
         private static readonly string UriOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(UriInput);
 
         private static readonly byte[] UriOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(UriInput);
+
+
+        private static readonly Version VersionInput = ExpressionTreeFixture.Create<Version>();
+
+        private static readonly string VersionOutputOfJilSerializer = JilSerializer.Serialize(VersionInput);
+
+        private static readonly string VersionOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(VersionInput);
+
+        private static readonly byte[] VersionOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(VersionInput);
 
 
         [Benchmark]

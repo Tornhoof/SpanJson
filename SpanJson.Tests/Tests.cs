@@ -36,7 +36,7 @@ namespace SpanJson.Tests
 
 
         /// <summary>
-        /// Jil's fraction handling is wrong
+        ///     Jil's fraction handling is wrong
         /// </summary>
         /// <param name="modelType"></param>
         [Theory]

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace SpanJson.Tests
@@ -14,7 +13,7 @@ namespace SpanJson.Tests
         {
             var reader = new JsonReader(json);
             reader.ReadBeginObjectOrThrow();
-            int count = 0;
+            var count = 0;
             while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
             {
                 var name = reader.ReadNameSpan();
@@ -31,18 +30,6 @@ namespace SpanJson.Tests
                 {
                     throw new InvalidOperationException();
                 }
-            }
-        }
-
-        [Fact]
-        public void ReadChars()
-        {
-            var chars = CreateChars();
-            foreach (var keyValuePair in chars)
-            {
-                var reader = new JsonReader(keyValuePair.Key);
-                var c = reader.ReadChar();
-                Assert.Equal(keyValuePair.Value, c);
             }
         }
 
@@ -96,6 +83,18 @@ namespace SpanJson.Tests
             }
 
             return result;
+        }
+
+        [Fact]
+        public void ReadChars()
+        {
+            var chars = CreateChars();
+            foreach (var keyValuePair in chars)
+            {
+                var reader = new JsonReader(keyValuePair.Key);
+                var c = reader.ReadChar();
+                Assert.Equal(keyValuePair.Value, c);
+            }
         }
     }
 }

@@ -9,136 +9,27 @@ namespace SpanJson.Benchmarks
     public class ModelBenchmark
     {
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
-
-        private static readonly Serializers.JilSerializer JilSerializer =
-            new Serializers.JilSerializer();
-
-        private static readonly Serializers.SpanJsonSerializer SpanJsonSerializer =
-            new Serializers.SpanJsonSerializer();
-
-        private static readonly Serializers.Utf8JsonSerializer Utf8JsonSerializer =
-            new Serializers.Utf8JsonSerializer();
-
-
         private static readonly AccessToken AccessTokenInput = ExpressionTreeFixture.Create<AccessToken>();
 
-        private static readonly AccountMerge AccountMergeInput = ExpressionTreeFixture.Create<AccountMerge>();
 
-        private static readonly Answer AnswerInput = ExpressionTreeFixture.Create<Answer>();
-
-        private static readonly Badge BadgeInput = ExpressionTreeFixture.Create<Badge>();
-
-        private static readonly Comment CommentInput = ExpressionTreeFixture.Create<Comment>();
-
-        private static readonly Error ErrorInput = ExpressionTreeFixture.Create<Error>();
-
-        private static readonly Event EventInput = ExpressionTreeFixture.Create<Event>();
-
-        private static readonly MobileFeed MobileFeedInput = ExpressionTreeFixture.Create<MobileFeed>();
-
-        private static readonly MobileQuestion MobileQuestionInput = ExpressionTreeFixture.Create<MobileQuestion>();
-
-        private static readonly MobileRepChange MobileRepChangeInput = ExpressionTreeFixture.Create<MobileRepChange>();
-
-        private static readonly MobileInboxItem MobileInboxItemInput = ExpressionTreeFixture.Create<MobileInboxItem>();
-
-        private static readonly MobileBadgeAward MobileBadgeAwardInput =
-            ExpressionTreeFixture.Create<MobileBadgeAward>();
-
-        private static readonly MobilePrivilege MobilePrivilegeInput = ExpressionTreeFixture.Create<MobilePrivilege>();
-
-        private static readonly MobileCommunityBulletin MobileCommunityBulletinInput =
-            ExpressionTreeFixture.Create<MobileCommunityBulletin>();
-
-        private static readonly MobileAssociationBonus MobileAssociationBonusInput =
-            ExpressionTreeFixture.Create<MobileAssociationBonus>();
-
-        private static readonly MobileCareersJobAd MobileCareersJobAdInput =
-            ExpressionTreeFixture.Create<MobileCareersJobAd>();
-
-        private static readonly MobileBannerAd MobileBannerAdInput = ExpressionTreeFixture.Create<MobileBannerAd>();
-
-        private static readonly MobileUpdateNotice MobileUpdateNoticeInput =
-            ExpressionTreeFixture.Create<MobileUpdateNotice>();
-
-        private static readonly FlagOption FlagOptionInput = ExpressionTreeFixture.Create<FlagOption>();
-
-        private static readonly InboxItem InboxItemInput = ExpressionTreeFixture.Create<InboxItem>();
-
-        private static readonly Info InfoInput = ExpressionTreeFixture.Create<Info>();
-
-        private static readonly NetworkUser NetworkUserInput = ExpressionTreeFixture.Create<NetworkUser>();
-
-        private static readonly Notification NotificationInput = ExpressionTreeFixture.Create<Notification>();
-
-        private static readonly Post PostInput = ExpressionTreeFixture.Create<Post>();
-
-        private static readonly Privilege PrivilegeInput = ExpressionTreeFixture.Create<Privilege>();
-
-        private static readonly Question QuestionInput = ExpressionTreeFixture.Create<Question>();
-
-        private static readonly QuestionTimeline QuestionTimelineInput =
-            ExpressionTreeFixture.Create<QuestionTimeline>();
-
-        private static readonly Reputation ReputationInput = ExpressionTreeFixture.Create<Reputation>();
-
-        private static readonly ReputationHistory ReputationHistoryInput =
-            ExpressionTreeFixture.Create<ReputationHistory>();
-
-        private static readonly Revision RevisionInput = ExpressionTreeFixture.Create<Revision>();
-
-        private static readonly SearchExcerpt SearchExcerptInput = ExpressionTreeFixture.Create<SearchExcerpt>();
-
-        private static readonly ShallowUser ShallowUserInput = ExpressionTreeFixture.Create<ShallowUser>();
-
-        private static readonly SuggestedEdit SuggestedEditInput = ExpressionTreeFixture.Create<SuggestedEdit>();
-
-        private static readonly Tag TagInput = ExpressionTreeFixture.Create<Tag>();
-
-        private static readonly TagScore TagScoreInput = ExpressionTreeFixture.Create<TagScore>();
-
-        private static readonly TagSynonym TagSynonymInput = ExpressionTreeFixture.Create<TagSynonym>();
-
-        private static readonly TagWiki TagWikiInput = ExpressionTreeFixture.Create<TagWiki>();
-
-        private static readonly TopTag TopTagInput = ExpressionTreeFixture.Create<TopTag>();
-
-        private static readonly User UserInput = ExpressionTreeFixture.Create<User>();
-
-        private static readonly UserTimeline UserTimelineInput = ExpressionTreeFixture.Create<UserTimeline>();
-
-        private static readonly WritePermission WritePermissionInput = ExpressionTreeFixture.Create<WritePermission>();
-
-        private static readonly MobileBannerAd.MobileBannerAdImage MobileBannerAdImageInput =
-            ExpressionTreeFixture.Create<MobileBannerAd.MobileBannerAdImage>();
-
-        private static readonly Info.Site SiteInput = ExpressionTreeFixture.Create<Info.Site>();
-
-        private static readonly Info.RelatedSite RelatedSiteInput = ExpressionTreeFixture.Create<Info.RelatedSite>();
-
-        private static readonly Question.ClosedDetails ClosedDetailsInput =
-            ExpressionTreeFixture.Create<Question.ClosedDetails>();
-
-        private static readonly Question.Notice NoticeInput = ExpressionTreeFixture.Create<Question.Notice>();
-
-        private static readonly Question.MigrationInfo MigrationInfoInput =
-            ExpressionTreeFixture.Create<Question.MigrationInfo>();
-
-        private static readonly User.BadgeCount BadgeCountInput = ExpressionTreeFixture.Create<User.BadgeCount>();
-
-        private static readonly Info.Site.Styling StylingInput = ExpressionTreeFixture.Create<Info.Site.Styling>();
-
-        private static readonly Question.ClosedDetails.OriginalQuestion OriginalQuestionInput =
-            ExpressionTreeFixture.Create<Question.ClosedDetails.OriginalQuestion>();
-
+        private static readonly JilSerializer JilSerializer =
+            new JilSerializer();
 
         private static readonly string AccessTokenOutputOfJilSerializer = JilSerializer.Serialize(AccessTokenInput);
+
+        private static readonly SpanJsonSerializer SpanJsonSerializer =
+            new SpanJsonSerializer();
 
         private static readonly string AccessTokenOutputOfJsonSpanSerializer =
             SpanJsonSerializer.Serialize(AccessTokenInput);
 
+        private static readonly Utf8JsonSerializer Utf8JsonSerializer =
+            new Utf8JsonSerializer();
+
         private static readonly byte[] AccessTokenOutputOfUtf8JsonSerializer =
             Utf8JsonSerializer.Serialize(AccessTokenInput);
+
+        private static readonly AccountMerge AccountMergeInput = ExpressionTreeFixture.Create<AccountMerge>();
 
         private static readonly string AccountMergeOutputOfJilSerializer = JilSerializer.Serialize(AccountMergeInput);
 
@@ -148,11 +39,25 @@ namespace SpanJson.Benchmarks
         private static readonly byte[] AccountMergeOutputOfUtf8JsonSerializer =
             Utf8JsonSerializer.Serialize(AccountMergeInput);
 
+        private static readonly Answer AnswerInput = ExpressionTreeFixture.Create<Answer>();
+
         private static readonly string AnswerOutputOfJilSerializer = JilSerializer.Serialize(AnswerInput);
 
         private static readonly string AnswerOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(AnswerInput);
 
         private static readonly byte[] AnswerOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(AnswerInput);
+
+        private static readonly User.BadgeCount BadgeCountInput = ExpressionTreeFixture.Create<User.BadgeCount>();
+
+        private static readonly string BadgeCountOutputOfJilSerializer = JilSerializer.Serialize(BadgeCountInput);
+
+        private static readonly string BadgeCountOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(BadgeCountInput);
+
+        private static readonly byte[] BadgeCountOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(BadgeCountInput);
+
+        private static readonly Badge BadgeInput = ExpressionTreeFixture.Create<Badge>();
 
         private static readonly string BadgeOutputOfJilSerializer = JilSerializer.Serialize(BadgeInput);
 
@@ -160,11 +65,26 @@ namespace SpanJson.Benchmarks
 
         private static readonly byte[] BadgeOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(BadgeInput);
 
+        private static readonly Question.ClosedDetails ClosedDetailsInput =
+            ExpressionTreeFixture.Create<Question.ClosedDetails>();
+
+        private static readonly string ClosedDetailsOutputOfJilSerializer = JilSerializer.Serialize(ClosedDetailsInput);
+
+        private static readonly string ClosedDetailsOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(ClosedDetailsInput);
+
+        private static readonly byte[] ClosedDetailsOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(ClosedDetailsInput);
+
+        private static readonly Comment CommentInput = ExpressionTreeFixture.Create<Comment>();
+
         private static readonly string CommentOutputOfJilSerializer = JilSerializer.Serialize(CommentInput);
 
         private static readonly string CommentOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(CommentInput);
 
         private static readonly byte[] CommentOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(CommentInput);
+
+        private static readonly Error ErrorInput = ExpressionTreeFixture.Create<Error>();
 
         private static readonly string ErrorOutputOfJilSerializer = JilSerializer.Serialize(ErrorInput);
 
@@ -172,73 +92,57 @@ namespace SpanJson.Benchmarks
 
         private static readonly byte[] ErrorOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(ErrorInput);
 
+        private static readonly Event EventInput = ExpressionTreeFixture.Create<Event>();
+
         private static readonly string EventOutputOfJilSerializer = JilSerializer.Serialize(EventInput);
 
         private static readonly string EventOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(EventInput);
 
         private static readonly byte[] EventOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(EventInput);
 
-        private static readonly string MobileFeedOutputOfJilSerializer = JilSerializer.Serialize(MobileFeedInput);
 
-        private static readonly string MobileFeedOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(MobileFeedInput);
+        private static readonly FlagOption FlagOptionInput = ExpressionTreeFixture.Create<FlagOption>();
 
-        private static readonly byte[] MobileFeedOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(MobileFeedInput);
+        private static readonly string FlagOptionOutputOfJilSerializer = JilSerializer.Serialize(FlagOptionInput);
 
-        private static readonly string MobileQuestionOutputOfJilSerializer =
-            JilSerializer.Serialize(MobileQuestionInput);
+        private static readonly string FlagOptionOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(FlagOptionInput);
 
-        private static readonly string MobileQuestionOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(MobileQuestionInput);
+        private static readonly byte[] FlagOptionOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(FlagOptionInput);
 
-        private static readonly byte[] MobileQuestionOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(MobileQuestionInput);
+        private static readonly InboxItem InboxItemInput = ExpressionTreeFixture.Create<InboxItem>();
 
-        private static readonly string MobileRepChangeOutputOfJilSerializer =
-            JilSerializer.Serialize(MobileRepChangeInput);
+        private static readonly string InboxItemOutputOfJilSerializer = JilSerializer.Serialize(InboxItemInput);
 
-        private static readonly string MobileRepChangeOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(MobileRepChangeInput);
+        private static readonly string InboxItemOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(InboxItemInput);
 
-        private static readonly byte[] MobileRepChangeOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(MobileRepChangeInput);
+        private static readonly byte[] InboxItemOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(InboxItemInput);
 
-        private static readonly string MobileInboxItemOutputOfJilSerializer =
-            JilSerializer.Serialize(MobileInboxItemInput);
+        private static readonly Info InfoInput = ExpressionTreeFixture.Create<Info>();
 
-        private static readonly string MobileInboxItemOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(MobileInboxItemInput);
+        private static readonly string InfoOutputOfJilSerializer = JilSerializer.Serialize(InfoInput);
 
-        private static readonly byte[] MobileInboxItemOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(MobileInboxItemInput);
+        private static readonly string InfoOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(InfoInput);
 
-        private static readonly string MobileBadgeAwardOutputOfJilSerializer =
-            JilSerializer.Serialize(MobileBadgeAwardInput);
+        private static readonly byte[] InfoOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(InfoInput);
 
-        private static readonly string MobileBadgeAwardOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(MobileBadgeAwardInput);
 
-        private static readonly byte[] MobileBadgeAwardOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(MobileBadgeAwardInput);
+        private static readonly Question.MigrationInfo MigrationInfoInput =
+            ExpressionTreeFixture.Create<Question.MigrationInfo>();
 
-        private static readonly string MobilePrivilegeOutputOfJilSerializer =
-            JilSerializer.Serialize(MobilePrivilegeInput);
+        private static readonly string MigrationInfoOutputOfJilSerializer = JilSerializer.Serialize(MigrationInfoInput);
 
-        private static readonly string MobilePrivilegeOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(MobilePrivilegeInput);
+        private static readonly string MigrationInfoOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(MigrationInfoInput);
 
-        private static readonly byte[] MobilePrivilegeOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(MobilePrivilegeInput);
+        private static readonly byte[] MigrationInfoOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(MigrationInfoInput);
 
-        private static readonly string MobileCommunityBulletinOutputOfJilSerializer =
-            JilSerializer.Serialize(MobileCommunityBulletinInput);
-
-        private static readonly string MobileCommunityBulletinOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(MobileCommunityBulletinInput);
-
-        private static readonly byte[] MobileCommunityBulletinOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(MobileCommunityBulletinInput);
+        private static readonly MobileAssociationBonus MobileAssociationBonusInput =
+            ExpressionTreeFixture.Create<MobileAssociationBonus>();
 
         private static readonly string MobileAssociationBonusOutputOfJilSerializer =
             JilSerializer.Serialize(MobileAssociationBonusInput);
@@ -249,201 +153,20 @@ namespace SpanJson.Benchmarks
         private static readonly byte[] MobileAssociationBonusOutputOfUtf8JsonSerializer =
             Utf8JsonSerializer.Serialize(MobileAssociationBonusInput);
 
-        private static readonly string MobileCareersJobAdOutputOfJilSerializer =
-            JilSerializer.Serialize(MobileCareersJobAdInput);
+        private static readonly MobileBadgeAward MobileBadgeAwardInput =
+            ExpressionTreeFixture.Create<MobileBadgeAward>();
 
-        private static readonly string MobileCareersJobAdOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(MobileCareersJobAdInput);
+        private static readonly string MobileBadgeAwardOutputOfJilSerializer =
+            JilSerializer.Serialize(MobileBadgeAwardInput);
 
-        private static readonly byte[] MobileCareersJobAdOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(MobileCareersJobAdInput);
+        private static readonly string MobileBadgeAwardOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(MobileBadgeAwardInput);
 
-        private static readonly string MobileBannerAdOutputOfJilSerializer =
-            JilSerializer.Serialize(MobileBannerAdInput);
+        private static readonly byte[] MobileBadgeAwardOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(MobileBadgeAwardInput);
 
-        private static readonly string MobileBannerAdOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(MobileBannerAdInput);
-
-        private static readonly byte[] MobileBannerAdOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(MobileBannerAdInput);
-
-        private static readonly string MobileUpdateNoticeOutputOfJilSerializer =
-            JilSerializer.Serialize(MobileUpdateNoticeInput);
-
-        private static readonly string MobileUpdateNoticeOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(MobileUpdateNoticeInput);
-
-        private static readonly byte[] MobileUpdateNoticeOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(MobileUpdateNoticeInput);
-
-        private static readonly string FlagOptionOutputOfJilSerializer = JilSerializer.Serialize(FlagOptionInput);
-
-        private static readonly string FlagOptionOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(FlagOptionInput);
-
-        private static readonly byte[] FlagOptionOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(FlagOptionInput);
-
-        private static readonly string InboxItemOutputOfJilSerializer = JilSerializer.Serialize(InboxItemInput);
-
-        private static readonly string InboxItemOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(InboxItemInput);
-
-        private static readonly byte[] InboxItemOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(InboxItemInput);
-
-        private static readonly string InfoOutputOfJilSerializer = JilSerializer.Serialize(InfoInput);
-
-        private static readonly string InfoOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(InfoInput);
-
-        private static readonly byte[] InfoOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(InfoInput);
-
-        private static readonly string NetworkUserOutputOfJilSerializer = JilSerializer.Serialize(NetworkUserInput);
-
-        private static readonly string NetworkUserOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(NetworkUserInput);
-
-        private static readonly byte[] NetworkUserOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(NetworkUserInput);
-
-        private static readonly string NotificationOutputOfJilSerializer = JilSerializer.Serialize(NotificationInput);
-
-        private static readonly string NotificationOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(NotificationInput);
-
-        private static readonly byte[] NotificationOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(NotificationInput);
-
-        private static readonly string PostOutputOfJilSerializer = JilSerializer.Serialize(PostInput);
-
-        private static readonly string PostOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(PostInput);
-
-        private static readonly byte[] PostOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(PostInput);
-
-        private static readonly string PrivilegeOutputOfJilSerializer = JilSerializer.Serialize(PrivilegeInput);
-
-        private static readonly string PrivilegeOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(PrivilegeInput);
-
-        private static readonly byte[] PrivilegeOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(PrivilegeInput);
-
-        private static readonly string QuestionOutputOfJilSerializer = JilSerializer.Serialize(QuestionInput);
-
-        private static readonly string QuestionOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(QuestionInput);
-
-        private static readonly byte[] QuestionOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(QuestionInput);
-
-        private static readonly string QuestionTimelineOutputOfJilSerializer =
-            JilSerializer.Serialize(QuestionTimelineInput);
-
-        private static readonly string QuestionTimelineOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(QuestionTimelineInput);
-
-        private static readonly byte[] QuestionTimelineOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(QuestionTimelineInput);
-
-        private static readonly string ReputationOutputOfJilSerializer = JilSerializer.Serialize(ReputationInput);
-
-        private static readonly string ReputationOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(ReputationInput);
-
-        private static readonly byte[] ReputationOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(ReputationInput);
-
-        private static readonly string ReputationHistoryOutputOfJilSerializer =
-            JilSerializer.Serialize(ReputationHistoryInput);
-
-        private static readonly string ReputationHistoryOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(ReputationHistoryInput);
-
-        private static readonly byte[] ReputationHistoryOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(ReputationHistoryInput);
-
-        private static readonly string RevisionOutputOfJilSerializer = JilSerializer.Serialize(RevisionInput);
-
-        private static readonly string RevisionOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(RevisionInput);
-
-        private static readonly byte[] RevisionOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(RevisionInput);
-
-        private static readonly string SearchExcerptOutputOfJilSerializer = JilSerializer.Serialize(SearchExcerptInput);
-
-        private static readonly string SearchExcerptOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(SearchExcerptInput);
-
-        private static readonly byte[] SearchExcerptOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(SearchExcerptInput);
-
-        private static readonly string ShallowUserOutputOfJilSerializer = JilSerializer.Serialize(ShallowUserInput);
-
-        private static readonly string ShallowUserOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(ShallowUserInput);
-
-        private static readonly byte[] ShallowUserOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(ShallowUserInput);
-
-        private static readonly string SuggestedEditOutputOfJilSerializer = JilSerializer.Serialize(SuggestedEditInput);
-
-        private static readonly string SuggestedEditOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(SuggestedEditInput);
-
-        private static readonly byte[] SuggestedEditOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(SuggestedEditInput);
-
-        private static readonly string TagOutputOfJilSerializer = JilSerializer.Serialize(TagInput);
-
-        private static readonly string TagOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(TagInput);
-
-        private static readonly byte[] TagOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(TagInput);
-
-        private static readonly string TagScoreOutputOfJilSerializer = JilSerializer.Serialize(TagScoreInput);
-
-        private static readonly string TagScoreOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(TagScoreInput);
-
-        private static readonly byte[] TagScoreOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(TagScoreInput);
-
-        private static readonly string TagSynonymOutputOfJilSerializer = JilSerializer.Serialize(TagSynonymInput);
-
-        private static readonly string TagSynonymOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(TagSynonymInput);
-
-        private static readonly byte[] TagSynonymOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(TagSynonymInput);
-
-        private static readonly string TagWikiOutputOfJilSerializer = JilSerializer.Serialize(TagWikiInput);
-
-        private static readonly string TagWikiOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(TagWikiInput);
-
-        private static readonly byte[] TagWikiOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(TagWikiInput);
-
-        private static readonly string TopTagOutputOfJilSerializer = JilSerializer.Serialize(TopTagInput);
-
-        private static readonly string TopTagOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(TopTagInput);
-
-        private static readonly byte[] TopTagOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(TopTagInput);
-
-        private static readonly string UserOutputOfJilSerializer = JilSerializer.Serialize(UserInput);
-
-        private static readonly string UserOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(UserInput);
-
-        private static readonly byte[] UserOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(UserInput);
-
-        private static readonly string UserTimelineOutputOfJilSerializer = JilSerializer.Serialize(UserTimelineInput);
-
-        private static readonly string UserTimelineOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(UserTimelineInput);
-
-        private static readonly byte[] UserTimelineOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(UserTimelineInput);
-
-        private static readonly string WritePermissionOutputOfJilSerializer =
-            JilSerializer.Serialize(WritePermissionInput);
-
-        private static readonly string WritePermissionOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(WritePermissionInput);
-
-        private static readonly byte[] WritePermissionOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(WritePermissionInput);
+        private static readonly MobileBannerAd.MobileBannerAdImage MobileBannerAdImageInput =
+            ExpressionTreeFixture.Create<MobileBannerAd.MobileBannerAdImage>();
 
         private static readonly string MobileBannerAdImageOutputOfJilSerializer =
             JilSerializer.Serialize(MobileBannerAdImageInput);
@@ -454,27 +177,118 @@ namespace SpanJson.Benchmarks
         private static readonly byte[] MobileBannerAdImageOutputOfUtf8JsonSerializer =
             Utf8JsonSerializer.Serialize(MobileBannerAdImageInput);
 
-        private static readonly string SiteOutputOfJilSerializer = JilSerializer.Serialize(SiteInput);
+        private static readonly MobileBannerAd MobileBannerAdInput = ExpressionTreeFixture.Create<MobileBannerAd>();
 
-        private static readonly string SiteOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(SiteInput);
+        private static readonly string MobileBannerAdOutputOfJilSerializer =
+            JilSerializer.Serialize(MobileBannerAdInput);
 
-        private static readonly byte[] SiteOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(SiteInput);
+        private static readonly string MobileBannerAdOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(MobileBannerAdInput);
 
-        private static readonly string RelatedSiteOutputOfJilSerializer = JilSerializer.Serialize(RelatedSiteInput);
+        private static readonly byte[] MobileBannerAdOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(MobileBannerAdInput);
 
-        private static readonly string RelatedSiteOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(RelatedSiteInput);
+        private static readonly MobileCareersJobAd MobileCareersJobAdInput =
+            ExpressionTreeFixture.Create<MobileCareersJobAd>();
 
-        private static readonly byte[] RelatedSiteOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(RelatedSiteInput);
+        private static readonly string MobileCareersJobAdOutputOfJilSerializer =
+            JilSerializer.Serialize(MobileCareersJobAdInput);
 
-        private static readonly string ClosedDetailsOutputOfJilSerializer = JilSerializer.Serialize(ClosedDetailsInput);
+        private static readonly string MobileCareersJobAdOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(MobileCareersJobAdInput);
 
-        private static readonly string ClosedDetailsOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(ClosedDetailsInput);
+        private static readonly byte[] MobileCareersJobAdOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(MobileCareersJobAdInput);
 
-        private static readonly byte[] ClosedDetailsOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(ClosedDetailsInput);
+        private static readonly MobileCommunityBulletin MobileCommunityBulletinInput =
+            ExpressionTreeFixture.Create<MobileCommunityBulletin>();
+
+        private static readonly string MobileCommunityBulletinOutputOfJilSerializer =
+            JilSerializer.Serialize(MobileCommunityBulletinInput);
+
+        private static readonly string MobileCommunityBulletinOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(MobileCommunityBulletinInput);
+
+        private static readonly byte[] MobileCommunityBulletinOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(MobileCommunityBulletinInput);
+
+        private static readonly MobileFeed MobileFeedInput = ExpressionTreeFixture.Create<MobileFeed>();
+
+        private static readonly string MobileFeedOutputOfJilSerializer = JilSerializer.Serialize(MobileFeedInput);
+
+        private static readonly string MobileFeedOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(MobileFeedInput);
+
+        private static readonly byte[] MobileFeedOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(MobileFeedInput);
+
+        private static readonly MobileInboxItem MobileInboxItemInput = ExpressionTreeFixture.Create<MobileInboxItem>();
+
+        private static readonly string MobileInboxItemOutputOfJilSerializer =
+            JilSerializer.Serialize(MobileInboxItemInput);
+
+        private static readonly string MobileInboxItemOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(MobileInboxItemInput);
+
+        private static readonly byte[] MobileInboxItemOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(MobileInboxItemInput);
+
+        private static readonly MobilePrivilege MobilePrivilegeInput = ExpressionTreeFixture.Create<MobilePrivilege>();
+
+        private static readonly string MobilePrivilegeOutputOfJilSerializer =
+            JilSerializer.Serialize(MobilePrivilegeInput);
+
+        private static readonly string MobilePrivilegeOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(MobilePrivilegeInput);
+
+        private static readonly byte[] MobilePrivilegeOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(MobilePrivilegeInput);
+
+        private static readonly MobileQuestion MobileQuestionInput = ExpressionTreeFixture.Create<MobileQuestion>();
+
+        private static readonly string MobileQuestionOutputOfJilSerializer =
+            JilSerializer.Serialize(MobileQuestionInput);
+
+        private static readonly string MobileQuestionOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(MobileQuestionInput);
+
+        private static readonly byte[] MobileQuestionOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(MobileQuestionInput);
+
+        private static readonly MobileRepChange MobileRepChangeInput = ExpressionTreeFixture.Create<MobileRepChange>();
+
+        private static readonly string MobileRepChangeOutputOfJilSerializer =
+            JilSerializer.Serialize(MobileRepChangeInput);
+
+        private static readonly string MobileRepChangeOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(MobileRepChangeInput);
+
+        private static readonly byte[] MobileRepChangeOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(MobileRepChangeInput);
+
+        private static readonly MobileUpdateNotice MobileUpdateNoticeInput =
+            ExpressionTreeFixture.Create<MobileUpdateNotice>();
+
+        private static readonly string MobileUpdateNoticeOutputOfJilSerializer =
+            JilSerializer.Serialize(MobileUpdateNoticeInput);
+
+        private static readonly string MobileUpdateNoticeOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(MobileUpdateNoticeInput);
+
+        private static readonly byte[] MobileUpdateNoticeOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(MobileUpdateNoticeInput);
+
+        private static readonly NetworkUser NetworkUserInput = ExpressionTreeFixture.Create<NetworkUser>();
+
+        private static readonly string NetworkUserOutputOfJilSerializer = JilSerializer.Serialize(NetworkUserInput);
+
+        private static readonly string NetworkUserOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(NetworkUserInput);
+
+        private static readonly byte[] NetworkUserOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(NetworkUserInput);
+
+        private static readonly Question.Notice NoticeInput = ExpressionTreeFixture.Create<Question.Notice>();
 
         private static readonly string NoticeOutputOfJilSerializer = JilSerializer.Serialize(NoticeInput);
 
@@ -482,27 +296,18 @@ namespace SpanJson.Benchmarks
 
         private static readonly byte[] NoticeOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(NoticeInput);
 
-        private static readonly string MigrationInfoOutputOfJilSerializer = JilSerializer.Serialize(MigrationInfoInput);
+        private static readonly Notification NotificationInput = ExpressionTreeFixture.Create<Notification>();
 
-        private static readonly string MigrationInfoOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(MigrationInfoInput);
+        private static readonly string NotificationOutputOfJilSerializer = JilSerializer.Serialize(NotificationInput);
 
-        private static readonly byte[] MigrationInfoOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(MigrationInfoInput);
+        private static readonly string NotificationOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(NotificationInput);
 
-        private static readonly string BadgeCountOutputOfJilSerializer = JilSerializer.Serialize(BadgeCountInput);
+        private static readonly byte[] NotificationOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(NotificationInput);
 
-        private static readonly string BadgeCountOutputOfJsonSpanSerializer =
-            SpanJsonSerializer.Serialize(BadgeCountInput);
-
-        private static readonly byte[] BadgeCountOutputOfUtf8JsonSerializer =
-            Utf8JsonSerializer.Serialize(BadgeCountInput);
-
-        private static readonly string StylingOutputOfJilSerializer = JilSerializer.Serialize(StylingInput);
-
-        private static readonly string StylingOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(StylingInput);
-
-        private static readonly byte[] StylingOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(StylingInput);
+        private static readonly Question.ClosedDetails.OriginalQuestion OriginalQuestionInput =
+            ExpressionTreeFixture.Create<Question.ClosedDetails.OriginalQuestion>();
 
         private static readonly string OriginalQuestionOutputOfJilSerializer =
             JilSerializer.Serialize(OriginalQuestionInput);
@@ -512,6 +317,203 @@ namespace SpanJson.Benchmarks
 
         private static readonly byte[] OriginalQuestionOutputOfUtf8JsonSerializer =
             Utf8JsonSerializer.Serialize(OriginalQuestionInput);
+
+        private static readonly Post PostInput = ExpressionTreeFixture.Create<Post>();
+
+        private static readonly string PostOutputOfJilSerializer = JilSerializer.Serialize(PostInput);
+
+        private static readonly string PostOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(PostInput);
+
+        private static readonly byte[] PostOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(PostInput);
+
+        private static readonly Privilege PrivilegeInput = ExpressionTreeFixture.Create<Privilege>();
+
+        private static readonly string PrivilegeOutputOfJilSerializer = JilSerializer.Serialize(PrivilegeInput);
+
+        private static readonly string PrivilegeOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(PrivilegeInput);
+
+        private static readonly byte[] PrivilegeOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(PrivilegeInput);
+
+        private static readonly Question QuestionInput = ExpressionTreeFixture.Create<Question>();
+
+        private static readonly string QuestionOutputOfJilSerializer = JilSerializer.Serialize(QuestionInput);
+
+        private static readonly string QuestionOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(QuestionInput);
+
+        private static readonly byte[] QuestionOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(QuestionInput);
+
+        private static readonly QuestionTimeline QuestionTimelineInput =
+            ExpressionTreeFixture.Create<QuestionTimeline>();
+
+        private static readonly string QuestionTimelineOutputOfJilSerializer =
+            JilSerializer.Serialize(QuestionTimelineInput);
+
+        private static readonly string QuestionTimelineOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(QuestionTimelineInput);
+
+        private static readonly byte[] QuestionTimelineOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(QuestionTimelineInput);
+
+        private static readonly Info.RelatedSite RelatedSiteInput = ExpressionTreeFixture.Create<Info.RelatedSite>();
+
+        private static readonly string RelatedSiteOutputOfJilSerializer = JilSerializer.Serialize(RelatedSiteInput);
+
+        private static readonly string RelatedSiteOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(RelatedSiteInput);
+
+        private static readonly byte[] RelatedSiteOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(RelatedSiteInput);
+
+        private static readonly ReputationHistory ReputationHistoryInput =
+            ExpressionTreeFixture.Create<ReputationHistory>();
+
+        private static readonly string ReputationHistoryOutputOfJilSerializer =
+            JilSerializer.Serialize(ReputationHistoryInput);
+
+        private static readonly string ReputationHistoryOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(ReputationHistoryInput);
+
+        private static readonly byte[] ReputationHistoryOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(ReputationHistoryInput);
+
+        private static readonly Reputation ReputationInput = ExpressionTreeFixture.Create<Reputation>();
+
+        private static readonly string ReputationOutputOfJilSerializer = JilSerializer.Serialize(ReputationInput);
+
+        private static readonly string ReputationOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(ReputationInput);
+
+        private static readonly byte[] ReputationOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(ReputationInput);
+
+        private static readonly Revision RevisionInput = ExpressionTreeFixture.Create<Revision>();
+
+        private static readonly string RevisionOutputOfJilSerializer = JilSerializer.Serialize(RevisionInput);
+
+        private static readonly string RevisionOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(RevisionInput);
+
+        private static readonly byte[] RevisionOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(RevisionInput);
+
+        private static readonly SearchExcerpt SearchExcerptInput = ExpressionTreeFixture.Create<SearchExcerpt>();
+
+        private static readonly string SearchExcerptOutputOfJilSerializer = JilSerializer.Serialize(SearchExcerptInput);
+
+        private static readonly string SearchExcerptOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(SearchExcerptInput);
+
+        private static readonly byte[] SearchExcerptOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(SearchExcerptInput);
+
+        private static readonly ShallowUser ShallowUserInput = ExpressionTreeFixture.Create<ShallowUser>();
+
+        private static readonly string ShallowUserOutputOfJilSerializer = JilSerializer.Serialize(ShallowUserInput);
+
+        private static readonly string ShallowUserOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(ShallowUserInput);
+
+        private static readonly byte[] ShallowUserOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(ShallowUserInput);
+
+        private static readonly Info.Site SiteInput = ExpressionTreeFixture.Create<Info.Site>();
+
+        private static readonly string SiteOutputOfJilSerializer = JilSerializer.Serialize(SiteInput);
+
+        private static readonly string SiteOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(SiteInput);
+
+        private static readonly byte[] SiteOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(SiteInput);
+
+
+        private static readonly Info.Site.Styling StylingInput = ExpressionTreeFixture.Create<Info.Site.Styling>();
+
+        private static readonly string StylingOutputOfJilSerializer = JilSerializer.Serialize(StylingInput);
+
+        private static readonly string StylingOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(StylingInput);
+
+        private static readonly byte[] StylingOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(StylingInput);
+
+        private static readonly SuggestedEdit SuggestedEditInput = ExpressionTreeFixture.Create<SuggestedEdit>();
+
+        private static readonly string SuggestedEditOutputOfJilSerializer = JilSerializer.Serialize(SuggestedEditInput);
+
+        private static readonly string SuggestedEditOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(SuggestedEditInput);
+
+        private static readonly byte[] SuggestedEditOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(SuggestedEditInput);
+
+        private static readonly Tag TagInput = ExpressionTreeFixture.Create<Tag>();
+
+        private static readonly string TagOutputOfJilSerializer = JilSerializer.Serialize(TagInput);
+
+        private static readonly string TagOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(TagInput);
+
+        private static readonly byte[] TagOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(TagInput);
+
+        private static readonly TagScore TagScoreInput = ExpressionTreeFixture.Create<TagScore>();
+
+        private static readonly string TagScoreOutputOfJilSerializer = JilSerializer.Serialize(TagScoreInput);
+
+        private static readonly string TagScoreOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(TagScoreInput);
+
+        private static readonly byte[] TagScoreOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(TagScoreInput);
+
+        private static readonly TagSynonym TagSynonymInput = ExpressionTreeFixture.Create<TagSynonym>();
+
+        private static readonly string TagSynonymOutputOfJilSerializer = JilSerializer.Serialize(TagSynonymInput);
+
+        private static readonly string TagSynonymOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(TagSynonymInput);
+
+        private static readonly byte[] TagSynonymOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(TagSynonymInput);
+
+        private static readonly TagWiki TagWikiInput = ExpressionTreeFixture.Create<TagWiki>();
+
+        private static readonly string TagWikiOutputOfJilSerializer = JilSerializer.Serialize(TagWikiInput);
+
+        private static readonly string TagWikiOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(TagWikiInput);
+
+        private static readonly byte[] TagWikiOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(TagWikiInput);
+
+        private static readonly TopTag TopTagInput = ExpressionTreeFixture.Create<TopTag>();
+
+        private static readonly string TopTagOutputOfJilSerializer = JilSerializer.Serialize(TopTagInput);
+
+        private static readonly string TopTagOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(TopTagInput);
+
+        private static readonly byte[] TopTagOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(TopTagInput);
+
+        private static readonly User UserInput = ExpressionTreeFixture.Create<User>();
+
+        private static readonly string UserOutputOfJilSerializer = JilSerializer.Serialize(UserInput);
+
+        private static readonly string UserOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(UserInput);
+
+        private static readonly byte[] UserOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(UserInput);
+
+        private static readonly UserTimeline UserTimelineInput = ExpressionTreeFixture.Create<UserTimeline>();
+
+        private static readonly string UserTimelineOutputOfJilSerializer = JilSerializer.Serialize(UserTimelineInput);
+
+        private static readonly string UserTimelineOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(UserTimelineInput);
+
+        private static readonly byte[] UserTimelineOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(UserTimelineInput);
+
+
+        private static readonly WritePermission WritePermissionInput = ExpressionTreeFixture.Create<WritePermission>();
+
+        private static readonly string WritePermissionOutputOfJilSerializer =
+            JilSerializer.Serialize(WritePermissionInput);
+
+        private static readonly string WritePermissionOutputOfJsonSpanSerializer =
+            SpanJsonSerializer.Serialize(WritePermissionInput);
+
+        private static readonly byte[] WritePermissionOutputOfUtf8JsonSerializer =
+            Utf8JsonSerializer.Serialize(WritePermissionInput);
 
 
         [Benchmark]

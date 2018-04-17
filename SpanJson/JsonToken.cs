@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SpanJson
+﻿namespace SpanJson
 {
     public enum JsonToken : byte
     {

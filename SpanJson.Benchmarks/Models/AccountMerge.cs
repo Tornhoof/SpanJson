@@ -6,11 +6,14 @@ namespace SpanJson.Benchmarks.Models
     [ProtoContract]
     public class AccountMerge : IGenericEquality<AccountMerge>
     {
-        [ProtoMember(1)] public int? old_account_id { get; set; }
+        [ProtoMember(1)]
+        public int? old_account_id { get; set; }
 
-        [ProtoMember(2)] public int? new_account_id { get; set; }
+        [ProtoMember(2)]
+        public int? new_account_id { get; set; }
 
-        [ProtoMember(3)] public DateTime? merge_date { get; set; }
+        [ProtoMember(3)]
+        public DateTime? merge_date { get; set; }
 
         public bool Equals(AccountMerge obj)
         {

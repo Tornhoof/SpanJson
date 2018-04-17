@@ -10,7 +10,8 @@ namespace SpanJson.Tests
         {
             [DataMember(Name = "AnotherName")] public string DifferentName;
 
-            [IgnoreDataMember] public int Excluded { get; set; }
+            [IgnoreDataMember]
+            public int Excluded { get; set; }
 
             public string ExcludeNull { get; set; }
             public string OnlyIfHelloWorld { get; set; }

@@ -9,10 +9,10 @@
         public static readonly ComplexStructFormatter<T, TResolver>
             Default = new ComplexStructFormatter<T, TResolver>();
 
-        private static readonly SerializeDelegate<T, TResolver> Serializer = BuildSerializeDelegate<T, TResolver>();
-
         private static readonly DeserializeDelegate<T, TResolver> Deserializer =
             BuildDeserializeDelegate<T, TResolver>();
+
+        private static readonly SerializeDelegate<T, TResolver> Serializer = BuildSerializeDelegate<T, TResolver>();
 
         public int AllocSize { get; } = EstimateSize<T>();
 

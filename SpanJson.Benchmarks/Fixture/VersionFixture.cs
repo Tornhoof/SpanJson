@@ -4,9 +4,9 @@ namespace SpanJson.Benchmarks.Fixture
 {
     public class VersionFixture : IValueFixture
     {
+        private int _build;
         private int _majorVersion;
         private int _minorVersion;
-        private int _build;
         private int _revision;
         public Type Type { get; } = typeof(Version);
 

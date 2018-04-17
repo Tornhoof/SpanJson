@@ -34,7 +34,6 @@ namespace SpanJson
             private static class Inner<T, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
             {
                 internal static readonly SerializeDelegate InnerSerialize = BuildSerializeDelegate();
-
                 internal static readonly DeserializeDelegate InnerDeserialize = BuildDeserializeDelegate();
 
 
@@ -86,9 +85,9 @@ namespace SpanJson
                     return Deserialize;
                 }
 
-                internal delegate string SerializeDelegate(T input);
-
                 internal delegate T DeserializeDelegate(ReadOnlySpan<char> input);
+
+                internal delegate string SerializeDelegate(T input);
             }
         }
 
@@ -113,10 +112,7 @@ namespace SpanJson
 
                 public static string Serialize(object input)
                 {
-                    if (input == null)
-                    {
-                        return null;
-                    }
+                    if (input == null) return null;
 
                     // ReSharper disable ConvertClosureToMethodGroup
                     var invoker = Invokers.GetOrAdd(input.GetType(), x => BuildInvoker(x));
@@ -126,10 +122,7 @@ namespace SpanJson
 
                 public static object Deserialize(ReadOnlySpan<char> input, Type type)
                 {
-                    if (input == null)
-                    {
-                        return null;
-                    }
+                    if (input == null) return null;
 
                     // ReSharper disable ConvertClosureToMethodGroup
                     var invoker = Invokers.GetOrAdd(type, x => BuildInvoker(x));
@@ -159,16 +152,11 @@ namespace SpanJson
                     var inputParam = Expression.Parameter(typeof(ReadOnlySpan<char>), "input");
                     Expression genericCall = Expression.Call(typeof(Generic), nameof(Generic.Deserialize),
                         new[] {type, typeof(TResolver)}, inputParam);
-                    if (type.IsValueType)
-                    {
-                        genericCall = Expression.Convert(genericCall, typeof(object));
-                    }
+                    if (type.IsValueType) genericCall = Expression.Convert(genericCall, typeof(object));
 
                     var lambdaExpression = Expression.Lambda<DeserializeDelegate>(genericCall, inputParam);
                     return lambdaExpression.Compile();
                 }
-
-                private delegate string SerializeDelegate(object input);
 
                 private delegate object DeserializeDelegate(ReadOnlySpan<char> input);
 
@@ -183,6 +171,8 @@ namespace SpanJson
                     public readonly SerializeDelegate Serializer;
                     public readonly DeserializeDelegate Deserializer;
                 }
+
+                private delegate string SerializeDelegate(object input);
             }
         }
     }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
-using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
@@ -13,6 +12,13 @@ namespace SpanJson.Formatters
 
         private static readonly ConcurrentDictionary<Type, SerializeDelegate> RuntimeSerializerDictionary =
             new ConcurrentDictionary<Type, SerializeDelegate>();
+
+        public int AllocSize { get; } = 100;
+
+        public object Deserialize(ref JsonReader reader)
+        {
+            return reader.ReadDynamic();
+        }
 
         public void Serialize(ref JsonWriter writer, object value)
         {
@@ -27,13 +33,6 @@ namespace SpanJson.Formatters
             serializer(ref writer, value);
             // ReSharper restore ConvertClosureToMethodGroup
         }
-
-        public object Deserialize(ref JsonReader reader)
-        {
-            return reader.ReadDynamic();
-        }
-
-        public int AllocSize { get; } = 100;
 
         private static SerializeDelegate BuildSerializeDelegate(Type type)
         {

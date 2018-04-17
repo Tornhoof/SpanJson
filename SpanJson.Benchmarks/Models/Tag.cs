@@ -7,21 +7,29 @@ namespace SpanJson.Benchmarks.Models
     [ProtoContract]
     public class Tag : IGenericEquality<Tag>
     {
-        [ProtoMember(1)] public string name { get; set; }
+        [ProtoMember(1)]
+        public string name { get; set; }
 
-        [ProtoMember(2)] public int? count { get; set; }
+        [ProtoMember(2)]
+        public int? count { get; set; }
 
-        [ProtoMember(3)] public bool? is_required { get; set; }
+        [ProtoMember(3)]
+        public bool? is_required { get; set; }
 
-        [ProtoMember(4)] public bool? is_moderator_only { get; set; }
+        [ProtoMember(4)]
+        public bool? is_moderator_only { get; set; }
 
-        [ProtoMember(5)] public int? user_id { get; set; }
+        [ProtoMember(5)]
+        public int? user_id { get; set; }
 
-        [ProtoMember(6)] public bool? has_synonyms { get; set; }
+        [ProtoMember(6)]
+        public bool? has_synonyms { get; set; }
 
-        [ProtoMember(7)] public DateTime? last_activity_date { get; set; }
+        [ProtoMember(7)]
+        public DateTime? last_activity_date { get; set; }
 
-        [ProtoMember(8)] public List<string> synonyms { get; set; }
+        [ProtoMember(8)]
+        public List<string> synonyms { get; set; }
 
         public bool Equals(Tag obj)
         {

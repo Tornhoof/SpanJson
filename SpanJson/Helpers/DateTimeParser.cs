@@ -5,10 +5,11 @@ using System.Runtime.CompilerServices;
 namespace SpanJson.Helpers
 {
     /// <summary>
-    /// Largely based on https://raw.githubusercontent.com/dotnet/corefx/f5d31619f821e7b4a0bcf7f648fe1dc2e4e2f09f/src/System.Memory/src/System/Buffers/Text/Utf8Parser/Utf8Parser.Date.O.cs
-    /// Copyright (c) .NET Foundation and Contributors
-    /// Modified to work for char and removed the 7 fractions requirement
-    /// Non-UTC is slow, as it needs to go through the timezone stuff to get the right offset
+    ///     Largely based on
+    ///     https://raw.githubusercontent.com/dotnet/corefx/f5d31619f821e7b4a0bcf7f648fe1dc2e4e2f09f/src/System.Memory/src/System/Buffers/Text/Utf8Parser/Utf8Parser.Date.O.cs
+    ///     Copyright (c) .NET Foundation and Contributors
+    ///     Modified to work for char and removed the 7 fractions requirement
+    ///     Non-UTC is slow, as it needs to go through the timezone stuff to get the right offset
     /// </summary>
     public static class DateTimeParser
     {
@@ -16,7 +17,6 @@ namespace SpanJson.Helpers
         public static bool TryParseDateTimeOffset(ReadOnlySpan<char> source, out DateTimeOffset value, out int charsConsumed)
         {
             if (TryParseDate(source, out var date, out charsConsumed))
-            {
                 switch (date.Kind)
                 {
                     // for local/unspecified we go through datetime to make sure we get the offsets correct
@@ -39,7 +39,6 @@ namespace SpanJson.Helpers
                         return true;
                     }
                 }
-            }
 
             value = default;
             charsConsumed = 0;
@@ -75,15 +74,15 @@ namespace SpanJson.Helpers
         }
 
         /// <summary>
-        ///  2017-06-12T05:30:45.7680000-07:00
-        ///  2017-06-12T05:30:45.7680000Z
-        ///  2017-06-12T05:30:45.7680000 (local)
-        ///  2017-06-12T05:30:45.768-07:00
-        ///  2017-06-12T05:30:45.768Z
-        ///  2017-06-12T05:30:45.768 (local)
-        ///  2017-06-12T05:30:45
-        ///  2017-06-12T05:30:45Z
-        ///  2017-06-12T05:30:45 (local)
+        ///     2017-06-12T05:30:45.7680000-07:00
+        ///     2017-06-12T05:30:45.7680000Z
+        ///     2017-06-12T05:30:45.7680000 (local)
+        ///     2017-06-12T05:30:45.768-07:00
+        ///     2017-06-12T05:30:45.768Z
+        ///     2017-06-12T05:30:45.768 (local)
+        ///     2017-06-12T05:30:45
+        ///     2017-06-12T05:30:45Z
+        ///     2017-06-12T05:30:45 (local)
         /// </summary>
         private static bool TryParseDate(ReadOnlySpan<char> source, out Date value,
             out int charsConsumed)
@@ -225,7 +224,7 @@ namespace SpanJson.Helpers
             var currentOffset = 19; // up until here everything is fixed
 
 
-            int fraction = 0;
+            var fraction = 0;
             if (source.Length > currentOffset + 1 && source[currentOffset] == '.')
             {
                 currentOffset++;
@@ -241,10 +240,7 @@ namespace SpanJson.Helpers
                 for (var i = 0; i < maxDigits; i++)
                 {
                     var digit = source[currentOffset] - 48U;
-                    if (digit > 9)
-                    {
-                        break;
-                    }
+                    if (digit > 9) break;
 
                     temp = temp * 10 + digit;
                     currentOffset++;

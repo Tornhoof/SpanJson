@@ -3,8 +3,6 @@ using System.Buffers;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
 using SpanJson.Helpers;
 
 namespace SpanJson
@@ -48,10 +46,7 @@ namespace SpanJson
 
             var toReturn = _arrayToReturnToPool;
             _chars = _arrayToReturnToPool = poolArray;
-            if (toReturn != null)
-            {
-                ArrayPool<char>.Shared.Return(toReturn);
-            }
+            if (toReturn != null) ArrayPool<char>.Shared.Return(toReturn);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -59,10 +54,7 @@ namespace SpanJson
         {
             var toReturn = _arrayToReturnToPool;
             this = default; // for safety, to avoid using pooled array if this instance is erroneously appended to again
-            if (toReturn != null)
-            {
-                ArrayPool<char>.Shared.Return(toReturn);
-            }
+            if (toReturn != null) ArrayPool<char>.Shared.Return(toReturn);
         }
 
         public void WriteSByte(sbyte value)
@@ -93,20 +85,14 @@ namespace SpanJson
             ref var pos = ref _pos;
             if (value == long.MinValue)
             {
-                if (pos > _chars.Length - 21)
-                {
-                    Grow(21);
-                }
+                if (pos > _chars.Length - 21) Grow(21);
 
                 LongMinValue.AsSpan().TryCopyTo(_chars.Slice(pos));
                 pos += LongMinValue.Length;
             }
             else if (value < 0)
             {
-                if (pos > _chars.Length - 1)
-                {
-                    Grow(1);
-                }
+                if (pos > _chars.Length - 1) Grow(1);
 
                 _chars[_pos++] = '-';
                 value = unchecked(-value);
@@ -121,10 +107,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             if (value < 10)
             {
-                if (pos > _chars.Length - 1)
-                {
-                    Grow(1);
-                }
+                if (pos > _chars.Length - 1) Grow(1);
 
                 _chars[_pos++] = (char) ('0' + value);
                 return;
@@ -132,10 +115,7 @@ namespace SpanJson
 
             var digits = FormatterUtils.CountDigits(value);
 
-            if (pos > _chars.Length - digits)
-            {
-                Grow(digits);
-            }
+            if (pos > _chars.Length - digits) Grow(digits);
 
             for (var i = digits; i > 0; i--)
             {
@@ -172,10 +152,7 @@ namespace SpanJson
             Span<char> span = stackalloc char[25]; // TODO find out how long
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
-            if (pos > _chars.Length - written)
-            {
-                Grow(written);
-            }
+            if (pos > _chars.Length - written) Grow(written);
 
             span.Slice(0, written).CopyTo(_chars.Slice(pos));
             pos += written;
@@ -186,10 +163,7 @@ namespace SpanJson
             Span<char> span = stackalloc char[50]; // TODO find out how long
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
-            if (pos > _chars.Length - written)
-            {
-                Grow(written);
-            }
+            if (pos > _chars.Length - written) Grow(written);
 
             span.Slice(0, written).CopyTo(_chars.Slice(pos));
             pos += written;
@@ -200,10 +174,7 @@ namespace SpanJson
             Span<char> span = stackalloc char[100]; // TODO find out how long
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
-            if (pos > _chars.Length - written)
-            {
-                Grow(written);
-            }
+            if (pos > _chars.Length - written) Grow(written);
 
             span.Slice(0, written).CopyTo(_chars.Slice(pos));
             pos += written;
@@ -215,10 +186,7 @@ namespace SpanJson
             if (value)
             {
                 const int trueLength = 4;
-                if (pos > _chars.Length - trueLength)
-                {
-                    Grow(trueLength);
-                }
+                if (pos > _chars.Length - trueLength) Grow(trueLength);
 
                 _chars[pos++] = JsonConstant.True;
                 _chars[pos++] = 'r';
@@ -228,10 +196,7 @@ namespace SpanJson
             else
             {
                 const int falseLength = 5;
-                if (pos > _chars.Length - falseLength)
-                {
-                    Grow(falseLength);
-                }
+                if (pos > _chars.Length - falseLength) Grow(falseLength);
 
                 _chars[pos++] = JsonConstant.False;
                 _chars[pos++] = 'a';
@@ -245,10 +210,7 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             const int size = 6; // 1-6 chars + two JsonConstant.DoubleQuote
-            if (pos > _chars.Length - size)
-            {
-                Grow(size);
-            }
+            if (pos > _chars.Length - size) Grow(size);
 
             WriteDoubleQuote();
             switch (value)
@@ -367,10 +329,7 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             const int dtSize = 35; // Form o + two JsonConstant.DoubleQuote
-            if (pos > _chars.Length - dtSize)
-            {
-                Grow(dtSize);
-            }
+            if (pos > _chars.Length - dtSize) Grow(dtSize);
 
             WriteDoubleQuote();
             value.TryFormat(_chars.Slice(pos), out var written, "O", CultureInfo.InvariantCulture);
@@ -382,10 +341,7 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             const int dtSize = 35; // Form o + two JsonConstant.DoubleQuote
-            if (pos > _chars.Length - dtSize)
-            {
-                Grow(dtSize);
-            }
+            if (pos > _chars.Length - dtSize) Grow(dtSize);
 
             WriteDoubleQuote();
             value.TryFormat(_chars.Slice(pos), out var written, "O", CultureInfo.InvariantCulture);
@@ -397,10 +353,7 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             const int dtSize = 20; // Form o + two JsonConstant.DoubleQuote
-            if (pos > _chars.Length - dtSize)
-            {
-                Grow(dtSize);
-            }
+            if (pos > _chars.Length - dtSize) Grow(dtSize);
 
             WriteDoubleQuote();
             value.TryFormat(_chars.Slice(pos), out var written, "c", CultureInfo.InvariantCulture);
@@ -412,10 +365,7 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             const int guidSize = 42; // Format D + two JsonConstant.DoubleQuote;
-            if (pos > _chars.Length - guidSize)
-            {
-                Grow(guidSize);
-            }
+            if (pos > _chars.Length - guidSize) Grow(guidSize);
 
             WriteDoubleQuote();
             value.TryFormat(_chars.Slice(pos), out var written);
@@ -427,10 +377,7 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             var sLength = value.Length + 2;
-            if (pos > _chars.Length - sLength)
-            {
-                Grow(sLength);
-            }
+            if (pos > _chars.Length - sLength) Grow(sLength);
 
             WriteDoubleQuote();
             var remaining = value.AsSpan();
@@ -557,10 +504,7 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             var sLength = value.Length + 3;
-            if (pos > _chars.Length - sLength)
-            {
-                Grow(sLength);
-            }
+            if (pos > _chars.Length - sLength) Grow(sLength);
 
             WriteDoubleQuote();
             value.AsSpan().CopyTo(_chars.Slice(pos));
@@ -579,9 +523,7 @@ namespace SpanJson
             remaining.Slice(0, i).CopyTo(_chars.Slice(pos));
             pos += i;
             if (pos > _chars.Length - 1) // one more now
-            {
                 Grow(1);
-            }
             WriteSingleEscapedChar(toEscape);
             remaining = remaining.Slice(i + 1); // continuing after the escaped char
             i = 0;
@@ -601,13 +543,13 @@ namespace SpanJson
             pos += i;
             const int length = 6;
             if (pos > _chars.Length - length) // one more now
-            {
-                Grow(length);            }
+                Grow(length);
 
             WriteDoubleEscapedCar(firstToEscape, secondToEscape);
             remaining = remaining.Slice(i + 1); // continuing after the escaped char
             i = 0;
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteDoubleEscapedCar(char firstToEscape, char secondToEscape)
         {
@@ -623,10 +565,7 @@ namespace SpanJson
         public void WriteObjectStart()
         {
             ref var pos = ref _pos;
-            if (pos > _chars.Length - 1)
-            {
-                Grow(1);
-            }
+            if (pos > _chars.Length - 1) Grow(1);
 
             _chars[pos++] = JsonConstant.BeginObject;
         }
@@ -635,22 +574,16 @@ namespace SpanJson
         public void WriteObjectEnd()
         {
             ref var pos = ref _pos;
-            if (pos > _chars.Length - 1)
-            {
-                Grow(1);
-            }
+            if (pos > _chars.Length - 1) Grow(1);
 
-            _chars[pos++] =JsonConstant.EndObject;
+            _chars[pos++] = JsonConstant.EndObject;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteArrayStart()
         {
             ref var pos = ref _pos;
-            if (pos > _chars.Length - 1)
-            {
-                Grow(1);
-            }
+            if (pos > _chars.Length - 1) Grow(1);
 
             _chars[pos++] = JsonConstant.BeginArray;
         }
@@ -659,10 +592,7 @@ namespace SpanJson
         public void WriteArrayEnd()
         {
             ref var pos = ref _pos;
-            if (pos > _chars.Length - 1)
-            {
-                Grow(1);
-            }
+            if (pos > _chars.Length - 1) Grow(1);
 
             _chars[pos++] = JsonConstant.EndArray;
         }
@@ -671,10 +601,7 @@ namespace SpanJson
         public void WriteValueSeparator()
         {
             ref var pos = ref _pos;
-            if (pos > _chars.Length - 1)
-            {
-                Grow(1);
-            }
+            if (pos > _chars.Length - 1) Grow(1);
 
             _chars[pos++] = JsonConstant.ValueSeparator;
         }
@@ -684,10 +611,7 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             const int nullLength = 4;
-            if (pos > _chars.Length - nullLength)
-            {
-                Grow(nullLength);
-            }
+            if (pos > _chars.Length - nullLength) Grow(nullLength);
 
             _chars[pos++] = JsonConstant.Null;
             _chars[pos++] = 'u';
@@ -707,10 +631,7 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             const int versionLength = 45; // 4 * int + 3 . + 2 double quote
-            if (pos > _chars.Length - versionLength)
-            {
-                Grow(versionLength);
-            }
+            if (pos > _chars.Length - versionLength) Grow(versionLength);
             WriteDoubleQuote();
             value.TryFormat(_chars.Slice(pos), out var written);
             pos += written;

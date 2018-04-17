@@ -25,17 +25,23 @@ namespace SpanJson.Benchmarks.Models
     [ProtoContract]
     public class Notification : IGenericEquality<Notification>
     {
-        [ProtoMember(1)] public NotificationType? notification_type { get; set; }
+        [ProtoMember(1)]
+        public NotificationType? notification_type { get; set; }
 
-        [ProtoMember(2)] public Info.Site site { get; set; }
+        [ProtoMember(2)]
+        public Info.Site site { get; set; }
 
-        [ProtoMember(3)] public DateTime? creation_date { get; set; }
+        [ProtoMember(3)]
+        public DateTime? creation_date { get; set; }
 
-        [ProtoMember(4)] public string body { get; set; }
+        [ProtoMember(4)]
+        public string body { get; set; }
 
-        [ProtoMember(5)] public int? post_id { get; set; }
+        [ProtoMember(5)]
+        public int? post_id { get; set; }
 
-        [ProtoMember(6)] public bool? is_unread { get; set; }
+        [ProtoMember(6)]
+        public bool? is_unread { get; set; }
 
         public bool Equals(Notification obj)
         {

@@ -7,34 +7,22 @@ namespace SpanJson.Tests
 {
     public sealed class GenericEqualityComparer : IEqualityComparer<object>
     {
-        public static readonly GenericEqualityComparer Default = new GenericEqualityComparer();
-
         private static readonly ConcurrentDictionary<Type, TypedEqualityComparerDelegate> Comparers =
             new ConcurrentDictionary<Type, TypedEqualityComparerDelegate>();
 
+        public static readonly GenericEqualityComparer Default = new GenericEqualityComparer();
+
         public new bool Equals(object x, object y)
         {
-            if (ReferenceEquals(x, y))
-            {
-                return true;
-            }
+            if (ReferenceEquals(x, y)) return true;
 
-            if (x == null && y != null)
-            {
-                return false;
-            }
+            if (x == null && y != null) return false;
 
-            if (x != null && y == null)
-            {
-                return false;
-            }
+            if (x != null && y == null) return false;
 
             var xType = x.GetType();
             var yType = y.GetType();
-            if (!ReferenceEquals(xType, yType))
-            {
-                return false;
-            }
+            if (!ReferenceEquals(xType, yType)) return false;
 
             // ReSharper disable ConvertClosureToMethodGroup
             var typedComparer = Comparers.GetOrAdd(xType, t => BuildTypedComparer(t));
@@ -64,27 +52,18 @@ namespace SpanJson.Tests
 
     public sealed class DynamicEqualityComparer : IEqualityComparer<object>
     {
-        public static readonly SpanJson.Tests.DynamicEqualityComparer Default = new SpanJson.Tests.DynamicEqualityComparer();
-
         private static readonly ConcurrentDictionary<Type, DynamicEqualityComparerDelegate> Comparers =
             new ConcurrentDictionary<Type, DynamicEqualityComparerDelegate>();
 
+        public static readonly DynamicEqualityComparer Default = new DynamicEqualityComparer();
+
         public new bool Equals(object x, object y)
         {
-            if (ReferenceEquals(x, y))
-            {
-                return true;
-            }
+            if (ReferenceEquals(x, y)) return true;
 
-            if (x == null && y != null)
-            {
-                return false;
-            }
+            if (x == null && y != null) return false;
 
-            if (x != null && y == null)
-            {
-                return false;
-            }
+            if (x != null && y == null) return false;
 
             var xType = x.GetType();
 

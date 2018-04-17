@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Text;
+﻿using System.Collections.Generic;
 using SpanJson.Resolvers;
 using Xunit;
 
@@ -25,7 +22,7 @@ namespace SpanJson.Tests
         [Fact]
         public void NoNameMatches()
         {
-            var parent = new Parent {Age = 30, Name = "Adam", Children = new List<Child>{new Child {Name = "Cain", Age = 5}}};
+            var parent = new Parent {Age = 30, Name = "Adam", Children = new List<Child> {new Child {Name = "Cain", Age = 5}}};
             var serializedWithCamelCase =
                 JsonSerializer.Generic.Serialize<Parent, ExcludeNullsCamelCaseResolver>(parent);
             Assert.Contains("age", serializedWithCamelCase);

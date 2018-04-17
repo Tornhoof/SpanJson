@@ -10,7 +10,6 @@ namespace SpanJson.Formatters
     {
         private static readonly SerializeDelegate Serializer = BuildSerializeDelegate();
         private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
-
         public static readonly EnumFormatter<T, TResolver> Default = new EnumFormatter<T, TResolver>();
 
 
@@ -86,8 +85,8 @@ namespace SpanJson.Formatters
             return type.GetMethod(name);
         }
 
-        private delegate void SerializeDelegate(ref JsonWriter writer, T value);
-
         private delegate T DeserializeDelegate(ref JsonReader reader);
+
+        private delegate void SerializeDelegate(ref JsonWriter writer, T value);
     }
 }

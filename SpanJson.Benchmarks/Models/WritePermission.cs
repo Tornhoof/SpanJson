@@ -5,19 +5,26 @@ namespace SpanJson.Benchmarks.Models
     [ProtoContract]
     public class WritePermission : IGenericEquality<WritePermission>
     {
-        [ProtoMember(1)] public int? user_id { get; set; }
+        [ProtoMember(1)]
+        public int? user_id { get; set; }
 
-        [ProtoMember(2)] public string object_type { get; set; }
+        [ProtoMember(2)]
+        public string object_type { get; set; }
 
-        [ProtoMember(3)] public bool? can_add { get; set; }
+        [ProtoMember(3)]
+        public bool? can_add { get; set; }
 
-        [ProtoMember(4)] public bool? can_edit { get; set; }
+        [ProtoMember(4)]
+        public bool? can_edit { get; set; }
 
-        [ProtoMember(5)] public bool? can_delete { get; set; }
+        [ProtoMember(5)]
+        public bool? can_delete { get; set; }
 
-        [ProtoMember(6)] public int? max_daily_actions { get; set; }
+        [ProtoMember(6)]
+        public int? max_daily_actions { get; set; }
 
-        [ProtoMember(7)] public int? min_seconds_between_actions { get; set; }
+        [ProtoMember(7)]
+        public int? min_seconds_between_actions { get; set; }
 
         public bool Equals(WritePermission obj)
         {

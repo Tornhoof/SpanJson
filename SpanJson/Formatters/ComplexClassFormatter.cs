@@ -7,19 +7,17 @@
         where T : class, new() where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
         public static readonly ComplexClassFormatter<T, TResolver> Default = new ComplexClassFormatter<T, TResolver>();
-        private static readonly SerializeDelegate<T, TResolver> Serializer = BuildSerializeDelegate<T, TResolver>();
 
         private static readonly DeserializeDelegate<T, TResolver> Deserializer =
             BuildDeserializeDelegate<T, TResolver>();
+
+        private static readonly SerializeDelegate<T, TResolver> Serializer = BuildSerializeDelegate<T, TResolver>();
 
         public int AllocSize { get; } = EstimateSize<T>();
 
         public T Deserialize(ref JsonReader reader)
         {
-            if (reader.ReadIsNull())
-            {
-                return null;
-            }
+            if (reader.ReadIsNull()) return null;
 
             return Deserializer(ref reader);
         }

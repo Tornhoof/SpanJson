@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using BenchmarkDotNet.Attributes;
 using SpanJson.Benchmarks.Fixture;
 using SpanJson.Benchmarks.Models;
@@ -13,20 +12,19 @@ namespace SpanJson.Benchmarks
     public class SelectedBenchmarks
     {
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
-
-        private static readonly JilSerializer JilSerializer = new JilSerializer();
-
         private static readonly SpanJsonSerializer SpanJsonSerializer = new SpanJsonSerializer();
-
-        private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
-
-
 
         private static readonly string AnswerSerializedString =
             SpanJsonSerializer.Serialize(ExpressionTreeFixture.Create<Answer>());
 
         private static readonly byte[] AnswerSerializedByteArray =
             Encoding.UTF8.GetBytes(AnswerSerializedString);
+
+
+        private static readonly JilSerializer JilSerializer = new JilSerializer();
+
+
+        private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
 
         [Benchmark]
         public Answer DeserializeAnswerWithSpanJsonSerializer()
@@ -45,7 +43,5 @@ namespace SpanJson.Benchmarks
         {
             return Utf8JsonSerializer.Deserialize<Answer>(AnswerSerializedByteArray);
         }
-
-
     }
 }

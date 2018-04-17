@@ -13,21 +13,29 @@ namespace SpanJson.Benchmarks.Models
     [ProtoContract]
     public class ShallowUser : IGenericEquality<ShallowUser>
     {
-        [ProtoMember(1)] public int? user_id { get; set; }
+        [ProtoMember(1)]
+        public int? user_id { get; set; }
 
-        [ProtoMember(2)] public string display_name { get; set; }
+        [ProtoMember(2)]
+        public string display_name { get; set; }
 
-        [ProtoMember(3)] public int? reputation { get; set; }
+        [ProtoMember(3)]
+        public int? reputation { get; set; }
 
-        [ProtoMember(4)] public UserType? user_type { get; set; }
+        [ProtoMember(4)]
+        public UserType? user_type { get; set; }
 
-        [ProtoMember(5)] public string profile_image { get; set; }
+        [ProtoMember(5)]
+        public string profile_image { get; set; }
 
-        [ProtoMember(6)] public string link { get; set; }
+        [ProtoMember(6)]
+        public string link { get; set; }
 
-        [ProtoMember(7)] public int? accept_rate { get; set; }
+        [ProtoMember(7)]
+        public int? accept_rate { get; set; }
 
-        [ProtoMember(8)] public User.BadgeCount badge_counts { get; set; }
+        [ProtoMember(8)]
+        public User.BadgeCount badge_counts { get; set; }
 
         public bool Equals(ShallowUser obj)
         {
