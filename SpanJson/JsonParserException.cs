@@ -2,9 +2,9 @@
 
 namespace SpanJson
 {
-    public class JsonFormatException : Exception
+    public class JsonParserException : Exception
     {
-        public enum FormatError
+        public enum ParserError
         {
             EndOfData,
             InvalidNumberFormat,
@@ -17,20 +17,20 @@ namespace SpanJson
             ExpectedSeparator
         }
 
-        public JsonFormatException(FormatError error, int position) : base($"Error reading JSON data: '{error}' at position: '{position}'.")
+        public JsonParserException(ParserError error, int position) : base($"Error reading JSON data: '{error}' at position: '{position}'.")
         {
             Error = error;
             Position = position;
         }
 
-        public JsonFormatException(FormatError error, Type type, int position) : base(
+        public JsonParserException(ParserError error, Type type, int position) : base(
             $"Error reading JSON data for type '{type.Name}': '{error}' at position: '{position}'.")
         {
             Type = type;
         }
 
         public Type Type { get; }
-        public FormatError Error { get; }
+        public ParserError Error { get; }
         public int Position { get; }
     }
 }

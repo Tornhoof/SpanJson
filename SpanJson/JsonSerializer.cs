@@ -78,7 +78,7 @@ namespace SpanJson
 
                     T Deserialize(ReadOnlySpan<char> input)
                     {
-                        var jsonReader = new JsonReader(input);
+                        var jsonReader = new JsonParser(input);
                         return formatter.Deserialize(ref jsonReader);
                     }
 

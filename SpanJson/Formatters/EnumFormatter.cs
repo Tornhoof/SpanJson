@@ -15,9 +15,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public T Deserialize(ref JsonReader reader)
+        public T Deserialize(ref JsonParser parser)
         {
-            return Deserializer(ref reader);
+            return Deserializer(ref parser);
         }
 
         public void Serialize(ref JsonWriter writer, T value)
@@ -27,14 +27,14 @@ namespace SpanJson.Formatters
 
         private static DeserializeDelegate BuildDeserializeDelegate()
         {
-            var readerParameter = Expression.Parameter(typeof(JsonReader).MakeByRefType(), "reader");
+            var readerParameter = Expression.Parameter(typeof(JsonParser).MakeByRefType(), "reader");
 
             var jsonValue = Expression.Variable(typeof(string), "jsonValue");
             var returnValue = Expression.Variable(typeof(T), "returnValue");
             var expressions = new List<Expression>
             {
                 Expression.Assign(jsonValue,
-                    Expression.Call(readerParameter, FindMethod(readerParameter.Type, nameof(JsonReader.ReadString))))
+                    Expression.Call(readerParameter, FindMethod(readerParameter.Type, nameof(JsonParser.ReadString))))
             };
             var cases = new List<SwitchCase>();
             foreach (var value in Enum.GetValues(typeof(T)))
@@ -85,7 +85,7 @@ namespace SpanJson.Formatters
             return type.GetMethod(name);
         }
 
-        private delegate T DeserializeDelegate(ref JsonReader reader);
+        private delegate T DeserializeDelegate(ref JsonParser parser);
 
         private delegate void SerializeDelegate(ref JsonWriter writer, T value);
     }

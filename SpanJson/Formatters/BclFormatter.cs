@@ -11,9 +11,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public SByte Deserialize(ref JsonReader reader)
+        public SByte Deserialize(ref JsonParser parser)
         {
-            return reader.ReadSByte();
+            return parser.ReadSByte();
         }
 
         public void Serialize(ref JsonWriter writer, SByte value)
@@ -27,9 +27,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableSByteFormatter<TResolver> Default = new NullableSByteFormatter<TResolver>();
 
-        public SByte? Deserialize(ref JsonReader reader)
+        public SByte? Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, SByteFormatter<TResolver>.Default);
+            return Deserialize(ref parser, SByteFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, SByte? value)
@@ -43,9 +43,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableSByteArrayFormatter<TResolver> Default = new NullableSByteArrayFormatter<TResolver>();
 
-        public SByte?[] Deserialize(ref JsonReader reader)
+        public SByte?[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableSByteFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableSByteFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, SByte?[] value)
@@ -59,9 +59,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableSByteListFormatter<TResolver> Default = new NullableSByteListFormatter<TResolver>();
 
-        public List<SByte?> Deserialize(ref JsonReader reader)
+        public List<SByte?> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableSByteFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableSByteFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<SByte?> value)
@@ -75,9 +75,9 @@ namespace SpanJson.Formatters
     {
         public static readonly SByteArrayFormatter<TResolver> Default = new SByteArrayFormatter<TResolver>();
 
-        public SByte[] Deserialize(ref JsonReader reader)
+        public SByte[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, SByteFormatter<TResolver>.Default);
+            return Deserialize(ref parser, SByteFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, SByte[] value)
@@ -91,9 +91,9 @@ namespace SpanJson.Formatters
     {
         public static readonly SByteListFormatter<TResolver> Default = new SByteListFormatter<TResolver>();
 
-        public List<SByte> Deserialize(ref JsonReader reader)
+        public List<SByte> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, SByteFormatter<TResolver>.Default);
+            return Deserialize(ref parser, SByteFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<SByte> value)
@@ -108,9 +108,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public Int16 Deserialize(ref JsonReader reader)
+        public Int16 Deserialize(ref JsonParser parser)
         {
-            return reader.ReadInt16();
+            return parser.ReadInt16();
         }
 
         public void Serialize(ref JsonWriter writer, Int16 value)
@@ -124,9 +124,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableInt16Formatter<TResolver> Default = new NullableInt16Formatter<TResolver>();
 
-        public Int16? Deserialize(ref JsonReader reader)
+        public Int16? Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, Int16Formatter<TResolver>.Default);
+            return Deserialize(ref parser, Int16Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Int16? value)
@@ -140,9 +140,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableInt16ArrayFormatter<TResolver> Default = new NullableInt16ArrayFormatter<TResolver>();
 
-        public Int16?[] Deserialize(ref JsonReader reader)
+        public Int16?[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableInt16Formatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableInt16Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Int16?[] value)
@@ -156,9 +156,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableInt16ListFormatter<TResolver> Default = new NullableInt16ListFormatter<TResolver>();
 
-        public List<Int16?> Deserialize(ref JsonReader reader)
+        public List<Int16?> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableInt16Formatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableInt16Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Int16?> value)
@@ -172,9 +172,9 @@ namespace SpanJson.Formatters
     {
         public static readonly Int16ArrayFormatter<TResolver> Default = new Int16ArrayFormatter<TResolver>();
 
-        public Int16[] Deserialize(ref JsonReader reader)
+        public Int16[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, Int16Formatter<TResolver>.Default);
+            return Deserialize(ref parser, Int16Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Int16[] value)
@@ -188,9 +188,9 @@ namespace SpanJson.Formatters
     {
         public static readonly Int16ListFormatter<TResolver> Default = new Int16ListFormatter<TResolver>();
 
-        public List<Int16> Deserialize(ref JsonReader reader)
+        public List<Int16> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, Int16Formatter<TResolver>.Default);
+            return Deserialize(ref parser, Int16Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Int16> value)
@@ -205,9 +205,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public Int32 Deserialize(ref JsonReader reader)
+        public Int32 Deserialize(ref JsonParser parser)
         {
-            return reader.ReadInt32();
+            return parser.ReadInt32();
         }
 
         public void Serialize(ref JsonWriter writer, Int32 value)
@@ -221,9 +221,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableInt32Formatter<TResolver> Default = new NullableInt32Formatter<TResolver>();
 
-        public Int32? Deserialize(ref JsonReader reader)
+        public Int32? Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, Int32Formatter<TResolver>.Default);
+            return Deserialize(ref parser, Int32Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Int32? value)
@@ -237,9 +237,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableInt32ArrayFormatter<TResolver> Default = new NullableInt32ArrayFormatter<TResolver>();
 
-        public Int32?[] Deserialize(ref JsonReader reader)
+        public Int32?[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableInt32Formatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableInt32Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Int32?[] value)
@@ -253,9 +253,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableInt32ListFormatter<TResolver> Default = new NullableInt32ListFormatter<TResolver>();
 
-        public List<Int32?> Deserialize(ref JsonReader reader)
+        public List<Int32?> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableInt32Formatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableInt32Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Int32?> value)
@@ -269,9 +269,9 @@ namespace SpanJson.Formatters
     {
         public static readonly Int32ArrayFormatter<TResolver> Default = new Int32ArrayFormatter<TResolver>();
 
-        public Int32[] Deserialize(ref JsonReader reader)
+        public Int32[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, Int32Formatter<TResolver>.Default);
+            return Deserialize(ref parser, Int32Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Int32[] value)
@@ -285,9 +285,9 @@ namespace SpanJson.Formatters
     {
         public static readonly Int32ListFormatter<TResolver> Default = new Int32ListFormatter<TResolver>();
 
-        public List<Int32> Deserialize(ref JsonReader reader)
+        public List<Int32> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, Int32Formatter<TResolver>.Default);
+            return Deserialize(ref parser, Int32Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Int32> value)
@@ -302,9 +302,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public Int64 Deserialize(ref JsonReader reader)
+        public Int64 Deserialize(ref JsonParser parser)
         {
-            return reader.ReadInt64();
+            return parser.ReadInt64();
         }
 
         public void Serialize(ref JsonWriter writer, Int64 value)
@@ -318,9 +318,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableInt64Formatter<TResolver> Default = new NullableInt64Formatter<TResolver>();
 
-        public Int64? Deserialize(ref JsonReader reader)
+        public Int64? Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, Int64Formatter<TResolver>.Default);
+            return Deserialize(ref parser, Int64Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Int64? value)
@@ -334,9 +334,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableInt64ArrayFormatter<TResolver> Default = new NullableInt64ArrayFormatter<TResolver>();
 
-        public Int64?[] Deserialize(ref JsonReader reader)
+        public Int64?[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableInt64Formatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableInt64Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Int64?[] value)
@@ -350,9 +350,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableInt64ListFormatter<TResolver> Default = new NullableInt64ListFormatter<TResolver>();
 
-        public List<Int64?> Deserialize(ref JsonReader reader)
+        public List<Int64?> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableInt64Formatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableInt64Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Int64?> value)
@@ -366,9 +366,9 @@ namespace SpanJson.Formatters
     {
         public static readonly Int64ArrayFormatter<TResolver> Default = new Int64ArrayFormatter<TResolver>();
 
-        public Int64[] Deserialize(ref JsonReader reader)
+        public Int64[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, Int64Formatter<TResolver>.Default);
+            return Deserialize(ref parser, Int64Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Int64[] value)
@@ -382,9 +382,9 @@ namespace SpanJson.Formatters
     {
         public static readonly Int64ListFormatter<TResolver> Default = new Int64ListFormatter<TResolver>();
 
-        public List<Int64> Deserialize(ref JsonReader reader)
+        public List<Int64> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, Int64Formatter<TResolver>.Default);
+            return Deserialize(ref parser, Int64Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Int64> value)
@@ -399,9 +399,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public Byte Deserialize(ref JsonReader reader)
+        public Byte Deserialize(ref JsonParser parser)
         {
-            return reader.ReadByte();
+            return parser.ReadByte();
         }
 
         public void Serialize(ref JsonWriter writer, Byte value)
@@ -415,9 +415,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableByteFormatter<TResolver> Default = new NullableByteFormatter<TResolver>();
 
-        public Byte? Deserialize(ref JsonReader reader)
+        public Byte? Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, ByteFormatter<TResolver>.Default);
+            return Deserialize(ref parser, ByteFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Byte? value)
@@ -431,9 +431,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableByteArrayFormatter<TResolver> Default = new NullableByteArrayFormatter<TResolver>();
 
-        public Byte?[] Deserialize(ref JsonReader reader)
+        public Byte?[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableByteFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableByteFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Byte?[] value)
@@ -447,9 +447,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableByteListFormatter<TResolver> Default = new NullableByteListFormatter<TResolver>();
 
-        public List<Byte?> Deserialize(ref JsonReader reader)
+        public List<Byte?> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableByteFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableByteFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Byte?> value)
@@ -463,9 +463,9 @@ namespace SpanJson.Formatters
     {
         public static readonly ByteArrayFormatter<TResolver> Default = new ByteArrayFormatter<TResolver>();
 
-        public Byte[] Deserialize(ref JsonReader reader)
+        public Byte[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, ByteFormatter<TResolver>.Default);
+            return Deserialize(ref parser, ByteFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Byte[] value)
@@ -479,9 +479,9 @@ namespace SpanJson.Formatters
     {
         public static readonly ByteListFormatter<TResolver> Default = new ByteListFormatter<TResolver>();
 
-        public List<Byte> Deserialize(ref JsonReader reader)
+        public List<Byte> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, ByteFormatter<TResolver>.Default);
+            return Deserialize(ref parser, ByteFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Byte> value)
@@ -496,9 +496,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public UInt16 Deserialize(ref JsonReader reader)
+        public UInt16 Deserialize(ref JsonParser parser)
         {
-            return reader.ReadUInt16();
+            return parser.ReadUInt16();
         }
 
         public void Serialize(ref JsonWriter writer, UInt16 value)
@@ -512,9 +512,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableUInt16Formatter<TResolver> Default = new NullableUInt16Formatter<TResolver>();
 
-        public UInt16? Deserialize(ref JsonReader reader)
+        public UInt16? Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, UInt16Formatter<TResolver>.Default);
+            return Deserialize(ref parser, UInt16Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, UInt16? value)
@@ -528,9 +528,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableUInt16ArrayFormatter<TResolver> Default = new NullableUInt16ArrayFormatter<TResolver>();
 
-        public UInt16?[] Deserialize(ref JsonReader reader)
+        public UInt16?[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableUInt16Formatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableUInt16Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, UInt16?[] value)
@@ -544,9 +544,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableUInt16ListFormatter<TResolver> Default = new NullableUInt16ListFormatter<TResolver>();
 
-        public List<UInt16?> Deserialize(ref JsonReader reader)
+        public List<UInt16?> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableUInt16Formatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableUInt16Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<UInt16?> value)
@@ -560,9 +560,9 @@ namespace SpanJson.Formatters
     {
         public static readonly UInt16ArrayFormatter<TResolver> Default = new UInt16ArrayFormatter<TResolver>();
 
-        public UInt16[] Deserialize(ref JsonReader reader)
+        public UInt16[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, UInt16Formatter<TResolver>.Default);
+            return Deserialize(ref parser, UInt16Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, UInt16[] value)
@@ -576,9 +576,9 @@ namespace SpanJson.Formatters
     {
         public static readonly UInt16ListFormatter<TResolver> Default = new UInt16ListFormatter<TResolver>();
 
-        public List<UInt16> Deserialize(ref JsonReader reader)
+        public List<UInt16> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, UInt16Formatter<TResolver>.Default);
+            return Deserialize(ref parser, UInt16Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<UInt16> value)
@@ -593,9 +593,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public UInt32 Deserialize(ref JsonReader reader)
+        public UInt32 Deserialize(ref JsonParser parser)
         {
-            return reader.ReadUInt32();
+            return parser.ReadUInt32();
         }
 
         public void Serialize(ref JsonWriter writer, UInt32 value)
@@ -609,9 +609,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableUInt32Formatter<TResolver> Default = new NullableUInt32Formatter<TResolver>();
 
-        public UInt32? Deserialize(ref JsonReader reader)
+        public UInt32? Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, UInt32Formatter<TResolver>.Default);
+            return Deserialize(ref parser, UInt32Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, UInt32? value)
@@ -625,9 +625,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableUInt32ArrayFormatter<TResolver> Default = new NullableUInt32ArrayFormatter<TResolver>();
 
-        public UInt32?[] Deserialize(ref JsonReader reader)
+        public UInt32?[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableUInt32Formatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableUInt32Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, UInt32?[] value)
@@ -641,9 +641,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableUInt32ListFormatter<TResolver> Default = new NullableUInt32ListFormatter<TResolver>();
 
-        public List<UInt32?> Deserialize(ref JsonReader reader)
+        public List<UInt32?> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableUInt32Formatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableUInt32Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<UInt32?> value)
@@ -657,9 +657,9 @@ namespace SpanJson.Formatters
     {
         public static readonly UInt32ArrayFormatter<TResolver> Default = new UInt32ArrayFormatter<TResolver>();
 
-        public UInt32[] Deserialize(ref JsonReader reader)
+        public UInt32[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, UInt32Formatter<TResolver>.Default);
+            return Deserialize(ref parser, UInt32Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, UInt32[] value)
@@ -673,9 +673,9 @@ namespace SpanJson.Formatters
     {
         public static readonly UInt32ListFormatter<TResolver> Default = new UInt32ListFormatter<TResolver>();
 
-        public List<UInt32> Deserialize(ref JsonReader reader)
+        public List<UInt32> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, UInt32Formatter<TResolver>.Default);
+            return Deserialize(ref parser, UInt32Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<UInt32> value)
@@ -690,9 +690,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public UInt64 Deserialize(ref JsonReader reader)
+        public UInt64 Deserialize(ref JsonParser parser)
         {
-            return reader.ReadUInt64();
+            return parser.ReadUInt64();
         }
 
         public void Serialize(ref JsonWriter writer, UInt64 value)
@@ -706,9 +706,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableUInt64Formatter<TResolver> Default = new NullableUInt64Formatter<TResolver>();
 
-        public UInt64? Deserialize(ref JsonReader reader)
+        public UInt64? Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, UInt64Formatter<TResolver>.Default);
+            return Deserialize(ref parser, UInt64Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, UInt64? value)
@@ -722,9 +722,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableUInt64ArrayFormatter<TResolver> Default = new NullableUInt64ArrayFormatter<TResolver>();
 
-        public UInt64?[] Deserialize(ref JsonReader reader)
+        public UInt64?[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableUInt64Formatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableUInt64Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, UInt64?[] value)
@@ -738,9 +738,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableUInt64ListFormatter<TResolver> Default = new NullableUInt64ListFormatter<TResolver>();
 
-        public List<UInt64?> Deserialize(ref JsonReader reader)
+        public List<UInt64?> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableUInt64Formatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableUInt64Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<UInt64?> value)
@@ -754,9 +754,9 @@ namespace SpanJson.Formatters
     {
         public static readonly UInt64ArrayFormatter<TResolver> Default = new UInt64ArrayFormatter<TResolver>();
 
-        public UInt64[] Deserialize(ref JsonReader reader)
+        public UInt64[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, UInt64Formatter<TResolver>.Default);
+            return Deserialize(ref parser, UInt64Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, UInt64[] value)
@@ -770,9 +770,9 @@ namespace SpanJson.Formatters
     {
         public static readonly UInt64ListFormatter<TResolver> Default = new UInt64ListFormatter<TResolver>();
 
-        public List<UInt64> Deserialize(ref JsonReader reader)
+        public List<UInt64> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, UInt64Formatter<TResolver>.Default);
+            return Deserialize(ref parser, UInt64Formatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<UInt64> value)
@@ -787,9 +787,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public Single Deserialize(ref JsonReader reader)
+        public Single Deserialize(ref JsonParser parser)
         {
-            return reader.ReadSingle();
+            return parser.ReadSingle();
         }
 
         public void Serialize(ref JsonWriter writer, Single value)
@@ -803,9 +803,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableSingleFormatter<TResolver> Default = new NullableSingleFormatter<TResolver>();
 
-        public Single? Deserialize(ref JsonReader reader)
+        public Single? Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, SingleFormatter<TResolver>.Default);
+            return Deserialize(ref parser, SingleFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Single? value)
@@ -819,9 +819,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableSingleArrayFormatter<TResolver> Default = new NullableSingleArrayFormatter<TResolver>();
 
-        public Single?[] Deserialize(ref JsonReader reader)
+        public Single?[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableSingleFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableSingleFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Single?[] value)
@@ -835,9 +835,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableSingleListFormatter<TResolver> Default = new NullableSingleListFormatter<TResolver>();
 
-        public List<Single?> Deserialize(ref JsonReader reader)
+        public List<Single?> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableSingleFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableSingleFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Single?> value)
@@ -851,9 +851,9 @@ namespace SpanJson.Formatters
     {
         public static readonly SingleArrayFormatter<TResolver> Default = new SingleArrayFormatter<TResolver>();
 
-        public Single[] Deserialize(ref JsonReader reader)
+        public Single[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, SingleFormatter<TResolver>.Default);
+            return Deserialize(ref parser, SingleFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Single[] value)
@@ -867,9 +867,9 @@ namespace SpanJson.Formatters
     {
         public static readonly SingleListFormatter<TResolver> Default = new SingleListFormatter<TResolver>();
 
-        public List<Single> Deserialize(ref JsonReader reader)
+        public List<Single> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, SingleFormatter<TResolver>.Default);
+            return Deserialize(ref parser, SingleFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Single> value)
@@ -884,9 +884,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public Double Deserialize(ref JsonReader reader)
+        public Double Deserialize(ref JsonParser parser)
         {
-            return reader.ReadDouble();
+            return parser.ReadDouble();
         }
 
         public void Serialize(ref JsonWriter writer, Double value)
@@ -900,9 +900,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableDoubleFormatter<TResolver> Default = new NullableDoubleFormatter<TResolver>();
 
-        public Double? Deserialize(ref JsonReader reader)
+        public Double? Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, DoubleFormatter<TResolver>.Default);
+            return Deserialize(ref parser, DoubleFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Double? value)
@@ -916,9 +916,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableDoubleArrayFormatter<TResolver> Default = new NullableDoubleArrayFormatter<TResolver>();
 
-        public Double?[] Deserialize(ref JsonReader reader)
+        public Double?[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableDoubleFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableDoubleFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Double?[] value)
@@ -932,9 +932,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableDoubleListFormatter<TResolver> Default = new NullableDoubleListFormatter<TResolver>();
 
-        public List<Double?> Deserialize(ref JsonReader reader)
+        public List<Double?> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableDoubleFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableDoubleFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Double?> value)
@@ -948,9 +948,9 @@ namespace SpanJson.Formatters
     {
         public static readonly DoubleArrayFormatter<TResolver> Default = new DoubleArrayFormatter<TResolver>();
 
-        public Double[] Deserialize(ref JsonReader reader)
+        public Double[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, DoubleFormatter<TResolver>.Default);
+            return Deserialize(ref parser, DoubleFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Double[] value)
@@ -964,9 +964,9 @@ namespace SpanJson.Formatters
     {
         public static readonly DoubleListFormatter<TResolver> Default = new DoubleListFormatter<TResolver>();
 
-        public List<Double> Deserialize(ref JsonReader reader)
+        public List<Double> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, DoubleFormatter<TResolver>.Default);
+            return Deserialize(ref parser, DoubleFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Double> value)
@@ -981,9 +981,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public Decimal Deserialize(ref JsonReader reader)
+        public Decimal Deserialize(ref JsonParser parser)
         {
-            return reader.ReadDecimal();
+            return parser.ReadDecimal();
         }
 
         public void Serialize(ref JsonWriter writer, Decimal value)
@@ -997,9 +997,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableDecimalFormatter<TResolver> Default = new NullableDecimalFormatter<TResolver>();
 
-        public Decimal? Deserialize(ref JsonReader reader)
+        public Decimal? Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, DecimalFormatter<TResolver>.Default);
+            return Deserialize(ref parser, DecimalFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Decimal? value)
@@ -1013,9 +1013,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableDecimalArrayFormatter<TResolver> Default = new NullableDecimalArrayFormatter<TResolver>();
 
-        public Decimal?[] Deserialize(ref JsonReader reader)
+        public Decimal?[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableDecimalFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableDecimalFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Decimal?[] value)
@@ -1029,9 +1029,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableDecimalListFormatter<TResolver> Default = new NullableDecimalListFormatter<TResolver>();
 
-        public List<Decimal?> Deserialize(ref JsonReader reader)
+        public List<Decimal?> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableDecimalFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableDecimalFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Decimal?> value)
@@ -1045,9 +1045,9 @@ namespace SpanJson.Formatters
     {
         public static readonly DecimalArrayFormatter<TResolver> Default = new DecimalArrayFormatter<TResolver>();
 
-        public Decimal[] Deserialize(ref JsonReader reader)
+        public Decimal[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, DecimalFormatter<TResolver>.Default);
+            return Deserialize(ref parser, DecimalFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Decimal[] value)
@@ -1061,9 +1061,9 @@ namespace SpanJson.Formatters
     {
         public static readonly DecimalListFormatter<TResolver> Default = new DecimalListFormatter<TResolver>();
 
-        public List<Decimal> Deserialize(ref JsonReader reader)
+        public List<Decimal> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, DecimalFormatter<TResolver>.Default);
+            return Deserialize(ref parser, DecimalFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Decimal> value)
@@ -1078,9 +1078,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public Boolean Deserialize(ref JsonReader reader)
+        public Boolean Deserialize(ref JsonParser parser)
         {
-            return reader.ReadBoolean();
+            return parser.ReadBoolean();
         }
 
         public void Serialize(ref JsonWriter writer, Boolean value)
@@ -1094,9 +1094,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableBooleanFormatter<TResolver> Default = new NullableBooleanFormatter<TResolver>();
 
-        public Boolean? Deserialize(ref JsonReader reader)
+        public Boolean? Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, BooleanFormatter<TResolver>.Default);
+            return Deserialize(ref parser, BooleanFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Boolean? value)
@@ -1110,9 +1110,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableBooleanArrayFormatter<TResolver> Default = new NullableBooleanArrayFormatter<TResolver>();
 
-        public Boolean?[] Deserialize(ref JsonReader reader)
+        public Boolean?[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableBooleanFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableBooleanFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Boolean?[] value)
@@ -1126,9 +1126,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableBooleanListFormatter<TResolver> Default = new NullableBooleanListFormatter<TResolver>();
 
-        public List<Boolean?> Deserialize(ref JsonReader reader)
+        public List<Boolean?> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableBooleanFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableBooleanFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Boolean?> value)
@@ -1142,9 +1142,9 @@ namespace SpanJson.Formatters
     {
         public static readonly BooleanArrayFormatter<TResolver> Default = new BooleanArrayFormatter<TResolver>();
 
-        public Boolean[] Deserialize(ref JsonReader reader)
+        public Boolean[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, BooleanFormatter<TResolver>.Default);
+            return Deserialize(ref parser, BooleanFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Boolean[] value)
@@ -1158,9 +1158,9 @@ namespace SpanJson.Formatters
     {
         public static readonly BooleanListFormatter<TResolver> Default = new BooleanListFormatter<TResolver>();
 
-        public List<Boolean> Deserialize(ref JsonReader reader)
+        public List<Boolean> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, BooleanFormatter<TResolver>.Default);
+            return Deserialize(ref parser, BooleanFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Boolean> value)
@@ -1175,9 +1175,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public Char Deserialize(ref JsonReader reader)
+        public Char Deserialize(ref JsonParser parser)
         {
-            return reader.ReadChar();
+            return parser.ReadChar();
         }
 
         public void Serialize(ref JsonWriter writer, Char value)
@@ -1191,9 +1191,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableCharFormatter<TResolver> Default = new NullableCharFormatter<TResolver>();
 
-        public Char? Deserialize(ref JsonReader reader)
+        public Char? Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, CharFormatter<TResolver>.Default);
+            return Deserialize(ref parser, CharFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Char? value)
@@ -1207,9 +1207,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableCharArrayFormatter<TResolver> Default = new NullableCharArrayFormatter<TResolver>();
 
-        public Char?[] Deserialize(ref JsonReader reader)
+        public Char?[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableCharFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableCharFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Char?[] value)
@@ -1223,9 +1223,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableCharListFormatter<TResolver> Default = new NullableCharListFormatter<TResolver>();
 
-        public List<Char?> Deserialize(ref JsonReader reader)
+        public List<Char?> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableCharFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableCharFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Char?> value)
@@ -1239,9 +1239,9 @@ namespace SpanJson.Formatters
     {
         public static readonly CharArrayFormatter<TResolver> Default = new CharArrayFormatter<TResolver>();
 
-        public Char[] Deserialize(ref JsonReader reader)
+        public Char[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, CharFormatter<TResolver>.Default);
+            return Deserialize(ref parser, CharFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Char[] value)
@@ -1255,9 +1255,9 @@ namespace SpanJson.Formatters
     {
         public static readonly CharListFormatter<TResolver> Default = new CharListFormatter<TResolver>();
 
-        public List<Char> Deserialize(ref JsonReader reader)
+        public List<Char> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, CharFormatter<TResolver>.Default);
+            return Deserialize(ref parser, CharFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Char> value)
@@ -1272,9 +1272,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public DateTime Deserialize(ref JsonReader reader)
+        public DateTime Deserialize(ref JsonParser parser)
         {
-            return reader.ReadDateTime();
+            return parser.ReadDateTime();
         }
 
         public void Serialize(ref JsonWriter writer, DateTime value)
@@ -1288,9 +1288,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableDateTimeFormatter<TResolver> Default = new NullableDateTimeFormatter<TResolver>();
 
-        public DateTime? Deserialize(ref JsonReader reader)
+        public DateTime? Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, DateTimeFormatter<TResolver>.Default);
+            return Deserialize(ref parser, DateTimeFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, DateTime? value)
@@ -1304,9 +1304,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableDateTimeArrayFormatter<TResolver> Default = new NullableDateTimeArrayFormatter<TResolver>();
 
-        public DateTime?[] Deserialize(ref JsonReader reader)
+        public DateTime?[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableDateTimeFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableDateTimeFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, DateTime?[] value)
@@ -1320,9 +1320,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableDateTimeListFormatter<TResolver> Default = new NullableDateTimeListFormatter<TResolver>();
 
-        public List<DateTime?> Deserialize(ref JsonReader reader)
+        public List<DateTime?> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableDateTimeFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableDateTimeFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<DateTime?> value)
@@ -1336,9 +1336,9 @@ namespace SpanJson.Formatters
     {
         public static readonly DateTimeArrayFormatter<TResolver> Default = new DateTimeArrayFormatter<TResolver>();
 
-        public DateTime[] Deserialize(ref JsonReader reader)
+        public DateTime[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, DateTimeFormatter<TResolver>.Default);
+            return Deserialize(ref parser, DateTimeFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, DateTime[] value)
@@ -1352,9 +1352,9 @@ namespace SpanJson.Formatters
     {
         public static readonly DateTimeListFormatter<TResolver> Default = new DateTimeListFormatter<TResolver>();
 
-        public List<DateTime> Deserialize(ref JsonReader reader)
+        public List<DateTime> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, DateTimeFormatter<TResolver>.Default);
+            return Deserialize(ref parser, DateTimeFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<DateTime> value)
@@ -1370,9 +1370,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public DateTimeOffset Deserialize(ref JsonReader reader)
+        public DateTimeOffset Deserialize(ref JsonParser parser)
         {
-            return reader.ReadDateTimeOffset();
+            return parser.ReadDateTimeOffset();
         }
 
         public void Serialize(ref JsonWriter writer, DateTimeOffset value)
@@ -1386,9 +1386,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableDateTimeOffsetFormatter<TResolver> Default = new NullableDateTimeOffsetFormatter<TResolver>();
 
-        public DateTimeOffset? Deserialize(ref JsonReader reader)
+        public DateTimeOffset? Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, DateTimeOffsetFormatter<TResolver>.Default);
+            return Deserialize(ref parser, DateTimeOffsetFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, DateTimeOffset? value)
@@ -1402,9 +1402,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableDateTimeOffsetArrayFormatter<TResolver> Default = new NullableDateTimeOffsetArrayFormatter<TResolver>();
 
-        public DateTimeOffset?[] Deserialize(ref JsonReader reader)
+        public DateTimeOffset?[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableDateTimeOffsetFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableDateTimeOffsetFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, DateTimeOffset?[] value)
@@ -1418,9 +1418,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableDateTimeOffsetListFormatter<TResolver> Default = new NullableDateTimeOffsetListFormatter<TResolver>();
 
-        public List<DateTimeOffset?> Deserialize(ref JsonReader reader)
+        public List<DateTimeOffset?> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableDateTimeOffsetFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableDateTimeOffsetFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<DateTimeOffset?> value)
@@ -1434,9 +1434,9 @@ namespace SpanJson.Formatters
     {
         public static readonly DateTimeOffsetArrayFormatter<TResolver> Default = new DateTimeOffsetArrayFormatter<TResolver>();
 
-        public DateTimeOffset[] Deserialize(ref JsonReader reader)
+        public DateTimeOffset[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, DateTimeOffsetFormatter<TResolver>.Default);
+            return Deserialize(ref parser, DateTimeOffsetFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, DateTimeOffset[] value)
@@ -1450,9 +1450,9 @@ namespace SpanJson.Formatters
     {
         public static readonly DateTimeOffsetListFormatter<TResolver> Default = new DateTimeOffsetListFormatter<TResolver>();
 
-        public List<DateTimeOffset> Deserialize(ref JsonReader reader)
+        public List<DateTimeOffset> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, DateTimeOffsetFormatter<TResolver>.Default);
+            return Deserialize(ref parser, DateTimeOffsetFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<DateTimeOffset> value)
@@ -1467,9 +1467,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public TimeSpan Deserialize(ref JsonReader reader)
+        public TimeSpan Deserialize(ref JsonParser parser)
         {
-            return reader.ReadTimeSpan();
+            return parser.ReadTimeSpan();
         }
 
         public void Serialize(ref JsonWriter writer, TimeSpan value)
@@ -1483,9 +1483,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableTimeSpanFormatter<TResolver> Default = new NullableTimeSpanFormatter<TResolver>();
 
-        public TimeSpan? Deserialize(ref JsonReader reader)
+        public TimeSpan? Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, TimeSpanFormatter<TResolver>.Default);
+            return Deserialize(ref parser, TimeSpanFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, TimeSpan? value)
@@ -1499,9 +1499,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableTimeSpanArrayFormatter<TResolver> Default = new NullableTimeSpanArrayFormatter<TResolver>();
 
-        public TimeSpan?[] Deserialize(ref JsonReader reader)
+        public TimeSpan?[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableTimeSpanFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableTimeSpanFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, TimeSpan?[] value)
@@ -1515,9 +1515,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableTimeSpanListFormatter<TResolver> Default = new NullableTimeSpanListFormatter<TResolver>();
 
-        public List<TimeSpan?> Deserialize(ref JsonReader reader)
+        public List<TimeSpan?> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableTimeSpanFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableTimeSpanFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<TimeSpan?> value)
@@ -1531,9 +1531,9 @@ namespace SpanJson.Formatters
     {
         public static readonly TimeSpanArrayFormatter<TResolver> Default = new TimeSpanArrayFormatter<TResolver>();
 
-        public TimeSpan[] Deserialize(ref JsonReader reader)
+        public TimeSpan[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, TimeSpanFormatter<TResolver>.Default);
+            return Deserialize(ref parser, TimeSpanFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, TimeSpan[] value)
@@ -1547,9 +1547,9 @@ namespace SpanJson.Formatters
     {
         public static readonly TimeSpanListFormatter<TResolver> Default = new TimeSpanListFormatter<TResolver>();
 
-        public List<TimeSpan> Deserialize(ref JsonReader reader)
+        public List<TimeSpan> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, TimeSpanFormatter<TResolver>.Default);
+            return Deserialize(ref parser, TimeSpanFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<TimeSpan> value)
@@ -1564,9 +1564,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public Guid Deserialize(ref JsonReader reader)
+        public Guid Deserialize(ref JsonParser parser)
         {
-            return reader.ReadGuid();
+            return parser.ReadGuid();
         }
 
         public void Serialize(ref JsonWriter writer, Guid value)
@@ -1580,9 +1580,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableGuidFormatter<TResolver> Default = new NullableGuidFormatter<TResolver>();
 
-        public Guid? Deserialize(ref JsonReader reader)
+        public Guid? Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, GuidFormatter<TResolver>.Default);
+            return Deserialize(ref parser, GuidFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Guid? value)
@@ -1596,9 +1596,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableGuidArrayFormatter<TResolver> Default = new NullableGuidArrayFormatter<TResolver>();
 
-        public Guid?[] Deserialize(ref JsonReader reader)
+        public Guid?[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableGuidFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableGuidFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Guid?[] value)
@@ -1612,9 +1612,9 @@ namespace SpanJson.Formatters
     {
         public static readonly NullableGuidListFormatter<TResolver> Default = new NullableGuidListFormatter<TResolver>();
 
-        public List<Guid?> Deserialize(ref JsonReader reader)
+        public List<Guid?> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, NullableGuidFormatter<TResolver>.Default);
+            return Deserialize(ref parser, NullableGuidFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Guid?> value)
@@ -1628,9 +1628,9 @@ namespace SpanJson.Formatters
     {
         public static readonly GuidArrayFormatter<TResolver> Default = new GuidArrayFormatter<TResolver>();
 
-        public Guid[] Deserialize(ref JsonReader reader)
+        public Guid[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, GuidFormatter<TResolver>.Default);
+            return Deserialize(ref parser, GuidFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Guid[] value)
@@ -1644,9 +1644,9 @@ namespace SpanJson.Formatters
     {
         public static readonly GuidListFormatter<TResolver> Default = new GuidListFormatter<TResolver>();
 
-        public List<Guid> Deserialize(ref JsonReader reader)
+        public List<Guid> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, GuidFormatter<TResolver>.Default);
+            return Deserialize(ref parser, GuidFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Guid> value)
@@ -1661,9 +1661,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public String Deserialize(ref JsonReader reader)
+        public String Deserialize(ref JsonParser parser)
         {
-            return reader.ReadString();
+            return parser.ReadString();
         }
 
         public void Serialize(ref JsonWriter writer, String value)
@@ -1677,9 +1677,9 @@ namespace SpanJson.Formatters
     {
         public static readonly StringArrayFormatter<TResolver> Default = new StringArrayFormatter<TResolver>();
 
-        public String[] Deserialize(ref JsonReader reader)
+        public String[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, StringFormatter<TResolver>.Default);
+            return Deserialize(ref parser, StringFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, String[] value)
@@ -1693,9 +1693,9 @@ namespace SpanJson.Formatters
     {
         public static readonly StringListFormatter<TResolver> Default = new StringListFormatter<TResolver>();
 
-        public List<String> Deserialize(ref JsonReader reader)
+        public List<String> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, StringFormatter<TResolver>.Default);
+            return Deserialize(ref parser, StringFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<String> value)
@@ -1710,9 +1710,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public Version Deserialize(ref JsonReader reader)
+        public Version Deserialize(ref JsonParser parser)
         {
-            return reader.ReadVersion();
+            return parser.ReadVersion();
         }
 
         public void Serialize(ref JsonWriter writer, Version value)
@@ -1726,9 +1726,9 @@ namespace SpanJson.Formatters
     {
         public static readonly VersionArrayFormatter<TResolver> Default = new VersionArrayFormatter<TResolver>();
 
-        public Version[] Deserialize(ref JsonReader reader)
+        public Version[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, VersionFormatter<TResolver>.Default);
+            return Deserialize(ref parser, VersionFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Version[] value)
@@ -1742,9 +1742,9 @@ namespace SpanJson.Formatters
     {
         public static readonly VersionListFormatter<TResolver> Default = new VersionListFormatter<TResolver>();
 
-        public List<Version> Deserialize(ref JsonReader reader)
+        public List<Version> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, VersionFormatter<TResolver>.Default);
+            return Deserialize(ref parser, VersionFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Version> value)
@@ -1759,9 +1759,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public Uri Deserialize(ref JsonReader reader)
+        public Uri Deserialize(ref JsonParser parser)
         {
-            return reader.ReadUri();
+            return parser.ReadUri();
         }
 
         public void Serialize(ref JsonWriter writer, Uri value)
@@ -1775,9 +1775,9 @@ namespace SpanJson.Formatters
     {
         public static readonly UriArrayFormatter<TResolver> Default = new UriArrayFormatter<TResolver>();
 
-        public Uri[] Deserialize(ref JsonReader reader)
+        public Uri[] Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, UriFormatter<TResolver>.Default);
+            return Deserialize(ref parser, UriFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, Uri[] value)
@@ -1791,9 +1791,9 @@ namespace SpanJson.Formatters
     {
         public static readonly UriListFormatter<TResolver> Default = new UriListFormatter<TResolver>();
 
-        public List<Uri> Deserialize(ref JsonReader reader)
+        public List<Uri> Deserialize(ref JsonParser parser)
         {
-            return Deserialize(ref reader, UriFormatter<TResolver>.Default);
+            return Deserialize(ref parser, UriFormatter<TResolver>.Default);
         }
 
         public void Serialize(ref JsonWriter writer, List<Uri> value)

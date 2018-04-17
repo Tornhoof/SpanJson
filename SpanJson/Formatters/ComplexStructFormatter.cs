@@ -16,9 +16,9 @@
 
         public int AllocSize { get; } = EstimateSize<T>();
 
-        public T Deserialize(ref JsonReader reader)
+        public T Deserialize(ref JsonParser parser)
         {
-            return Deserializer(ref reader);
+            return Deserializer(ref parser);
         }
 
 

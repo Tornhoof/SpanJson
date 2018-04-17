@@ -36,11 +36,11 @@ namespace SpanJson.Tests.JsonTestSuite
                 }
                 case Result.Rejected:
                 {
-                    Assert.Throws<JsonParsingException>(() => JsonSerializer.Generic.Deserialize<object>(input));
+                    Assert.Throws<JsonParserException>(() => JsonSerializer.Generic.Deserialize<object>(input));
                     _outputHelper.WriteLine($"{name} was rejected.");
                     break;
                 }
-                default:
+                case Result.Both:
                 {
                     try
                     {
@@ -78,14 +78,14 @@ namespace SpanJson.Tests.JsonTestSuite
                         {
                             result.Add(new object[] {name, text, Result.Accepted});
                         }
-                        //else if (name.StartsWith("n_"))
-                        //{
-                        //    result.Add(new object[] {name, text, Result.Rejected});
-                        //}
-                        //else if (name.StartsWith("i_"))
-                        //{
-                        //    result.Add(new object[] {name, text, Result.Accepted | Result.Rejected});
-                        //}
+                        else if (name.StartsWith("n_"))
+                        {
+                            result.Add(new object[] { name, text, Result.Rejected });
+                        }
+                        else if (name.StartsWith("i_"))
+                        {
+                            result.Add(new object[] { name, text, Result.Both});
+                        }
                     }
                 }
             }
@@ -98,6 +98,7 @@ namespace SpanJson.Tests.JsonTestSuite
         {
             Accepted,
             Rejected,
+            Both,
         }
     }
 }

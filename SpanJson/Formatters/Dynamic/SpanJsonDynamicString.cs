@@ -39,7 +39,7 @@ namespace SpanJson.Formatters.Dynamic
 
             public override bool TryConvertTo(Type destinationType, in ReadOnlySpan<char> span, out object value)
             {
-                var reader = new JsonReader(span);
+                var reader = new JsonParser(span);
                 if (Converters.TryGetValue(destinationType, out var del))
                 {
                     value = del(reader);
