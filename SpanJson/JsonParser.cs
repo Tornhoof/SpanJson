@@ -255,15 +255,15 @@ namespace SpanJson
                 return span[pos++];
             }
 
-            if (span[pos] == JsonConstant.Escape)
+            if (span[pos] == JsonConstant.ReverseSolidus)
             {
                 pos++;
                 switch (span[pos++])
                 {
                     case JsonConstant.DoubleQuote:
                         return JsonConstant.DoubleQuote;
-                    case JsonConstant.Escape:
-                        return JsonConstant.Escape;
+                    case JsonConstant.ReverseSolidus:
+                        return JsonConstant.ReverseSolidus;
                     case 'b':
                         return '\b';
                     case 'f':
@@ -373,7 +373,7 @@ namespace SpanJson
             while (index < span.Length)
             {
                 var current = span[index++];
-                if (current == JsonConstant.Escape)
+                if (current == JsonConstant.ReverseSolidus)
                 {
                     current = span[index++];
                     switch (current)
@@ -381,8 +381,11 @@ namespace SpanJson
                         case JsonConstant.DoubleQuote:
                             current = JsonConstant.DoubleQuote;
                             break;
-                        case JsonConstant.Escape:
-                            current = JsonConstant.Escape;
+                        case JsonConstant.ReverseSolidus:
+                            current = JsonConstant.ReverseSolidus;
+                            break;
+                        case JsonConstant.Solidus:
+                            current = JsonConstant.Solidus;
                             break;
                         case 'b':
                             current = '\b';
@@ -522,15 +525,12 @@ namespace SpanJson
             }
         }
 
-        /// <summary>
-        ///     Make sure we don't increase the pointer too much
-        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SkipWhitespace()
         {
             ref var pos = ref _pos;
-            do
-            {
+            while(IsAvailable)
+            { 
                 ref readonly var c = ref _chars[pos];
                 switch (c)
                 {
@@ -538,11 +538,14 @@ namespace SpanJson
                     case '\t':
                     case '\r':
                     case '\n':
+                    {
+                        pos++;
                         continue;
+                    }
                     default:
                         return;
                 }
-            } while (pos++ < _chars.Length);
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -581,17 +584,17 @@ namespace SpanJson
 
             if (count++ > 0)
             {
-                if (_chars[pos] == JsonConstant.ValueSeparator)
+                if (IsAvailable && _chars[pos] == JsonConstant.ValueSeparator)
                 {
                     pos++;
-                    return true;
+                    return false;
                 }
+
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedSeparator);
             }
 
             return false;
         }
-
 
         public bool IsAvailable => _pos < _chars.Length;
 
@@ -672,6 +675,7 @@ namespace SpanJson
                     pos++;
                     return false;
                 }
+
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedSeparator);
             }
 
@@ -727,12 +731,12 @@ namespace SpanJson
                 case JsonToken.EndArray:
                 {
                     pos++;
-                    if (stack > 0)
-                        {
-                            SkipNextSegment(stack - 1);
-                        }
+                    if (stack -1 > 0)
+                    {
+                        SkipNextSegment(stack - 1);
+                    }
 
-                        break;
+                    break;
                 }
                 case JsonToken.Number:
                 case JsonToken.String:
@@ -749,11 +753,11 @@ namespace SpanJson
                     } while (stack > 0 && (byte) token > 4); // No None or the Begin/End-Array/Object tokens
 
                     if (stack > 0)
-                        {
-                            SkipNextSegment(stack);
-                        }
+                    {
+                        SkipNextSegment(stack);
+                    }
 
-                        break;
+                    break;
                 }
             }
         }
@@ -776,11 +780,11 @@ namespace SpanJson
                 case JsonToken.Number:
                 {
                     if (TryFindEndOfNumber(pos, out var charsConsumed))
-                        {
-                            pos += charsConsumed;
-                        }
+                    {
+                        pos += charsConsumed;
+                    }
 
-                        break;
+                    break;
                 }
                 case JsonToken.String:
                 {
@@ -835,7 +839,7 @@ namespace SpanJson
             for (var i = pos; i < _chars.Length; i++)
             {
                 ref readonly var c = ref _chars[i];
-                if (c == JsonConstant.Escape)
+                if (c == JsonConstant.ReverseSolidus)
                 {
                     escapedChars++;
                     var nextChar = _chars[i + 1];
@@ -846,9 +850,9 @@ namespace SpanJson
                 }
                 else if (c == JsonConstant.String)
                 {
-                    if (_chars[i - 1] == JsonConstant.Escape) // now it could be just an escaped JsonConstant.DoubleQuote
+                    if (_chars[i - 1] == JsonConstant.ReverseSolidus) // now it could be just an escaped JsonConstant.DoubleQuote
                     {
-                        if (i - 2 >= 0 && _chars[i - 2] != JsonConstant.Escape) // it's an escaped string and not just an escaped JsonConstant.Escape
+                        if (i - 2 >= 0 && _chars[i - 2] != JsonConstant.ReverseSolidus) // it's an escaped string and not just an escaped JsonConstant.Escape
                         {
                             continue;
                         }

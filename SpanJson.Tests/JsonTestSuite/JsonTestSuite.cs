@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -24,19 +25,19 @@ namespace SpanJson.Tests.JsonTestSuite
 
         [Theory]
         [MemberData(nameof(GetTestCases))]
-        public void Run(string name, string input, Result result)
+        public void Run(string name, string input, Result result, TestType type)
         {
             switch (result)
             {
                 case Result.Accepted:
                 {
-                    JsonSerializer.Generic.Deserialize<object>(input);
+                    Deserialize(input, type);
                     _outputHelper.WriteLine($"{name} was accepted.");
                     break;
                 }
                 case Result.Rejected:
                 {
-                    Assert.Throws<JsonParserException>(() => JsonSerializer.Generic.Deserialize<object>(input));
+                    Assert.Throws<JsonParserException>(() => Deserialize(input, type));
                     _outputHelper.WriteLine($"{name} was rejected.");
                     break;
                 }
@@ -44,7 +45,7 @@ namespace SpanJson.Tests.JsonTestSuite
                 {
                     try
                     {
-                        JsonSerializer.Generic.Deserialize<object>(input);
+                        Deserialize(input, type);
                         _outputHelper.WriteLine($"{name} was accepted.");
                     }
                     catch
@@ -54,6 +55,54 @@ namespace SpanJson.Tests.JsonTestSuite
 
                     break;
                 }
+            }
+        }
+
+        private object Deserialize(string input, TestType type)
+        {
+            bool array = input[0] == JsonConstant.BeginArray;
+            switch (type)
+            {
+                case TestType.String:
+                {
+                    if (array)
+                    {
+                        return JsonSerializer.Generic.Deserialize<string[]>(input);
+                    }
+                    else
+                    {
+                        return JsonSerializer.Generic.Deserialize<string>(input);
+                    }
+                }
+                case TestType.Number:
+                {
+                    if (array)
+                    {
+                        return JsonSerializer.Generic.Deserialize<double[]>(input);
+                    }
+                    else
+                    {
+                        return JsonSerializer.Generic.Deserialize<double>(input);
+                    }
+                }
+                case TestType.Array:
+                {
+                    return JsonSerializer.Generic.Deserialize<object[]>(input);
+                }
+                case TestType.Object:
+                case TestType.Structure:
+                {
+                    if (array)
+                    {
+                        return JsonSerializer.Generic.Deserialize<object[]>(input);
+                    }
+                    else
+                    {
+                        return JsonSerializer.Generic.Deserialize<object>(input);
+                    }
+                }
+                default:
+                    throw new NotImplementedException();
             }
         }
 
@@ -74,17 +123,18 @@ namespace SpanJson.Tests.JsonTestSuite
                         }
 
                         var text = reader.ReadToEnd();
+                        var type = GetTestType(name);
                         if (name.StartsWith("y_"))
                         {
-                            result.Add(new object[] {name, text, Result.Accepted});
+                            result.Add(new object[] {name, text, Result.Accepted, type});
                         }
-                        else if (name.StartsWith("n_"))
-                        {
-                            result.Add(new object[] { name, text, Result.Rejected });
-                        }
+                        //else if (name.StartsWith("n_"))
+                        //{
+                        //    result.Add(new object[] {name, text, Result.Rejected, type});
+                        //}
                         else if (name.StartsWith("i_"))
                         {
-                            result.Add(new object[] { name, text, Result.Both});
+                            result.Add(new object[] { name, text, Result.Both, type });
                         }
                     }
                 }
@@ -93,12 +143,43 @@ namespace SpanJson.Tests.JsonTestSuite
             return result;
         }
 
-        [Flags]
+        private static TestType GetTestType(string name)
+        {
+            if (name.Contains("object"))
+            {
+                return TestType.Object;
+            }
+            if (name.Contains("string_"))
+            {
+                return TestType.String;
+            }
+            if(name.Contains("number_"))
+            {
+                return TestType.Number;
+            }
+            if (name.Contains("array_"))
+            {
+                return TestType.Array;
+            }
+            return TestType.Structure;
+        }
+
+        public enum TestType
+        {
+            String,
+            Number,
+            Array,
+            Object,
+            Structure,
+        }
+
         public enum Result
         {
             Accepted,
             Rejected,
             Both,
         }
+
+
     }
 }

@@ -254,8 +254,8 @@ namespace SpanJson
                 case JsonConstant.DoubleQuote:
                     WriteSingleEscapedChar(JsonConstant.DoubleQuote);
                     break;
-                case JsonConstant.Escape:
-                    WriteSingleEscapedChar(JsonConstant.Escape);
+                case JsonConstant.ReverseSolidus:
+                    WriteSingleEscapedChar(JsonConstant.ReverseSolidus);
                     break;
                 case '\b':
                     WriteSingleEscapedChar('b');
@@ -440,8 +440,8 @@ namespace SpanJson
                     case JsonConstant.DoubleQuote:
                         CopyAndEscape(ref remaining, ref i, JsonConstant.DoubleQuote);
                         break;
-                    case JsonConstant.Escape:
-                        CopyAndEscape(ref remaining, ref i, JsonConstant.Escape);
+                    case JsonConstant.ReverseSolidus:
+                        CopyAndEscape(ref remaining, ref i, JsonConstant.ReverseSolidus);
                         break;
                     case '\b':
                         CopyAndEscape(ref remaining, ref i, 'b');
@@ -589,7 +589,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteSingleEscapedChar(char toEscape)
         {
-            _chars[_pos++] = JsonConstant.Escape;
+            _chars[_pos++] = JsonConstant.ReverseSolidus;
             _chars[_pos++] = toEscape;
         }
 
@@ -612,7 +612,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteDoubleEscapedCar(char firstToEscape, char secondToEscape)
         {
-            _chars[_pos++] = JsonConstant.Escape;
+            _chars[_pos++] = JsonConstant.ReverseSolidus;
             _chars[_pos++] = 'u';
             _chars[_pos++] = '0';
             _chars[_pos++] = '0';
