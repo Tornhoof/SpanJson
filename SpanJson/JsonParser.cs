@@ -869,8 +869,17 @@ namespace SpanJson
 
         public object ReadDynamic()
         {
+            return ReadDynamic(0);
+        }
+
+        public object ReadDynamic(int stack)
+        {
             ref var pos = ref _pos;
             var nextToken = ReadNextToken();
+            if (stack > 256)
+            {
+                ThrowJsonParserException(JsonParserException.ParserError.NestingTooDeep);
+            }
             switch (nextToken)
             {
                 case JsonToken.Null:
@@ -900,7 +909,7 @@ namespace SpanJson
                     while (!TryReadIsEndObjectOrValueSeparator(ref count))
                     {
                         var name = ReadNameSpan().ToString();
-                        var value = ReadDynamic();
+                        var value = ReadDynamic(stack + 1);
                         dictionary[name] = value; // take last one
                     }
 
@@ -913,7 +922,7 @@ namespace SpanJson
                     var list = new List<object>();
                     while (!TryReadIsEndArrayOrValueSeparator(ref count))
                     {
-                        var value = ReadDynamic();
+                        var value = ReadDynamic(stack + 1);
                         list.Add(value);
                     }
 

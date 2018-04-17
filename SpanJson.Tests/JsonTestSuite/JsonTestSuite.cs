@@ -27,6 +27,7 @@ namespace SpanJson.Tests.JsonTestSuite
         [MemberData(nameof(GetTestCases))]
         public void Run(string name, string input, Result result, TestType type)
         {
+            File.AppendAllText(@"c:\temp\tests.txt", name+Environment.NewLine);
             switch (result)
             {
                 case Result.Accepted:
@@ -37,7 +38,7 @@ namespace SpanJson.Tests.JsonTestSuite
                 }
                 case Result.Rejected:
                 {
-                    Assert.Throws<JsonParserException>(() => Deserialize(input, type));
+                    Assert.ThrowsAny<Exception>(() => Deserialize(input, type));
                     _outputHelper.WriteLine($"{name} was rejected.");
                     break;
                 }
@@ -117,21 +118,16 @@ namespace SpanJson.Tests.JsonTestSuite
                     using (var reader = new StreamReader(zipArchiveEntry.Open()))
                     {
                         var name = zipArchiveEntry.Name;
-                        if (name == "n_structure_100000_opening_arrays.json") // not yet supproted
-                        {
-                            continue;
-                        }
-
                         var text = reader.ReadToEnd();
                         var type = GetTestType(name);
                         if (name.StartsWith("y_"))
                         {
-                            result.Add(new object[] {name, text, Result.Accepted, type});
+                            result.Add(new object[] { name, text, Result.Accepted, type });
                         }
-                        //else if (name.StartsWith("n_"))
-                        //{
-                        //    result.Add(new object[] {name, text, Result.Rejected, type});
-                        //}
+                        if (name.StartsWith("n_"))
+                        {
+                            result.Add(new object[] { name, text, Result.Rejected, type });
+                        }
                         else if (name.StartsWith("i_"))
                         {
                             result.Add(new object[] { name, text, Result.Both, type });
