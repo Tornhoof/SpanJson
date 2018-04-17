@@ -88,10 +88,16 @@ namespace SpanJson.Formatters.Dynamic
             public IEnumerator<TOutput> GetEnumerator()
             {
                 var stringConverter = new SpanJsonDynamicString.DynamicTypeConverter();
-                if (stringConverter.IsSupported(typeof(TOutput))) return new Enumerator<SpanJsonDynamicString.DynamicTypeConverter, TOutput>(_input);
+                if (stringConverter.IsSupported(typeof(TOutput)))
+                {
+                    return new Enumerator<SpanJsonDynamicString.DynamicTypeConverter, TOutput>(_input);
+                }
 
                 var numberConverter = new SpanJsonDynamicNumber.DynamicTypeConverter();
-                if (numberConverter.IsSupported(typeof(TOutput))) return new Enumerator<SpanJsonDynamicNumber.DynamicTypeConverter, TOutput>(_input);
+                if (numberConverter.IsSupported(typeof(TOutput)))
+                {
+                    return new Enumerator<SpanJsonDynamicNumber.DynamicTypeConverter, TOutput>(_input);
+                }
 
                 return null;
             }
@@ -119,7 +125,10 @@ namespace SpanJson.Formatters.Dynamic
 
             public bool MoveNext()
             {
-                if (_index >= _length) return false;
+                if (_index >= _length)
+                {
+                    return false;
+                }
 
                 Current = (TOutput) Converter.ConvertTo(_input[_index++], typeof(TOutput));
                 return true;

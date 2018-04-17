@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="JsonTestSuite\test_parsing.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="JsonTestSuite\test_parsing.zip" />
   </ItemGroup>
 
   <ItemGroup>

@@ -112,7 +112,10 @@ namespace SpanJson
 
                 public static string Serialize(object input)
                 {
-                    if (input == null) return null;
+                    if (input == null)
+                    {
+                        return null;
+                    }
 
                     // ReSharper disable ConvertClosureToMethodGroup
                     var invoker = Invokers.GetOrAdd(input.GetType(), x => BuildInvoker(x));
@@ -122,7 +125,10 @@ namespace SpanJson
 
                 public static object Deserialize(ReadOnlySpan<char> input, Type type)
                 {
-                    if (input == null) return null;
+                    if (input == null)
+                    {
+                        return null;
+                    }
 
                     // ReSharper disable ConvertClosureToMethodGroup
                     var invoker = Invokers.GetOrAdd(type, x => BuildInvoker(x));
@@ -152,7 +158,10 @@ namespace SpanJson
                     var inputParam = Expression.Parameter(typeof(ReadOnlySpan<char>), "input");
                     Expression genericCall = Expression.Call(typeof(Generic), nameof(Generic.Deserialize),
                         new[] {type, typeof(TResolver)}, inputParam);
-                    if (type.IsValueType) genericCall = Expression.Convert(genericCall, typeof(object));
+                    if (type.IsValueType)
+                    {
+                        genericCall = Expression.Convert(genericCall, typeof(object));
+                    }
 
                     var lambdaExpression = Expression.Lambda<DeserializeDelegate>(genericCall, inputParam);
                     return lambdaExpression.Compile();

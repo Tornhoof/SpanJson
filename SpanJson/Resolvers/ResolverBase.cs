@@ -54,7 +54,11 @@ namespace SpanJson.Resolvers
                 if (!IsIgnored(memberInfo))
                 {
                     var name = Escape(GetAttributeName(memberInfo) ?? memberInfo.Name);
-                    if (_namingConventions == NamingConventions.CamelCase) name = MakeCamelCase(name);
+                    if (_namingConventions == NamingConventions.CamelCase)
+                    {
+                        name = MakeCamelCase(name);
+                    }
+
                     var shouldSerialize = type.GetMethod($"ShouldSerialize{memberInfo.Name}");
                     var memberType = memberInfo is FieldInfo fi ? fi.FieldType :
                         memberInfo is PropertyInfo pi ? pi.PropertyType : null;
@@ -68,7 +72,10 @@ namespace SpanJson.Resolvers
 
         private string MakeCamelCase(string name)
         {
-            if (char.IsLower(name[0])) return name;
+            if (char.IsLower(name[0]))
+            {
+                return name;
+            }
 
             return string.Concat(char.ToLowerInvariant(name[0]), name.Substring(1));
         }
@@ -98,29 +105,43 @@ namespace SpanJson.Resolvers
         {
             // todo: support for multidimensional array
             if (type.IsArray)
+            {
                 return GetIntegrated(type) ??
                        GetDefaultOrCreate(typeof(ArrayFormatter<,>).MakeGenericType(type.GetElementType(),
                            typeof(TResolver)));
+            }
 
             if (type.TryGetListType(out var elementType))
+            {
                 return GetIntegrated(type) ??
                        GetDefaultOrCreate(
                            typeof(ListFormatter<,>).MakeGenericType(elementType, typeof(TResolver)));
+            }
 
-            if (type.IsEnum) return GetDefaultOrCreate(typeof(EnumFormatter<,>).MakeGenericType(type, typeof(TResolver)));
+            if (type.IsEnum)
+            {
+                return GetDefaultOrCreate(typeof(EnumFormatter<,>).MakeGenericType(type, typeof(TResolver)));
+            }
 
             if (type.TryGetNullableUnderlyingType(out var underlyingType))
+            {
                 return GetIntegrated(type) ??
                        GetDefaultOrCreate(typeof(NullableFormatter<,>).MakeGenericType(underlyingType,
                            typeof(TResolver)));
+            }
 
             var integrated = GetIntegrated(type);
-            if (integrated != null) return integrated;
+            if (integrated != null)
+            {
+                return integrated;
+            }
 
             // no integrated type, let's build it
             if (type.IsValueType)
+            {
                 return GetDefaultOrCreate(
                     typeof(ComplexStructFormatter<,>).MakeGenericType(type, typeof(TResolver)));
+            }
 
             return GetDefaultOrCreate(typeof(ComplexClassFormatter<,>).MakeGenericType(type, typeof(TResolver)));
         }
@@ -136,7 +157,10 @@ namespace SpanJson.Resolvers
                     if (genericArgs.Length == 1 && typeof(IJsonFormatterResolver).IsAssignableFrom(genericArgs[0]))
                     {
                         var iface = typeof(IJsonFormatter<,>).MakeGenericType(type, genericArgs[0]);
-                        if (iface.IsAssignableFrom(allType)) return GetDefaultOrCreate(allType.MakeGenericType(typeof(TResolver)));
+                        if (iface.IsAssignableFrom(allType))
+                        {
+                            return GetDefaultOrCreate(allType.MakeGenericType(typeof(TResolver)));
+                        }
                     }
                 }
             }

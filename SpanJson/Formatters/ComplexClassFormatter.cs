@@ -17,7 +17,10 @@
 
         public T Deserialize(ref JsonReader reader)
         {
-            if (reader.ReadIsNull()) return null;
+            if (reader.ReadIsNull())
+            {
+                return null;
+            }
 
             return Deserializer(ref reader);
         }

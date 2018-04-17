@@ -116,7 +116,10 @@ namespace SpanJson.Benchmarks.Fixture
                 var typeProps = type.GetProperties();
                 foreach (var propertyInfo in typeProps)
                 {
-                    if (!propertyInfo.CanWrite) continue;
+                    if (!propertyInfo.CanWrite)
+                    {
+                        continue;
+                    }
 
                     var propertyType = propertyInfo.PropertyType;
                     var isRecursion = IsRecursion(type, propertyType) || IsRecursion(propertyType, type);
@@ -137,7 +140,10 @@ namespace SpanJson.Benchmarks.Fixture
 
         private bool IsRecursion(Type parentType, Type type)
         {
-            if (type == parentType) return true;
+            if (type == parentType)
+            {
+                return true;
+            }
 
             if (parentType.IsTypedList())
             {

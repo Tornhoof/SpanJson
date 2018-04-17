@@ -12,7 +12,10 @@ namespace SpanJson.Resolvers
             ShouldSerialize = shouldSerialize;
             Name = name;
             ExcludeNull = excludeNull;
-            if (MemberType.IsValueType) ExcludeNull = false; // value types are not null
+            if (MemberType.IsValueType)
+            {
+                ExcludeNull = false; // value types are not null
+            }
         }
 
         public string MemberName { get; }

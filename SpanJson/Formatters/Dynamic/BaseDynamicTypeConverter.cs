@@ -32,7 +32,10 @@ namespace SpanJson.Formatters.Dynamic
             Type destinationType)
         {
             var input = (ISpanJsonDynamicValue) value;
-            if (TryConvertTo(destinationType, input.Chars, out var temp)) return temp;
+            if (TryConvertTo(destinationType, input.Chars, out var temp))
+            {
+                return temp;
+            }
 
             throw new InvalidCastException();
         }

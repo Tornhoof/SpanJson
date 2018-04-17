@@ -11,7 +11,10 @@ namespace SpanJson.Formatters
         protected static T? Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
             where T : struct where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
-            if (reader.ReadIsNull()) return null;
+            if (reader.ReadIsNull())
+            {
+                return null;
+            }
 
             return formatter.Deserialize(ref reader);
         }

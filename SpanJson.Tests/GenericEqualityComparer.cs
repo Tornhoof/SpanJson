@@ -14,15 +14,27 @@ namespace SpanJson.Tests
 
         public new bool Equals(object x, object y)
         {
-            if (ReferenceEquals(x, y)) return true;
+            if (ReferenceEquals(x, y))
+            {
+                return true;
+            }
 
-            if (x == null && y != null) return false;
+            if (x == null && y != null)
+            {
+                return false;
+            }
 
-            if (x != null && y == null) return false;
+            if (x != null && y == null)
+            {
+                return false;
+            }
 
             var xType = x.GetType();
             var yType = y.GetType();
-            if (!ReferenceEquals(xType, yType)) return false;
+            if (!ReferenceEquals(xType, yType))
+            {
+                return false;
+            }
 
             // ReSharper disable ConvertClosureToMethodGroup
             var typedComparer = Comparers.GetOrAdd(xType, t => BuildTypedComparer(t));
@@ -59,11 +71,20 @@ namespace SpanJson.Tests
 
         public new bool Equals(object x, object y)
         {
-            if (ReferenceEquals(x, y)) return true;
+            if (ReferenceEquals(x, y))
+            {
+                return true;
+            }
 
-            if (x == null && y != null) return false;
+            if (x == null && y != null)
+            {
+                return false;
+            }
 
-            if (x != null && y == null) return false;
+            if (x != null && y == null)
+            {
+                return false;
+            }
 
             var xType = x.GetType();
 

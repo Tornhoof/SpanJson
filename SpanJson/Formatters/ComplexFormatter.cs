@@ -57,7 +57,10 @@ namespace SpanJson.Formatters
                         serializeMethodInfo, writerParameter,
                         Expression.PropertyOrField(valueParameter, memberInfo.MemberName))
                 };
-                if (i != memberInfos.Length - 1) valueExpressions.Add(Expression.Call(writerParameter, seperatorWriteMethodInfo));
+                if (i != memberInfos.Length - 1)
+                {
+                    valueExpressions.Add(Expression.Call(writerParameter, seperatorWriteMethodInfo));
+                }
 
                 var testNullExpression = memberInfo.ExcludeNull
                     ? Expression.ReferenceNotEqual(
@@ -69,15 +72,26 @@ namespace SpanJson.Formatters
                     : null;
                 Expression testExpression = null;
                 if (testNullExpression != null && shouldSerializeExpression != null)
+                {
                     testExpression = Expression.AndAlso(testNullExpression, shouldSerializeExpression);
+                }
                 else if (testNullExpression != null)
+                {
                     testExpression = testNullExpression;
-                else if (shouldSerializeExpression != null) testExpression = shouldSerializeExpression;
+                }
+                else if (shouldSerializeExpression != null)
+                {
+                    testExpression = shouldSerializeExpression;
+                }
 
                 if (testExpression != null)
+                {
                     expressions.Add(Expression.IfThen(testExpression, Expression.Block(valueExpressions)));
+                }
                 else
+                {
                     expressions.AddRange(valueExpressions);
+                }
             }
 
             expressions.Add(Expression.Call(writerParameter,
@@ -169,7 +183,10 @@ namespace SpanJson.Formatters
             Expression returnValue, Expression readerParameter) where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
             var group = memberInfos.Where(a => (prefix == null || a.Name.StartsWith(prefix)) && a.Name.Length > index).GroupBy(a => a.Name[index]).ToList();
-            if (!group.Any()) return null;
+            if (!group.Any())
+            {
+                return null;
+            }
 
             var cases = new List<SwitchCase>();
             var equalityMethod =

@@ -17,6 +17,7 @@ namespace SpanJson.Helpers
         public static bool TryParseDateTimeOffset(ReadOnlySpan<char> source, out DateTimeOffset value, out int charsConsumed)
         {
             if (TryParseDate(source, out var date, out charsConsumed))
+            {
                 switch (date.Kind)
                 {
                     // for local/unspecified we go through datetime to make sure we get the offsets correct
@@ -39,6 +40,7 @@ namespace SpanJson.Helpers
                         return true;
                     }
                 }
+            }
 
             value = default;
             charsConsumed = 0;
@@ -240,7 +242,10 @@ namespace SpanJson.Helpers
                 for (var i = 0; i < maxDigits; i++)
                 {
                     var digit = source[currentOffset] - 48U;
-                    if (digit > 9) break;
+                    if (digit > 9)
+                    {
+                        break;
+                    }
 
                     temp = temp * 10 + digit;
                     currentOffset++;
