@@ -3,7 +3,9 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <RuntimeFrameworkVersion>2.1.0-preview3-26411-01</RuntimeFrameworkVersion>
+    <!--<RuntimeFrameworkVersion>2.1.0-preview2-26406-04</RuntimeFrameworkVersion>-->
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.1.0.0-alpha-00003</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

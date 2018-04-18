@@ -13,8 +13,9 @@ namespace SpanJson.Benchmarks
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
         private static readonly SpanJsonSerializer SpanJsonSerializer = new SpanJsonSerializer();
 
-        private static readonly string AnswerSerializedString =
-            SpanJsonSerializer.Serialize(ExpressionTreeFixture.Create<Answer>());
+        private static readonly Answer Answer = ExpressionTreeFixture.Create<Answer>();
+        private static readonly string AnswerSerializedString =            
+            SpanJsonSerializer.Serialize(Answer);
 
         private static readonly byte[] AnswerSerializedByteArray =
             Encoding.UTF8.GetBytes(AnswerSerializedString);
@@ -25,22 +26,40 @@ namespace SpanJson.Benchmarks
 
         private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
 
+        //[Benchmark]
+        //public Answer DeserializeAnswerWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
+        //}
+
+        //[Benchmark]
+        //public Answer DeserializeAnswerWithJilSerializer()
+        //{
+        //    return JilSerializer.Deserialize<Answer>(AnswerSerializedString);
+        //}
+
+        //[Benchmark]
+        //public Answer DeserializeAnswerWithUtf8JsonSerializer()
+        //{
+        //    return Utf8JsonSerializer.Deserialize<Answer>(AnswerSerializedByteArray);
+        //}
+
         [Benchmark]
-        public Answer DeserializeAnswerWithSpanJsonSerializer()
+        public string SerializeAnswerWithSpanJsonSerializer()
         {
-            return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
+            return SpanJsonSerializer.Serialize(Answer);
         }
 
         [Benchmark]
-        public Answer DeserializeAnswerWithJilSerializer()
+        public string SerializeAnswerWithJilSerializer()
         {
-            return JilSerializer.Deserialize<Answer>(AnswerSerializedString);
+            return JilSerializer.Serialize(Answer);
         }
 
         [Benchmark]
-        public Answer DeserializeAnswerWithUtf8JsonSerializer()
+        public byte[] SerializeAnswerWithUtf8JsonSerializer()
         {
-            return Utf8JsonSerializer.Deserialize<Answer>(AnswerSerializedByteArray);
+            return Utf8JsonSerializer.Serialize(Answer);
         }
     }
 }

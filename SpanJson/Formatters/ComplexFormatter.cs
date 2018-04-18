@@ -31,6 +31,7 @@ namespace SpanJson.Formatters
             expressions.Add(Expression.Call(writerParameter,
                 FindMethod(writerParameter.Type, nameof(JsonWriter.WriteObjectStart))));
             var isNotReferenceOrContainsReference = !RuntimeHelpers.IsReferenceOrContainsReferences<T>();
+            var writeSeperator = Expression.Variable(typeof(bool), "writeSeperator");
             for (var i = 0; i < memberInfos.Count; i++)
             {
                 var memberInfo = memberInfos[i];
@@ -49,24 +50,43 @@ namespace SpanJson.Formatters
                     serializeMethodInfo = formatter.GetType().GetMethod("Serialize");
                 }
 
-                var valueExpressions = new List<Expression>
+                var valueExpressions = new List<Expression>();
+                // we need to add the separator, but only if a value was written before
+                // we reset the indicator after each seperator write and set it after writing each field
+                // todo find better way, it's not really fast at runtime
+                if (i > 0)
                 {
-                    Expression.Call(writerParameter, propertyNameWriterMethodInfo,
-                        Expression.Constant(memberInfo.Name)),
-                    Expression.Call(formatterExpression,
-                        serializeMethodInfo, writerParameter,
-                        Expression.PropertyOrField(valueParameter, memberInfo.MemberName))
-                };
-                if (i != memberInfos.Count - 1)
-                {
-                    valueExpressions.Add(Expression.Call(writerParameter, seperatorWriteMethodInfo));
+                    valueExpressions.Add(
+                        Expression.IfThen(
+                            writeSeperator,
+                            Expression.Block(new ParameterExpression[] { writeSeperator },
+                                Expression.Call(writerParameter, seperatorWriteMethodInfo),
+                                Expression.Assign(writeSeperator, Expression.Constant(false)))
+                        ));
                 }
 
-                var testNullExpression = memberInfo.ExcludeNull
-                    ? Expression.ReferenceNotEqual(
-                        Expression.PropertyOrField(valueParameter, memberInfo.MemberName),
-                        Expression.Constant(null))
-                    : null;
+                valueExpressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo,
+                    Expression.Constant(memberInfo.Name)));
+                valueExpressions.Add(Expression.Call(formatterExpression,
+                    serializeMethodInfo, writerParameter,
+                    Expression.PropertyOrField(valueParameter, memberInfo.MemberName)));
+                valueExpressions.Add(Expression.Assign(writeSeperator, Expression.Constant(true)));
+                Expression testNullExpression = null;
+                if (memberInfo.ExcludeNull)
+                {
+                    if (memberInfo.MemberType.IsClass)
+                    {
+                        testNullExpression = Expression.ReferenceNotEqual(
+                            Expression.PropertyOrField(valueParameter, memberInfo.MemberName),
+                            Expression.Constant(null));
+                    }
+                    else if (memberInfo.MemberType.IsValueType && Nullable.GetUnderlyingType(memberInfo.MemberType) != null) // nullable value type
+                    {
+                        testNullExpression = Expression.IsTrue(
+                            Expression.Property(Expression.PropertyOrField(valueParameter, memberInfo.MemberName), "HasValue"));
+                    }
+                }
+
                 var shouldSerializeExpression = memberInfo.ShouldSerialize != null
                     ? Expression.IsTrue(Expression.Call(valueParameter, memberInfo.ShouldSerialize))
                     : null;
@@ -86,7 +106,7 @@ namespace SpanJson.Formatters
 
                 if (testExpression != null)
                 {
-                    expressions.Add(Expression.IfThen(testExpression, Expression.Block(valueExpressions)));
+                    expressions.Add(Expression.IfThen(testExpression, Expression.Block(new ParameterExpression[] { writeSeperator }, valueExpressions)));
                 }
                 else
                 {
@@ -96,7 +116,7 @@ namespace SpanJson.Formatters
 
             expressions.Add(Expression.Call(writerParameter,
                 FindMethod(writerParameter.Type, nameof(JsonWriter.WriteObjectEnd))));
-            var blockExpression = Expression.Block(expressions);
+            var blockExpression = Expression.Block(new ParameterExpression[] { writeSeperator }, expressions);
             var lambda =
                 Expression.Lambda<SerializeDelegate<T, TResolver>>(blockExpression, writerParameter, valueParameter);
             return lambda.Compile();
@@ -145,7 +165,7 @@ namespace SpanJson.Formatters
             var switchValue = Expression.Variable(typeof(ReadOnlySpan<char>), "switchValue");
             var switchValueAssignExpression = Expression.Assign(switchValue,
                 Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader.ReadNameSpan))));
-            var switchExpression = Expression.Block(new[] {switchValue}, switchValueAssignExpression,
+            var switchExpression = Expression.Block(new[] { switchValue }, switchValueAssignExpression,
                 BuildPropertyComparisonSwitchExpression(resolver, memberInfos, null, 0, switchValue, returnValue, readerParameter));
             var countExpression = Expression.Parameter(typeof(int), "count");
             var abortExpression = Expression.IsTrue(Expression.Call(readerParameter,
@@ -155,7 +175,7 @@ namespace SpanJson.Formatters
                 FindMethod(readerParameter.Type, nameof(JsonReader.ReadBeginObjectOrThrow)));
             var loopAbort = Expression.Label(typeof(void));
             var returnTarget = Expression.Label(returnValue.Type);
-            var block = Expression.Block(new[] {returnValue, countExpression}, readBeginObject,
+            var block = Expression.Block(new[] { returnValue, countExpression }, readBeginObject,
                 Expression.Assign(returnValue, Expression.New(returnValue.Type)),
                 Expression.Loop(
                     Expression.IfThenElse(abortExpression, Expression.Break(loopAbort),

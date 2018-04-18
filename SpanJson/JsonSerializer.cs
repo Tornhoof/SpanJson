@@ -104,6 +104,17 @@ namespace SpanJson
                 return Inner<ExcludeNullsOriginalCaseResolver>.Deserialize(input, type);
             }
 
+            public static object Deserialize<TResolver>(ReadOnlySpan<char> input, Type type) where TResolver : IJsonFormatterResolver<TResolver>, new()
+            {
+                return Inner<TResolver>.Deserialize(input, type);
+            }
+
+            public static string Serialize<TResolver>(object input) where TResolver : IJsonFormatterResolver<TResolver>, new()
+            {
+                return Inner<TResolver>.Serialize(input);
+            }
+
+
             private class Inner<TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
             {
                 private static readonly ConcurrentDictionary<Type, Invoker> Invokers =

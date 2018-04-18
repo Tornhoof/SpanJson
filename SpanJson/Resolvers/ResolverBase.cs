@@ -77,7 +77,7 @@ namespace SpanJson.Resolvers
             return result.ToArray();
         }
 
-        private string MakeCamelCase(string name)
+        private static string MakeCamelCase(string name)
         {
             if (char.IsLower(name[0]))
             {

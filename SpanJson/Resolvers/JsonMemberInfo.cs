@@ -14,10 +14,6 @@ namespace SpanJson.Resolvers
             ExcludeNull = excludeNull;
             CanRead = canRead;
             CanWrite = canWrite;
-            if (MemberType.IsValueType)
-            {
-                ExcludeNull = false; // value types are not null
-            }
         }
 
         public string MemberName { get; }
