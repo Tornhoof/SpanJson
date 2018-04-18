@@ -110,6 +110,11 @@ namespace SpanJson.Resolvers
 
         private static IJsonFormatter BuildFormatter(Type type)
         {
+            var integrated = GetIntegrated(type);
+            if (integrated != null)
+            {
+                return integrated;
+            }
             // todo: support for multidimensional array
             if (type.IsArray)
             {
@@ -125,7 +130,7 @@ namespace SpanJson.Resolvers
                     throw new NotImplementedException($"{keyType} is not supported a Key for Dictionary.");
                 }
 
-                return GetIntegrated(type) ?? GetDefaultOrCreate(typeof(DictionaryFormatter<,>).MakeGenericType(valueType, typeof(TResolver)));
+                return GetIntegrated(type) ?? GetDefaultOrCreate(typeof(DictionaryFormatter<,,>).MakeGenericType(type, valueType, typeof(TResolver)));
             }
 
             if (type.TryGetListType(out var elementType))
@@ -145,12 +150,6 @@ namespace SpanJson.Resolvers
                 return GetIntegrated(type) ??
                        GetDefaultOrCreate(typeof(NullableFormatter<,>).MakeGenericType(underlyingType,
                            typeof(TResolver)));
-            }
-
-            var integrated = GetIntegrated(type);
-            if (integrated != null)
-            {
-                return integrated;
             }
 
             // no integrated type, let's build it

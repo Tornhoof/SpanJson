@@ -15,14 +15,14 @@
 
         public int AllocSize { get; } = EstimateSize<T>();
 
-        public T Deserialize(ref JsonParser parser)
+        public T Deserialize(ref JsonReader reader)
         {
-            if (parser.ReadIsNull())
+            if (reader.ReadIsNull())
             {
                 return null;
             }
 
-            return Deserializer(ref parser);
+            return Deserializer(ref reader);
         }
 
 

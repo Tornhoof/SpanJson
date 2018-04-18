@@ -8,15 +8,15 @@ namespace SpanJson.Formatters
         public int AllocSize { get; } = 100;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static T? Deserialize<T, TResolver>(ref JsonParser parser, IJsonFormatter<T, TResolver> formatter)
+        protected static T? Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
             where T : struct where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
-            if (parser.ReadIsNull())
+            if (reader.ReadIsNull())
             {
                 return null;
             }
 
-            return formatter.Deserialize(ref parser);
+            return formatter.Deserialize(ref reader);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -44,9 +44,9 @@ namespace SpanJson.Formatters
         private static readonly IJsonFormatter<T, TResolver> DefaultFormatter =
             StandardResolvers.GetResolver<TResolver>().GetFormatter<T>();
 
-        public T? Deserialize(ref JsonParser parser)
+        public T? Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref parser, DefaultFormatter);
+            return Deserialize(ref reader, DefaultFormatter);
         }
 
         public void Serialize(ref JsonWriter writer, T? value)

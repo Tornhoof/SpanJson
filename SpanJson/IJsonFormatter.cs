@@ -9,6 +9,6 @@
     {
         int AllocSize { get; }
         void Serialize(ref JsonWriter writer, T value);
-        T Deserialize(ref JsonParser parser);
+        T Deserialize(ref JsonReader reader);
     }
 }

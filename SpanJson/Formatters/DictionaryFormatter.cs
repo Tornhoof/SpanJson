@@ -1,35 +1,35 @@
 ﻿using System.Collections.Generic;
 using SpanJson.Resolvers;
 
-namespace SpanJson
+namespace SpanJson.Formatters
 {
     public abstract class DictionaryFormatter
     {
         public int AllocSize { get; } = 100;
 
-        protected static Dictionary<string, T> Deserialize<T, TResolver>(ref JsonParser parser,
+        protected static TDictionary Deserialize<TDictionary, T, TResolver>(ref JsonReader reader,
             IJsonFormatter<T, TResolver> formatter)
-            where TResolver : IJsonFormatterResolver<TResolver>, new()
+            where TResolver : IJsonFormatterResolver<TResolver>, new() where TDictionary : class, IDictionary<string, T>, new()
         {
-            if (parser.ReadIsNull())
+            if (reader.ReadIsNull())
             {
                 return null;
             }
 
-            parser.ReadBeginObjectOrThrow();
-            var result = new Dictionary<string, T>();
+            reader.ReadBeginObjectOrThrow();
+            var result = new TDictionary();
             var count = 0;
-            while (!parser.TryReadIsEndObjectOrValueSeparator(ref count))
+            while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
             {
-                var key = parser.ReadEscapedName();
-                var value = formatter.Deserialize(ref parser);
+                var key = reader.ReadEscapedName();
+                var value = formatter.Deserialize(ref reader);
                 result[key] = value;
             }
             return result;
         }
 
-        protected static void Serialize<T, TResolver>(ref JsonWriter writer, Dictionary<string, T> value, IJsonFormatter<T, TResolver> formatter)
-            where TResolver : IJsonFormatterResolver<TResolver>, new()
+        protected static void Serialize<TDictionary, T, TResolver>(ref JsonWriter writer, TDictionary value, IJsonFormatter<T, TResolver> formatter)
+            where TResolver : IJsonFormatterResolver<TResolver>, new() where TDictionary : class, IDictionary<string, T>, new()
         {
             if (value == null)
             {
@@ -60,19 +60,19 @@ namespace SpanJson
     /// <summary>
     ///     Used for types which are not built-in
     /// </summary>
-    public sealed class DictionaryFormatter<T, TResolver> : DictionaryFormatter, IJsonFormatter<Dictionary<string, T>, TResolver>
-        where TResolver : IJsonFormatterResolver<TResolver>, new()
-    {
-        public static readonly DictionaryFormatter<T, TResolver> Default = new DictionaryFormatter<T, TResolver>();
+    public sealed class DictionaryFormatter<TDictionary, T, TResolver> : DictionaryFormatter, IJsonFormatter<TDictionary, TResolver>
+        where TResolver : IJsonFormatterResolver<TResolver>, new()  where TDictionary : class, IDictionary<string, T>, new()
+    { 
+        public static readonly DictionaryFormatter<TDictionary, T, TResolver> Default = new DictionaryFormatter<TDictionary, T, TResolver>();
 
         private static readonly IJsonFormatter<T, TResolver> DefaultFormatter = StandardResolvers.GetResolver<TResolver>().GetFormatter<T>();
 
-        public Dictionary<string, T> Deserialize(ref JsonParser parser)
+        public TDictionary Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref parser, DefaultFormatter);
+            return Deserialize<TDictionary, T, TResolver>(ref reader, DefaultFormatter);
         }
 
-        public void Serialize(ref JsonWriter writer, Dictionary<string, T> value)
+        public void Serialize(ref JsonWriter writer, TDictionary value)
         {
             Serialize(ref writer, value, DefaultFormatter);
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpanJson.Helpers
 {
@@ -31,7 +32,8 @@ namespace SpanJson.Helpers
 
         public static bool TryGetDictionaryType(this Type type, out Type keyType, out Type valueType)
         {
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>)) // todo extend to other dictionaries
+            var interfaces = type.GetInterfaces();
+            if (interfaces.Any(a => a.IsGenericType && typeof(IDictionary<,>).IsAssignableFrom(a.GetGenericTypeDefinition())))
             {
                 keyType = type.GetGenericArguments()[0];
                 valueType = type.GetGenericArguments()[1];

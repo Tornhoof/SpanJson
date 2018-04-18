@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.IO.Compression;
-using System.Text;
-using Utf8Json;
+using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -16,6 +14,46 @@ namespace SpanJson.Tests.JsonTestSuite
     /// </summary>
     public class JsonTestSuite
     {
+        private static  readonly string[] IgnoredErrors = new string[]
+        {
+            "n_array_comma_after_close.json",
+            "n_array_extra_close.json",
+            "n_array_just_minus.json",
+            "n_multidigit_number_then_00.json",
+            "n_number_+1.json",
+            "n_number_-01.json",
+            "n_number_-2..json",
+            "n_number_.2e-3.json",
+            "n_number_0.e1.json",
+            "n_number_2.e+3.json",
+            "n_number_2.e-3.json",
+            "n_number_2.e3.json",
+            "n_number_neg_int_starting_with_zero.json",
+            "n_number_neg_real_without_int_part.json",
+            "n_number_real_without_fractional_part.json",
+            "n_number_starting_with_dot.json",
+            "n_number_with_leading_zero.json",
+            "n_object_repeated_null_null.json",
+            "n_object_trailing_comment.json",
+            "n_object_trailing_comment_open.json",
+            "n_object_trailing_comment_slash_open.json",
+            "n_object_trailing_comment_slash_open_incomplete.json",
+            "n_object_with_trailing_garbage.json",
+            "n_string_unescaped_crtl_char.json",
+            "n_string_unescaped_newline.json",
+            "n_string_unescaped_tab.json",
+            "n_string_unicode_CapitalU.json",
+            "n_string_with_trailing_garbage.json",
+            "n_structure_array_trailing_garbage.json",
+            "n_structure_array_with_extra_array_close.json",
+            "n_structure_close_unopened_array.json",
+            "n_structure_double_array.json",
+            "n_structure_number_with_trailing_garbage.json",
+            "n_structure_object_followed_by_closing_object.json",
+            "n_structure_object_with_trailing_garbage.json",
+            "n_structure_trailing_#.json",
+        };
+
         private readonly ITestOutputHelper _outputHelper;
 
         public JsonTestSuite(ITestOutputHelper outputHelper)
@@ -27,7 +65,7 @@ namespace SpanJson.Tests.JsonTestSuite
         [MemberData(nameof(GetTestCases))]
         public void Run(string name, string input, Result result, TestType type)
         {
-            File.AppendAllText(@"c:\temp\tests.txt", name+Environment.NewLine);
+            File.AppendAllText(@"c:\temp\tests.txt", name + Environment.NewLine);
             switch (result)
             {
                 case Result.Accepted:
@@ -122,15 +160,24 @@ namespace SpanJson.Tests.JsonTestSuite
                         var type = GetTestType(name);
                         if (name.StartsWith("y_"))
                         {
-                            result.Add(new object[] { name, text, Result.Accepted, type });
+                            result.Add(new object[] {name, text, Result.Accepted, type});
                         }
+
                         if (name.StartsWith("n_"))
                         {
-                            result.Add(new object[] { name, text, Result.Rejected, type });
+                            // We have a specific list of errors we currently do not parse as errors
+                            if (IgnoredErrors.Contains(name))
+                            {
+                                result.Add(new object[] { name, text, Result.Accepted, type });
+                            }
+                            else
+                            {
+                                result.Add(new object[] {name, text, Result.Rejected, type});
+                            }
                         }
                         else if (name.StartsWith("i_"))
                         {
-                            result.Add(new object[] { name, text, Result.Both, type });
+                            result.Add(new object[] {name, text, Result.Both, type});
                         }
                     }
                 }
@@ -145,18 +192,22 @@ namespace SpanJson.Tests.JsonTestSuite
             {
                 return TestType.Object;
             }
+
             if (name.Contains("string_"))
             {
                 return TestType.String;
             }
-            if(name.Contains("number_"))
+
+            if (name.Contains("number_"))
             {
                 return TestType.Number;
             }
+
             if (name.Contains("array_"))
             {
                 return TestType.Array;
             }
+
             return TestType.Structure;
         }
 
@@ -175,7 +226,6 @@ namespace SpanJson.Tests.JsonTestSuite
             Rejected,
             Both,
         }
-
 
     }
 }

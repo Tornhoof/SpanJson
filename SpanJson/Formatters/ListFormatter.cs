@@ -7,20 +7,20 @@ namespace SpanJson.Formatters
     {
         public int AllocSize { get; } = 100;
 
-        protected static List<T> Deserialize<T, TResolver>(ref JsonParser parser, IJsonFormatter<T, TResolver> formatter)
+        protected static List<T> Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
             where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
-            if (parser.ReadIsNull())
+            if (reader.ReadIsNull())
             {
                 return null;
             }
 
-            parser.ReadBeginArrayOrThrow();
+            reader.ReadBeginArrayOrThrow();
             var list = new List<T>();
             var count = 0;
-            while (!parser.TryReadIsEndArrayOrValueSeparator(ref count))
+            while (!reader.TryReadIsEndArrayOrValueSeparator(ref count))
             {
-                list.Add(formatter.Deserialize(ref parser));
+                list.Add(formatter.Deserialize(ref reader));
             }
 
             return list;
@@ -62,9 +62,9 @@ namespace SpanJson.Formatters
         private static readonly IJsonFormatter<T, TResolver> DefaultFormatter =
             StandardResolvers.GetResolver<TResolver>().GetFormatter<T>();
 
-        public List<T> Deserialize(ref JsonParser parser)
+        public List<T> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref parser, DefaultFormatter);
+            return Deserialize(ref reader, DefaultFormatter);
         }
 
         public void Serialize(ref JsonWriter writer, List<T> value)

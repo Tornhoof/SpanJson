@@ -3,7 +3,7 @@ using System.Linq;
 using SpanJson.Benchmarks.Fixture;
 using Xunit;
 
-namespace SpanJson.Tests
+namespace SpanJson.Tests.Generated
 {
     public abstract class TestBase
     {

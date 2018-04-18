@@ -137,22 +137,22 @@ namespace SpanJson.Formatters
             var memberInfos = resolver.GetMemberInfos<T>().Where(a => a.CanWrite).ToList();
             if (memberInfos.Count == 0)
             {
-                return (ref JsonParser parser) => default;
+                return (ref JsonReader parser) => default;
             }
 
-            var readerParameter = Expression.Parameter(typeof(JsonParser).MakeByRefType(), "reader");
+            var readerParameter = Expression.Parameter(typeof(JsonReader).MakeByRefType(), "reader");
             var returnValue = Expression.Variable(typeof(T), "result");
             var switchValue = Expression.Variable(typeof(ReadOnlySpan<char>), "switchValue");
             var switchValueAssignExpression = Expression.Assign(switchValue,
-                Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonParser.ReadNameSpan))));
+                Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader.ReadNameSpan))));
             var switchExpression = Expression.Block(new[] {switchValue}, switchValueAssignExpression,
                 BuildPropertyComparisonSwitchExpression(resolver, memberInfos, null, 0, switchValue, returnValue, readerParameter));
             var countExpression = Expression.Parameter(typeof(int), "count");
             var abortExpression = Expression.IsTrue(Expression.Call(readerParameter,
-                readerParameter.Type.GetMethod(nameof(JsonParser.TryReadIsEndObjectOrValueSeparator)),
+                readerParameter.Type.GetMethod(nameof(JsonReader.TryReadIsEndObjectOrValueSeparator)),
                 countExpression));
             var readBeginObject = Expression.Call(readerParameter,
-                FindMethod(readerParameter.Type, nameof(JsonParser.ReadBeginObjectOrThrow)));
+                FindMethod(readerParameter.Type, nameof(JsonReader.ReadBeginObjectOrThrow)));
             var loopAbort = Expression.Label(typeof(void));
             var returnTarget = Expression.Label(returnValue.Type);
             var block = Expression.Block(new[] {returnValue, countExpression}, readBeginObject,
@@ -195,7 +195,7 @@ namespace SpanJson.Formatters
             var cases = new List<SwitchCase>();
             var equalityMethod =
                 typeof(ComplexFormatter).GetMethod(nameof(StringEquals), BindingFlags.NonPublic | BindingFlags.Static);
-            var defaultValue = Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonParser.SkipNextSegment)));
+            var defaultValue = Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader.SkipNextSegment)));
             foreach (var groupedMemberInfos in group)
             {
                 var memberInfosPerChar = groupedMemberInfos.Count();
@@ -258,7 +258,7 @@ namespace SpanJson.Formatters
             return span[index];
         }
 
-        protected delegate T DeserializeDelegate<out T, in TResolver>(ref JsonParser parser)
+        protected delegate T DeserializeDelegate<out T, in TResolver>(ref JsonReader reader)
             where TResolver : IJsonFormatterResolver<TResolver>, new();
 
 

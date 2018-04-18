@@ -15,9 +15,9 @@ namespace SpanJson.Formatters
 
         public int AllocSize { get; } = 100;
 
-        public object Deserialize(ref JsonParser parser)
+        public object Deserialize(ref JsonReader reader)
         {
-            return parser.ReadDynamic();
+            return reader.ReadDynamic();
         }
 
         public void Serialize(ref JsonWriter writer, object value)

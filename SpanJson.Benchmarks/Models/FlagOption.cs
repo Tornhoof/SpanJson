@@ -49,7 +49,7 @@ namespace SpanJson.Benchmarks.Models
 
         public bool EqualsDynamic(dynamic obj)
         {
-            return
+            var equality =
                 count.TrueEquals((int?) obj.count) &&
                 description.TrueEqualsString((string) obj.description) &&
                 has_flagged.TrueEquals((bool?) obj.has_flagged) &&
@@ -57,8 +57,12 @@ namespace SpanJson.Benchmarks.Models
                 requires_comment.TrueEquals((bool?) obj.requires_comment) &&
                 requires_question_id.TrueEquals((bool?) obj.requires_question_id) &&
                 requires_site.TrueEquals((bool?) obj.requires_site) &&
-                sub_options != null && obj.sub_options != null && sub_options.TrueEqualsListDynamic((IEnumerable<dynamic>) obj.sub_options) &&
                 title.TrueEqualsString((string) obj.title);
+            if (sub_options != null) // not sure how to solve that nicely, as the dynamic binding of sub_options will throw
+            {
+                equality &= obj.sub_options != null && sub_options.TrueEqualsListDynamic((IEnumerable<dynamic>) obj.sub_options);
+            }
+            return equality;
         }
     }
 }

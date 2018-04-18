@@ -9,14 +9,14 @@ using SpanJson.Helpers;
 
 namespace SpanJson
 {
-    public ref struct JsonParser
+    public ref struct JsonReader
     {
         private readonly ReadOnlySpan<char> _chars;
         private readonly int _length;
         private static readonly char[] NullTerminator = {'\0'};
         private int _pos;
 
-        public JsonParser(ReadOnlySpan<char> input)
+        public JsonReader(ReadOnlySpan<char> input)
         {
             _chars = input;
             _length = input.Length;

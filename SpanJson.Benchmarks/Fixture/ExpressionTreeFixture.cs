@@ -55,6 +55,12 @@ namespace SpanJson.Benchmarks.Fixture
             _valueFixtures.Add(timespanFixture.Type, timespanFixture);
         }
 
+        public T Configure<T>() where T : IValueFixture
+        {
+            var firstMatch = _valueFixtures.Values.FirstOrDefault(a => a is T);
+            return (T) firstMatch;
+        }
+
         public object Create(Type type, int repeatCount = 1, int recursiveCount = 1)
         {
             var functor = _functorCache.GetOrAdd(type, AddFunctor);

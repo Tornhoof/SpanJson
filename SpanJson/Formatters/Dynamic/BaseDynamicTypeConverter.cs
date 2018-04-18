@@ -51,10 +51,10 @@ namespace SpanJson.Formatters.Dynamic
             var result = new Dictionary<Type, ConvertDelegate>();
             foreach (var allowedType in allowedTypes)
             {
-                var method = typeof(JsonParser).GetMethod($"Read{allowedType.Name}");
+                var method = typeof(JsonReader).GetMethod($"Read{allowedType.Name}");
                 if (method != null)
                 {
-                    var parameter = Expression.Parameter(typeof(JsonParser).MakeByRefType(), "reader");
+                    var parameter = Expression.Parameter(typeof(JsonReader).MakeByRefType(), "reader");
                     var lambda = Expression.Lambda<ConvertDelegate>(
                         Expression.Convert(Expression.Call(parameter, method), typeof(object)), parameter);
                     result.Add(allowedType, lambda.Compile());
@@ -64,7 +64,7 @@ namespace SpanJson.Formatters.Dynamic
             return result;
         }
 
-        protected delegate object ConvertDelegate(in JsonParser parser);
+        protected delegate object ConvertDelegate(in JsonReader reader);
     }
 
     public interface ISpanJsonDynamicValue

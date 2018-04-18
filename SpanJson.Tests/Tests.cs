@@ -44,6 +44,7 @@ namespace SpanJson.Tests
         public void CanDeserializeAllFromJil(Type modelType)
         {
             var fixture = new ExpressionTreeFixture();
+            fixture.Configure<DateTimeValueFixture>().Increment(TimeSpan.TicksPerSecond); // seconds only to get around jil's fraction handling
             var model = fixture.Create(modelType);
             var serialized = JSON.Serialize(model, Options.ISO8601ExcludeNullsIncludeInherited);
             Assert.NotNull(serialized);
@@ -61,18 +62,6 @@ namespace SpanJson.Tests
                             !t.IsAbstract)
                 .ToList();
             return models.Select(a => new object[] {a});
-        }
-
-
-        [Theory]
-        [InlineData("Hello \"World", "\"Hello \\\"World\"")]
-        [InlineData("Hello \"Univ\"erse", "\"Hello \\\"Univ\\\"erse\"")]
-        public void WriteEscaped(string input, string output)
-        {
-            var serialized = JsonSerializer.Generic.Serialize(input);
-            var jilSerialized = JSON.Serialize(input);
-            Assert.Equal(output, serialized);
-            Assert.Equal(jilSerialized, serialized);
         }
     }
 }
