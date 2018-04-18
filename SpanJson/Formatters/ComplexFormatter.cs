@@ -59,7 +59,7 @@ namespace SpanJson.Formatters
                     valueExpressions.Add(
                         Expression.IfThen(
                             writeSeperator,
-                            Expression.Block(new ParameterExpression[] { writeSeperator },
+                            Expression.Block(
                                 Expression.Call(writerParameter, seperatorWriteMethodInfo),
                                 Expression.Assign(writeSeperator, Expression.Constant(false)))
                         ));
@@ -106,7 +106,7 @@ namespace SpanJson.Formatters
 
                 if (testExpression != null)
                 {
-                    expressions.Add(Expression.IfThen(testExpression, Expression.Block(new ParameterExpression[] { writeSeperator }, valueExpressions)));
+                    expressions.Add(Expression.IfThen(testExpression, Expression.Block(valueExpressions)));
                 }
                 else
                 {
