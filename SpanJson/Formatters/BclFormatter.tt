@@ -44,6 +44,13 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter writer, <#= t.Name #> value)
         {
+<# if(!t.IsValueType) { #>
+			if(value == null)
+			{	
+				writer.WriteNull();
+				return;
+			}
+<# } #>
             writer.Write<#= t.Name #>(value);
         }
 

@@ -39,12 +39,7 @@ using Xunit;
 namespace SpanJson.Tests.Generated
 {
 <# foreach(var t in types) {  #>
-<# if(t.IsValueType) { #>
-			
-	public partial class Nullable<#= t.Name #>Tests : NullableTestBase<<#= t.Name #>>
-	{
-	}
-
+<# if(t.IsValueType) { #>			
 	public partial class Nullable<#= t.Name #>ListTests : NullableListTestBase<<#= t.Name #>>
 	{
 	}
@@ -52,11 +47,15 @@ namespace SpanJson.Tests.Generated
 	public partial class Nullable<#= t.Name #>ArrayTests : NullableArrayTestBase<<#= t.Name #>>
 	{
 	}
-<# } #>
-	public partial class <#= t.Name #>Tests : TestBase<<#= t.Name #>>
+	public partial class <#= t.Name #>Tests : StructTestBase<<#= t.Name #>>
 	{
 	}
-
+<# } #>
+<# if(!t.IsValueType) { #>
+	public partial class <#= t.Name #>Tests : ClassTestBase<<#= t.Name #>>
+	{
+	}
+<# } #>
 	public partial class <#= t.Name #>ListTests : ListTestBase<<#= t.Name #>>
 	{
 	}

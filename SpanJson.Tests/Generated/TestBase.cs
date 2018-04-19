@@ -11,7 +11,9 @@ namespace SpanJson.Tests.Generated
 
     public abstract class TestBase<T> : TestBase
     {
-        private static readonly ExpressionTreeFixture _fixture = new ExpressionTreeFixture();
+        // ReSharper disable StaticMemberInGenericType
+        private static readonly ExpressionTreeFixture Fixture = new ExpressionTreeFixture();
+        // ReSharper restore StaticMemberInGenericType
 
         [Theory]
         [MemberData(nameof(GenerateData))]
@@ -29,7 +31,7 @@ namespace SpanJson.Tests.Generated
         public static IEnumerable<object[]> GenerateData()
         {
             var result = new List<object[]>();
-            var randomData = new HashSet<T>(_fixture.CreateMany<T>(10));
+            var randomData = new HashSet<T>(Fixture.CreateMany<T>(10));
             foreach (var data in randomData)
             {
                 result.Add(new object[] {data});
@@ -41,13 +43,15 @@ namespace SpanJson.Tests.Generated
 
     public abstract class ListTestBase<T> : TestBase
     {
-        private static readonly ExpressionTreeFixture _fixture = new ExpressionTreeFixture();
+        // ReSharper disable StaticMemberInGenericType
+        private static readonly ExpressionTreeFixture Fixture = new ExpressionTreeFixture();
+        // ReSharper restore StaticMemberInGenericType
 
 
         [Fact]
         public void SerializeDeserialize()
         {
-            var value = new HashSet<T>(_fixture.CreateMany<T>(10)).ToList();
+            var value = new HashSet<T>(Fixture.CreateMany<T>(10)).ToList();
             var serialized = JsonSerializer.Generic.Serialize(value);
             Assert.False(string.IsNullOrEmpty(serialized));
             var deserialized = JsonSerializer.Generic.Deserialize<List<T>>(serialized);
@@ -60,13 +64,15 @@ namespace SpanJson.Tests.Generated
 
     public abstract class ArrayTestBase<T> : TestBase
     {
-        private static readonly ExpressionTreeFixture _fixture = new ExpressionTreeFixture();
+        // ReSharper disable StaticMemberInGenericType
+        private static readonly ExpressionTreeFixture Fixture = new ExpressionTreeFixture();
+        // ReSharper restore StaticMemberInGenericType
 
 
         [Fact]
         public void SerializeDeserialize()
         {
-            var value = new HashSet<T>(_fixture.CreateMany<T>(10)).ToArray();
+            var value = new HashSet<T>(Fixture.CreateMany<T>(10)).ToArray();
             var serialized = JsonSerializer.Generic.Serialize(value);
             Assert.False(string.IsNullOrEmpty(serialized));
             var deserialized = JsonSerializer.Generic.Deserialize<T[]>(serialized);
@@ -84,8 +90,20 @@ namespace SpanJson.Tests.Generated
     public abstract class NullableArrayTestBase<T> : ArrayTestBase<T?> where T : struct
     {
     }
+    public abstract class ClassTestBase<T> : TestBase<T> where T : class
+    {
+        [Fact]
+        public void SerializeDeserializeNull()
+        {
+            const string input = "null";
+            var serialized = JsonSerializer.Generic.Serialize<T>(null);
+            Assert.Equal(input, serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<T>(input);
+            Assert.Null(deserialized);
+        }
+    }
 
-    public abstract class NullableTestBase<T> : TestBase where T : struct
+    public abstract class StructTestBase<T> : TestBase<T> where T : struct
     {
         [Fact]
         public void SerializeDeserializeNull()

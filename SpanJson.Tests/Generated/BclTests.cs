@@ -8,10 +8,6 @@ using Xunit;
 namespace SpanJson.Tests.Generated
 {
 			
-	public partial class NullableSByteTests : NullableTestBase<SByte>
-	{
-	}
-
 	public partial class NullableSByteListTests : NullableListTestBase<SByte>
 	{
 	}
@@ -19,10 +15,9 @@ namespace SpanJson.Tests.Generated
 	public partial class NullableSByteArrayTests : NullableArrayTestBase<SByte>
 	{
 	}
-	public partial class SByteTests : TestBase<SByte>
+	public partial class SByteTests : StructTestBase<SByte>
 	{
 	}
-
 	public partial class SByteListTests : ListTestBase<SByte>
 	{
 	}
@@ -31,10 +26,6 @@ namespace SpanJson.Tests.Generated
 	{
 	}
 			
-	public partial class NullableInt16Tests : NullableTestBase<Int16>
-	{
-	}
-
 	public partial class NullableInt16ListTests : NullableListTestBase<Int16>
 	{
 	}
@@ -42,10 +33,9 @@ namespace SpanJson.Tests.Generated
 	public partial class NullableInt16ArrayTests : NullableArrayTestBase<Int16>
 	{
 	}
-	public partial class Int16Tests : TestBase<Int16>
+	public partial class Int16Tests : StructTestBase<Int16>
 	{
 	}
-
 	public partial class Int16ListTests : ListTestBase<Int16>
 	{
 	}
@@ -54,10 +44,6 @@ namespace SpanJson.Tests.Generated
 	{
 	}
 			
-	public partial class NullableInt32Tests : NullableTestBase<Int32>
-	{
-	}
-
 	public partial class NullableInt32ListTests : NullableListTestBase<Int32>
 	{
 	}
@@ -65,10 +51,9 @@ namespace SpanJson.Tests.Generated
 	public partial class NullableInt32ArrayTests : NullableArrayTestBase<Int32>
 	{
 	}
-	public partial class Int32Tests : TestBase<Int32>
+	public partial class Int32Tests : StructTestBase<Int32>
 	{
 	}
-
 	public partial class Int32ListTests : ListTestBase<Int32>
 	{
 	}
@@ -77,10 +62,6 @@ namespace SpanJson.Tests.Generated
 	{
 	}
 			
-	public partial class NullableInt64Tests : NullableTestBase<Int64>
-	{
-	}
-
 	public partial class NullableInt64ListTests : NullableListTestBase<Int64>
 	{
 	}
@@ -88,10 +69,9 @@ namespace SpanJson.Tests.Generated
 	public partial class NullableInt64ArrayTests : NullableArrayTestBase<Int64>
 	{
 	}
-	public partial class Int64Tests : TestBase<Int64>
+	public partial class Int64Tests : StructTestBase<Int64>
 	{
 	}
-
 	public partial class Int64ListTests : ListTestBase<Int64>
 	{
 	}
@@ -100,10 +80,6 @@ namespace SpanJson.Tests.Generated
 	{
 	}
 			
-	public partial class NullableByteTests : NullableTestBase<Byte>
-	{
-	}
-
 	public partial class NullableByteListTests : NullableListTestBase<Byte>
 	{
 	}
@@ -111,10 +87,9 @@ namespace SpanJson.Tests.Generated
 	public partial class NullableByteArrayTests : NullableArrayTestBase<Byte>
 	{
 	}
-	public partial class ByteTests : TestBase<Byte>
+	public partial class ByteTests : StructTestBase<Byte>
 	{
 	}
-
 	public partial class ByteListTests : ListTestBase<Byte>
 	{
 	}
@@ -123,10 +98,6 @@ namespace SpanJson.Tests.Generated
 	{
 	}
 			
-	public partial class NullableUInt16Tests : NullableTestBase<UInt16>
-	{
-	}
-
 	public partial class NullableUInt16ListTests : NullableListTestBase<UInt16>
 	{
 	}
@@ -134,10 +105,9 @@ namespace SpanJson.Tests.Generated
 	public partial class NullableUInt16ArrayTests : NullableArrayTestBase<UInt16>
 	{
 	}
-	public partial class UInt16Tests : TestBase<UInt16>
+	public partial class UInt16Tests : StructTestBase<UInt16>
 	{
 	}
-
 	public partial class UInt16ListTests : ListTestBase<UInt16>
 	{
 	}
@@ -146,10 +116,6 @@ namespace SpanJson.Tests.Generated
 	{
 	}
 			
-	public partial class NullableUInt32Tests : NullableTestBase<UInt32>
-	{
-	}
-
 	public partial class NullableUInt32ListTests : NullableListTestBase<UInt32>
 	{
 	}
@@ -157,10 +123,9 @@ namespace SpanJson.Tests.Generated
 	public partial class NullableUInt32ArrayTests : NullableArrayTestBase<UInt32>
 	{
 	}
-	public partial class UInt32Tests : TestBase<UInt32>
+	public partial class UInt32Tests : StructTestBase<UInt32>
 	{
 	}
-
 	public partial class UInt32ListTests : ListTestBase<UInt32>
 	{
 	}
@@ -169,10 +134,6 @@ namespace SpanJson.Tests.Generated
 	{
 	}
 			
-	public partial class NullableUInt64Tests : NullableTestBase<UInt64>
-	{
-	}
-
 	public partial class NullableUInt64ListTests : NullableListTestBase<UInt64>
 	{
 	}
@@ -180,10 +141,9 @@ namespace SpanJson.Tests.Generated
 	public partial class NullableUInt64ArrayTests : NullableArrayTestBase<UInt64>
 	{
 	}
-	public partial class UInt64Tests : TestBase<UInt64>
+	public partial class UInt64Tests : StructTestBase<UInt64>
 	{
 	}
-
 	public partial class UInt64ListTests : ListTestBase<UInt64>
 	{
 	}
@@ -192,10 +152,6 @@ namespace SpanJson.Tests.Generated
 	{
 	}
 			
-	public partial class NullableSingleTests : NullableTestBase<Single>
-	{
-	}
-
 	public partial class NullableSingleListTests : NullableListTestBase<Single>
 	{
 	}
@@ -203,10 +159,9 @@ namespace SpanJson.Tests.Generated
 	public partial class NullableSingleArrayTests : NullableArrayTestBase<Single>
 	{
 	}
-	public partial class SingleTests : TestBase<Single>
+	public partial class SingleTests : StructTestBase<Single>
 	{
 	}
-
 	public partial class SingleListTests : ListTestBase<Single>
 	{
 	}
@@ -215,10 +170,6 @@ namespace SpanJson.Tests.Generated
 	{
 	}
 			
-	public partial class NullableDoubleTests : NullableTestBase<Double>
-	{
-	}
-
 	public partial class NullableDoubleListTests : NullableListTestBase<Double>
 	{
 	}
@@ -226,10 +177,9 @@ namespace SpanJson.Tests.Generated
 	public partial class NullableDoubleArrayTests : NullableArrayTestBase<Double>
 	{
 	}
-	public partial class DoubleTests : TestBase<Double>
+	public partial class DoubleTests : StructTestBase<Double>
 	{
 	}
-
 	public partial class DoubleListTests : ListTestBase<Double>
 	{
 	}
@@ -238,10 +188,6 @@ namespace SpanJson.Tests.Generated
 	{
 	}
 			
-	public partial class NullableBooleanTests : NullableTestBase<Boolean>
-	{
-	}
-
 	public partial class NullableBooleanListTests : NullableListTestBase<Boolean>
 	{
 	}
@@ -249,10 +195,9 @@ namespace SpanJson.Tests.Generated
 	public partial class NullableBooleanArrayTests : NullableArrayTestBase<Boolean>
 	{
 	}
-	public partial class BooleanTests : TestBase<Boolean>
+	public partial class BooleanTests : StructTestBase<Boolean>
 	{
 	}
-
 	public partial class BooleanListTests : ListTestBase<Boolean>
 	{
 	}
@@ -261,10 +206,6 @@ namespace SpanJson.Tests.Generated
 	{
 	}
 			
-	public partial class NullableCharTests : NullableTestBase<Char>
-	{
-	}
-
 	public partial class NullableCharListTests : NullableListTestBase<Char>
 	{
 	}
@@ -272,10 +213,9 @@ namespace SpanJson.Tests.Generated
 	public partial class NullableCharArrayTests : NullableArrayTestBase<Char>
 	{
 	}
-	public partial class CharTests : TestBase<Char>
+	public partial class CharTests : StructTestBase<Char>
 	{
 	}
-
 	public partial class CharListTests : ListTestBase<Char>
 	{
 	}
@@ -284,10 +224,6 @@ namespace SpanJson.Tests.Generated
 	{
 	}
 			
-	public partial class NullableDateTimeTests : NullableTestBase<DateTime>
-	{
-	}
-
 	public partial class NullableDateTimeListTests : NullableListTestBase<DateTime>
 	{
 	}
@@ -295,10 +231,9 @@ namespace SpanJson.Tests.Generated
 	public partial class NullableDateTimeArrayTests : NullableArrayTestBase<DateTime>
 	{
 	}
-	public partial class DateTimeTests : TestBase<DateTime>
+	public partial class DateTimeTests : StructTestBase<DateTime>
 	{
 	}
-
 	public partial class DateTimeListTests : ListTestBase<DateTime>
 	{
 	}
@@ -307,10 +242,6 @@ namespace SpanJson.Tests.Generated
 	{
 	}
 			
-	public partial class NullableDateTimeOffsetTests : NullableTestBase<DateTimeOffset>
-	{
-	}
-
 	public partial class NullableDateTimeOffsetListTests : NullableListTestBase<DateTimeOffset>
 	{
 	}
@@ -318,10 +249,9 @@ namespace SpanJson.Tests.Generated
 	public partial class NullableDateTimeOffsetArrayTests : NullableArrayTestBase<DateTimeOffset>
 	{
 	}
-	public partial class DateTimeOffsetTests : TestBase<DateTimeOffset>
+	public partial class DateTimeOffsetTests : StructTestBase<DateTimeOffset>
 	{
 	}
-
 	public partial class DateTimeOffsetListTests : ListTestBase<DateTimeOffset>
 	{
 	}
@@ -330,10 +260,6 @@ namespace SpanJson.Tests.Generated
 	{
 	}
 			
-	public partial class NullableTimeSpanTests : NullableTestBase<TimeSpan>
-	{
-	}
-
 	public partial class NullableTimeSpanListTests : NullableListTestBase<TimeSpan>
 	{
 	}
@@ -341,10 +267,9 @@ namespace SpanJson.Tests.Generated
 	public partial class NullableTimeSpanArrayTests : NullableArrayTestBase<TimeSpan>
 	{
 	}
-	public partial class TimeSpanTests : TestBase<TimeSpan>
+	public partial class TimeSpanTests : StructTestBase<TimeSpan>
 	{
 	}
-
 	public partial class TimeSpanListTests : ListTestBase<TimeSpan>
 	{
 	}
@@ -353,10 +278,6 @@ namespace SpanJson.Tests.Generated
 	{
 	}
 			
-	public partial class NullableGuidTests : NullableTestBase<Guid>
-	{
-	}
-
 	public partial class NullableGuidListTests : NullableListTestBase<Guid>
 	{
 	}
@@ -364,10 +285,9 @@ namespace SpanJson.Tests.Generated
 	public partial class NullableGuidArrayTests : NullableArrayTestBase<Guid>
 	{
 	}
-	public partial class GuidTests : TestBase<Guid>
+	public partial class GuidTests : StructTestBase<Guid>
 	{
 	}
-
 	public partial class GuidListTests : ListTestBase<Guid>
 	{
 	}
@@ -375,10 +295,9 @@ namespace SpanJson.Tests.Generated
 	public partial class GuidArrayTests : ArrayTestBase<Guid>
 	{
 	}
-	public partial class StringTests : TestBase<String>
+	public partial class StringTests : ClassTestBase<String>
 	{
 	}
-
 	public partial class StringListTests : ListTestBase<String>
 	{
 	}
@@ -387,10 +306,6 @@ namespace SpanJson.Tests.Generated
 	{
 	}
 			
-	public partial class NullableDecimalTests : NullableTestBase<Decimal>
-	{
-	}
-
 	public partial class NullableDecimalListTests : NullableListTestBase<Decimal>
 	{
 	}
@@ -398,10 +313,9 @@ namespace SpanJson.Tests.Generated
 	public partial class NullableDecimalArrayTests : NullableArrayTestBase<Decimal>
 	{
 	}
-	public partial class DecimalTests : TestBase<Decimal>
+	public partial class DecimalTests : StructTestBase<Decimal>
 	{
 	}
-
 	public partial class DecimalListTests : ListTestBase<Decimal>
 	{
 	}
@@ -409,10 +323,9 @@ namespace SpanJson.Tests.Generated
 	public partial class DecimalArrayTests : ArrayTestBase<Decimal>
 	{
 	}
-	public partial class VersionTests : TestBase<Version>
+	public partial class VersionTests : ClassTestBase<Version>
 	{
 	}
-
 	public partial class VersionListTests : ListTestBase<Version>
 	{
 	}
@@ -420,10 +333,9 @@ namespace SpanJson.Tests.Generated
 	public partial class VersionArrayTests : ArrayTestBase<Version>
 	{
 	}
-	public partial class UriTests : TestBase<Uri>
+	public partial class UriTests : ClassTestBase<Uri>
 	{
 	}
-
 	public partial class UriListTests : ListTestBase<Uri>
 	{
 	}
