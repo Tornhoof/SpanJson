@@ -16,7 +16,7 @@
         /// <summary>]</summary>
         EndArray = 4,
 
-        /// <summary>0-9,+,-,Ee</summary>
+        /// <summary>0-9,.,+,-,Ee</summary>
         Number = 5,
 
         /// <summary>"</summary>

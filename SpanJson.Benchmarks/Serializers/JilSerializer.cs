@@ -6,12 +6,12 @@ namespace SpanJson.Benchmarks.Serializers
     {
         public override T Deserialize<T>(string input)
         {
-            return JSON.Deserialize<T>(input, Options.ISO8601);
+            return JSON.Deserialize<T>(input, Options.ISO8601IncludeInheritedUtc);
         }
 
         public override string Serialize<T>(T input)
         {
-            return JSON.Serialize(input, Options.ISO8601);
+            return JSON.Serialize(input, Options.ISO8601IncludeInheritedUtc);
         }
     }
 }

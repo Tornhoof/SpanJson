@@ -95,13 +95,13 @@ namespace SpanJson
         {
             public static string Serialize(object input)
             {
-                return Inner<ExcludeNullsOriginalCaseResolver>.Serialize(input);
+                return Serialize<ExcludeNullsOriginalCaseResolver>(input);
             }
 
 
             public static object Deserialize(ReadOnlySpan<char> input, Type type)
             {
-                return Inner<ExcludeNullsOriginalCaseResolver>.Deserialize(input, type);
+                return Deserialize<ExcludeNullsOriginalCaseResolver>(input, type);
             }
 
             public static object Deserialize<TResolver>(ReadOnlySpan<char> input, Type type) where TResolver : IJsonFormatterResolver<TResolver>, new()

@@ -38,7 +38,7 @@ namespace SpanJson.Formatters
             }
 
             var valueLength = value.Count;
-            writer.WriteObjectStart();
+            writer.WriteBeginObject();
             if (valueLength > 0)
             {
                 int counter = 0;
@@ -53,7 +53,7 @@ namespace SpanJson.Formatters
                 }
             }
 
-            writer.WriteObjectEnd();
+            writer.WriteEndObject();
         }
     }
 

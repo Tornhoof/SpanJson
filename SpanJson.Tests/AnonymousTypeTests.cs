@@ -12,6 +12,7 @@ namespace SpanJson.Tests
         {
             var x = new {Name = "Alice", Age = 25};
             var output = JsonSerializer.Generic.Serialize(x);
+            Assert.Equal("{\"Name\":\"Alice\",\"Age\":25}", output);
         }
     }
 }

@@ -29,27 +29,29 @@ namespace SpanJson.Formatters
             var propertyNameWriterMethodInfo = FindMethod(typeof(JsonWriter), nameof(JsonWriter.WriteName));
             var seperatorWriteMethodInfo = FindMethod(typeof(JsonWriter), nameof(JsonWriter.WriteValueSeparator));
             expressions.Add(Expression.Call(writerParameter,
-                FindMethod(writerParameter.Type, nameof(JsonWriter.WriteObjectStart))));
-            var isNotReferenceOrContainsReference = !RuntimeHelpers.IsReferenceOrContainsReferences<T>();
+                FindMethod(writerParameter.Type, nameof(JsonWriter.WriteBeginObject))));
+            var isReferenceOrContainsReference = RuntimeHelpers.IsReferenceOrContainsReferences<T>();
             var writeSeperator = Expression.Variable(typeof(bool), "writeSeperator");
             for (var i = 0; i < memberInfos.Count; i++)
             {
                 var memberInfo = memberInfos[i];
-                Expression formatterExpression;
-                MethodInfo serializeMethodInfo;
-                if (isNotReferenceOrContainsReference || IsSealedOrStruct(memberInfo.MemberType))
+                Expression runtimeFormatterExpression = null;
+                Expression runtimeDecisionExpression = null;
+                MethodInfo runtimeSerializeMethodInfo = null;
+                var formatter = resolver.GetFormatter(memberInfo.MemberType);
+                Expression formatterExpression = Expression.Constant(formatter);
+                var serializeMethodInfo = formatter.GetType().GetMethod("Serialize");
+                var memberExpression = Expression.PropertyOrField(valueParameter, memberInfo.MemberName);
+                if (isReferenceOrContainsReference && !IsSealedOrStruct(memberInfo.MemberType)) // decide at runtime
                 {
-                    var formatter = resolver.GetFormatter(memberInfo.MemberType);
-                    formatterExpression = Expression.Constant(formatter);
-                    serializeMethodInfo = formatter.GetType().GetMethod("Serialize");
+                    var backupFormatter = RuntimeFormatter<TResolver>.Default;
+                    runtimeFormatterExpression = Expression.Constant(backupFormatter);
+                    runtimeSerializeMethodInfo = backupFormatter.GetType().GetMethod("Serialize");
+                    // switch based on type to the static one or the runtime one, assuming the static one is the normal case
+                    var getTypeMethodInfo = typeof(object).GetMethod(nameof(GetType));
+                    runtimeDecisionExpression =
+                        Expression.Equal(Expression.Call(memberExpression, getTypeMethodInfo), Expression.Constant(memberInfo.MemberType));
                 }
-                else
-                {
-                    var formatter = RuntimeFormatter<TResolver>.Default;
-                    formatterExpression = Expression.Constant(formatter);
-                    serializeMethodInfo = formatter.GetType().GetMethod("Serialize");
-                }
-
                 var valueExpressions = new List<Expression>();
                 // we need to add the separator, but only if a value was written before
                 // we reset the indicator after each seperator write and set it after writing each field
@@ -65,11 +67,16 @@ namespace SpanJson.Formatters
                         ));
                 }
 
-                valueExpressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo,
-                    Expression.Constant(memberInfo.Name)));
-                valueExpressions.Add(Expression.Call(formatterExpression,
-                    serializeMethodInfo, writerParameter,
-                    Expression.PropertyOrField(valueParameter, memberInfo.MemberName)));
+                valueExpressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo, Expression.Constant(memberInfo.Name)));
+                Expression serializerCall = Expression.Call(formatterExpression, serializeMethodInfo, writerParameter, memberExpression);
+                if (runtimeDecisionExpression != null) // if we need to decide at runtime we 
+                {
+                    var backupSerializerCall = Expression.Call(runtimeFormatterExpression,
+                        runtimeSerializeMethodInfo, writerParameter, memberExpression);
+                    serializerCall = Expression.IfThenElse(runtimeDecisionExpression, serializerCall, backupSerializerCall);
+                }
+
+                valueExpressions.Add(serializerCall);
                 valueExpressions.Add(Expression.Assign(writeSeperator, Expression.Constant(true)));
                 Expression testNullExpression = null;
                 if (memberInfo.ExcludeNull)
@@ -115,7 +122,7 @@ namespace SpanJson.Formatters
             }
 
             expressions.Add(Expression.Call(writerParameter,
-                FindMethod(writerParameter.Type, nameof(JsonWriter.WriteObjectEnd))));
+                FindMethod(writerParameter.Type, nameof(JsonWriter.WriteEndObject))));
             var blockExpression = Expression.Block(new ParameterExpression[] { writeSeperator }, expressions);
             var lambda =
                 Expression.Lambda<SerializeDelegate<T, TResolver>>(blockExpression, writerParameter, valueParameter);
@@ -155,12 +162,38 @@ namespace SpanJson.Formatters
         {
             var resolver = StandardResolvers.GetResolver<TResolver>();
             var memberInfos = resolver.GetMemberInfos<T>().Where(a => a.CanWrite).ToList();
-            if (memberInfos.Count == 0)
+            var readerParameter = Expression.Parameter(typeof(JsonReader).MakeByRefType(), "reader");
+            // can't deserialize abstract or interface
+            if (memberInfos.Any(a => a.MemberType.IsAbstract || a.MemberType.IsInterface))
             {
-                return (ref JsonReader parser) => default;
+                return Expression
+                    .Lambda<DeserializeDelegate<T, TResolver>>(Expression.Block(
+                            Expression.Throw(Expression.Constant(new NotSupportedException($"{typeof(T).Name} contains abstract or interface members."))),
+                            Expression.Default(typeof(T))),
+                        readerParameter).Compile();
+            }
+            if (typeof(T).IsAbstract)
+            {
+                return Expression.Lambda<DeserializeDelegate<T, TResolver>>(Expression.Default(typeof(T)), readerParameter).Compile();
             }
 
-            var readerParameter = Expression.Parameter(typeof(JsonReader).MakeByRefType(), "reader");
+            if (memberInfos.Count == 0)
+            {
+                Expression createExpression = null;
+                if (typeof(T).IsClass)
+                {
+                    var ci = typeof(T).GetConstructor(Type.EmptyTypes);
+                    if (ci != null)
+                    {
+                        createExpression = Expression.New(ci);
+                    }
+                }
+                if (createExpression == null)
+                {
+                    createExpression = Expression.Default(typeof(T));
+                }
+                return Expression.Lambda<DeserializeDelegate<T, TResolver>>(createExpression, readerParameter).Compile();
+            }
             var returnValue = Expression.Variable(typeof(T), "result");
             var switchValue = Expression.Variable(typeof(ReadOnlySpan<char>), "switchValue");
             var switchValueAssignExpression = Expression.Assign(switchValue,

@@ -23,7 +23,7 @@ namespace SpanJson.Formatters
             }
 
             var valueLength = value.Length;
-            writer.WriteArrayStart();
+            writer.WriteBeginArray();
             if (valueLength > 0)
             {
                 formatter.Serialize(ref writer, value[0]);
@@ -34,7 +34,7 @@ namespace SpanJson.Formatters
                 }
             }
 
-            writer.WriteArrayEnd();
+            writer.WriteEndArray();
         }
     }
 

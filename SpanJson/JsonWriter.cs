@@ -29,7 +29,7 @@ namespace SpanJson
 
         public override string ToString()
         {
-            var s = new string(_chars.Slice(0, _pos));
+            var s = _chars.Slice(0, _pos).ToString();
             Dispose();
             return s;
         }
@@ -95,7 +95,6 @@ namespace SpanJson
                 {
                     Grow(21);
                 }
-
                 LongMinValue.AsSpan().TryCopyTo(_chars.Slice(pos));
                 pos += LongMinValue.Length;
             }
@@ -106,7 +105,7 @@ namespace SpanJson
                     Grow(1);
                 }
 
-                _chars[_pos++] = '-';
+                _chars[pos++] = '-';
                 value = unchecked(-value);
             }
 
@@ -124,7 +123,7 @@ namespace SpanJson
                     Grow(1);
                 }
 
-                _chars[_pos++] = (char) ('0' + value);
+                _chars[pos++] = (char) ('0' + value);
                 return;
             }
 
@@ -273,85 +272,85 @@ namespace SpanJson
                     WriteSingleEscapedChar('t');
                     break;
                 case '\x0':
-                    WriteDoubleEscapedCar('0', '0');
+                    WriteDoubleEscapedChar('0', '0');
                     break;
                 case '\x1':
-                    WriteDoubleEscapedCar('0', '1');
+                    WriteDoubleEscapedChar('0', '1');
                     break;
                 case '\x2':
-                    WriteDoubleEscapedCar('0', '2');
+                    WriteDoubleEscapedChar('0', '2');
                     break;
                 case '\x3':
-                    WriteDoubleEscapedCar('0', '3');
+                    WriteDoubleEscapedChar('0', '3');
                     break;
                 case '\x4':
-                    WriteDoubleEscapedCar('0', '4');
+                    WriteDoubleEscapedChar('0', '4');
                     break;
                 case '\x5':
-                    WriteDoubleEscapedCar('0', '5');
+                    WriteDoubleEscapedChar('0', '5');
                     break;
                 case '\x6':
-                    WriteDoubleEscapedCar('0', '6');
+                    WriteDoubleEscapedChar('0', '6');
                     break;
                 case '\x7':
-                    WriteDoubleEscapedCar('0', '7');
+                    WriteDoubleEscapedChar('0', '7');
                     break;
                 case '\xB':
-                    WriteDoubleEscapedCar('0', 'B');
+                    WriteDoubleEscapedChar('0', 'B');
                     break;
                 case '\xE':
-                    WriteDoubleEscapedCar('0', 'E');
+                    WriteDoubleEscapedChar('0', 'E');
                     break;
                 case '\xF':
-                    WriteDoubleEscapedCar('0', 'F');
+                    WriteDoubleEscapedChar('0', 'F');
                     break;
                 case '\x10':
-                    WriteDoubleEscapedCar('1', '0');
+                    WriteDoubleEscapedChar('1', '0');
                     break;
                 case '\x11':
-                    WriteDoubleEscapedCar('1', '1');
+                    WriteDoubleEscapedChar('1', '1');
                     break;
                 case '\x12':
-                    WriteDoubleEscapedCar('1', '2');
+                    WriteDoubleEscapedChar('1', '2');
                     break;
                 case '\x13':
-                    WriteDoubleEscapedCar('1', '3');
+                    WriteDoubleEscapedChar('1', '3');
                     break;
                 case '\x14':
-                    WriteDoubleEscapedCar('1', '4');
+                    WriteDoubleEscapedChar('1', '4');
                     break;
                 case '\x15':
-                    WriteDoubleEscapedCar('1', '5');
+                    WriteDoubleEscapedChar('1', '5');
                     break;
                 case '\x16':
-                    WriteDoubleEscapedCar('1', '6');
+                    WriteDoubleEscapedChar('1', '6');
                     break;
                 case '\x17':
-                    WriteDoubleEscapedCar('1', '7');
+                    WriteDoubleEscapedChar('1', '7');
                     break;
                 case '\x18':
-                    WriteDoubleEscapedCar('1', '8');
+                    WriteDoubleEscapedChar('1', '8');
                     break;
                 case '\x19':
-                    WriteDoubleEscapedCar('1', '9');
+                    WriteDoubleEscapedChar('1', '9');
                     break;
                 case '\x1A':
-                    WriteDoubleEscapedCar('1', 'A');
+                    WriteDoubleEscapedChar('1', 'A');
                     break;
                 case '\x1B':
-                    WriteDoubleEscapedCar('1', 'B');
+                    WriteDoubleEscapedChar('1', 'B');
                     break;
                 case '\x1C':
-                    WriteDoubleEscapedCar('1', 'C');
+                    WriteDoubleEscapedChar('1', 'C');
                     break;
                 case '\x1D':
-                    WriteDoubleEscapedCar('1', 'D');
+                    WriteDoubleEscapedChar('1', 'D');
                     break;
                 case '\x1E':
-                    WriteDoubleEscapedCar('1', 'E');
+                    WriteDoubleEscapedChar('1', 'E');
                     break;
                 case '\x1F':
-                    WriteDoubleEscapedCar('1', 'F');
+                    WriteDoubleEscapedChar('1', 'F');
                     break;
                 default:
                     _chars[pos++] = value;
@@ -589,8 +588,9 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteSingleEscapedChar(char toEscape)
         {
-            _chars[_pos++] = JsonConstant.ReverseSolidus;
-            _chars[_pos++] = toEscape;
+            ref var pos = ref _pos;
+            _chars[pos++] = JsonConstant.ReverseSolidus;
+            _chars[pos++] = toEscape;
         }
 
         private void CopyAndEscapeUnicode(ref ReadOnlySpan<char> remaining, ref int i, char firstToEscape, char secondToEscape)
@@ -604,24 +604,25 @@ namespace SpanJson
                 Grow(length);
             }
 
-            WriteDoubleEscapedCar(firstToEscape, secondToEscape);
+            WriteDoubleEscapedChar(firstToEscape, secondToEscape);
             remaining = remaining.Slice(i + 1); // continuing after the escaped char
             i = 0;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void WriteDoubleEscapedCar(char firstToEscape, char secondToEscape)
+        private void WriteDoubleEscapedChar(char firstToEscape, char secondToEscape)
         {
-            _chars[_pos++] = JsonConstant.ReverseSolidus;
-            _chars[_pos++] = 'u';
-            _chars[_pos++] = '0';
-            _chars[_pos++] = '0';
-            _chars[_pos++] = firstToEscape;
-            _chars[_pos++] = secondToEscape;
+            ref var pos = ref _pos;
+            _chars[pos++] = JsonConstant.ReverseSolidus;
+            _chars[pos++] = 'u';
+            _chars[pos++] = '0';
+            _chars[pos++] = '0';
+            _chars[pos++] = firstToEscape;
+            _chars[pos++] = secondToEscape;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteObjectStart()
+        public void WriteBeginObject()
         {
             ref var pos = ref _pos;
             if (pos > _chars.Length - 1)
@@ -633,7 +634,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteObjectEnd()
+        public void WriteEndObject()
         {
             ref var pos = ref _pos;
             if (pos > _chars.Length - 1)
@@ -645,7 +646,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteArrayStart()
+        public void WriteBeginArray()
         {
             ref var pos = ref _pos;
             if (pos > _chars.Length - 1)
@@ -657,7 +658,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteArrayEnd()
+        public void WriteEndArray()
         {
             ref var pos = ref _pos;
             if (pos > _chars.Length - 1)
