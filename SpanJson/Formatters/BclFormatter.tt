@@ -92,6 +92,7 @@ namespace SpanJson.Formatters
 	public sealed class Nullable<#= t.Name #>ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<<#= t.Name #>?>, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
         public static readonly Nullable<#= t.Name #>ListFormatter<TResolver> Default = new Nullable<#= t.Name #>ListFormatter<TResolver>();
+		private static readonly Func<List<<#= t.Name #>?>> CreateFunctor = () => new List<<#= t.Name #>?>();
 
         public void Serialize(ref JsonWriter writer, List<<#= t.Name #>?> value)
         {
@@ -100,7 +101,7 @@ namespace SpanJson.Formatters
 
         public List<<#= t.Name #>?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize<List<<#= t.Name #>?>, <#= t.Name #>?, TResolver>(ref reader, Nullable<#= t.Name #>Formatter<TResolver>.Default);
+            return Deserialize(ref reader, Nullable<#= t.Name #>Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 <# } #>
@@ -123,6 +124,7 @@ namespace SpanJson.Formatters
 	public sealed class <#= t.Name #>ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<<#= t.Name #>>, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
         public static readonly <#= t.Name #>ListFormatter<TResolver> Default = new <#= t.Name #>ListFormatter<TResolver>();
+		private static readonly Func<List<<#= t.Name #>>> CreateFunctor = () => new List<<#= t.Name #>>();
 
         public void Serialize(ref JsonWriter writer, List<<#= t.Name #>> value)
         {
@@ -131,7 +133,7 @@ namespace SpanJson.Formatters
 
         public List<<#= t.Name #>> Deserialize(ref JsonReader reader)
         {
-            return Deserialize<List<<#= t.Name #>>, <#= t.Name #>, TResolver>(ref reader, <#= t.Name #>Formatter<TResolver>.Default);
+            return Deserialize(ref reader, <#= t.Name #>Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 <# } #>

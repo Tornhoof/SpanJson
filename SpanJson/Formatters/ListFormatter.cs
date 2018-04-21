@@ -1,14 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public abstract class ListFormatter
+    public abstract class ListFormatter : BaseFormatter
     {
-
-
-        protected static TList Deserialize<TList, T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
-            where TResolver : IJsonFormatterResolver<TResolver>, new() where TList : class, IList<T>, new()
+        protected static TList Deserialize<TList, T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter, Func<TList> createFunctor)
+            where TResolver : IJsonFormatterResolver<TResolver>, new() where TList : class, IList<T>
         {
             if (reader.ReadIsNull())
             {
@@ -16,7 +15,7 @@ namespace SpanJson.Formatters
             }
 
             reader.ReadBeginArrayOrThrow();
-            var list = new TList();
+            var list = createFunctor();
             var count = 0;
             while (!reader.TryReadIsEndArrayOrValueSeparator(ref count))
             {
@@ -27,7 +26,7 @@ namespace SpanJson.Formatters
         }
 
         protected static void Serialize<TList, T, TResolver>(ref JsonWriter writer, TList value,
-            IJsonFormatter<T, TResolver> formatter) where TResolver : IJsonFormatterResolver<TResolver>, new() where TList : class, IList<T>, new()
+            IJsonFormatter<T, TResolver> formatter) where TResolver : IJsonFormatterResolver<TResolver>, new() where TList : class, IList<T>
         {
             if (value == null)
             {
@@ -63,9 +62,11 @@ namespace SpanJson.Formatters
         private static readonly IJsonFormatter<T, TResolver> DefaultFormatter =
             StandardResolvers.GetResolver<TResolver>().GetFormatter<T>();
 
+        private static readonly Func<TList> CreateFunctor = BuildCreateFunctor<TList>();
+
         public TList Deserialize(ref JsonReader reader)
         {
-            return Deserialize<TList, T, TResolver>(ref reader, DefaultFormatter);
+            return Deserialize(ref reader, DefaultFormatter, CreateFunctor);
         }
 
         public void Serialize(ref JsonWriter writer, TList value)

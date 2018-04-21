@@ -8,7 +8,7 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public abstract class ComplexFormatter
+    public abstract class ComplexFormatter : BaseFormatter
     {
         /// <summary>
         ///     if the propertyType is object, we need to do it during runtime
@@ -52,6 +52,7 @@ namespace SpanJson.Formatters
                     runtimeDecisionExpression =
                         Expression.Equal(Expression.Call(memberExpression, getTypeMethodInfo), Expression.Constant(memberInfo.MemberType));
                 }
+
                 var valueExpressions = new List<Expression>();
                 // we need to add the separator, but only if a value was written before
                 // we reset the indicator after each seperator write and set it after writing each field
@@ -121,7 +122,7 @@ namespace SpanJson.Formatters
 
             expressions.Add(Expression.Call(writerParameter,
                 FindMethod(writerParameter.Type, nameof(JsonWriter.WriteEndObject))));
-            var blockExpression = Expression.Block(new ParameterExpression[] { writeSeperator }, expressions);
+            var blockExpression = Expression.Block(new[] {writeSeperator}, expressions);
             var lambda =
                 Expression.Lambda<SerializeDelegate<T, TResolver>>(blockExpression, writerParameter, valueParameter);
             return lambda.Compile();
@@ -142,6 +143,7 @@ namespace SpanJson.Formatters
                             Expression.Default(typeof(T))),
                         readerParameter).Compile();
             }
+
             if (typeof(T).IsAbstract)
             {
                 return Expression.Lambda<DeserializeDelegate<T, TResolver>>(Expression.Default(typeof(T)), readerParameter).Compile();
@@ -158,17 +160,20 @@ namespace SpanJson.Formatters
                         createExpression = Expression.New(ci);
                     }
                 }
+
                 if (createExpression == null)
                 {
                     createExpression = Expression.Default(typeof(T));
                 }
+
                 return Expression.Lambda<DeserializeDelegate<T, TResolver>>(createExpression, readerParameter).Compile();
             }
+
             var returnValue = Expression.Variable(typeof(T), "result");
             var switchValue = Expression.Variable(typeof(ReadOnlySpan<char>), "switchValue");
             var switchValueAssignExpression = Expression.Assign(switchValue,
                 Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader.ReadNameSpan))));
-            var switchExpression = Expression.Block(new[] { switchValue }, switchValueAssignExpression,
+            var switchExpression = Expression.Block(new[] {switchValue}, switchValueAssignExpression,
                 BuildPropertyComparisonSwitchExpression(resolver, memberInfos, null, 0, switchValue, returnValue, readerParameter));
             var countExpression = Expression.Parameter(typeof(int), "count");
             var abortExpression = Expression.IsTrue(Expression.Call(readerParameter,
@@ -178,7 +183,7 @@ namespace SpanJson.Formatters
                 FindMethod(readerParameter.Type, nameof(JsonReader.ReadBeginObjectOrThrow)));
             var loopAbort = Expression.Label(typeof(void));
             var returnTarget = Expression.Label(returnValue.Type);
-            var block = Expression.Block(new[] { returnValue, countExpression }, readBeginObject,
+            var block = Expression.Block(new[] {returnValue, countExpression}, readBeginObject,
                 Expression.Assign(returnValue, Expression.New(returnValue.Type)),
                 Expression.Loop(
                     Expression.IfThenElse(abortExpression, Expression.Break(loopAbort),
@@ -205,7 +210,8 @@ namespace SpanJson.Formatters
         ///     We group the field names by the nth character and nest the switch tables to find the appropriate field/property to
         ///     assign to
         /// </summary>
-        private static Expression BuildPropertyComparisonSwitchExpression<TResolver>(TResolver resolver, ICollection<JsonMemberInfo> memberInfos, string prefix, int index,
+        private static Expression BuildPropertyComparisonSwitchExpression<TResolver>(TResolver resolver, ICollection<JsonMemberInfo> memberInfos, string prefix,
+            int index,
             ParameterExpression switchValue, Expression returnValue, Expression readerParameter) where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
             var group = memberInfos.Where(a => (prefix == null || a.Name.StartsWith(prefix)) && a.Name.Length > index).GroupBy(a => a.Name[index]).ToList();

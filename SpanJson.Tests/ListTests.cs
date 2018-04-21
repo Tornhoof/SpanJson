@@ -23,6 +23,14 @@ namespace SpanJson.Tests
         }
 
         [Fact]
+        public void SerializeCollection()
+        {
+            var list = new LinkedList<string>(new[] {"Hello", "World", "Universe"});
+            var serialized = JsonSerializer.Generic.Serialize(list);
+            Assert.Equal("[\"Hello\",\"World\",\"Universe\"]", serialized);
+        }
+
+        [Fact]
         public void SerializeLinq()
         {
             var list = new List<string> { "Hello", "World", "Universe" };

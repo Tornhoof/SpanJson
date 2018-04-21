@@ -3,10 +3,8 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public abstract class NullableFormatter
+    public abstract class NullableFormatter : BaseFormatter
     {
-
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected static T? Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
             where T : struct where TResolver : IJsonFormatterResolver<TResolver>, new()

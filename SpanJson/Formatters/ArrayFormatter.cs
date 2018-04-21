@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections.Generic;
-using System.Linq;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
     public abstract class ArrayFormatter
     {
-
-
         protected static T[] Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
             where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
@@ -94,6 +90,7 @@ namespace SpanJson.Formatters
 
         private static readonly IJsonFormatter<T, TResolver> DefaultFormatter =
             StandardResolvers.GetResolver<TResolver>().GetFormatter<T>();
+        //private static readonly Func<int, T[]> C
 
         public T[] Deserialize(ref JsonReader reader)
         {

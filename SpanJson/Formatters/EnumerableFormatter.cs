@@ -4,10 +4,8 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public abstract class EnumerableFormatter
+    public abstract class EnumerableFormatter : BaseFormatter
     {
-
-
         protected static TEnumerable Deserialize<TEnumerable, T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
             where TResolver : IJsonFormatterResolver<TResolver>, new() where TEnumerable : class, IEnumerable<T>
         {
@@ -15,6 +13,7 @@ namespace SpanJson.Formatters
             {
                 return null;
             }
+
             throw new NotImplementedException(); // generic IEnumerable<> deserialization is not supported
         }
 
@@ -43,6 +42,7 @@ namespace SpanJson.Formatters
                         formatter.Serialize(ref writer, enumerator.Current);
                     }
                 }
+
                 writer.WriteEndArray();
             }
             finally

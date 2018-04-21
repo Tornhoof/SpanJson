@@ -146,11 +146,6 @@ namespace SpanJson.Resolvers
                 return GetDefaultOrCreate(typeof(ListFormatter<,,>).MakeGenericType(type, listArgumentTypes.Single(), typeof(TResolver)));
             }
 
-            if (type.TryGetTypeOfGenericInterface(typeof(ICollection<>), out var collArgumentTypes))
-            {
-                return GetDefaultOrCreate(typeof(CollectionFormatter<,,>).MakeGenericType(type, collArgumentTypes.Single(), typeof(TResolver)));
-            }
-
             if (type.TryGetTypeOfGenericInterface(typeof(IEnumerable<>), out var enumArgumentTypes))
             {
                 return GetDefaultOrCreate(typeof(EnumerableFormatter<,,>).MakeGenericType(type, enumArgumentTypes.Single(), typeof(TResolver)));

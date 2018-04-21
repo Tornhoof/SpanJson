@@ -39,7 +39,6 @@ namespace SpanJson.Formatters.Dynamic
             {
                 try
                 {
-
                     if (Converters.TryGetValue(destinationType, out var del))
                     {
                         var reader = new JsonReader(span);

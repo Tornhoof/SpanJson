@@ -59,7 +59,6 @@ namespace SpanJson.Formatters.Dynamic
                             value = enumValue;
                             return true;
                         }
-
                     }
                 }
                 catch (Exception)

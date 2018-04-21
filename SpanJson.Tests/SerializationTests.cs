@@ -20,19 +20,20 @@ namespace SpanJson.Tests
             public int Age { get; set; }
         }
 
-        //[Fact]        
-        //public void NoNameMatches()
-        //{
-        //    var parent = new Parent {Age = 30, Name = "Adam", Children = new List<Child> {new Child {Name = "Cain", Age = 5}}};
-        //    var serializedWithCamelCase =
-        //        JsonSerializer.Generic.Serialize<Parent, ExcludeNullsCamelCaseResolver>(parent);
-        //    Assert.Contains("age", serializedWithCamelCase);
-        //    var deserialized =
-        //        JsonSerializer.Generic.Deserialize<Parent, ExcludeNullsOriginalCaseResolver>(serializedWithCamelCase);
-        //    Assert.NotNull(deserialized);
-        //    Assert.Null(deserialized.Children);
-        //    Assert.Equal(0, deserialized.Age);
-        //    Assert.Null(deserialized.Name);
-        //}
+        [Fact]
+        public void NoNameMatches()
+        {
+            var parent = new Parent { Age = 30, Name = "Adam", Children = new List<Child> { new Child { Name = "Cain", Age = 5 } } };
+            var serializedWithCamelCase =
+                JsonSerializer.Generic.Serialize<Parent, ExcludeNullsOriginalCaseResolver>(parent);
+            serializedWithCamelCase = serializedWithCamelCase.ToLowerInvariant();
+            Assert.Contains("age", serializedWithCamelCase);
+            var deserialized =
+                JsonSerializer.Generic.Deserialize<Parent, ExcludeNullsOriginalCaseResolver>(serializedWithCamelCase);
+            Assert.NotNull(deserialized);
+            Assert.Null(deserialized.Children);
+            Assert.Equal(0, deserialized.Age);
+            Assert.Null(deserialized.Name);
+        }
     }
 }

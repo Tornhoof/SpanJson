@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace SpanJson.Formatters
 {
-    public sealed class EnumFormatter<T, TResolver> : IJsonFormatter<T, TResolver> where T : struct
+    public sealed class EnumFormatter<T, TResolver> : BaseFormatter, IJsonFormatter<T, TResolver> where T : struct
         where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
         private static readonly SerializeDelegate Serializer = BuildSerializeDelegate();

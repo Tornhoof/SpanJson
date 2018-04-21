@@ -26,40 +26,40 @@ namespace SpanJson.Benchmarks
 
         private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
 
-        //[Benchmark]
-        //public Answer DeserializeAnswerWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
-        //}
-
-        //[Benchmark]
-        //public Answer DeserializeAnswerWithJilSerializer()
-        //{
-        //    return JilSerializer.Deserialize<Answer>(AnswerSerializedString);
-        //}
-
-        //[Benchmark]
-        //public Answer DeserializeAnswerWithUtf8JsonSerializer()
-        //{
-        //    return Utf8JsonSerializer.Deserialize<Answer>(AnswerSerializedByteArray);
-        //}
-
         [Benchmark]
-        public string SerializeAnswerWithSpanJsonSerializer()
+        public Answer DeserializeAnswerWithSpanJsonSerializer()
         {
-            return SpanJsonSerializer.Serialize(Answer);
+            return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
         }
 
         [Benchmark]
-        public string SerializeAnswerWithJilSerializer()
+        public Answer DeserializeAnswerWithJilSerializer()
         {
-            return JilSerializer.Serialize(Answer);
+            return JilSerializer.Deserialize<Answer>(AnswerSerializedString);
         }
 
         [Benchmark]
-        public byte[] SerializeAnswerWithUtf8JsonSerializer()
+        public Answer DeserializeAnswerWithUtf8JsonSerializer()
         {
-            return Utf8JsonSerializer.Serialize(Answer);
+            return Utf8JsonSerializer.Deserialize<Answer>(AnswerSerializedByteArray);
         }
+
+        //[Benchmark]
+        //public string SerializeAnswerWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(Answer);
+        //}
+
+        //[Benchmark]
+        //public string SerializeAnswerWithJilSerializer()
+        //{
+        //    return JilSerializer.Serialize(Answer);
+        //}
+
+        //[Benchmark]
+        //public byte[] SerializeAnswerWithUtf8JsonSerializer()
+        //{
+        //    return Utf8JsonSerializer.Serialize(Answer);
+        //}
     }
 }
