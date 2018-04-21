@@ -62,7 +62,7 @@ namespace SpanJson.Formatters
 
         public List<SByte?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, NullableSByteFormatter<TResolver>.Default);
+            return Deserialize<List<SByte?>, SByte?, TResolver>(ref reader, NullableSByteFormatter<TResolver>.Default);
         }	
 	}
 
@@ -92,7 +92,7 @@ namespace SpanJson.Formatters
 
         public List<SByte> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, SByteFormatter<TResolver>.Default);
+            return Deserialize<List<SByte>, SByte, TResolver>(ref reader, SByteFormatter<TResolver>.Default);
         }	
 	}
     public sealed class Int16Formatter<TResolver> : IJsonFormatter<Int16, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -151,7 +151,7 @@ namespace SpanJson.Formatters
 
         public List<Int16?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, NullableInt16Formatter<TResolver>.Default);
+            return Deserialize<List<Int16?>, Int16?, TResolver>(ref reader, NullableInt16Formatter<TResolver>.Default);
         }	
 	}
 
@@ -181,7 +181,7 @@ namespace SpanJson.Formatters
 
         public List<Int16> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, Int16Formatter<TResolver>.Default);
+            return Deserialize<List<Int16>, Int16, TResolver>(ref reader, Int16Formatter<TResolver>.Default);
         }	
 	}
     public sealed class Int32Formatter<TResolver> : IJsonFormatter<Int32, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -240,7 +240,7 @@ namespace SpanJson.Formatters
 
         public List<Int32?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, NullableInt32Formatter<TResolver>.Default);
+            return Deserialize<List<Int32?>, Int32?, TResolver>(ref reader, NullableInt32Formatter<TResolver>.Default);
         }	
 	}
 
@@ -270,7 +270,7 @@ namespace SpanJson.Formatters
 
         public List<Int32> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, Int32Formatter<TResolver>.Default);
+            return Deserialize<List<Int32>, Int32, TResolver>(ref reader, Int32Formatter<TResolver>.Default);
         }	
 	}
     public sealed class Int64Formatter<TResolver> : IJsonFormatter<Int64, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -329,7 +329,7 @@ namespace SpanJson.Formatters
 
         public List<Int64?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, NullableInt64Formatter<TResolver>.Default);
+            return Deserialize<List<Int64?>, Int64?, TResolver>(ref reader, NullableInt64Formatter<TResolver>.Default);
         }	
 	}
 
@@ -359,7 +359,7 @@ namespace SpanJson.Formatters
 
         public List<Int64> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, Int64Formatter<TResolver>.Default);
+            return Deserialize<List<Int64>, Int64, TResolver>(ref reader, Int64Formatter<TResolver>.Default);
         }	
 	}
     public sealed class ByteFormatter<TResolver> : IJsonFormatter<Byte, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -418,7 +418,7 @@ namespace SpanJson.Formatters
 
         public List<Byte?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, NullableByteFormatter<TResolver>.Default);
+            return Deserialize<List<Byte?>, Byte?, TResolver>(ref reader, NullableByteFormatter<TResolver>.Default);
         }	
 	}
 
@@ -448,7 +448,7 @@ namespace SpanJson.Formatters
 
         public List<Byte> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, ByteFormatter<TResolver>.Default);
+            return Deserialize<List<Byte>, Byte, TResolver>(ref reader, ByteFormatter<TResolver>.Default);
         }	
 	}
     public sealed class UInt16Formatter<TResolver> : IJsonFormatter<UInt16, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -507,7 +507,7 @@ namespace SpanJson.Formatters
 
         public List<UInt16?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, NullableUInt16Formatter<TResolver>.Default);
+            return Deserialize<List<UInt16?>, UInt16?, TResolver>(ref reader, NullableUInt16Formatter<TResolver>.Default);
         }	
 	}
 
@@ -537,7 +537,7 @@ namespace SpanJson.Formatters
 
         public List<UInt16> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, UInt16Formatter<TResolver>.Default);
+            return Deserialize<List<UInt16>, UInt16, TResolver>(ref reader, UInt16Formatter<TResolver>.Default);
         }	
 	}
     public sealed class UInt32Formatter<TResolver> : IJsonFormatter<UInt32, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -596,7 +596,7 @@ namespace SpanJson.Formatters
 
         public List<UInt32?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, NullableUInt32Formatter<TResolver>.Default);
+            return Deserialize<List<UInt32?>, UInt32?, TResolver>(ref reader, NullableUInt32Formatter<TResolver>.Default);
         }	
 	}
 
@@ -626,7 +626,7 @@ namespace SpanJson.Formatters
 
         public List<UInt32> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, UInt32Formatter<TResolver>.Default);
+            return Deserialize<List<UInt32>, UInt32, TResolver>(ref reader, UInt32Formatter<TResolver>.Default);
         }	
 	}
     public sealed class UInt64Formatter<TResolver> : IJsonFormatter<UInt64, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -685,7 +685,7 @@ namespace SpanJson.Formatters
 
         public List<UInt64?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, NullableUInt64Formatter<TResolver>.Default);
+            return Deserialize<List<UInt64?>, UInt64?, TResolver>(ref reader, NullableUInt64Formatter<TResolver>.Default);
         }	
 	}
 
@@ -715,7 +715,7 @@ namespace SpanJson.Formatters
 
         public List<UInt64> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, UInt64Formatter<TResolver>.Default);
+            return Deserialize<List<UInt64>, UInt64, TResolver>(ref reader, UInt64Formatter<TResolver>.Default);
         }	
 	}
     public sealed class SingleFormatter<TResolver> : IJsonFormatter<Single, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -774,7 +774,7 @@ namespace SpanJson.Formatters
 
         public List<Single?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, NullableSingleFormatter<TResolver>.Default);
+            return Deserialize<List<Single?>, Single?, TResolver>(ref reader, NullableSingleFormatter<TResolver>.Default);
         }	
 	}
 
@@ -804,7 +804,7 @@ namespace SpanJson.Formatters
 
         public List<Single> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, SingleFormatter<TResolver>.Default);
+            return Deserialize<List<Single>, Single, TResolver>(ref reader, SingleFormatter<TResolver>.Default);
         }	
 	}
     public sealed class DoubleFormatter<TResolver> : IJsonFormatter<Double, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -863,7 +863,7 @@ namespace SpanJson.Formatters
 
         public List<Double?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, NullableDoubleFormatter<TResolver>.Default);
+            return Deserialize<List<Double?>, Double?, TResolver>(ref reader, NullableDoubleFormatter<TResolver>.Default);
         }	
 	}
 
@@ -893,7 +893,7 @@ namespace SpanJson.Formatters
 
         public List<Double> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, DoubleFormatter<TResolver>.Default);
+            return Deserialize<List<Double>, Double, TResolver>(ref reader, DoubleFormatter<TResolver>.Default);
         }	
 	}
     public sealed class DecimalFormatter<TResolver> : IJsonFormatter<Decimal, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -952,7 +952,7 @@ namespace SpanJson.Formatters
 
         public List<Decimal?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, NullableDecimalFormatter<TResolver>.Default);
+            return Deserialize<List<Decimal?>, Decimal?, TResolver>(ref reader, NullableDecimalFormatter<TResolver>.Default);
         }	
 	}
 
@@ -982,7 +982,7 @@ namespace SpanJson.Formatters
 
         public List<Decimal> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, DecimalFormatter<TResolver>.Default);
+            return Deserialize<List<Decimal>, Decimal, TResolver>(ref reader, DecimalFormatter<TResolver>.Default);
         }	
 	}
     public sealed class BooleanFormatter<TResolver> : IJsonFormatter<Boolean, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -1041,7 +1041,7 @@ namespace SpanJson.Formatters
 
         public List<Boolean?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, NullableBooleanFormatter<TResolver>.Default);
+            return Deserialize<List<Boolean?>, Boolean?, TResolver>(ref reader, NullableBooleanFormatter<TResolver>.Default);
         }	
 	}
 
@@ -1071,7 +1071,7 @@ namespace SpanJson.Formatters
 
         public List<Boolean> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, BooleanFormatter<TResolver>.Default);
+            return Deserialize<List<Boolean>, Boolean, TResolver>(ref reader, BooleanFormatter<TResolver>.Default);
         }	
 	}
     public sealed class CharFormatter<TResolver> : IJsonFormatter<Char, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -1130,7 +1130,7 @@ namespace SpanJson.Formatters
 
         public List<Char?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, NullableCharFormatter<TResolver>.Default);
+            return Deserialize<List<Char?>, Char?, TResolver>(ref reader, NullableCharFormatter<TResolver>.Default);
         }	
 	}
 
@@ -1160,7 +1160,7 @@ namespace SpanJson.Formatters
 
         public List<Char> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, CharFormatter<TResolver>.Default);
+            return Deserialize<List<Char>, Char, TResolver>(ref reader, CharFormatter<TResolver>.Default);
         }	
 	}
     public sealed class DateTimeFormatter<TResolver> : IJsonFormatter<DateTime, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -1219,7 +1219,7 @@ namespace SpanJson.Formatters
 
         public List<DateTime?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, NullableDateTimeFormatter<TResolver>.Default);
+            return Deserialize<List<DateTime?>, DateTime?, TResolver>(ref reader, NullableDateTimeFormatter<TResolver>.Default);
         }	
 	}
 
@@ -1249,7 +1249,7 @@ namespace SpanJson.Formatters
 
         public List<DateTime> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, DateTimeFormatter<TResolver>.Default);
+            return Deserialize<List<DateTime>, DateTime, TResolver>(ref reader, DateTimeFormatter<TResolver>.Default);
         }	
 	}
     public sealed class DateTimeOffsetFormatter<TResolver> : IJsonFormatter<DateTimeOffset, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -1308,7 +1308,7 @@ namespace SpanJson.Formatters
 
         public List<DateTimeOffset?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, NullableDateTimeOffsetFormatter<TResolver>.Default);
+            return Deserialize<List<DateTimeOffset?>, DateTimeOffset?, TResolver>(ref reader, NullableDateTimeOffsetFormatter<TResolver>.Default);
         }	
 	}
 
@@ -1338,7 +1338,7 @@ namespace SpanJson.Formatters
 
         public List<DateTimeOffset> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, DateTimeOffsetFormatter<TResolver>.Default);
+            return Deserialize<List<DateTimeOffset>, DateTimeOffset, TResolver>(ref reader, DateTimeOffsetFormatter<TResolver>.Default);
         }	
 	}
     public sealed class TimeSpanFormatter<TResolver> : IJsonFormatter<TimeSpan, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -1397,7 +1397,7 @@ namespace SpanJson.Formatters
 
         public List<TimeSpan?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, NullableTimeSpanFormatter<TResolver>.Default);
+            return Deserialize<List<TimeSpan?>, TimeSpan?, TResolver>(ref reader, NullableTimeSpanFormatter<TResolver>.Default);
         }	
 	}
 
@@ -1427,7 +1427,7 @@ namespace SpanJson.Formatters
 
         public List<TimeSpan> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, TimeSpanFormatter<TResolver>.Default);
+            return Deserialize<List<TimeSpan>, TimeSpan, TResolver>(ref reader, TimeSpanFormatter<TResolver>.Default);
         }	
 	}
     public sealed class GuidFormatter<TResolver> : IJsonFormatter<Guid, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -1486,7 +1486,7 @@ namespace SpanJson.Formatters
 
         public List<Guid?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, NullableGuidFormatter<TResolver>.Default);
+            return Deserialize<List<Guid?>, Guid?, TResolver>(ref reader, NullableGuidFormatter<TResolver>.Default);
         }	
 	}
 
@@ -1516,7 +1516,7 @@ namespace SpanJson.Formatters
 
         public List<Guid> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, GuidFormatter<TResolver>.Default);
+            return Deserialize<List<Guid>, Guid, TResolver>(ref reader, GuidFormatter<TResolver>.Default);
         }	
 	}
     public sealed class StringFormatter<TResolver> : IJsonFormatter<String, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -1567,7 +1567,7 @@ namespace SpanJson.Formatters
 
         public List<String> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, StringFormatter<TResolver>.Default);
+            return Deserialize<List<String>, String, TResolver>(ref reader, StringFormatter<TResolver>.Default);
         }	
 	}
     public sealed class VersionFormatter<TResolver> : IJsonFormatter<Version, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -1618,7 +1618,7 @@ namespace SpanJson.Formatters
 
         public List<Version> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, VersionFormatter<TResolver>.Default);
+            return Deserialize<List<Version>, Version, TResolver>(ref reader, VersionFormatter<TResolver>.Default);
         }	
 	}
     public sealed class UriFormatter<TResolver> : IJsonFormatter<Uri, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -1669,7 +1669,7 @@ namespace SpanJson.Formatters
 
         public List<Uri> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, UriFormatter<TResolver>.Default);
+            return Deserialize<List<Uri>, Uri, TResolver>(ref reader, UriFormatter<TResolver>.Default);
         }	
 	}
 }

@@ -1,4 +1,8 @@
-﻿using SpanJson.Resolvers;
+﻿using System;
+using System.Buffers;
+using System.Collections.Generic;
+using System.Linq;
+using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
@@ -9,8 +13,50 @@ namespace SpanJson.Formatters
         protected static T[] Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
             where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
-            // TODO improve
-            return ListFormatter<T, TResolver>.Default.Deserialize(ref reader)?.ToArray();
+            T[] temp = null;
+            T[] result;
+            try
+            {
+                temp = ArrayPool<T>.Shared.Rent(4);
+                reader.ReadBeginArrayOrThrow();
+                var count = 0;
+                while (!reader.TryReadIsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
+                {
+                    if (count == temp.Length)
+                    {
+                        Grow(ref temp);
+                    }
+
+                    temp[count - 1] = formatter.Deserialize(ref reader);
+                }
+
+                if (count == 0)
+                {
+                    result = Array.Empty<T>();
+                }
+                else
+                {
+                    result = new T[count];
+                    Array.Copy(temp, result, count);
+                }
+            }
+            finally
+            {
+                if (temp != null)
+                {
+                    ArrayPool<T>.Shared.Return(temp);
+                }
+            }
+
+            return result;
+        }
+
+        private static void Grow<T>(ref T[] array)
+        {
+            var backup = array;
+            array = ArrayPool<T>.Shared.Rent(backup.Length * 2);
+            backup.CopyTo(array, 0);
+            ArrayPool<T>.Shared.Return(backup);
         }
 
         protected static void Serialize<T, TResolver>(ref JsonWriter writer, T[] value, IJsonFormatter<T, TResolver> formatter)

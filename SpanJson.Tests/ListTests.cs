@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace SpanJson.Tests
@@ -19,6 +20,14 @@ namespace SpanJson.Tests
             var list = new List<string> {"Hello", "World", "Universe"};
             var serialized = JsonSerializer.Generic.Serialize(list);
             Assert.Equal("[\"Hello\",\"World\",\"Universe\"]", serialized);
+        }
+
+        [Fact]
+        public void SerializeLinq()
+        {
+            var list = new List<string> { "Hello", "World", "Universe" };
+            var serialized = JsonSerializer.Generic.Serialize(list.Where(a => a != "Universe"));
+            Assert.Equal("[\"Hello\",\"World\"]", serialized);
         }
     }
 }

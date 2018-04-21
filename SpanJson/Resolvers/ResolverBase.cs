@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,13 +54,14 @@ namespace SpanJson.Resolvers
             {
                 if (!IsIgnored(memberInfo))
                 {
-                    bool canRead = true;
-                    bool canWrite = true;
+                    var canRead = true;
+                    var canWrite = true;
                     if (memberInfo is PropertyInfo propertyInfo)
                     {
                         canRead = propertyInfo.CanRead;
                         canWrite = propertyInfo.CanWrite;
                     }
+
                     var name = Escape(GetAttributeName(memberInfo) ?? memberInfo.Name);
                     if (_namingConventions == NamingConventions.CamelCase)
                     {
@@ -115,29 +117,12 @@ namespace SpanJson.Resolvers
             {
                 return integrated;
             }
+
             // todo: support for multidimensional array
             if (type.IsArray)
             {
-                return GetIntegrated(type) ??
-                       GetDefaultOrCreate(typeof(ArrayFormatter<,>).MakeGenericType(type.GetElementType(),
-                           typeof(TResolver)));
-            }
-
-            if (type.TryGetDictionaryType(out var keyType, out var valueType))
-            {
-                if (keyType != typeof(string))
-                {
-                    throw new NotImplementedException($"{keyType} is not supported a Key for Dictionary.");
-                }
-
-                return GetIntegrated(type) ?? GetDefaultOrCreate(typeof(DictionaryFormatter<,,>).MakeGenericType(type, valueType, typeof(TResolver)));
-            }
-
-            if (type.TryGetListType(out var elementType))
-            {
-                return GetIntegrated(type) ??
-                       GetDefaultOrCreate(
-                           typeof(ListFormatter<,>).MakeGenericType(elementType, typeof(TResolver)));
+                return GetDefaultOrCreate(typeof(ArrayFormatter<,>).MakeGenericType(type.GetElementType(),
+                    typeof(TResolver)));
             }
 
             if (type.IsEnum)
@@ -145,11 +130,35 @@ namespace SpanJson.Resolvers
                 return GetDefaultOrCreate(typeof(EnumFormatter<,>).MakeGenericType(type, typeof(TResolver)));
             }
 
+            if (type.TryGetTypeOfGenericInterface(typeof(IDictionary<,>), out var dictArgumentTypes))
+            {
+                if (dictArgumentTypes.Length != 2 || dictArgumentTypes[0] != typeof(string))
+                {
+                    throw new NotImplementedException($"{dictArgumentTypes[0]} is not supported a Key for Dictionary.");
+                }
+
+                return GetDefaultOrCreate(typeof(DictionaryFormatter<,,>).MakeGenericType(type, dictArgumentTypes[1], typeof(TResolver)));
+            }
+
+            if (type.TryGetTypeOfGenericInterface(typeof(IList<>), out var listArgumentTypes))
+            {
+                return GetDefaultOrCreate(typeof(ListFormatter<,,>).MakeGenericType(type, listArgumentTypes.Single(), typeof(TResolver)));
+            }
+
+            if (type.TryGetTypeOfGenericInterface(typeof(ICollection<>), out var collArgumentTypes))
+            {
+                return GetDefaultOrCreate(typeof(CollectionFormatter<,,>).MakeGenericType(type, collArgumentTypes.Single(), typeof(TResolver)));
+            }
+
+            if (type.TryGetTypeOfGenericInterface(typeof(IEnumerable<>), out var enumArgumentTypes))
+            {
+                return GetDefaultOrCreate(typeof(EnumerableFormatter<,,>).MakeGenericType(type, enumArgumentTypes.Single(), typeof(TResolver)));
+            }
+
             if (type.TryGetNullableUnderlyingType(out var underlyingType))
             {
-                return GetIntegrated(type) ??
-                       GetDefaultOrCreate(typeof(NullableFormatter<,>).MakeGenericType(underlyingType,
-                           typeof(TResolver)));
+                return GetDefaultOrCreate(typeof(NullableFormatter<,>).MakeGenericType(underlyingType,
+                    typeof(TResolver)));
             }
 
             // no integrated type, let's build it

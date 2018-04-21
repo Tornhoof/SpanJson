@@ -41,7 +41,7 @@ namespace SpanJson.Formatters
             writer.WriteBeginObject();
             if (valueLength > 0)
             {
-                int counter = 0;
+                var counter = 0;
                 foreach (var kvp in value)
                 {
                     writer.WriteName(kvp.Key);

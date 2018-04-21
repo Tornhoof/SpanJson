@@ -102,7 +102,7 @@ namespace SpanJson.Formatters
 
         public List<<#= t.Name #>?> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, Nullable<#= t.Name #>Formatter<TResolver>.Default);
+            return Deserialize<List<<#= t.Name #>?>, <#= t.Name #>?, TResolver>(ref reader, Nullable<#= t.Name #>Formatter<TResolver>.Default);
         }	
 	}
 <# } #>
@@ -133,7 +133,7 @@ namespace SpanJson.Formatters
 
         public List<<#= t.Name #>> Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, <#= t.Name #>Formatter<TResolver>.Default);
+            return Deserialize<List<<#= t.Name #>>, <#= t.Name #>, TResolver>(ref reader, <#= t.Name #>Formatter<TResolver>.Default);
         }	
 	}
 <# } #>

@@ -99,7 +99,7 @@ namespace SpanJson.Tests.JsonTestSuite
 
         private object Deserialize(string input, TestType type)
         {
-            bool array = input[0] == JsonConstant.BeginArray;
+            var array = input[0] == JsonConstant.BeginArray;
             switch (type)
             {
                 case TestType.String:

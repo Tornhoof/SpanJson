@@ -7,8 +7,8 @@ namespace SpanJson.Formatters
     {
         public int AllocSize { get; } = 100;
 
-        protected static List<T> Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
-            where TResolver : IJsonFormatterResolver<TResolver>, new()
+        protected static TList Deserialize<TList, T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
+            where TResolver : IJsonFormatterResolver<TResolver>, new() where TList : class, IList<T>, new()
         {
             if (reader.ReadIsNull())
             {
@@ -16,7 +16,7 @@ namespace SpanJson.Formatters
             }
 
             reader.ReadBeginArrayOrThrow();
-            var list = new List<T>();
+            var list = new TList();
             var count = 0;
             while (!reader.TryReadIsEndArrayOrValueSeparator(ref count))
             {
@@ -26,8 +26,8 @@ namespace SpanJson.Formatters
             return list;
         }
 
-        protected static void Serialize<T, TResolver>(ref JsonWriter writer, List<T> value,
-            IJsonFormatter<T, TResolver> formatter) where TResolver : IJsonFormatterResolver<TResolver>, new()
+        protected static void Serialize<TList, T, TResolver>(ref JsonWriter writer, TList value,
+            IJsonFormatter<T, TResolver> formatter) where TResolver : IJsonFormatterResolver<TResolver>, new() where TList : class, IList<T>, new()
         {
             if (value == null)
             {
@@ -54,20 +54,21 @@ namespace SpanJson.Formatters
     /// <summary>
     ///     Used for types which are not built-in
     /// </summary>
-    public sealed class ListFormatter<T, TResolver> : ListFormatter, IJsonFormatter<List<T>, TResolver>
-        where TResolver : IJsonFormatterResolver<TResolver>, new()
+    public sealed class ListFormatter<TList, T, TResolver> : ListFormatter, IJsonFormatter<TList, TResolver>
+        where TResolver : IJsonFormatterResolver<TResolver>, new() where TList : class, IList<T>, new()
+
     {
-        public static readonly ListFormatter<T, TResolver> Default = new ListFormatter<T, TResolver>();
+        public static readonly ListFormatter<TList, T, TResolver> Default = new ListFormatter<TList, T, TResolver>();
 
         private static readonly IJsonFormatter<T, TResolver> DefaultFormatter =
             StandardResolvers.GetResolver<TResolver>().GetFormatter<T>();
 
-        public List<T> Deserialize(ref JsonReader reader)
+        public TList Deserialize(ref JsonReader reader)
         {
-            return Deserialize(ref reader, DefaultFormatter);
+            return Deserialize<TList, T, TResolver>(ref reader, DefaultFormatter);
         }
 
-        public void Serialize(ref JsonWriter writer, List<T> value)
+        public void Serialize(ref JsonWriter writer, TList value)
         {
             Serialize(ref writer, value, DefaultFormatter);
         }

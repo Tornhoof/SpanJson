@@ -18,30 +18,27 @@ namespace SpanJson.Helpers
             return false;
         }
 
-        public static bool TryGetListType(this Type type, out Type elementType)
+        public static bool TryGetTypeOfGenericInterface(this Type type, Type interfaceType, out Type[] argumentTypes)
         {
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+            if (!interfaceType.IsInterface)
             {
-                elementType = type.GetGenericArguments()[0];
+                throw new ArgumentException($"{interfaceType} is not an interface.");
+            }
+
+            if (type.IsGenericType && interfaceType.IsAssignableFrom(type.GetGenericTypeDefinition()))
+            {
+                argumentTypes = type.GetGenericArguments();
                 return true;
             }
 
-            elementType = default;
-            return false;
-        }
-
-        public static bool TryGetDictionaryType(this Type type, out Type keyType, out Type valueType)
-        {
             var interfaces = type.GetInterfaces();
-            if (interfaces.Any(a => a.IsGenericType && typeof(IDictionary<,>).IsAssignableFrom(a.GetGenericTypeDefinition())))
+            if (interfaces.Any(a => a.IsGenericType && interfaceType.IsAssignableFrom(a.GetGenericTypeDefinition())))
             {
-                keyType = type.GetGenericArguments()[0];
-                valueType = type.GetGenericArguments()[1];
+                argumentTypes = type.GetGenericArguments();
                 return true;
             }
 
-            keyType = default;
-            valueType = default;
+            argumentTypes = default;
             return false;
         }
     }
