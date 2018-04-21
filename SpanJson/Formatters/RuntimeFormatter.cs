@@ -13,8 +13,6 @@ namespace SpanJson.Formatters
         private static readonly ConcurrentDictionary<Type, SerializeDelegate> RuntimeSerializerDictionary =
             new ConcurrentDictionary<Type, SerializeDelegate>();
 
-        public int AllocSize { get; } = 100;
-
         public object Deserialize(ref JsonReader reader)
         {
             return reader.ReadDynamic();

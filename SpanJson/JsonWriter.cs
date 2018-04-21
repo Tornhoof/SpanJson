@@ -13,13 +13,6 @@ namespace SpanJson
         private Span<char> _chars;
         private int _pos;
 
-        public JsonWriter(Span<char> initialBuffer)
-        {
-            _arrayToReturnToPool = null;
-            _chars = initialBuffer;
-            _pos = 0;
-        }
-
         public JsonWriter(int initialSize)
         {
             _arrayToReturnToPool = ArrayPool<char>.Shared.Rent(initialSize);
@@ -33,6 +26,8 @@ namespace SpanJson
             Dispose();
             return s;
         }
+
+        public int Position => _pos;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void Grow(int requiredAdditionalCapacity)
@@ -95,6 +90,7 @@ namespace SpanJson
                 {
                     Grow(21);
                 }
+
                 LongMinValue.AsSpan().TryCopyTo(_chars.Slice(pos));
                 pos += LongMinValue.Length;
             }

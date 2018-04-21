@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 using SpanJson.Resolvers;
 
 namespace SpanJson

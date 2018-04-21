@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using SpanJson.Formatters.Dynamic;
 using SpanJson.Helpers;
 
@@ -100,6 +99,7 @@ namespace SpanJson
                 ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
                 return default;
             }
+
             ref readonly var firstChar = ref _chars[pos];
             var neg = false;
             if (firstChar == '-')
@@ -135,6 +135,7 @@ namespace SpanJson
                 ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
                 return default;
             }
+
             ref readonly var firstChar = ref _chars[pos];
             if (firstChar == '-')
             {
@@ -767,7 +768,7 @@ namespace SpanJson
                 case JsonToken.EndArray:
                 {
                     pos++;
-                    if (stack -1 > 0)
+                    if (stack - 1 > 0)
                     {
                         SkipNextSegment(stack - 1);
                     }
@@ -916,6 +917,7 @@ namespace SpanJson
             {
                 ThrowJsonParserException(JsonParserException.ParserError.NestingTooDeep);
             }
+
             switch (nextToken)
             {
                 case JsonToken.Null:

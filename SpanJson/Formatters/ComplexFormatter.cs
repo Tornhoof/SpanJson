@@ -55,15 +55,13 @@ namespace SpanJson.Formatters
                 var valueExpressions = new List<Expression>();
                 // we need to add the separator, but only if a value was written before
                 // we reset the indicator after each seperator write and set it after writing each field
-                // todo find better way, it's not really fast at runtime
                 if (i > 0)
                 {
                     valueExpressions.Add(
                         Expression.IfThen(
                             writeSeperator,
                             Expression.Block(
-                                Expression.Call(writerParameter, seperatorWriteMethodInfo),
-                                Expression.Assign(writeSeperator, Expression.Constant(false)))
+                                Expression.Call(writerParameter, seperatorWriteMethodInfo))
                         ));
                 }
 
@@ -127,34 +125,6 @@ namespace SpanJson.Formatters
             var lambda =
                 Expression.Lambda<SerializeDelegate<T, TResolver>>(blockExpression, writerParameter, valueParameter);
             return lambda.Compile();
-        }
-
-        protected static int EstimateSize<T>()
-        {
-            var queue = new Queue<Type>();
-            var alreadyseen = new HashSet<Type>();
-            queue.Enqueue(typeof(T));
-            var result = 0;
-            while (queue.Count > 0)
-            {
-                var current = queue.Dequeue();
-                if (alreadyseen.Add(current))
-                {
-                    var propertyInfos = current.GetProperties();
-                    foreach (var propertyInfo in propertyInfos)
-                    {
-                        result += propertyInfo.Name.Length + 3; // two quotes + :
-                        result += 20; // find better estimation
-                        if (propertyInfo.PropertyType.IsClass)
-                        {
-                            result += 4;
-                            queue.Enqueue(propertyInfo.PropertyType);
-                        }
-                    }
-                }
-            }
-
-            return result;
         }
 
         protected static DeserializeDelegate<T, TResolver> BuildDeserializeDelegate<T, TResolver>()
@@ -236,8 +206,7 @@ namespace SpanJson.Formatters
         ///     assign to
         /// </summary>
         private static Expression BuildPropertyComparisonSwitchExpression<TResolver>(TResolver resolver, ICollection<JsonMemberInfo> memberInfos, string prefix, int index,
-            ParameterExpression switchValue,
-            Expression returnValue, Expression readerParameter) where TResolver : IJsonFormatterResolver<TResolver>, new()
+            ParameterExpression switchValue, Expression returnValue, Expression readerParameter) where TResolver : IJsonFormatterResolver<TResolver>, new()
         {
             var group = memberInfos.Where(a => (prefix == null || a.Name.StartsWith(prefix)) && a.Name.Length > index).GroupBy(a => a.Name[index]).ToList();
             if (!group.Any())

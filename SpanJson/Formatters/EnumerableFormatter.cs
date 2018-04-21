@@ -6,7 +6,7 @@ namespace SpanJson.Formatters
 {
     public abstract class EnumerableFormatter
     {
-        public int AllocSize { get; } = 100;
+
 
         protected static TEnumerable Deserialize<TEnumerable, T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
             where TResolver : IJsonFormatterResolver<TResolver>, new() where TEnumerable : class, IEnumerable<T>

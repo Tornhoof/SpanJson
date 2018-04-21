@@ -32,9 +32,10 @@ namespace SpanJson.Helpers
             }
 
             var interfaces = type.GetInterfaces();
-            if (interfaces.Any(a => a.IsGenericType && interfaceType.IsAssignableFrom(a.GetGenericTypeDefinition())))
+            var match = interfaces.FirstOrDefault(a => a.IsGenericType && interfaceType.IsAssignableFrom(a.GetGenericTypeDefinition()));
+            if(match != null)
             {
-                argumentTypes = type.GetGenericArguments();
+                argumentTypes = match.GetGenericArguments();
                 return true;
             }
 

@@ -15,7 +15,7 @@ namespace SpanJson
             ExpectedBeginObject,
             ExpectedEndObject,
             ExpectedSeparator,
-            NestingTooDeep,
+            NestingTooDeep
         }
 
         public JsonParserException(ParserError error, int position) : base($"Error reading JSON data: '{error}' at position: '{position}'.")

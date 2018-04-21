@@ -58,8 +58,6 @@ namespace SpanJson.Formatters
         {
             return reader.Read<#= t.Name #>();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 <# if(t.IsValueType) { #>
 	public sealed class Nullable<#= t.Name #>Formatter<TResolver> : NullableFormatter, IJsonFormatter<<#= t.Name #>?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()

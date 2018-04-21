@@ -5,7 +5,7 @@ namespace SpanJson.Formatters
 {
     public abstract class DictionaryFormatter
     {
-        public int AllocSize { get; } = 100;
+
 
         protected static TDictionary Deserialize<TDictionary, T, TResolver>(ref JsonReader reader,
             IJsonFormatter<T, TResolver> formatter)

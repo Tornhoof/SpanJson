@@ -14,8 +14,6 @@
 
         private static readonly SerializeDelegate<T, TResolver> Serializer = BuildSerializeDelegate<T, TResolver>();
 
-        public int AllocSize { get; } = EstimateSize<T>();
-
         public T Deserialize(ref JsonReader reader)
         {
             return Deserializer(ref reader);

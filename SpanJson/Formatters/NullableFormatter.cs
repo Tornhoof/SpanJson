@@ -5,7 +5,7 @@ namespace SpanJson.Formatters
 {
     public abstract class NullableFormatter
     {
-        public int AllocSize { get; } = 100;
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected static T? Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)

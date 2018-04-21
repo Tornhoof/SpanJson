@@ -5,7 +5,7 @@ namespace SpanJson.Formatters
 {
     public abstract class ListFormatter
     {
-        public int AllocSize { get; } = 100;
+
 
         protected static TList Deserialize<TList, T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
             where TResolver : IJsonFormatterResolver<TResolver>, new() where TList : class, IList<T>, new()

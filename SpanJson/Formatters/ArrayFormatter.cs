@@ -8,7 +8,7 @@ namespace SpanJson.Formatters
 {
     public abstract class ArrayFormatter
     {
-        public int AllocSize { get; } = 100;
+
 
         protected static T[] Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
             where TResolver : IJsonFormatterResolver<TResolver>, new()

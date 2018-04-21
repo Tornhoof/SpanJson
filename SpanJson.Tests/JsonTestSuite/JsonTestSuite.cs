@@ -65,7 +65,6 @@ namespace SpanJson.Tests.JsonTestSuite
         [MemberData(nameof(GetTestCases))]
         public void Run(string name, string input, Result result, TestType type)
         {
-            File.AppendAllText(@"c:\temp\tests.txt", name + Environment.NewLine);
             switch (result)
             {
                 case Result.Accepted:

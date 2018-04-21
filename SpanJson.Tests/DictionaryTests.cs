@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Dynamic;
+using System.Linq;
 using System.Text;
 using Xunit;
 
@@ -38,6 +40,20 @@ namespace SpanJson.Tests
             Assert.Equal(dictionary, deserialized);
         }
 
+        [Fact]
+        public void ExpandoObject()
+        {
+            var expando = new ExpandoObject();
+            expando.TryAdd("Hello", "World");
+            var serialized = JsonSerializer.Generic.Serialize(expando);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<ExpandoObject>(serialized);
+            Assert.NotNull(deserialized);
+            var dict = (IDictionary<string, object>) expando;
+            Assert.NotNull(dict);
+            Assert.True(dict.ContainsKey("Hello"));
+
+        }
 
         public class DictionaryValue : IEquatable<DictionaryValue>
         {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Xunit;
+﻿using Xunit;
 
 namespace SpanJson.Tests
 {
@@ -12,8 +9,7 @@ namespace SpanJson.Tests
         [InlineData("Hello \"Univ\"erse", "\"Hello \\\"Univ\\\"erse\"")]
         public void WriteEscaped(string input, string output)
         {
-            Span<char> span = stackalloc char[100];
-            var writer = new JsonWriter(span);
+            var writer = new JsonWriter(100);
             writer.WriteString(input);
             var serialized = writer.ToString();
             Assert.Equal(output, serialized);

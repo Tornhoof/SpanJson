@@ -19,8 +19,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadSByte();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 	public sealed class NullableSByteFormatter<TResolver> : NullableFormatter, IJsonFormatter<SByte?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
@@ -108,8 +106,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadInt16();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 	public sealed class NullableInt16Formatter<TResolver> : NullableFormatter, IJsonFormatter<Int16?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
@@ -197,8 +193,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadInt32();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 	public sealed class NullableInt32Formatter<TResolver> : NullableFormatter, IJsonFormatter<Int32?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
@@ -286,8 +280,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadInt64();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 	public sealed class NullableInt64Formatter<TResolver> : NullableFormatter, IJsonFormatter<Int64?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
@@ -375,8 +367,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadByte();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 	public sealed class NullableByteFormatter<TResolver> : NullableFormatter, IJsonFormatter<Byte?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
@@ -464,8 +454,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadUInt16();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 	public sealed class NullableUInt16Formatter<TResolver> : NullableFormatter, IJsonFormatter<UInt16?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
@@ -553,8 +541,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadUInt32();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 	public sealed class NullableUInt32Formatter<TResolver> : NullableFormatter, IJsonFormatter<UInt32?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
@@ -642,8 +628,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadUInt64();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 	public sealed class NullableUInt64Formatter<TResolver> : NullableFormatter, IJsonFormatter<UInt64?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
@@ -731,8 +715,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadSingle();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 	public sealed class NullableSingleFormatter<TResolver> : NullableFormatter, IJsonFormatter<Single?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
@@ -820,8 +802,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadDouble();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 	public sealed class NullableDoubleFormatter<TResolver> : NullableFormatter, IJsonFormatter<Double?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
@@ -909,8 +889,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadDecimal();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 	public sealed class NullableDecimalFormatter<TResolver> : NullableFormatter, IJsonFormatter<Decimal?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
@@ -998,8 +976,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadBoolean();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 	public sealed class NullableBooleanFormatter<TResolver> : NullableFormatter, IJsonFormatter<Boolean?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
@@ -1087,8 +1063,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadChar();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 	public sealed class NullableCharFormatter<TResolver> : NullableFormatter, IJsonFormatter<Char?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
@@ -1176,8 +1150,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadDateTime();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 	public sealed class NullableDateTimeFormatter<TResolver> : NullableFormatter, IJsonFormatter<DateTime?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
@@ -1265,8 +1237,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadDateTimeOffset();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 	public sealed class NullableDateTimeOffsetFormatter<TResolver> : NullableFormatter, IJsonFormatter<DateTimeOffset?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
@@ -1354,8 +1324,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadTimeSpan();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 	public sealed class NullableTimeSpanFormatter<TResolver> : NullableFormatter, IJsonFormatter<TimeSpan?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
@@ -1443,8 +1411,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadGuid();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 	public sealed class NullableGuidFormatter<TResolver> : NullableFormatter, IJsonFormatter<Guid?, TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
@@ -1537,8 +1503,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadString();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 
     public sealed class StringArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<String[], TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -1588,8 +1552,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadVersion();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 
     public sealed class VersionArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Version[], TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -1639,8 +1601,6 @@ namespace SpanJson.Formatters
         {
             return reader.ReadUri();
         }
-
-		public int AllocSize {get;} = 100;
 	} 
 
     public sealed class UriArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Uri[], TResolver> where TResolver : IJsonFormatterResolver<TResolver>, new()

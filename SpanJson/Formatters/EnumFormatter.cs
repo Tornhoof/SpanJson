@@ -5,15 +5,13 @@ using System.Reflection;
 
 namespace SpanJson.Formatters
 {
-    public class EnumFormatter<T, TResolver> : IJsonFormatter<T, TResolver> where T : struct
+    public sealed class EnumFormatter<T, TResolver> : IJsonFormatter<T, TResolver> where T : struct
         where TResolver : IJsonFormatterResolver<TResolver>, new()
     {
         private static readonly SerializeDelegate Serializer = BuildSerializeDelegate();
         private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
         public static readonly EnumFormatter<T, TResolver> Default = new EnumFormatter<T, TResolver>();
 
-
-        public int AllocSize { get; } = 100;
 
         public T Deserialize(ref JsonReader reader)
         {
