@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -81,11 +82,6 @@ namespace SpanJson.Resolvers
 
         private static string MakeCamelCase(string name)
         {
-            if (char.IsLower(name[0]))
-            {
-                return name;
-            }
-
             return string.Concat(char.ToLowerInvariant(name[0]), name.Substring(1));
         }
 

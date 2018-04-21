@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SpanJson.Resolvers;
 using Xunit;
+using Xunit.Sdk;
 
 namespace SpanJson.Tests
 {
@@ -19,7 +20,7 @@ namespace SpanJson.Tests
             public int Age { get; set; }
         }
 
-        [Fact]
+        [Fact]        
         public void NoNameMatches()
         {
             var parent = new Parent {Age = 30, Name = "Adam", Children = new List<Child> {new Child {Name = "Cain", Age = 5}}};
