@@ -1,5 +1,6 @@
 # SpanJson
-SpanJson
+[![Build status](https://ci.appveyor.com/api/projects/status/h49loskhn09g03in/branch/master?svg=true)](https://ci.appveyor.com/project/Tornhoof/spanjson/branch/master)
+
 Sandbox for playing around with Span and JSON Serialization.
 This is basically the ValueStringBuilder from CoreFx with the TryFormat API for formatting values with Span<char>.
 The actual serializers are a T4 Template (BclFormatter.tt).
