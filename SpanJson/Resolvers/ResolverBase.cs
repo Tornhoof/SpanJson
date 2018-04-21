@@ -82,6 +82,11 @@ namespace SpanJson.Resolvers
 
         private static string MakeCamelCase(string name)
         {
+            if (char.IsLower(name[0]))
+            {
+                return name;
+            }
+
             return string.Concat(char.ToLowerInvariant(name[0]), name.Substring(1));
         }
 
