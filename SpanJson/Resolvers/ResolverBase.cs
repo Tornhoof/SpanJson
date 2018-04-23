@@ -49,7 +49,9 @@ namespace SpanJson.Resolvers
 
         protected virtual JsonMemberInfo[] BuildMembers(Type type)
         {
-            var publicMembers = type.GetFields().Cast<MemberInfo>().Concat(type.GetProperties());
+            var publicMembers = type.GetFields(BindingFlags.Public | BindingFlags.Instance)
+                .Where(a => !a.IsLiteral).Cast<MemberInfo>().Concat(
+                    type.GetProperties(BindingFlags.Public | BindingFlags.Instance));
             var result = new List<JsonMemberInfo>();
             foreach (var memberInfo in publicMembers)
             {
