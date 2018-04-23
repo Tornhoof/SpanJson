@@ -1,5 +1,8 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Attributes.Jobs;
 using SpanJson.Benchmarks.Fixture;
 using SpanJson.Benchmarks.Models;
 using SpanJson.Benchmarks.Serializers;
@@ -7,7 +10,7 @@ using SpanJson.Benchmarks.Serializers;
 namespace SpanJson.Benchmarks
 {
     [MemoryDiagnoser]
-    //[ShortRunJob]
+    [ShortRunJob]
     public class SelectedBenchmarks
     {
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
@@ -25,30 +28,52 @@ namespace SpanJson.Benchmarks
 
 
         private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
-
-        [Benchmark]
-        public Answer DeserializeAnswerWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
-        }
-
-        [Benchmark]
-        public Answer DeserializeAnswerWithJilSerializer()
-        {
-            return JilSerializer.Deserialize<Answer>(AnswerSerializedString);
-        }
-
-        [Benchmark]
-        public Answer DeserializeAnswerWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Deserialize<Answer>(AnswerSerializedByteArray);
-        }
+        private static readonly StringBuilder StringBuilder = new StringBuilder();
 
         //[Benchmark]
-        //public string SerializeAnswerWithSpanJsonSerializer()
+        //public Answer DeserializeAnswerWithSpanJsonSerializer()
         //{
-        //    return SpanJsonSerializer.Serialize(Answer);
+        //    return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
         //}
+
+        //[Benchmark]
+        //public async Task<Answer> DeserializeAnswerWithSpanJsonSerializerAsync()
+        //{
+        //    using (var tr = new StringReader(AnswerSerializedString))
+        //    {
+        //        return await JsonSerializer.Generic.DeserializeAsync<Answer>(tr);
+        //    }
+        //}
+
+        //[Benchmark]
+        //public Answer DeserializeAnswerWithJilSerializer()
+        //{
+        //    return JilSerializer.Deserialize<Answer>(AnswerSerializedString);
+        //}
+
+        //[Benchmark]
+        //public Answer DeserializeAnswerWithUtf8JsonSerializer()
+        //{
+        //    return Utf8JsonSerializer.Deserialize<Answer>(AnswerSerializedByteArray);
+        //}
+
+        [Benchmark]
+        public string SerializeAnswerWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Serialize(Answer);
+        }
+
+        [Benchmark]
+        public async Task<StringBuilder> SerializeAnswerWithSpanJsonSerializerAsync()
+        {
+            StringBuilder.Clear();
+            using (var tw = new StringWriter(StringBuilder))
+            {
+                await JsonSerializer.Generic.SerializeAsync(Answer, tw);
+
+            }
+            return StringBuilder;
+        }
 
         //[Benchmark]
         //public string SerializeAnswerWithJilSerializer()

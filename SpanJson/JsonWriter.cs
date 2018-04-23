@@ -29,6 +29,8 @@ namespace SpanJson
 
         public int Position => _pos;
 
+        public char[] Data => _arrayToReturnToPool;
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void Grow(int requiredAdditionalCapacity)
         {

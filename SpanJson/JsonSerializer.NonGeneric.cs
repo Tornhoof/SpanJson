@@ -1,6 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.IO;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
+using System.Threading.Tasks;
 using SpanJson.Resolvers;
 
 namespace SpanJson
@@ -14,10 +20,19 @@ namespace SpanJson
                 return Serialize<ExcludeNullsOriginalCaseResolver>(input);
             }
 
-
             public static object Deserialize(ReadOnlySpan<char> input, Type type)
             {
                 return Deserialize<ExcludeNullsOriginalCaseResolver>(input, type);
+            }
+
+            public static Task SerializeAsync(object input, TextWriter writer, CancellationToken cancellationToken = default)
+            {
+                return SerializeAsync<ExcludeNullsOriginalCaseResolver>(input, writer, cancellationToken);
+            }
+
+            public static Task<object> DeserializeAsync(TextReader reader, Type type, CancellationToken cancellationToken = default)
+            {
+                return DeserializeAsync<ExcludeNullsOriginalCaseResolver>(reader, type, cancellationToken);
             }
 
             public static object Deserialize<TResolver>(ReadOnlySpan<char> input, Type type) where TResolver : IJsonFormatterResolver<TResolver>, new()
@@ -28,6 +43,16 @@ namespace SpanJson
             public static string Serialize<TResolver>(object input) where TResolver : IJsonFormatterResolver<TResolver>, new()
             {
                 return Inner<TResolver>.InnerSerialize(input);
+            }
+
+            public static Task<object> DeserializeAsync<TResolver>(TextReader reader, Type type, CancellationToken cancellationToken = default) where TResolver : IJsonFormatterResolver<TResolver>, new()
+            {
+                return Inner<TResolver>.InnerDeserializeAsync(reader, type, cancellationToken);
+            }
+
+            public static Task SerializeAsync<TResolver>(object input, TextWriter writer, CancellationToken cancellationToken = default) where TResolver : IJsonFormatterResolver<TResolver>, new()
+            {
+                return Inner<TResolver>.InnerSerializeAsync(input, writer, cancellationToken);
             }
 
 
@@ -63,9 +88,35 @@ namespace SpanJson
                     return invoker.Deserializer(input);
                 }
 
+                public static Task InnerSerializeAsync(object input, TextWriter writer, CancellationToken cancellationToken = default)
+                {
+                    if (input == null)
+                    {
+                        return Task.CompletedTask;
+                    }
+
+                    // ReSharper disable ConvertClosureToMethodGroup
+                    var invoker = Invokers.GetOrAdd(input.GetType(), x => BuildInvoker(x));
+                    // ReSharper restore ConvertClosureToMethodGroup
+                    return invoker.SerializerAsync(input, writer, cancellationToken);
+                }
+
+                public static Task<object> InnerDeserializeAsync(TextReader reader, Type type, CancellationToken cancellationToken = default)
+                {
+                    if (reader == null)
+                    {
+                        return Task.FromResult<object>(null);
+                    }
+
+                    // ReSharper disable ConvertClosureToMethodGroup
+                    var invoker = Invokers.GetOrAdd(type, x => BuildInvoker(x));
+                    // ReSharper restore ConvertClosureToMethodGroup
+                    return invoker.DeserializerAsync(reader, cancellationToken);
+                }
+
                 private static Invoker BuildInvoker(Type type)
                 {
-                    return new Invoker(BuildSerializer(type), BuildDeserializer(type));
+                    return new Invoker(BuildSerializer(type), BuildDeserializer(type), BuildAsyncSerializer(type), BuildAsyncDeserializer(type));
                 }
 
                 private static SerializeDelegate BuildSerializer(Type type)
@@ -94,21 +145,60 @@ namespace SpanJson
                     return lambdaExpression.Compile();
                 }
 
+                private static SerializeDelegateAsync BuildAsyncSerializer(Type type)
+                {
+                    var inputParam = Expression.Parameter(typeof(object), "input");
+                    var typedInputParam = Expression.Convert(inputParam, type);
+                    var textWriterParam = Expression.Parameter(typeof(TextWriter), "tw");
+                    var cancellationTokenParam = Expression.Parameter(typeof(CancellationToken), "cancellationToken");
+                    var lambdaExpression =
+                        Expression.Lambda<SerializeDelegateAsync>(
+                            Expression.Call(typeof(Generic), nameof(Generic.SerializeAsync),
+                                new[] { type, typeof(TResolver) }, typedInputParam, textWriterParam, cancellationTokenParam),
+                            inputParam, textWriterParam, cancellationTokenParam);
+                    return lambdaExpression.Compile();
+                }
+
+                private static DeserializeDelegateAsync BuildAsyncDeserializer(Type type)
+                {
+                    var inputParam = Expression.Parameter(typeof(TextReader), "tr");
+                    var cancellationTokenParam = Expression.Parameter(typeof(CancellationToken), "cancellationToken");
+                    Expression genericCall = Expression.Call(typeof(Inner<>).MakeGenericType(typeof(TResolver)), nameof(GenericObjectWrapper),
+                        new[] {type}, inputParam, cancellationTokenParam);
+                    var lambdaExpression = Expression.Lambda<DeserializeDelegateAsync>(genericCall, inputParam, cancellationTokenParam);
+                    return lambdaExpression.Compile();
+                }
+
+                /// <summary>
+                /// This is necessary to convert Task of T to Task of object
+                /// </summary>
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                private static async Task<object> GenericObjectWrapper<T>(TextReader reader, CancellationToken cancellationToken = default)
+                {
+                    return await Generic.DeserializeAsync<T, TResolver>(reader, cancellationToken).ConfigureAwait(false);
+                }
+
                 private delegate object DeserializeDelegate(ReadOnlySpan<char> input);
+                private delegate string SerializeDelegate(object input);
+
+                private delegate Task<object> DeserializeDelegateAsync(TextReader textReader, CancellationToken cancellationToken = default);
+                private delegate Task SerializeDelegateAsync(object input, TextWriter writer, CancellationToken cancellationToken = default);
 
                 private readonly struct Invoker
                 {
-                    public Invoker(SerializeDelegate serializer, DeserializeDelegate deserializer)
+                    public Invoker(SerializeDelegate serializer, DeserializeDelegate deserializer, SerializeDelegateAsync serializeDelegateAsync, DeserializeDelegateAsync deserializeDelegateAsync)
                     {
                         Serializer = serializer;
+                        SerializerAsync = serializeDelegateAsync;
                         Deserializer = deserializer;
+                        DeserializerAsync = deserializeDelegateAsync;
                     }
 
                     public readonly SerializeDelegate Serializer;
                     public readonly DeserializeDelegate Deserializer;
+                    public readonly SerializeDelegateAsync SerializerAsync;
+                    public readonly DeserializeDelegateAsync DeserializerAsync;
                 }
-
-                private delegate string SerializeDelegate(object input);
             }
         }
     }
