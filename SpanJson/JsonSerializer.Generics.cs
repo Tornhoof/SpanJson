@@ -83,7 +83,7 @@ namespace SpanJson
                     {
                         // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
                         ArrayPool<char>.Shared.Return(data);
-                        return new ValueTask(Task.CompletedTask); // not sure about this, this allocates a task after all
+                        return new ValueTask();
                     }
 
                     return AwaitSerializeAsync(result, data);
