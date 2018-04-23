@@ -9,20 +9,20 @@ using System.Runtime.CompilerServices;
 
 namespace SpanJson
 {
-    public class DynamicMetaObjectProviderFormatter<T, TResolver> : BaseFormatter, IJsonFormatter<T, TResolver> where T : IDynamicMetaObjectProvider
-        where TResolver : IJsonFormatterResolver<TResolver>, new()        
+    public class DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T, TSymbol, TResolver> where T : IDynamicMetaObjectProvider
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct  
     {
         private static readonly Func<T> CreateFunctor = BuildCreateFunctor<T>(null);
 
-        public static readonly DynamicMetaObjectProviderFormatter<T, TResolver> Default =
-            new DynamicMetaObjectProviderFormatter<T, TResolver>();
+        public static readonly DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver> Default =
+            new DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver>();
 
-        private static readonly TResolver Resolver = StandardResolvers.GetResolver<TResolver>();
+        private static readonly TResolver Resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
 
-        private static readonly IJsonFormatter<T, TResolver> DefaultFormatter = Resolver.GetFormatter<T>();
+        private static readonly IJsonFormatter<T, TSymbol, TResolver> DefaultFormatter = Resolver.GetFormatter<T>();
 
 
-        public T Deserialize(ref JsonReader reader)
+        public T Deserialize(ref JsonReader<TSymbol> reader)
         {
             if (reader.ReadIsNull())
             {
@@ -42,7 +42,7 @@ namespace SpanJson
         }
 
 
-        public void Serialize(ref JsonWriter writer, T value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T value)
         {
             if (value == null)
             {
@@ -66,7 +66,7 @@ namespace SpanJson
                     writer.WriteValueSeparator();
                 }
                 writer.WriteName(memberInfo.Name);
-                RuntimeFormatter<TResolver>.Default.Serialize(ref writer, child);
+                RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child);
             }
             writer.WriteEndObject();
         }

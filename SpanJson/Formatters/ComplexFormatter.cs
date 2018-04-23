@@ -17,19 +17,19 @@ namespace SpanJson.Formatters
         ///     if the type is sealed or struct, then the type during generation is the type we can use for static lookup
         ///     else we need to do runtime lookup
         /// </summary>
-        protected static SerializeDelegate<T, TResolver> BuildSerializeDelegate<T, TResolver>()
-            where TResolver : IJsonFormatterResolver<TResolver>, new()
+        protected static SerializeDelegate<T, TSymbol, TResolver> BuildSerializeDelegate<T, TSymbol, TResolver>()
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
-            var resolver = StandardResolvers.GetResolver<TResolver>();
+            var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
             var memberInfos = resolver.GetMemberInfos<T>().Where(a => a.CanRead).ToList();
-            var writerParameter = Expression.Parameter(typeof(JsonWriter).MakeByRefType(), "writer");
+            var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
 
             var expressions = new List<Expression>();
-            var propertyNameWriterMethodInfo = FindMethod(typeof(JsonWriter), nameof(JsonWriter.WriteName));
-            var seperatorWriteMethodInfo = FindMethod(typeof(JsonWriter), nameof(JsonWriter.WriteValueSeparator));
+            var propertyNameWriterMethodInfo = FindMethod(typeof(JsonWriter<TSymbol>), nameof(JsonWriter<TSymbol>.WriteName));
+            var seperatorWriteMethodInfo = FindMethod(typeof(JsonWriter<TSymbol>), nameof(JsonWriter<TSymbol>.WriteValueSeparator));
             expressions.Add(Expression.Call(writerParameter,
-                FindMethod(writerParameter.Type, nameof(JsonWriter.WriteBeginObject))));
+                FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteBeginObject))));
             var isReferenceOrContainsReference = RuntimeHelpers.IsReferenceOrContainsReferences<T>();
             var writeSeperator = Expression.Variable(typeof(bool), "writeSeperator");
             for (var i = 0; i < memberInfos.Count; i++)
@@ -44,7 +44,7 @@ namespace SpanJson.Formatters
                 var memberExpression = Expression.PropertyOrField(valueParameter, memberInfo.MemberName);
                 if (isReferenceOrContainsReference && !IsSealedOrStruct(memberInfo.MemberType)) // decide at runtime
                 {
-                    var backupFormatter = RuntimeFormatter<TResolver>.Default;
+                    var backupFormatter = RuntimeFormatter<TSymbol, TResolver>.Default;
                     runtimeFormatterExpression = Expression.Constant(backupFormatter);
                     runtimeSerializeMethodInfo = backupFormatter.GetType().GetMethod("Serialize");
                     // switch based on type to the static one or the runtime one, assuming the static one is the normal case
@@ -79,7 +79,7 @@ namespace SpanJson.Formatters
                 {
                     if (memberInfo.MemberType.IsClass)
                     {
-                        var writeNullMi = writerParameter.Type.GetMethod(nameof(JsonWriter.WriteNull));
+                        var writeNullMi = writerParameter.Type.GetMethod(nameof(JsonWriter<TSymbol>.WriteNull));
                         serializerCall = Expression.IfThenElse(Expression.ReferenceEqual(memberExpression, Expression.Constant(null)),
                             Expression.Call(writerParameter, writeNullMi), serializerCall);
                     }
@@ -130,24 +130,24 @@ namespace SpanJson.Formatters
             }
 
             expressions.Add(Expression.Call(writerParameter,
-                FindMethod(writerParameter.Type, nameof(JsonWriter.WriteEndObject))));
+                FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteEndObject))));
             var blockExpression = Expression.Block(new[] {writeSeperator}, expressions);
             var lambda =
-                Expression.Lambda<SerializeDelegate<T, TResolver>>(blockExpression, writerParameter, valueParameter);
+                Expression.Lambda<SerializeDelegate<T, TSymbol, TResolver>>(blockExpression, writerParameter, valueParameter);
             return lambda.Compile();
         }
 
-        protected static DeserializeDelegate<T, TResolver> BuildDeserializeDelegate<T, TResolver>()
-            where TResolver : IJsonFormatterResolver<TResolver>, new()
+        protected static DeserializeDelegate<T, TSymbol, TResolver> BuildDeserializeDelegate<T, TSymbol, TResolver>()
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
-            var resolver = StandardResolvers.GetResolver<TResolver>();
+            var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
             var memberInfos = resolver.GetMemberInfos<T>().Where(a => a.CanWrite).ToList();
-            var readerParameter = Expression.Parameter(typeof(JsonReader).MakeByRefType(), "reader");
+            var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
             // can't deserialize abstract or interface
             if (memberInfos.Any(a => a.MemberType.IsAbstract || a.MemberType.IsInterface))
             {
                 return Expression
-                    .Lambda<DeserializeDelegate<T, TResolver>>(Expression.Block(
+                    .Lambda<DeserializeDelegate<T, TSymbol, TResolver>>(Expression.Block(
                             Expression.Throw(Expression.Constant(new NotSupportedException($"{typeof(T).Name} contains abstract or interface members."))),
                             Expression.Default(typeof(T))),
                         readerParameter).Compile();
@@ -155,7 +155,7 @@ namespace SpanJson.Formatters
 
             if (typeof(T).IsAbstract)
             {
-                return Expression.Lambda<DeserializeDelegate<T, TResolver>>(Expression.Default(typeof(T)), readerParameter).Compile();
+                return Expression.Lambda<DeserializeDelegate<T, TSymbol, TResolver>>(Expression.Default(typeof(T)), readerParameter).Compile();
             }
 
             if (memberInfos.Count == 0)
@@ -175,21 +175,21 @@ namespace SpanJson.Formatters
                     createExpression = Expression.Default(typeof(T));
                 }
 
-                return Expression.Lambda<DeserializeDelegate<T, TResolver>>(createExpression, readerParameter).Compile();
+                return Expression.Lambda<DeserializeDelegate<T, TSymbol, TResolver>>(createExpression, readerParameter).Compile();
             }
 
             var returnValue = Expression.Variable(typeof(T), "result");
             var switchValue = Expression.Variable(typeof(ReadOnlySpan<char>), "switchValue");
             var switchValueAssignExpression = Expression.Assign(switchValue,
-                Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader.ReadNameSpan))));
+                Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader<TSymbol>.ReadNameSpan))));
             var switchExpression = Expression.Block(new[] {switchValue}, switchValueAssignExpression,
-                BuildPropertyComparisonSwitchExpression(resolver, memberInfos, null, 0, switchValue, returnValue, readerParameter));
+                BuildPropertyComparisonSwitchExpression<TSymbol, TResolver>(resolver, memberInfos, null, 0, switchValue, returnValue, readerParameter));
             var countExpression = Expression.Parameter(typeof(int), "count");
             var abortExpression = Expression.IsTrue(Expression.Call(readerParameter,
-                readerParameter.Type.GetMethod(nameof(JsonReader.TryReadIsEndObjectOrValueSeparator)),
+                readerParameter.Type.GetMethod(nameof(JsonReader<TSymbol>.TryReadIsEndObjectOrValueSeparator)),
                 countExpression));
             var readBeginObject = Expression.Call(readerParameter,
-                FindMethod(readerParameter.Type, nameof(JsonReader.ReadBeginObjectOrThrow)));
+                FindMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadBeginObjectOrThrow)));
             var loopAbort = Expression.Label(typeof(void));
             var returnTarget = Expression.Label(returnValue.Type);
             var block = Expression.Block(new[] {returnValue, countExpression}, readBeginObject,
@@ -201,7 +201,7 @@ namespace SpanJson.Formatters
                 Expression.Label(returnTarget, returnValue)
             );
 
-            var lambda = Expression.Lambda<DeserializeDelegate<T, TResolver>>(block, readerParameter);
+            var lambda = Expression.Lambda<DeserializeDelegate<T, TSymbol, TResolver>>(block, readerParameter);
             return lambda.Compile();
         }
 
@@ -219,9 +219,9 @@ namespace SpanJson.Formatters
         ///     We group the field names by the nth character and nest the switch tables to find the appropriate field/property to
         ///     assign to
         /// </summary>
-        private static Expression BuildPropertyComparisonSwitchExpression<TResolver>(TResolver resolver, ICollection<JsonMemberInfo> memberInfos, string prefix,
+        private static Expression BuildPropertyComparisonSwitchExpression<TSymbol, TResolver>(TResolver resolver, ICollection<JsonMemberInfo> memberInfos, string prefix,
             int index,
-            ParameterExpression switchValue, Expression returnValue, Expression readerParameter) where TResolver : IJsonFormatterResolver<TResolver>, new()
+            ParameterExpression switchValue, Expression returnValue, Expression readerParameter) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             var group = memberInfos.Where(a => (prefix == null || a.Name.StartsWith(prefix)) && a.Name.Length > index).GroupBy(a => a.Name[index]).ToList();
             if (!group.Any())
@@ -232,7 +232,7 @@ namespace SpanJson.Formatters
             var cases = new List<SwitchCase>();
             var equalityMethod =
                 typeof(ComplexFormatter).GetMethod(nameof(StringEquals), BindingFlags.NonPublic | BindingFlags.Static);
-            var defaultValue = Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader.SkipNextSegment)));
+            var defaultValue = Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader<TSymbol>.SkipNextSegment)));
             foreach (var groupedMemberInfos in group)
             {
                 var memberInfosPerChar = groupedMemberInfos.Count();
@@ -255,7 +255,7 @@ namespace SpanJson.Formatters
                 {
                     var nextPrefix = prefix + groupedMemberInfos.Key;
                     var nextSwitch =
-                        BuildPropertyComparisonSwitchExpression(resolver, memberInfos, nextPrefix, index + 1, switchValue, returnValue, readerParameter);
+                        BuildPropertyComparisonSwitchExpression<TSymbol, TResolver>(resolver, memberInfos, nextPrefix, index + 1, switchValue, returnValue, readerParameter);
                     var exactMatch = groupedMemberInfos.SingleOrDefault(a => a.Name == nextPrefix);
                     Expression directMatchExpression = null;
                     if (exactMatch != null)
@@ -295,11 +295,11 @@ namespace SpanJson.Formatters
             return span[index];
         }
 
-        protected delegate T DeserializeDelegate<out T, in TResolver>(ref JsonReader reader)
-            where TResolver : IJsonFormatterResolver<TResolver>, new();
+        protected delegate T DeserializeDelegate<out T, TSymbol, in TResolver>(ref JsonReader<TSymbol> reader)
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct;
 
 
-        protected delegate void SerializeDelegate<in T, in TResolver>(ref JsonWriter writer, T value)
-            where TResolver : IJsonFormatterResolver<TResolver>, new();
+        protected delegate void SerializeDelegate<in T, TSymbol, in TResolver>(ref JsonWriter<TSymbol> writer, T value)
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct;
     }
 }

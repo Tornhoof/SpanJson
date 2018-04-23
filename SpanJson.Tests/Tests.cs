@@ -12,17 +12,7 @@ namespace SpanJson.Tests
     {
         [Theory]
         [MemberData(nameof(GetModels))]
-        public void CanSerializeAll(Type modelType)
-        {
-            var fixture = new ExpressionTreeFixture();
-            var model = fixture.Create(modelType);
-            var serialized = JsonSerializer.NonGeneric.Serialize(model);
-            Assert.NotNull(serialized);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetModels))]
-        public void CanDeserializeAll(Type modelType)
+        public void CanSerializeDeserializeAll(Type modelType)
         {
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);

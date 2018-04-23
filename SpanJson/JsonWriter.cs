@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Buffers.Text;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -7,7 +8,7 @@ using SpanJson.Helpers;
 
 namespace SpanJson
 {
-    public ref struct JsonWriter
+    public ref struct JsonWriter<T> where T : struct 
     {
         private char[] _arrayToReturnToPool;
         private Span<char> _chars;

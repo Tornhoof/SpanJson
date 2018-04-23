@@ -6,8 +6,8 @@ namespace SpanJson.Formatters
 {
     public abstract class EnumerableFormatter : BaseFormatter
     {
-        protected static TEnumerable Deserialize<TEnumerable, T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
-            where TResolver : IJsonFormatterResolver<TResolver>, new() where TEnumerable : class, IEnumerable<T>
+        protected static TEnumerable Deserialize<TEnumerable, T, TSymbol, TResolver>(ref JsonReader<TSymbol> reader, IJsonFormatter<T, TSymbol, TResolver> formatter)
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TEnumerable : class, IEnumerable<T>
         {
             if (reader.ReadIsNull())
             {
@@ -17,8 +17,8 @@ namespace SpanJson.Formatters
             throw new NotImplementedException(); // generic IEnumerable<> deserialization is not supported
         }
 
-        protected static void Serialize<TEnumerable, T, TResolver>(ref JsonWriter writer, TEnumerable value,
-            IJsonFormatter<T, TResolver> formatter) where TResolver : IJsonFormatterResolver<TResolver>, new() where TEnumerable : class, IEnumerable<T>
+        protected static void Serialize<TEnumerable, T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, TEnumerable value,
+            IJsonFormatter<T, TSymbol, TResolver> formatter) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TEnumerable : class, IEnumerable<T>
         {
             if (value == null)
             {
@@ -55,21 +55,21 @@ namespace SpanJson.Formatters
     /// <summary>
     ///     Used for types which are not built-in
     /// </summary>
-    public sealed class EnumerableFormatter<TEnumerable, T, TResolver> : EnumerableFormatter, IJsonFormatter<TEnumerable, TResolver>
-        where TResolver : IJsonFormatterResolver<TResolver>, new() where TEnumerable : class, IEnumerable<T>
+    public sealed class EnumerableFormatter<TEnumerable, T, TSymbol, TResolver> : EnumerableFormatter, IJsonFormatter<TEnumerable, TSymbol, TResolver>
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TEnumerable : class, IEnumerable<T>
 
     {
-        public static readonly EnumerableFormatter<TEnumerable, T, TResolver> Default = new EnumerableFormatter<TEnumerable, T, TResolver>();
+        public static readonly EnumerableFormatter<TEnumerable, T, TSymbol, TResolver> Default = new EnumerableFormatter<TEnumerable, T, TSymbol, TResolver>();
 
-        private static readonly IJsonFormatter<T, TResolver> DefaultFormatter =
-            StandardResolvers.GetResolver<TResolver>().GetFormatter<T>();
+        private static readonly IJsonFormatter<T, TSymbol, TResolver> DefaultFormatter =
+            StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
 
-        public TEnumerable Deserialize(ref JsonReader reader)
+        public TEnumerable Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return Deserialize<TEnumerable, T, TResolver>(ref reader, DefaultFormatter);
+            return Deserialize<TEnumerable, T, TSymbol, TResolver>(ref reader, DefaultFormatter);
         }
 
-        public void Serialize(ref JsonWriter writer, TEnumerable value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, TEnumerable value)
         {
             Serialize(ref writer, value, DefaultFormatter);
         }

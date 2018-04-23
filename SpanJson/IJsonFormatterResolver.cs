@@ -10,10 +10,10 @@ namespace SpanJson
         JsonMemberInfo[] GetMemberInfos(Type type);
     }
 
-    public interface IJsonFormatterResolver<in TResolver> : IJsonFormatterResolver
-        where TResolver : IJsonFormatterResolver<TResolver>, new()
+    public interface IJsonFormatterResolver<TSymbol, in TResolver> : IJsonFormatterResolver
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
-        IJsonFormatter<T, TResolver> GetFormatter<T>();
+        IJsonFormatter<T, TSymbol, TResolver> GetFormatter<T>();
         JsonMemberInfo[] GetMemberInfos<T>();
 
         JsonMemberInfo[] GetDynamicMemberInfos(IDynamicMetaObjectProvider provider);

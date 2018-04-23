@@ -5,34 +5,34 @@ using System.Reflection;
 
 namespace SpanJson.Formatters
 {
-    public sealed class EnumFormatter<T, TResolver> : BaseFormatter, IJsonFormatter<T, TResolver> where T : struct
-        where TResolver : IJsonFormatterResolver<TResolver>, new()
+    public sealed class EnumFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T, TSymbol, TResolver> where T : struct
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
         private static readonly SerializeDelegate Serializer = BuildSerializeDelegate();
         private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
-        public static readonly EnumFormatter<T, TResolver> Default = new EnumFormatter<T, TResolver>();
+        public static readonly EnumFormatter<T, TSymbol, TResolver> Default = new EnumFormatter<T, TSymbol, TResolver>();
 
 
-        public T Deserialize(ref JsonReader reader)
+        public T Deserialize(ref JsonReader<TSymbol> reader)
         {
             return Deserializer(ref reader);
         }
 
-        public void Serialize(ref JsonWriter writer, T value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T value)
         {
             Serializer(ref writer, value);
         }
 
         private static DeserializeDelegate BuildDeserializeDelegate()
         {
-            var readerParameter = Expression.Parameter(typeof(JsonReader).MakeByRefType(), "reader");
+            var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
 
             var jsonValue = Expression.Variable(typeof(string), "jsonValue");
             var returnValue = Expression.Variable(typeof(T), "returnValue");
             var expressions = new List<Expression>
             {
                 Expression.Assign(jsonValue,
-                    Expression.Call(readerParameter, FindMethod(readerParameter.Type, nameof(JsonReader.ReadString))))
+                    Expression.Call(readerParameter, FindMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadString))))
             };
             var cases = new List<SwitchCase>();
             foreach (var value in Enum.GetValues(typeof(T)))
@@ -56,7 +56,7 @@ namespace SpanJson.Formatters
 
         private static SerializeDelegate BuildSerializeDelegate()
         {
-            var writerParameter = Expression.Parameter(typeof(JsonWriter).MakeByRefType(), "writer");
+            var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
 
             var cases = new List<SwitchCase>();
@@ -65,7 +65,7 @@ namespace SpanJson.Formatters
                 var switchCase =
                     Expression.SwitchCase(
                         Expression.Call(writerParameter,
-                            FindMethod(writerParameter.Type, nameof(JsonWriter.WriteString)),
+                            FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteString)),
                             Expression.Constant(value.ToString())), Expression.Constant(value));
                 cases.Add(switchCase);
             }
@@ -83,8 +83,8 @@ namespace SpanJson.Formatters
             return type.GetMethod(name);
         }
 
-        private delegate T DeserializeDelegate(ref JsonReader reader);
+        private delegate T DeserializeDelegate(ref JsonReader<TSymbol> reader);
 
-        private delegate void SerializeDelegate(ref JsonWriter writer, T value);
+        private delegate void SerializeDelegate(ref JsonWriter<TSymbol> writer, T value);
     }
 }

@@ -6,9 +6,9 @@ namespace SpanJson.Formatters
 {
     public abstract class DictionaryFormatter : BaseFormatter
     {
-        protected static TDictionary Deserialize<TDictionary, T, TResolver>(ref JsonReader reader,
-            IJsonFormatter<T, TResolver> formatter, Func<TDictionary> createFunctor)
-            where TResolver : IJsonFormatterResolver<TResolver>, new() where TDictionary : class, IDictionary<string, T>
+        protected static TDictionary Deserialize<TDictionary, T, TSymbol, TResolver>(ref JsonReader<TSymbol> reader,
+            IJsonFormatter<T, TSymbol, TResolver> formatter, Func<TDictionary> createFunctor)
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : class, IDictionary<string, T>
         {
             if (reader.ReadIsNull())
             {
@@ -28,8 +28,8 @@ namespace SpanJson.Formatters
             return result;
         }
 
-        protected static void Serialize<TDictionary, T, TResolver>(ref JsonWriter writer, TDictionary value, IJsonFormatter<T, TResolver> formatter)
-            where TResolver : IJsonFormatterResolver<TResolver>, new() where TDictionary : class, IDictionary<string, T>
+        protected static void Serialize<TDictionary, T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, TDictionary value, IJsonFormatter<T, TSymbol, TResolver> formatter)
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : class, IDictionary<string, T>
         {
             if (value == null)
             {
@@ -60,19 +60,19 @@ namespace SpanJson.Formatters
     /// <summary>
     ///     Used for types which are not built-in
     /// </summary>
-    public sealed class DictionaryFormatter<TDictionary, T, TResolver> : DictionaryFormatter, IJsonFormatter<TDictionary, TResolver>
-        where TResolver : IJsonFormatterResolver<TResolver>, new() where TDictionary : class, IDictionary<string, T>
+    public sealed class DictionaryFormatter<TDictionary, T, TSymbol, TResolver> : DictionaryFormatter, IJsonFormatter<TDictionary, TSymbol, TResolver>
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : class, IDictionary<string, T>
     {
-        public static readonly DictionaryFormatter<TDictionary, T, TResolver> Default = new DictionaryFormatter<TDictionary, T, TResolver>();
-        private static readonly IJsonFormatter<T, TResolver> DefaultFormatter = StandardResolvers.GetResolver<TResolver>().GetFormatter<T>();
+        public static readonly DictionaryFormatter<TDictionary, T, TSymbol, TResolver> Default = new DictionaryFormatter<TDictionary, T, TSymbol, TResolver>();
+        private static readonly IJsonFormatter<T, TSymbol, TResolver> DefaultFormatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
         private static readonly Func<TDictionary> CreateFunctor = BuildCreateFunctor<TDictionary>(typeof(Dictionary<string, T>));
 
-        public TDictionary Deserialize(ref JsonReader reader)
+        public TDictionary Deserialize(ref JsonReader<TSymbol> reader)
         {
             return Deserialize(ref reader, DefaultFormatter, CreateFunctor);
         }
 
-        public void Serialize(ref JsonWriter writer, TDictionary value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, TDictionary value)
         {
             Serialize(ref writer, value, DefaultFormatter);
         }

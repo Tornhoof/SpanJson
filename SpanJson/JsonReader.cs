@@ -8,7 +8,7 @@ using SpanJson.Helpers;
 
 namespace SpanJson
 {
-    public ref struct JsonReader
+    public ref struct JsonReader<TSymbol> where TSymbol : struct 
     {
         private readonly ReadOnlySpan<char> _chars;
         private readonly int _length;
@@ -932,12 +932,12 @@ namespace SpanJson
                 }
                 case JsonToken.Number:
                 {
-                    return new SpanJsonDynamicNumber(ReadNumberInternal());
+                    return new SpanJsonDynamicNumber<TSymbol>(ReadNumberInternal());
                 }
                 case JsonToken.String:
                 {
                     var span = ReadStringSpanWithQuotes(out _);
-                    return new SpanJsonDynamicString(span);
+                    return new SpanJsonDynamicString<TSymbol>(span);
                 }
                 case JsonToken.BeginObject:
                 {
@@ -964,7 +964,7 @@ namespace SpanJson
                         list.Add(value);
                     }
 
-                    return new SpanJsonDynamicArray(list.ToArray());
+                    return new SpanJsonDynamicArray<TSymbol>(list.ToArray());
                 }
                 default:
                 {

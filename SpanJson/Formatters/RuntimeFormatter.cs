@@ -5,20 +5,20 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public sealed class RuntimeFormatter<TResolver> : BaseFormatter, IJsonFormatter<object, TResolver>
-        where TResolver : IJsonFormatterResolver<TResolver>, new()
+    public sealed class RuntimeFormatter<TSymbol, TResolver> : BaseFormatter, IJsonFormatter<object, TSymbol, TResolver>
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
-        public static readonly RuntimeFormatter<TResolver> Default = new RuntimeFormatter<TResolver>();
+        public static readonly RuntimeFormatter<TSymbol, TResolver> Default = new RuntimeFormatter<TSymbol, TResolver>();
 
         private static readonly ConcurrentDictionary<Type, SerializeDelegate> RuntimeSerializerDictionary =
             new ConcurrentDictionary<Type, SerializeDelegate>();
 
-        public object Deserialize(ref JsonReader reader)
+        public object Deserialize(ref JsonReader<TSymbol> reader)
         {
             return reader.ReadDynamic();
         }
 
-        public void Serialize(ref JsonWriter writer, object value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, object value)
         {
             if (value == null)
             {
@@ -34,10 +34,10 @@ namespace SpanJson.Formatters
 
         private static SerializeDelegate BuildSerializeDelegate(Type type)
         {
-            var writerParameter = Expression.Parameter(typeof(JsonWriter).MakeByRefType(), "writer");
+            var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(object), "value");
 
-            var formatter = StandardResolvers.GetResolver<TResolver>().GetFormatter(type);
+            var formatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter(type);
             var formatterExpression = Expression.Constant(formatter);
             var serializeMethodInfo = formatter.GetType().GetMethod("Serialize");
             var lambda = Expression.Lambda<SerializeDelegate>(
@@ -46,6 +46,6 @@ namespace SpanJson.Formatters
             return lambda.Compile();
         }
 
-        private delegate void SerializeDelegate(ref JsonWriter writer, object value);
+        private delegate void SerializeDelegate(ref JsonWriter<TSymbol> writer, object value);
     }
 }

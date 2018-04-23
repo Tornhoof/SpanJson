@@ -102,10 +102,10 @@ namespace SpanJson.Tests
             dynamicObject.Value = 5;
             dynamicObject.NullValue = null;
 
-            var serialized = JsonSerializer.Generic.Serialize<MyDynamicObject, IncludeNullsOriginalCaseResolver>(dynamicObject);
+            var serialized = JsonSerializer.Generic.Serialize<MyDynamicObject, char, IncludeNullsOriginalCaseResolver<char>>(dynamicObject);
             Assert.NotNull(serialized);
             Assert.Contains("null", serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<MyDynamicObject, IncludeNullsOriginalCaseResolver>(serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<MyDynamicObject, char, IncludeNullsOriginalCaseResolver<char>>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal("Hello World", (string)dynamicObject.Text);
             Assert.Equal(5, (int)dynamicObject.Value);

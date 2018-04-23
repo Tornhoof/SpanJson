@@ -11,7 +11,7 @@ namespace SpanJson.Tests
         [InlineData(@"{""Name"":"""", ""Test"":""Something""}", "Something")]
         public void ReadNextSegmentTest(string json, string expected)
         {
-            var reader = new JsonReader(json);
+            var reader = new JsonReader<char>(json);
             reader.ReadBeginObjectOrThrow();
             var count = 0;
             while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
@@ -39,7 +39,7 @@ namespace SpanJson.Tests
         [InlineData("\"Hello\\u000AWorld\"", "Hello\nWorld")]
         public void ReadString(string escaped, string comparison)
         {
-            var reader = new JsonReader(escaped);
+            var reader = new JsonReader<char>(escaped);
             var unescaped = reader.ReadString();
             Assert.Equal(comparison, unescaped);
         }
@@ -91,7 +91,7 @@ namespace SpanJson.Tests
             var chars = CreateChars();
             foreach (var keyValuePair in chars)
             {
-                var reader = new JsonReader(keyValuePair.Key);
+                var reader = new JsonReader<char>(keyValuePair.Key);
                 var c = reader.ReadChar();
                 Assert.Equal(keyValuePair.Value, c);
             }

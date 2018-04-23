@@ -66,10 +66,10 @@ namespace SpanJson.Tests
         public void SerializeDeserializeGeneric()
         {
             var includeNull = new IncludeNull {Key = 1};
-            var serialized = JsonSerializer.Generic.Serialize<IncludeNull, IncludeNullsOriginalCaseResolver>(includeNull);
+            var serialized = JsonSerializer.Generic.Serialize<IncludeNull, char, IncludeNullsOriginalCaseResolver<char>>(includeNull);
             Assert.NotNull(serialized);
             Assert.Contains("null", serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<IncludeNull, IncludeNullsOriginalCaseResolver>(serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<IncludeNull, char, IncludeNullsOriginalCaseResolver<char>>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(includeNull, deserialized);
         }
@@ -77,11 +77,11 @@ namespace SpanJson.Tests
         [Fact]
         public void SerializeDeserializeNonGeneric()
         {
-            var includeNull = new IncludeNull { Key = 1 };
-            var serialized = JsonSerializer.NonGeneric.Serialize<IncludeNullsOriginalCaseResolver>(includeNull);
+            var includeNull = new IncludeNull {Key = 1};
+            var serialized = JsonSerializer.NonGeneric.Serialize<char, IncludeNullsOriginalCaseResolver<char>>(includeNull);
             Assert.NotNull(serialized);
             Assert.Contains("null", serialized);
-            var deserialized = JsonSerializer.NonGeneric.Deserialize<IncludeNullsOriginalCaseResolver>(serialized, typeof(IncludeNull));
+            var deserialized = JsonSerializer.NonGeneric.Deserialize<char, IncludeNullsOriginalCaseResolver<char>>(serialized, typeof(IncludeNull));
             Assert.NotNull(deserialized);
             Assert.Equal(includeNull, deserialized);
         }

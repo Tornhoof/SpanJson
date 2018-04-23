@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
@@ -11,6 +13,7 @@ namespace SpanJson.Benchmarks
 {
     [MemoryDiagnoser]
     [ShortRunJob]
+    [DisassemblyDiagnoser(printIL: true, recursiveDepth:2)]
     public class SelectedBenchmarks
     {
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
@@ -30,20 +33,26 @@ namespace SpanJson.Benchmarks
         private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
         private static readonly StringBuilder StringBuilder = new StringBuilder();
 
-        [Benchmark]
-        public Answer DeserializeAnswerWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
-        }
+        //[Benchmark]
+        //public Answer DeserializeAnswerWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
+        //}
 
-        [Benchmark]
-        public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsync()
-        {
-            using (var tr = new StringReader(AnswerSerializedString))
-            {
-                return await JsonSerializer.Generic.DeserializeAsync<Answer>(tr);
-            }
-        }
+        //[Benchmark]
+        //public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsync()
+        //{
+        //    using (var tr = new StringReader(AnswerSerializedString))
+        //    {
+        //        return await JsonSerializer.Generic.DeserializeAsync<Answer>(tr);
+        //    }
+        //}
+
+        //[Benchmark]
+        //public object DeserializeDynamicAnswerWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Deserialize<dynamic>(AnswerSerializedString);
+        //}
 
         //[Benchmark]
         //public Answer DeserializeAnswerWithJilSerializer()
@@ -63,17 +72,17 @@ namespace SpanJson.Benchmarks
             return SpanJsonSerializer.Serialize(Answer);
         }
 
-        [Benchmark]
-        public async ValueTask<string> SerializeAnswerWithSpanJsonSerializerAsync()
-        {
-            StringBuilder.Clear();
-            using (var tw = new StringWriter(StringBuilder))
-            {
-                await JsonSerializer.Generic.SerializeAsync(Answer, tw);
+        //[Benchmark]
+        //public async ValueTask<string> SerializeAnswerWithSpanJsonSerializerAsync()
+        //{
+        //    StringBuilder.Clear();
+        //    using (var tw = new StringWriter(StringBuilder))
+        //    {
+        //        await JsonSerializer.Generic.SerializeAsync(Answer, tw);
 
-            }
-            return StringBuilder.ToString();
-        }
+        //    }
+        //    return StringBuilder.ToString();
+        //}
 
         //[Benchmark]
         //public string SerializeAnswerWithJilSerializer()
@@ -86,5 +95,44 @@ namespace SpanJson.Benchmarks
         //{
         //    return Utf8JsonSerializer.Serialize(Answer);
         //}
+
+        //[Benchmark]
+        //public char JsonTestChar()
+        //{
+        //    var JsonWriter<TSymbol> = new JsonWriterTest<char>();
+        //    return  jsonWriter.Write('a');
+        //}
+
+        //[Benchmark]
+        //public byte JsonTestByte()
+        //{
+        //    var JsonWriter<TSymbol> = new JsonWriterTest<byte>();
+        //    return jsonWriter.Write((byte) 'a');
+        //}
+    }
+
+    public ref struct JsonWriterTest<T> where T : struct
+    {
+        public T Write(T value)
+        {
+            if (typeof(T) == typeof(char))
+            {
+                var c = Unsafe.As<T, char>(ref value);
+                return value;
+            }
+            if (typeof(T) == typeof(byte))
+            {
+                var c = Unsafe.As<T, byte>(ref value);
+                return value;
+            }
+
+            ThrowNotImplementedException();
+            return default;
+        }
+
+        private static void ThrowNotImplementedException()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

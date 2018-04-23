@@ -13,8 +13,8 @@ using SpanJson.Helpers;
 
 namespace SpanJson.Resolvers
 {
-    public abstract class ResolverBase<TResolver> : IJsonFormatterResolver<TResolver>
-        where TResolver : IJsonFormatterResolver<TResolver>, new()
+    public abstract class ResolverBase<TSymbol, TResolver> : IJsonFormatterResolver<TSymbol, TResolver>
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
         private readonly NamingConventions _namingConventions;
         private readonly NullOptions _nullOptions;
@@ -39,9 +39,9 @@ namespace SpanJson.Resolvers
             // ReSharper restore ConvertClosureToMethodGroup
         }
 
-        public IJsonFormatter<T, TResolver> GetFormatter<T>()
+        public IJsonFormatter<T, TSymbol, TResolver> GetFormatter<T>()
         {
-            return (IJsonFormatter<T, TResolver>) GetFormatter(typeof(T));
+            return (IJsonFormatter<T, TSymbol, TResolver>) GetFormatter(typeof(T));
         }
 
         public JsonMemberInfo[] GetMemberInfos<T>()
@@ -147,13 +147,13 @@ namespace SpanJson.Resolvers
             // todo: support for multidimensional array
             if (type.IsArray)
             {
-                return GetDefaultOrCreate(typeof(ArrayFormatter<,>).MakeGenericType(type.GetElementType(),
-                    typeof(TResolver)));
+                return GetDefaultOrCreate(typeof(ArrayFormatter<,,>).MakeGenericType(type.GetElementType(),
+                    typeof(TSymbol), typeof(TResolver)));
             }
 
             if (type.IsEnum)
             {
-                return GetDefaultOrCreate(typeof(EnumFormatter<,>).MakeGenericType(type, typeof(TResolver)));
+                return GetDefaultOrCreate(typeof(EnumFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
             }
 
             if (type.TryGetTypeOfGenericInterface(typeof(IDictionary<,>), out var dictArgumentTypes))
@@ -163,38 +163,38 @@ namespace SpanJson.Resolvers
                     throw new NotImplementedException($"{dictArgumentTypes[0]} is not supported a Key for Dictionary.");
                 }
 
-                return GetDefaultOrCreate(typeof(DictionaryFormatter<,,>).MakeGenericType(type, dictArgumentTypes[1], typeof(TResolver)));
+                return GetDefaultOrCreate(typeof(DictionaryFormatter<,,,>).MakeGenericType(type, dictArgumentTypes[1], typeof(TSymbol), typeof(TResolver)));
             }
 
             if (type.TryGetTypeOfGenericInterface(typeof(IList<>), out var listArgumentTypes))
             {
-                return GetDefaultOrCreate(typeof(ListFormatter<,,>).MakeGenericType(type, listArgumentTypes.Single(), typeof(TResolver)));
+                return GetDefaultOrCreate(typeof(ListFormatter<,,,>).MakeGenericType(type, listArgumentTypes.Single(), typeof(TSymbol), typeof(TResolver)));
             }
 
             if (type.TryGetTypeOfGenericInterface(typeof(IEnumerable<>), out var enumArgumentTypes))
             {
-                return GetDefaultOrCreate(typeof(EnumerableFormatter<,,>).MakeGenericType(type, enumArgumentTypes.Single(), typeof(TResolver)));
+                return GetDefaultOrCreate(typeof(EnumerableFormatter<,,,>).MakeGenericType(type, enumArgumentTypes.Single(), typeof(TSymbol), typeof(TResolver)));
             }
 
             if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(type))
             {
-                return GetDefaultOrCreate(typeof(DynamicMetaObjectProviderFormatter<,>).MakeGenericType(type, typeof(TResolver)));
+                return GetDefaultOrCreate(typeof(DynamicMetaObjectProviderFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
             }
 
             if (type.TryGetNullableUnderlyingType(out var underlyingType))
             {
-                return GetDefaultOrCreate(typeof(NullableFormatter<,>).MakeGenericType(underlyingType,
-                    typeof(TResolver)));
+                return GetDefaultOrCreate(typeof(NullableFormatter<,,>).MakeGenericType(underlyingType,
+                    typeof(TSymbol), typeof(TResolver)));
             }
 
             // no integrated type, let's build it
             if (type.IsValueType)
             {
                 return GetDefaultOrCreate(
-                    typeof(ComplexStructFormatter<,>).MakeGenericType(type, typeof(TResolver)));
+                    typeof(ComplexStructFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
             }
 
-            return GetDefaultOrCreate(typeof(ComplexClassFormatter<,>).MakeGenericType(type, typeof(TResolver)));
+            return GetDefaultOrCreate(typeof(ComplexClassFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
         }
 
         private static IJsonFormatter GetIntegrated(Type type)
@@ -205,12 +205,12 @@ namespace SpanJson.Resolvers
                 if (allType.IsGenericTypeDefinition && allType.ContainsGenericParameters && allType.IsGenericType)
                 {
                     var genericArgs = allType.GetGenericArguments();
-                    if (genericArgs.Length == 1 && typeof(IJsonFormatterResolver).IsAssignableFrom(genericArgs[0]))
+                    if (genericArgs.Length == 2 && typeof(IJsonFormatterResolver).IsAssignableFrom(genericArgs[1]))
                     {
-                        var iface = typeof(IJsonFormatter<,>).MakeGenericType(type, genericArgs[0]);
+                        var iface = typeof(IJsonFormatter<,,>).MakeGenericType(type, genericArgs[0], genericArgs[1]);
                         if (iface.IsAssignableFrom(allType))
                         {
-                            return GetDefaultOrCreate(allType.MakeGenericType(typeof(TResolver)));
+                            return GetDefaultOrCreate(allType.MakeGenericType(typeof(TSymbol), typeof(TResolver)));
                         }
                     }
                 }

@@ -26,11 +26,11 @@ namespace SpanJson.Tests
         {
             var parent = new Parent { Age = 30, Name = "Adam", Children = new List<Child> { new Child { Name = "Cain", Age = 5 } } };
             var serializedWithCamelCase =
-                JsonSerializer.Generic.Serialize<Parent, ExcludeNullsOriginalCaseResolver>(parent);
+                JsonSerializer.Generic.Serialize<Parent, char, ExcludeNullsOriginalCaseResolver<char>>(parent);
             serializedWithCamelCase = serializedWithCamelCase.ToLowerInvariant();
             Assert.Contains("age", serializedWithCamelCase);
             var deserialized =
-                JsonSerializer.Generic.Deserialize<Parent, ExcludeNullsOriginalCaseResolver>(serializedWithCamelCase);
+                JsonSerializer.Generic.Deserialize<Parent, char, ExcludeNullsOriginalCaseResolver<char>>(serializedWithCamelCase);
             Assert.NotNull(deserialized);
             Assert.Null(deserialized.Children);
             Assert.Equal(0, deserialized.Age);

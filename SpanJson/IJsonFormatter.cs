@@ -4,10 +4,10 @@
     {
     }
 
-    public interface IJsonFormatter<T, in TResolver> : IJsonFormatter
-        where TResolver : IJsonFormatterResolver<TResolver>, new()
+    public interface IJsonFormatter<T, TSymbol, in TResolver> : IJsonFormatter
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
-        void Serialize(ref JsonWriter writer, T value);
-        T Deserialize(ref JsonReader reader);
+        void Serialize(ref JsonWriter<TSymbol> writer, T value);
+        T Deserialize(ref JsonReader<TSymbol> reader);
     }
 }

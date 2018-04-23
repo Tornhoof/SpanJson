@@ -6,8 +6,8 @@ namespace SpanJson.Formatters
     public abstract class NullableFormatter : BaseFormatter
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static T? Deserialize<T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter)
-            where T : struct where TResolver : IJsonFormatterResolver<TResolver>, new()
+        protected static T? Deserialize<T, TSymbol, TResolver>(ref JsonReader<TSymbol> reader, IJsonFormatter<T, TSymbol, TResolver> formatter)
+            where T : struct where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             if (reader.ReadIsNull())
             {
@@ -18,8 +18,8 @@ namespace SpanJson.Formatters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static void Serialize<T, TResolver>(ref JsonWriter writer, T? value, IJsonFormatter<T, TResolver> formatter)
-            where T : struct where TResolver : IJsonFormatterResolver<TResolver>, new()
+        protected static void Serialize<T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, T? value, IJsonFormatter<T, TSymbol, TResolver> formatter)
+            where T : struct where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             if (value == null)
             {
@@ -34,20 +34,20 @@ namespace SpanJson.Formatters
     /// <summary>
     ///     Used for types which are not built-in
     /// </summary>
-    public sealed class NullableFormatter<T, TResolver> : NullableFormatter, IJsonFormatter<T?, TResolver>
-        where T : struct where TResolver : IJsonFormatterResolver<TResolver>, new()
+    public sealed class NullableFormatter<T, TSymbol, TResolver> : NullableFormatter, IJsonFormatter<T?, TSymbol, TResolver>
+        where T : struct where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
-        public static readonly NullableFormatter<T, TResolver> Default = new NullableFormatter<T, TResolver>();
+        public static readonly NullableFormatter<T, TSymbol, TResolver> Default = new NullableFormatter<T, TSymbol, TResolver>();
 
-        private static readonly IJsonFormatter<T, TResolver> DefaultFormatter =
-            StandardResolvers.GetResolver<TResolver>().GetFormatter<T>();
+        private static readonly IJsonFormatter<T, TSymbol, TResolver> DefaultFormatter =
+            StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
 
-        public T? Deserialize(ref JsonReader reader)
+        public T? Deserialize(ref JsonReader<TSymbol> reader)
         {
             return Deserialize(ref reader, DefaultFormatter);
         }
 
-        public void Serialize(ref JsonWriter writer, T? value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T? value)
         {
             Serialize(ref writer, value, DefaultFormatter);
         }

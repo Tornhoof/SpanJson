@@ -5,11 +5,9 @@ using System.Dynamic;
 
 namespace SpanJson.Formatters.Dynamic
 {
-    [TypeConverter(typeof(DynamicTypeConverter))]
-    public sealed class SpanJsonDynamicString : DynamicObject, ISpanJsonDynamicValue
+    public sealed class SpanJsonDynamicString<TSymbol> : DynamicObject, ISpanJsonDynamicValue where TSymbol : struct 
     {
-        private static readonly DynamicTypeConverter Converter =
-            (DynamicTypeConverter) TypeDescriptor.GetConverter(typeof(SpanJsonDynamicString));
+        private static readonly DynamicTypeConverter Converter = new DynamicTypeConverter();
 
         public SpanJsonDynamicString(ReadOnlySpan<char> span)
         {
@@ -29,7 +27,7 @@ namespace SpanJson.Formatters.Dynamic
             return new string(Chars);
         }
 
-        public sealed class DynamicTypeConverter : BaseDynamicTypeConverter
+        public sealed class DynamicTypeConverter : BaseDynamicTypeConverter<TSymbol>
         {
             private static readonly Dictionary<Type, ConvertDelegate> Converters = BuildDelegates();
 
@@ -37,7 +35,7 @@ namespace SpanJson.Formatters.Dynamic
             {
                 try
                 {
-                    var reader = new JsonReader(span);
+                    var reader = new JsonReader<TSymbol>(span);
                     if (Converters.TryGetValue(destinationType, out var del))
                     {
                         value = del(reader);

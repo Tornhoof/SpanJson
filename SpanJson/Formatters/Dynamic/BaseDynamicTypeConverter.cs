@@ -7,7 +7,7 @@ using SpanJson.Helpers;
 
 namespace SpanJson.Formatters.Dynamic
 {
-    public abstract class BaseDynamicTypeConverter : TypeConverter
+    public abstract class BaseDynamicTypeConverter<TSymbol> : TypeConverter where TSymbol : struct 
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
@@ -62,10 +62,10 @@ namespace SpanJson.Formatters.Dynamic
             var result = new Dictionary<Type, ConvertDelegate>();
             foreach (var allowedType in allowedTypes)
             {
-                var method = typeof(JsonReader).GetMethod($"Read{allowedType.Name}");
+                var method = typeof(JsonReader<TSymbol>).GetMethod($"Read{allowedType.Name}");
                 if (method != null)
                 {
-                    var parameter = Expression.Parameter(typeof(JsonReader).MakeByRefType(), "reader");
+                    var parameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
                     var lambda = Expression.Lambda<ConvertDelegate>(
                         Expression.Convert(Expression.Call(parameter, method), typeof(object)), parameter);
                     result.Add(allowedType, lambda.Compile());
@@ -75,7 +75,7 @@ namespace SpanJson.Formatters.Dynamic
             return result;
         }
 
-        protected delegate object ConvertDelegate(in JsonReader reader);
+        protected delegate object ConvertDelegate(in JsonReader<TSymbol> reader);
     }
 
     public interface ISpanJsonDynamicValue

@@ -6,8 +6,8 @@ namespace SpanJson.Formatters
 {
     public abstract class ListFormatter : BaseFormatter
     {
-        protected static TList Deserialize<TList, T, TResolver>(ref JsonReader reader, IJsonFormatter<T, TResolver> formatter, Func<TList> createFunctor)
-            where TResolver : IJsonFormatterResolver<TResolver>, new() where TList : class, IList<T>
+        protected static TList Deserialize<TList, T, TSymbol, TResolver>(ref JsonReader<TSymbol> reader, IJsonFormatter<T, TSymbol, TResolver> formatter, Func<TList> createFunctor)
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TList : class, IList<T>
         {
             if (reader.ReadIsNull())
             {
@@ -25,8 +25,8 @@ namespace SpanJson.Formatters
             return list;
         }
 
-        protected static void Serialize<TList, T, TResolver>(ref JsonWriter writer, TList value,
-            IJsonFormatter<T, TResolver> formatter) where TResolver : IJsonFormatterResolver<TResolver>, new() where TList : class, IList<T>
+        protected static void Serialize<TList, T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, TList value,
+            IJsonFormatter<T, TSymbol, TResolver> formatter) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TList : class, IList<T>
         {
             if (value == null)
             {
@@ -53,23 +53,23 @@ namespace SpanJson.Formatters
     /// <summary>
     ///     Used for types which are not built-in
     /// </summary>
-    public sealed class ListFormatter<TList, T, TResolver> : ListFormatter, IJsonFormatter<TList, TResolver>
-        where TResolver : IJsonFormatterResolver<TResolver>, new() where TList : class, IList<T>
+    public sealed class ListFormatter<TList, T, TSymbol, TResolver> : ListFormatter, IJsonFormatter<TList, TSymbol, TResolver>
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TList : class, IList<T>
 
     {
-        public static readonly ListFormatter<TList, T, TResolver> Default = new ListFormatter<TList, T, TResolver>();
+        public static readonly ListFormatter<TList, T, TSymbol, TResolver> Default = new ListFormatter<TList, T, TSymbol, TResolver>();
 
-        private static readonly IJsonFormatter<T, TResolver> DefaultFormatter =
-            StandardResolvers.GetResolver<TResolver>().GetFormatter<T>();
+        private static readonly IJsonFormatter<T, TSymbol, TResolver> DefaultFormatter =
+            StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
 
         private static readonly Func<TList> CreateFunctor = BuildCreateFunctor<TList>(typeof(List<T>));
 
-        public TList Deserialize(ref JsonReader reader)
+        public TList Deserialize(ref JsonReader<TSymbol> reader)
         {
             return Deserialize(ref reader, DefaultFormatter, CreateFunctor);
         }
 
-        public void Serialize(ref JsonWriter writer, TList value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, TList value)
         {
             Serialize(ref writer, value, DefaultFormatter);
         }

@@ -26,12 +26,12 @@ namespace SpanJson.Tests
         public void DifferentName()
         {
             var optional = new Optional {DifferentName = "Hello World"};
-            var serialized = JsonSerializer.Generic.Serialize<Optional, ExcludeNullsOriginalCaseResolver>(optional);
+            var serialized = JsonSerializer.Generic.Serialize<Optional, char, ExcludeNullsOriginalCaseResolver<char>>(optional);
             Assert.Contains("\"AnotherName\":\"Hello World\"", serialized);
             Assert.False(serialized.EndsWith(",}"));
 
             var deserialized =
-                JsonSerializer.Generic.Deserialize<Optional, ExcludeNullsOriginalCaseResolver>(
+                JsonSerializer.Generic.Deserialize<Optional, char, ExcludeNullsOriginalCaseResolver<char>>(
                     "{\"AnotherName\": \"Hello World\"}");
             Assert.Equal("Hello World", deserialized.DifferentName);
         }
@@ -40,7 +40,7 @@ namespace SpanJson.Tests
         public void Excluded()
         {
             var optional = new Optional {Excluded = 5};
-            var serialized = JsonSerializer.Generic.Serialize<Optional, ExcludeNullsOriginalCaseResolver>(optional);
+            var serialized = JsonSerializer.Generic.Serialize<Optional, char, ExcludeNullsOriginalCaseResolver<char>>(optional);
             Assert.DoesNotContain("\"Excluded\":", serialized);
         }
 
@@ -48,11 +48,11 @@ namespace SpanJson.Tests
         public void ExcludeNull()
         {
             var optional = new Optional {ExcludeNull = null};
-            var serialized = JsonSerializer.Generic.Serialize<Optional, ExcludeNullsOriginalCaseResolver>(optional);
+            var serialized = JsonSerializer.Generic.Serialize<Optional, char, ExcludeNullsOriginalCaseResolver<char>>(optional);
             Assert.DoesNotContain("\"ExcludeNull\":", serialized);
 
             var deserialized =
-                JsonSerializer.Generic.Deserialize<Optional, ExcludeNullsOriginalCaseResolver>("{\"Excluded\": 1}");
+                JsonSerializer.Generic.Deserialize<Optional, char, ExcludeNullsOriginalCaseResolver<char>>("{\"Excluded\": 1}");
             Assert.Equal(0, deserialized.Excluded);
         }
 
@@ -60,11 +60,11 @@ namespace SpanJson.Tests
         public void OnlineIfHelloWorld()
         {
             var optional = new Optional {OnlyIfHelloWorld = "Hello Universe"};
-            var serialized = JsonSerializer.Generic.Serialize<Optional, ExcludeNullsOriginalCaseResolver>(optional);
+            var serialized = JsonSerializer.Generic.Serialize<Optional, char, ExcludeNullsOriginalCaseResolver<char>>(optional);
             Assert.DoesNotContain("\"OnlyIfHelloWorld\":", serialized);
             Assert.False(serialized.EndsWith(",}"));
             optional.OnlyIfHelloWorld = "Hello World";
-            serialized = JsonSerializer.Generic.Serialize<Optional, ExcludeNullsOriginalCaseResolver>(optional);
+            serialized = JsonSerializer.Generic.Serialize<Optional, char, ExcludeNullsOriginalCaseResolver<char>>(optional);
             Assert.Contains("\"OnlyIfHelloWorld\":\"Hello World\"", serialized);
         }
 
