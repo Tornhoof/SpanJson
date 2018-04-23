@@ -53,6 +53,8 @@ namespace SpanJson.Benchmarks.Fixture
             _valueFixtures.Add(ulongFixture.Type, ulongFixture);
             var timespanFixture = new TimespanFixture();
             _valueFixtures.Add(timespanFixture.Type, timespanFixture);
+            var charFixture = new CharValueFixture();
+            _valueFixtures.Add(charFixture.Type, charFixture);
         }
 
         public T Configure<T>() where T : IValueFixture

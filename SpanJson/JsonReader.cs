@@ -936,7 +936,7 @@ namespace SpanJson
                 }
                 case JsonToken.String:
                 {
-                    var span = ReadStringSpanWithQuotes(out var escapedChars);
+                    var span = ReadStringSpanWithQuotes(out _);
                     return new SpanJsonDynamicString(span);
                 }
                 case JsonToken.BeginObject:

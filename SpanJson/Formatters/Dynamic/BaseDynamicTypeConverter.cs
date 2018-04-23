@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Linq.Expressions;
+using SpanJson.Helpers;
 
 namespace SpanJson.Formatters.Dynamic
 {
@@ -32,13 +33,22 @@ namespace SpanJson.Formatters.Dynamic
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
             Type destinationType)
         {
-            destinationType = Nullable.GetUnderlyingType(destinationType) ?? destinationType;
-            var input = (ISpanJsonDynamicValue) value;
-            if (TryConvertTo(destinationType, input.Chars, out var temp))
+            if (value == null)
             {
-                return temp;
+                if (destinationType.IsNullable())
+                {
+                    return null;
+                }                
             }
-
+            else
+            {
+                destinationType = Nullable.GetUnderlyingType(destinationType) ?? destinationType;
+                var input = (ISpanJsonDynamicValue) value;
+                if (TryConvertTo(destinationType, input.Chars, out var temp))
+                {
+                    return temp;
+                }
+            }
             throw new InvalidCastException();
         }
 

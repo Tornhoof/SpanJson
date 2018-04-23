@@ -7,13 +7,14 @@ namespace SpanJson.Tests.Generated
 {
     public abstract class TestBase
     {
+        // ReSharper disable StaticMemberInGenericType
+        protected static readonly ExpressionTreeFixture Fixture = new ExpressionTreeFixture();
+        // ReSharper restore StaticMemberInGenericType
     }
 
     public abstract class TestBase<T> : TestBase
     {
-        // ReSharper disable StaticMemberInGenericType
-        private static readonly ExpressionTreeFixture Fixture = new ExpressionTreeFixture();
-        // ReSharper restore StaticMemberInGenericType
+
 
         [Theory]
         [MemberData(nameof(GenerateData))]
@@ -43,11 +44,6 @@ namespace SpanJson.Tests.Generated
 
     public abstract class ListTestBase<T> : TestBase
     {
-        // ReSharper disable StaticMemberInGenericType
-        private static readonly ExpressionTreeFixture Fixture = new ExpressionTreeFixture();
-        // ReSharper restore StaticMemberInGenericType
-
-
         [Fact]
         public void SerializeDeserialize()
         {
@@ -60,15 +56,20 @@ namespace SpanJson.Tests.Generated
             var typedNonGeneric = Assert.IsType<List<T>>(nonGeneric);
             Assert.Equal(value, typedNonGeneric);
         }
+
+        [Fact]
+        public void SerializeDeserializeNull()
+        {
+            const string input = "null";
+            var serialized = JsonSerializer.Generic.Serialize<List<T>>(null);
+            Assert.Equal(input, serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<List<T>>(input);
+            Assert.Null(deserialized);
+        }
     }
 
     public abstract class ArrayTestBase<T> : TestBase
     {
-        // ReSharper disable StaticMemberInGenericType
-        private static readonly ExpressionTreeFixture Fixture = new ExpressionTreeFixture();
-        // ReSharper restore StaticMemberInGenericType
-
-
         [Fact]
         public void SerializeDeserialize()
         {
@@ -80,6 +81,27 @@ namespace SpanJson.Tests.Generated
             var nonGeneric = JsonSerializer.NonGeneric.Deserialize(serialized, typeof(T[]));
             var typedNonGeneric = Assert.IsType<T[]>(nonGeneric);
             Assert.Equal(value, typedNonGeneric);
+        }
+
+        [Fact]
+        public void SerializeDeserializeNull()
+        {
+            const string input = "null";
+            var serialized = JsonSerializer.Generic.Serialize<List<T>>(null);
+            Assert.Equal(input, serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<List<T>>(input);
+            Assert.Null(deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeDynamic()
+        {
+            var input = Fixture.CreateMany<T>(10).ToArray();
+            var serialized = JsonSerializer.Generic.Serialize(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(input, (T[]) deserialized);
         }
     }
 
@@ -101,6 +123,17 @@ namespace SpanJson.Tests.Generated
             var deserialized = JsonSerializer.Generic.Deserialize<T>(input);
             Assert.Null(deserialized);
         }
+
+        [Fact]
+        public void SerializeDeserializeDynamic()
+        {
+            var input = Fixture.Create<T>();
+            var serialized = JsonSerializer.Generic.Serialize(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(input, (T) deserialized);
+        }
     }
 
     public abstract class StructTestBase<T> : TestBase<T> where T : struct
@@ -113,6 +146,18 @@ namespace SpanJson.Tests.Generated
             Assert.Equal(input, serialized);
             var deserialized = JsonSerializer.Generic.Deserialize<T?>(input);
             Assert.Null(deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeDynamic()
+        {
+            var input = Fixture.Create<T>();
+            var serialized = JsonSerializer.Generic.Serialize(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(input, (T) deserialized);
+            Assert.Equal(input, (T?) deserialized);
         }
     }
 }

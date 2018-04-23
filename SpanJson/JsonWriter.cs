@@ -239,7 +239,7 @@ namespace SpanJson
         public void WriteChar(char value)
         {
             ref var pos = ref _pos;
-            const int size = 6; // 1-6 chars + two JsonConstant.DoubleQuote
+            const int size = 8; // 1-6 chars + two JsonConstant.DoubleQuote
             if (pos > _chars.Length - size)
             {
                 Grow(size);

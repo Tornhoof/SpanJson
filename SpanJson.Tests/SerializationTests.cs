@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SpanJson.Resolvers;
 using Xunit;
 using Xunit.Sdk;
@@ -35,5 +36,20 @@ namespace SpanJson.Tests
             Assert.Equal(0, deserialized.Age);
             Assert.Null(deserialized.Name);
         }
+
+        public class Node
+        {
+            public Guid Id { get; set; }
+            public List<Node> Children { get; set; } = new List<Node>();
+        }
+
+        //[Fact] // TODO Break Recursion
+        //public void Loops()
+        //{
+        //    var node = new Node {Id = Guid.NewGuid()};
+        //    node.Children.Add(node);
+        //    //var serialized = JsonSerializer.Generic.Serialize(node);
+        //    Assert.NotNull(serialized);
+        //}
     }
 }

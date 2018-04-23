@@ -18,6 +18,11 @@ namespace SpanJson.Helpers
             return false;
         }
 
+        public static bool IsNullable(this Type type)
+        {
+            return type.IsClass || Nullable.GetUnderlyingType(type) != null;
+        }
+
         public static bool TryGetTypeOfGenericInterface(this Type type, Type interfaceType, out Type[] argumentTypes)
         {
             if (!interfaceType.IsInterface)

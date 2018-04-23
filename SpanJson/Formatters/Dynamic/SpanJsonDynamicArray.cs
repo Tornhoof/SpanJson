@@ -4,14 +4,15 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Dynamic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace SpanJson.Formatters.Dynamic
 {
     public sealed class SpanJsonDynamicArray : DynamicObject, IReadOnlyList<object>
     {
-        private static readonly ConcurrentDictionary<Type, Func<object[], IEnumerable>> Enumerables =
-            new ConcurrentDictionary<Type, Func<object[], IEnumerable>>();
+        private static readonly ConcurrentDictionary<Type, Func<object[], ICountableEnumerable>> Enumerables =
+            new ConcurrentDictionary<Type, Func<object[], ICountableEnumerable>>();
 
         private readonly object[] _input;
 
@@ -42,12 +43,30 @@ namespace SpanJson.Formatters.Dynamic
 
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
-            // ReSharper disable ConvertClosureToMethodGroup
-            var enumerator = Enumerables.GetOrAdd(binder.ReturnType, x => CreateEnumerable(x));
-            // ReSharper restore ConvertClosureToMethodGroup
-            if (enumerator != null)
+            var returnType = binder.ReturnType;
+            if (returnType.IsArray)
             {
-                result = enumerator(_input);
+                // ReSharper disable ConvertClosureToMethodGroup
+                var functor = Enumerables.GetOrAdd(returnType.GetElementType(), x => CreateEnumerable(x));
+                // ReSharper restore ConvertClosureToMethodGroup
+                var enumerable = functor(_input);
+                var array = Array.CreateInstance(returnType.GetElementType(), enumerable.Count);
+                int index = 0;
+                foreach (var value in enumerable)
+                {
+                    array.SetValue(value, index++);
+                }
+
+                result = array;
+                return true;
+            }
+
+            if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+            {
+                // ReSharper disable ConvertClosureToMethodGroup
+                var enumerable = Enumerables.GetOrAdd(returnType.GetGenericArguments()[0], x => CreateEnumerable(x));
+                // ReSharper restore ConvertClosureToMethodGroup
+                result = enumerable(_input);
                 return true;
             }
 
@@ -68,66 +87,87 @@ namespace SpanJson.Formatters.Dynamic
 
         public override string ToString()
         {
-            return $"[{string.Join(", ", _input)}]";
+            return $"[{string.Join(", ", _input.Select(a => a == null ? "null" : a.ToString()))}]";
         }
 
-        private static Func<object[], IEnumerable> CreateEnumerable(Type type)
+        private static Func<object[], ICountableEnumerable> CreateEnumerable(Type type)
         {
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-            {
-                var ctor = typeof(Enumerable<>).MakeGenericType(type.GetGenericArguments()[0]).GetConstructor(new[] {typeof(object[])});
-                var paramExpression = Expression.Parameter(typeof(object[]), "input");
-                var lambda =
-                    Expression.Lambda<Func<object[], IEnumerable>>(
-                        Expression.Convert(Expression.New(ctor, paramExpression), typeof(IEnumerable)),
-                        paramExpression);
-                return lambda.Compile();
-            }
-
-            return null;
+            var ctor = typeof(Enumerable<>).MakeGenericType(type).GetConstructor(new[] {typeof(object[])});
+            var paramExpression = Expression.Parameter(typeof(object[]), "input");
+            var lambda =
+                Expression.Lambda<Func<object[], ICountableEnumerable>>(
+                    Expression.Convert(Expression.New(ctor, paramExpression), typeof(ICountableEnumerable)),
+                    paramExpression);
+            return lambda.Compile();
         }
 
-        private struct Enumerable<TOutput> : IEnumerable<TOutput>
+        private struct Enumerable<TOutput> : IReadOnlyCollection<TOutput>, ICountableEnumerable
         {
             private readonly object[] _input;
 
             public Enumerable(object[] input)
             {
                 _input = input;
+                Count = _input.Length;
             }
 
             public IEnumerator<TOutput> GetEnumerator()
             {
-                var stringConverter = new SpanJsonDynamicString.DynamicTypeConverter();
-                if (stringConverter.IsSupported(typeof(TOutput)))
+                if (typeof(TOutput) == typeof(bool) || typeof(TOutput) == typeof(bool?))
                 {
-                    return new Enumerator<SpanJsonDynamicString.DynamicTypeConverter, TOutput>(_input);
+                    return BoolEnumerator();
                 }
 
-                var numberConverter = new SpanJsonDynamicNumber.DynamicTypeConverter();
-                if (numberConverter.IsSupported(typeof(TOutput)))
-                {
-                    return new Enumerator<SpanJsonDynamicNumber.DynamicTypeConverter, TOutput>(_input);
-                }
+                return EnumeratorFactory.Create<TOutput>(_input);
+            }
 
-                return null;
+            private IEnumerator<TOutput> BoolEnumerator()
+            {
+                for (int i = 0; i < _input.Length; i++)
+                {
+                    yield return (TOutput) _input[i];
+                }
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
             }
+
+            public int Count { get; }
         }
 
-        private struct Enumerator<TConverter, TOutput> : IEnumerator<TOutput> where TConverter : TypeConverter, new()
+        private static class EnumeratorFactory
         {
-            private static readonly TConverter Converter = new TConverter();
+            private static readonly SpanJsonDynamicString.DynamicTypeConverter StringTypeConverter = new SpanJsonDynamicString.DynamicTypeConverter();
+            private static readonly SpanJsonDynamicNumber.DynamicTypeConverter NumberTypeConverter = new SpanJsonDynamicNumber.DynamicTypeConverter();
+
+            public static IEnumerator<TOutput> Create<TOutput>(object[] input)
+            {
+                var type = typeof(TOutput);
+                if (StringTypeConverter.IsSupported(type))
+                {
+                    return new Enumerator<SpanJsonDynamicString.DynamicTypeConverter, TOutput>(StringTypeConverter, input);
+                }
+
+                if (NumberTypeConverter.IsSupported(type))
+                {
+                    return new Enumerator<SpanJsonDynamicNumber.DynamicTypeConverter, TOutput>(NumberTypeConverter, input);
+                }
+                return null;
+            }
+        }
+
+        private struct Enumerator<TConverter, TOutput> : IEnumerator<TOutput> where TConverter : TypeConverter
+        {
+            private readonly TConverter _converter;
             private readonly object[] _input;
             private readonly int _length;
             private int _index;
 
-            public Enumerator(object[] input)
+            public Enumerator(TConverter converter, object[] input)
             {
+                _converter = converter;
                 _input = input;
                 _length = input.Length;
                 _index = 0;
@@ -141,7 +181,8 @@ namespace SpanJson.Formatters.Dynamic
                     return false;
                 }
 
-                Current = (TOutput) Converter.ConvertTo(_input[_index++], typeof(TOutput));
+                var value = _input[_index++];
+                Current = (TOutput) _converter.ConvertTo(value, typeof(TOutput));
                 return true;
             }
 
@@ -157,6 +198,11 @@ namespace SpanJson.Formatters.Dynamic
             public void Dispose()
             {
             }
+        }
+
+        private interface ICountableEnumerable : IEnumerable
+        {
+            int Count { get; }
         }
     }
 }
