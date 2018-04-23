@@ -71,8 +71,17 @@ namespace SpanJson.Formatters.Dynamic
 
             public override bool IsSupported(Type type)
             {
-                return Converters.ContainsKey(type) || type == typeof(string) ||
-                       type.IsEnum;
+                var fix = Converters.ContainsKey(type) || type == typeof(string) || type.IsEnum;
+                if (!fix)
+                {
+                    var nullable = Nullable.GetUnderlyingType(type);
+                    if (nullable != null)
+                    {
+                        fix |= IsSupported(nullable);
+                    }
+                }
+
+                return fix;
             }
 
             private static Dictionary<Type, ConvertDelegate> BuildDelegates()

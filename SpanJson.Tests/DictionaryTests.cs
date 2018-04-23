@@ -26,6 +26,23 @@ namespace SpanJson.Tests
             Assert.Equal(dictionary, deserialized);
         }
 
+
+        [Fact]
+        public void SerializeDeserializeIDictionary()
+        {
+            IDictionary<string, DictionaryValue> dictionary = new Dictionary<string, DictionaryValue>
+            {
+                {"Alice1", new DictionaryValue {Name = "Bob1"}},
+                {"Alice2", new DictionaryValue {Name = "Bob2"}},
+                {"Alice3", new DictionaryValue {Name = "Bob3"}},
+            };
+            var serialized = JsonSerializer.Generic.Serialize(dictionary);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<IDictionary<string, DictionaryValue>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(dictionary, deserialized);
+        }
+
         [Fact]
         public void SerializeDeserializeConcurrentDictionary()
         {

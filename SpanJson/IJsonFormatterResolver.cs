@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Dynamic;
 using SpanJson.Resolvers;
 
 namespace SpanJson
@@ -14,5 +15,7 @@ namespace SpanJson
     {
         IJsonFormatter<T, TResolver> GetFormatter<T>();
         JsonMemberInfo[] GetMemberInfos<T>();
+
+        JsonMemberInfo[] GetDynamicMemberInfos(IDynamicMetaObjectProvider provider);
     }
 }

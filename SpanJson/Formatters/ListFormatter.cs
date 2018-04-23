@@ -54,7 +54,7 @@ namespace SpanJson.Formatters
     ///     Used for types which are not built-in
     /// </summary>
     public sealed class ListFormatter<TList, T, TResolver> : ListFormatter, IJsonFormatter<TList, TResolver>
-        where TResolver : IJsonFormatterResolver<TResolver>, new() where TList : class, IList<T>, new()
+        where TResolver : IJsonFormatterResolver<TResolver>, new() where TList : class, IList<T>
 
     {
         public static readonly ListFormatter<TList, T, TResolver> Default = new ListFormatter<TList, T, TResolver>();
@@ -62,7 +62,7 @@ namespace SpanJson.Formatters
         private static readonly IJsonFormatter<T, TResolver> DefaultFormatter =
             StandardResolvers.GetResolver<TResolver>().GetFormatter<T>();
 
-        private static readonly Func<TList> CreateFunctor = BuildCreateFunctor<TList>();
+        private static readonly Func<TList> CreateFunctor = BuildCreateFunctor<TList>(typeof(List<T>));
 
         public TList Deserialize(ref JsonReader reader)
         {

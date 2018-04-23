@@ -61,11 +61,11 @@ namespace SpanJson.Formatters
     ///     Used for types which are not built-in
     /// </summary>
     public sealed class DictionaryFormatter<TDictionary, T, TResolver> : DictionaryFormatter, IJsonFormatter<TDictionary, TResolver>
-        where TResolver : IJsonFormatterResolver<TResolver>, new() where TDictionary : class, IDictionary<string, T>, new()
+        where TResolver : IJsonFormatterResolver<TResolver>, new() where TDictionary : class, IDictionary<string, T>
     {
         public static readonly DictionaryFormatter<TDictionary, T, TResolver> Default = new DictionaryFormatter<TDictionary, T, TResolver>();
         private static readonly IJsonFormatter<T, TResolver> DefaultFormatter = StandardResolvers.GetResolver<TResolver>().GetFormatter<T>();
-        private static readonly Func<TDictionary> CreateFunctor = BuildCreateFunctor<TDictionary>();
+        private static readonly Func<TDictionary> CreateFunctor = BuildCreateFunctor<TDictionary>(typeof(Dictionary<string, T>));
 
         public TDictionary Deserialize(ref JsonReader reader)
         {

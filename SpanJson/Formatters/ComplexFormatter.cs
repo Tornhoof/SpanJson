@@ -75,6 +75,15 @@ namespace SpanJson.Formatters
                     serializerCall = Expression.IfThenElse(runtimeDecisionExpression, serializerCall, backupSerializerCall);
                 }
 
+                if (!memberInfo.ExcludeNull)
+                {
+                    if (memberInfo.MemberType.IsClass)
+                    {
+                        var writeNullMi = writerParameter.Type.GetMethod(nameof(JsonWriter.WriteNull));
+                        serializerCall = Expression.IfThenElse(Expression.ReferenceEqual(memberExpression, Expression.Constant(null)),
+                            Expression.Call(writerParameter, writeNullMi), serializerCall);
+                    }
+                }
                 valueExpressions.Add(serializerCall);
                 valueExpressions.Add(Expression.Assign(writeSeperator, Expression.Constant(true)));
                 Expression testNullExpression = null;

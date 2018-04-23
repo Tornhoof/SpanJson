@@ -32,6 +32,7 @@ namespace SpanJson.Formatters.Dynamic
         public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
             Type destinationType)
         {
+            destinationType = Nullable.GetUnderlyingType(destinationType) ?? destinationType;
             var input = (ISpanJsonDynamicValue) value;
             if (TryConvertTo(destinationType, input.Chars, out var temp))
             {

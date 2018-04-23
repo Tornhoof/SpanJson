@@ -55,6 +55,17 @@ namespace SpanJson.Formatters.Dynamic
             return false;
         }
 
+        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        {
+            if (binder.Name == "Length")
+            {
+                result = _input.Length;
+                return true;
+            }
+
+            return base.TryGetMember(binder, out result);
+        }
+
         public override string ToString()
         {
             return $"[{string.Join(", ", _input)}]";
