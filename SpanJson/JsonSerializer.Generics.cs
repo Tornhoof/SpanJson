@@ -16,7 +16,7 @@ namespace SpanJson
                 return Serialize<T, ExcludeNullsOriginalCaseResolver>(input);
             }
 
-            public static Task SerializeAsync<T>(T input, TextWriter writer, CancellationToken cancellationToken = default)
+            public static ValueTask SerializeAsync<T>(T input, TextWriter writer, CancellationToken cancellationToken = default)
             {
                 return SerializeAsync<T, ExcludeNullsOriginalCaseResolver>(input, writer, cancellationToken);
             }
@@ -32,12 +32,12 @@ namespace SpanJson
                 return Inner<T, TResolver>.InnerSerialize(input);
             }
 
-            public static Task<T> DeserializeAsync<T>(TextReader reader, CancellationToken cancellationToken = default)
+            public static ValueTask<T> DeserializeAsync<T>(TextReader reader, CancellationToken cancellationToken = default)
             {
                 return DeserializeAsync<T, ExcludeNullsOriginalCaseResolver>(reader, cancellationToken);
             }
 
-            public static Task SerializeAsync<T, TResolver>(T input, TextWriter writer, CancellationToken cancellationToken = default)
+            public static ValueTask SerializeAsync<T, TResolver>(T input, TextWriter writer, CancellationToken cancellationToken = default)
                 where TResolver : IJsonFormatterResolver<TResolver>, new()
             {
                 return Inner<T, TResolver>.InnerSerializeAsync(input, writer, cancellationToken);
@@ -49,7 +49,7 @@ namespace SpanJson
                 return Inner<T, TResolver>.InnerDeserialize(input);
             }
 
-            public static Task<T> DeserializeAsync<T, TResolver>(TextReader reader, CancellationToken cancellationToken = default)
+            public static ValueTask<T> DeserializeAsync<T, TResolver>(TextReader reader, CancellationToken cancellationToken = default)
                 where TResolver : IJsonFormatterResolver<TResolver>, new()
             {
                 return Inner<T, TResolver>.InnerDeserializeAsync(reader, cancellationToken);
@@ -72,21 +72,28 @@ namespace SpanJson
                     return result;
                 }
 
-                public static Task InnerSerializeAsync(T input, TextWriter writer, CancellationToken cancellationToken = default)
+                public static ValueTask InnerSerializeAsync(T input, TextWriter writer, CancellationToken cancellationToken = default)
                 {
                     var jsonWriter = new JsonWriter(_lastSerializationSize);
                     Formatter.Serialize(ref jsonWriter, input);
                     _lastSerializationSize = jsonWriter.Position;
                     var data = jsonWriter.Data;
-                    // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
                     var result = writer.WriteAsync(data, 0, _lastSerializationSize);
                     if (result.IsCompletedSuccessfully)
                     {
+                        // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
                         ArrayPool<char>.Shared.Return(data);
-                        return Task.CompletedTask;
+                        return new ValueTask(Task.CompletedTask); // not sure about this, this allocates a task after all
                     }
 
-                    return result.ContinueWith(_ => ArrayPool<char>.Shared.Return(data), cancellationToken);
+                    return AwaitSerializeAsync(result, data);
+                }
+
+                // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
+                private static async ValueTask AwaitSerializeAsync(Task result, char[] data)
+                {
+                    await result.ConfigureAwait(false);
+                    ArrayPool<char>.Shared.Return(data);
                 }
 
                 public static T InnerDeserialize(ReadOnlySpan<char> input)
@@ -95,15 +102,21 @@ namespace SpanJson
                     return Formatter.Deserialize(ref jsonReader);
                 }
 
-                public static Task<T> InnerDeserializeAsync(TextReader reader, CancellationToken cancellationToken = default)
+                public static ValueTask<T> InnerDeserializeAsync(TextReader reader, CancellationToken cancellationToken = default)
                 {
                     var input = reader.ReadToEndAsync();
                     if (input.IsCompletedSuccessfully)
                     {
-                        return Task.FromResult(InnerDeserialize(input.Result));
+                        return new ValueTask<T>(InnerDeserialize(input.Result));
                     }
 
-                    return input.ContinueWith(task => InnerDeserialize(task.Result), cancellationToken);
+                    return AwaitDeSerializeAsync(input);
+                }
+
+                private static async ValueTask<T> AwaitDeSerializeAsync(Task<string> task)
+                {
+                    var input = await task.ConfigureAwait(false);
+                    return InnerDeserialize(input);
                 }
             }
         }

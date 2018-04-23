@@ -30,20 +30,20 @@ namespace SpanJson.Benchmarks
         private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
         private static readonly StringBuilder StringBuilder = new StringBuilder();
 
-        //[Benchmark]
-        //public Answer DeserializeAnswerWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
-        //}
+        [Benchmark]
+        public Answer DeserializeAnswerWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
+        }
 
-        //[Benchmark]
-        //public async Task<Answer> DeserializeAnswerWithSpanJsonSerializerAsync()
-        //{
-        //    using (var tr = new StringReader(AnswerSerializedString))
-        //    {
-        //        return await JsonSerializer.Generic.DeserializeAsync<Answer>(tr);
-        //    }
-        //}
+        [Benchmark]
+        public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsync()
+        {
+            using (var tr = new StringReader(AnswerSerializedString))
+            {
+                return await JsonSerializer.Generic.DeserializeAsync<Answer>(tr);
+            }
+        }
 
         //[Benchmark]
         //public Answer DeserializeAnswerWithJilSerializer()
@@ -64,7 +64,7 @@ namespace SpanJson.Benchmarks
         }
 
         [Benchmark]
-        public async Task<StringBuilder> SerializeAnswerWithSpanJsonSerializerAsync()
+        public async ValueTask<string> SerializeAnswerWithSpanJsonSerializerAsync()
         {
             StringBuilder.Clear();
             using (var tw = new StringWriter(StringBuilder))
@@ -72,7 +72,7 @@ namespace SpanJson.Benchmarks
                 await JsonSerializer.Generic.SerializeAsync(Answer, tw);
 
             }
-            return StringBuilder;
+            return StringBuilder.ToString();
         }
 
         //[Benchmark]

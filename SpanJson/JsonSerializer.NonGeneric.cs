@@ -2,9 +2,7 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 using System.Threading.Tasks;
 using SpanJson.Resolvers;
@@ -25,12 +23,12 @@ namespace SpanJson
                 return Deserialize<ExcludeNullsOriginalCaseResolver>(input, type);
             }
 
-            public static Task SerializeAsync(object input, TextWriter writer, CancellationToken cancellationToken = default)
+            public static ValueTask SerializeAsync(object input, TextWriter writer, CancellationToken cancellationToken = default)
             {
                 return SerializeAsync<ExcludeNullsOriginalCaseResolver>(input, writer, cancellationToken);
             }
 
-            public static Task<object> DeserializeAsync(TextReader reader, Type type, CancellationToken cancellationToken = default)
+            public static ValueTask<object> DeserializeAsync(TextReader reader, Type type, CancellationToken cancellationToken = default)
             {
                 return DeserializeAsync<ExcludeNullsOriginalCaseResolver>(reader, type, cancellationToken);
             }
@@ -45,12 +43,12 @@ namespace SpanJson
                 return Inner<TResolver>.InnerSerialize(input);
             }
 
-            public static Task<object> DeserializeAsync<TResolver>(TextReader reader, Type type, CancellationToken cancellationToken = default) where TResolver : IJsonFormatterResolver<TResolver>, new()
+            public static ValueTask<object> DeserializeAsync<TResolver>(TextReader reader, Type type, CancellationToken cancellationToken = default) where TResolver : IJsonFormatterResolver<TResolver>, new()
             {
                 return Inner<TResolver>.InnerDeserializeAsync(reader, type, cancellationToken);
             }
 
-            public static Task SerializeAsync<TResolver>(object input, TextWriter writer, CancellationToken cancellationToken = default) where TResolver : IJsonFormatterResolver<TResolver>, new()
+            public static ValueTask SerializeAsync<TResolver>(object input, TextWriter writer, CancellationToken cancellationToken = default) where TResolver : IJsonFormatterResolver<TResolver>, new()
             {
                 return Inner<TResolver>.InnerSerializeAsync(input, writer, cancellationToken);
             }
@@ -88,11 +86,11 @@ namespace SpanJson
                     return invoker.Deserializer(input);
                 }
 
-                public static Task InnerSerializeAsync(object input, TextWriter writer, CancellationToken cancellationToken = default)
+                public static ValueTask InnerSerializeAsync(object input, TextWriter writer, CancellationToken cancellationToken = default)
                 {
                     if (input == null)
                     {
-                        return Task.CompletedTask;
+                        return new ValueTask(Task.CompletedTask);
                     }
 
                     // ReSharper disable ConvertClosureToMethodGroup
@@ -101,11 +99,11 @@ namespace SpanJson
                     return invoker.SerializerAsync(input, writer, cancellationToken);
                 }
 
-                public static Task<object> InnerDeserializeAsync(TextReader reader, Type type, CancellationToken cancellationToken = default)
+                public static ValueTask<object> InnerDeserializeAsync(TextReader reader, Type type, CancellationToken cancellationToken = default)
                 {
                     if (reader == null)
                     {
-                        return Task.FromResult<object>(null);
+                        return new ValueTask<object>(null);
                     }
 
                     // ReSharper disable ConvertClosureToMethodGroup
@@ -170,10 +168,10 @@ namespace SpanJson
                 }
 
                 /// <summary>
-                /// This is necessary to convert Task of T to Task of object
+                /// This is necessary to convert ValueTask of T to ValueTask of object
                 /// </summary>
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                private static async Task<object> GenericObjectWrapper<T>(TextReader reader, CancellationToken cancellationToken = default)
+                private static async ValueTask<object> GenericObjectWrapper<T>(TextReader reader, CancellationToken cancellationToken = default)
                 {
                     return await Generic.DeserializeAsync<T, TResolver>(reader, cancellationToken).ConfigureAwait(false);
                 }
@@ -181,8 +179,8 @@ namespace SpanJson
                 private delegate object DeserializeDelegate(ReadOnlySpan<char> input);
                 private delegate string SerializeDelegate(object input);
 
-                private delegate Task<object> DeserializeDelegateAsync(TextReader textReader, CancellationToken cancellationToken = default);
-                private delegate Task SerializeDelegateAsync(object input, TextWriter writer, CancellationToken cancellationToken = default);
+                private delegate ValueTask<object> DeserializeDelegateAsync(TextReader textReader, CancellationToken cancellationToken = default);
+                private delegate ValueTask SerializeDelegateAsync(object input, TextWriter writer, CancellationToken cancellationToken = default);
 
                 private readonly struct Invoker
                 {
