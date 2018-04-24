@@ -200,21 +200,42 @@ namespace SpanJson.Resolvers
         private static IJsonFormatter GetIntegrated(Type type)
         {
             var allTypes = typeof(TResolver).Assembly.GetTypes();
-            foreach (var allType in allTypes)
+            foreach (var candidate in allTypes)
             {
-                if (allType.IsGenericTypeDefinition && allType.ContainsGenericParameters && allType.IsGenericType && allType.GetGenericArguments().Length == 1)
+                if (candidate.IsGenericTypeDefinition && candidate.ContainsGenericParameters && candidate.IsGenericType && candidate.IsClass && !candidate.IsAbstract)
                 {
-                    var genericArg = allType.GetGenericArguments().Single();
-                    if ( typeof(IJsonFormatterResolver).IsAssignableFrom(genericArg))
+                    var genArgs = candidate.GetGenericArguments();
+                    if (genArgs.Length == 1)
                     {
-                        var constraint = genericArg.GetGenericParameterConstraints()[0];
-                        var firstConstraintArg = constraint.GetGenericArguments()[0];
-                        if (firstConstraintArg == typeof(TSymbol)) // make sure it's the proper one
+                        var genericArg = genArgs.Single();
+                        if (typeof(IJsonFormatterResolver).IsAssignableFrom(genericArg))
                         {
-                            var iface = typeof(IJsonFormatter<,,>).MakeGenericType(type, typeof(TSymbol), genericArg);
-                            if (iface.IsAssignableFrom(allType))
+                            var constraint = genericArg.GetGenericParameterConstraints()[0];
+                            var firstConstraintArg = constraint.GetGenericArguments()[0];
+                            if (firstConstraintArg == typeof(TSymbol)) // make sure it's the proper one
                             {
-                                return GetDefaultOrCreate(allType.MakeGenericType(typeof(TResolver)));
+                                var iface = typeof(IJsonFormatter<,,>).MakeGenericType(type, typeof(TSymbol), genericArg);
+                                if (iface.IsAssignableFrom(candidate))
+                                {
+                                    return GetDefaultOrCreate(candidate.MakeGenericType(typeof(TResolver)));
+                                }
+                            }
+                        }
+                    }
+                    else if (genArgs.Length == 2)
+                    {
+                        var resolverGenArg = genArgs[1];
+                        if (typeof(IJsonFormatterResolver).IsAssignableFrom(resolverGenArg))
+                        {
+                            var constraint = resolverGenArg.GetGenericParameterConstraints()[0];
+                            var firstConstraintArg = constraint.GetGenericArguments()[0];
+                            if (firstConstraintArg.IsValueType) // make sure it's the proper one
+                            {
+                                var iface = typeof(IJsonFormatter<,,>).MakeGenericType(type, genArgs[0], genArgs[1]);
+                                if (iface.IsAssignableFrom(candidate))
+                                {
+                                    return GetDefaultOrCreate(candidate.MakeGenericType(typeof(TSymbol), typeof(TResolver)));
+                                }
                             }
                         }
                     }

@@ -69,23 +69,26 @@ namespace SpanJson
         {
             Debug.Assert(requiredAdditionalCapacity > 0);
 
-            var poolArray =
-                ArrayPool<TSymbol>.Shared.Rent(Math.Max(_pos + requiredAdditionalCapacity, _chars.Length * 2));
             var toReturn = _arrayToReturnToPool;
             if (typeof(TSymbol) == typeof(char))
             {
-                var converted = MemoryMarshal.Cast<TSymbol, char>(toReturn);
+                var poolArray =
+                    ArrayPool<TSymbol>.Shared.Rent(Math.Max(_pos + requiredAdditionalCapacity, _chars.Length * 2));
+                var converted = MemoryMarshal.Cast<TSymbol, char>(poolArray);
                 _chars.CopyTo(converted);
                 _chars = converted;
+                _arrayToReturnToPool = poolArray;
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                var converted = MemoryMarshal.Cast<TSymbol, byte>(toReturn);
+                var poolArray =
+                    ArrayPool<TSymbol>.Shared.Rent(Math.Max(_pos + requiredAdditionalCapacity, _bytes.Length * 2));
+                var converted = MemoryMarshal.Cast<TSymbol, byte>(poolArray);
                 _bytes.CopyTo(converted);
                 _bytes = converted;
+                _arrayToReturnToPool = poolArray;
             }
 
-            _arrayToReturnToPool = poolArray;
 
             if (toReturn != null)
             {
