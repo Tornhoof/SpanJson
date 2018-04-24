@@ -12,7 +12,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, SByte value)
         {
-            writer.WriteSByte(value);
+            writer.WriteUtf16SByte(value);
         }
 
         public SByte Deserialize(ref JsonReader<TSymbol> reader)
@@ -101,7 +101,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, Int16 value)
         {
-            writer.WriteInt16(value);
+            writer.WriteUtf16Int16(value);
         }
 
         public Int16 Deserialize(ref JsonReader<TSymbol> reader)
@@ -190,7 +190,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, Int32 value)
         {
-            writer.WriteInt32(value);
+            writer.WriteUtf16Int32(value);
         }
 
         public Int32 Deserialize(ref JsonReader<TSymbol> reader)
@@ -279,7 +279,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, Int64 value)
         {
-            writer.WriteInt64(value);
+            writer.WriteUtf16Int64(value);
         }
 
         public Int64 Deserialize(ref JsonReader<TSymbol> reader)
@@ -368,7 +368,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, Byte value)
         {
-            writer.WriteByte(value);
+            writer.WriteUtf16Byte(value);
         }
 
         public Byte Deserialize(ref JsonReader<TSymbol> reader)
@@ -457,7 +457,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, UInt16 value)
         {
-            writer.WriteUInt16(value);
+            writer.WriteUtf16UInt16(value);
         }
 
         public UInt16 Deserialize(ref JsonReader<TSymbol> reader)
@@ -546,7 +546,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, UInt32 value)
         {
-            writer.WriteUInt32(value);
+            writer.WriteUtf16UInt32(value);
         }
 
         public UInt32 Deserialize(ref JsonReader<TSymbol> reader)
@@ -635,7 +635,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, UInt64 value)
         {
-            writer.WriteUInt64(value);
+            writer.WriteUtf16UInt64(value);
         }
 
         public UInt64 Deserialize(ref JsonReader<TSymbol> reader)
@@ -724,7 +724,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, Single value)
         {
-            writer.WriteSingle(value);
+            writer.WriteUtf16Single(value);
         }
 
         public Single Deserialize(ref JsonReader<TSymbol> reader)
@@ -813,7 +813,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, Double value)
         {
-            writer.WriteDouble(value);
+            writer.WriteUtf16Double(value);
         }
 
         public Double Deserialize(ref JsonReader<TSymbol> reader)
@@ -902,7 +902,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, Decimal value)
         {
-            writer.WriteDecimal(value);
+            writer.WriteUtf16Decimal(value);
         }
 
         public Decimal Deserialize(ref JsonReader<TSymbol> reader)
@@ -991,7 +991,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, Boolean value)
         {
-            writer.WriteBoolean(value);
+            writer.WriteUtf16Boolean(value);
         }
 
         public Boolean Deserialize(ref JsonReader<TSymbol> reader)
@@ -1080,7 +1080,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, Char value)
         {
-            writer.WriteChar(value);
+            writer.WriteUtf16Char(value);
         }
 
         public Char Deserialize(ref JsonReader<TSymbol> reader)
@@ -1169,7 +1169,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, DateTime value)
         {
-            writer.WriteDateTime(value);
+            writer.WriteUtf16DateTime(value);
         }
 
         public DateTime Deserialize(ref JsonReader<TSymbol> reader)
@@ -1258,7 +1258,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, DateTimeOffset value)
         {
-            writer.WriteDateTimeOffset(value);
+            writer.WriteUtf16DateTimeOffset(value);
         }
 
         public DateTimeOffset Deserialize(ref JsonReader<TSymbol> reader)
@@ -1347,7 +1347,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, TimeSpan value)
         {
-            writer.WriteTimeSpan(value);
+            writer.WriteUtf16TimeSpan(value);
         }
 
         public TimeSpan Deserialize(ref JsonReader<TSymbol> reader)
@@ -1436,7 +1436,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, Guid value)
         {
-            writer.WriteGuid(value);
+            writer.WriteUtf16Guid(value);
         }
 
         public Guid Deserialize(ref JsonReader<TSymbol> reader)
@@ -1527,10 +1527,10 @@ namespace SpanJson.Formatters
         {
 			if(value == null)
 			{	
-				writer.WriteNull();
+				writer.WriteUtf16Null();
 				return;
 			}
-            writer.WriteString(value);
+            writer.WriteUtf16String(value);
         }
 
         public String Deserialize(ref JsonReader<TSymbol> reader)
@@ -1577,10 +1577,10 @@ namespace SpanJson.Formatters
         {
 			if(value == null)
 			{	
-				writer.WriteNull();
+				writer.WriteUtf16Null();
 				return;
 			}
-            writer.WriteVersion(value);
+            writer.WriteUtf16Version(value);
         }
 
         public Version Deserialize(ref JsonReader<TSymbol> reader)
@@ -1627,10 +1627,10 @@ namespace SpanJson.Formatters
         {
 			if(value == null)
 			{	
-				writer.WriteNull();
+				writer.WriteUtf16Null();
 				return;
 			}
-            writer.WriteUri(value);
+            writer.WriteUtf16Uri(value);
         }
 
         public Uri Deserialize(ref JsonReader<TSymbol> reader)

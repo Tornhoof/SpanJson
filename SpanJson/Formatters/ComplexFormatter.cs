@@ -26,10 +26,10 @@ namespace SpanJson.Formatters
             var valueParameter = Expression.Parameter(typeof(T), "value");
 
             var expressions = new List<Expression>();
-            var propertyNameWriterMethodInfo = FindMethod(typeof(JsonWriter<TSymbol>), nameof(JsonWriter<TSymbol>.WriteName));
-            var seperatorWriteMethodInfo = FindMethod(typeof(JsonWriter<TSymbol>), nameof(JsonWriter<TSymbol>.WriteValueSeparator));
+            var propertyNameWriterMethodInfo = FindMethod(typeof(JsonWriter<TSymbol>), nameof(JsonWriter<TSymbol>.WriteUtf16Name));
+            var seperatorWriteMethodInfo = FindMethod(typeof(JsonWriter<TSymbol>), nameof(JsonWriter<TSymbol>.WriteUtf16ValueSeparator));
             expressions.Add(Expression.Call(writerParameter,
-                FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteBeginObject))));
+                FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16BeginObject))));
             var isReferenceOrContainsReference = RuntimeHelpers.IsReferenceOrContainsReferences<T>();
             var writeSeperator = Expression.Variable(typeof(bool), "writeSeperator");
             for (var i = 0; i < memberInfos.Count; i++)
@@ -79,7 +79,7 @@ namespace SpanJson.Formatters
                 {
                     if (memberInfo.MemberType.IsClass)
                     {
-                        var writeNullMi = writerParameter.Type.GetMethod(nameof(JsonWriter<TSymbol>.WriteNull));
+                        var writeNullMi = writerParameter.Type.GetMethod(nameof(JsonWriter<TSymbol>.WriteUtf16Null));
                         serializerCall = Expression.IfThenElse(Expression.ReferenceEqual(memberExpression, Expression.Constant(null)),
                             Expression.Call(writerParameter, writeNullMi), serializerCall);
                     }
@@ -130,7 +130,7 @@ namespace SpanJson.Formatters
             }
 
             expressions.Add(Expression.Call(writerParameter,
-                FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteEndObject))));
+                FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16EndObject))));
             var blockExpression = Expression.Block(new[] {writeSeperator}, expressions);
             var lambda =
                 Expression.Lambda<SerializeDelegate<T, TSymbol, TResolver>>(blockExpression, writerParameter, valueParameter);

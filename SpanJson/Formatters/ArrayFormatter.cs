@@ -60,23 +60,23 @@ namespace SpanJson.Formatters
         {
             if (value == null)
             {
-                writer.WriteNull();
+                writer.WriteUtf16Null();
                 return;
             }
 
             var valueLength = value.Length;
-            writer.WriteBeginArray();
+            writer.WriteUtf16BeginArray();
             if (valueLength > 0)
             {
                 formatter.Serialize(ref writer, value[0]);
                 for (var i = 1; i < valueLength; i++)
                 {
-                    writer.WriteValueSeparator();
+                    writer.WriteUtf16ValueSeparator();
                     formatter.Serialize(ref writer, value[i]);
                 }
             }
 
-            writer.WriteEndArray();
+            writer.WriteUtf16EndArray();
         }
     }
 

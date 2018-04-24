@@ -23,7 +23,7 @@ namespace SpanJson.Formatters
         {
             if (value == null)
             {
-                writer.WriteNull();
+                writer.WriteUtf16Null();
                 return;
             }
 

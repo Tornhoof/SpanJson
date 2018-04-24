@@ -47,11 +47,11 @@ namespace SpanJson.Formatters
 <# if(!t.IsValueType) { #>
 			if(value == null)
 			{	
-				writer.WriteNull();
+				writer.WriteUtf16Null();
 				return;
 			}
 <# } #>
-            writer.Write<#= t.Name #>(value);
+            writer.WriteUtf16<#= t.Name #>(value);
         }
 
         public <#= t.Name #> Deserialize(ref JsonReader<TSymbol> reader)

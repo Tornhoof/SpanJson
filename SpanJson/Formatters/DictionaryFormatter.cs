@@ -33,27 +33,27 @@ namespace SpanJson.Formatters
         {
             if (value == null)
             {
-                writer.WriteNull();
+                writer.WriteUtf16Null();
                 return;
             }
 
             var valueLength = value.Count;
-            writer.WriteBeginObject();
+            writer.WriteUtf16BeginObject();
             if (valueLength > 0)
             {
                 var counter = 0;
                 foreach (var kvp in value)
                 {
-                    writer.WriteName(kvp.Key);
+                    writer.WriteUtf16Name(kvp.Key);
                     formatter.Serialize(ref writer, kvp.Value);
                     if (counter++ < valueLength - 1)
                     {
-                        writer.WriteValueSeparator();
+                        writer.WriteUtf16ValueSeparator();
                     }
                 }
             }
 
-            writer.WriteEndObject();
+            writer.WriteUtf16EndObject();
         }
     }
 

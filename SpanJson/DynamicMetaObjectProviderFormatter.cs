@@ -46,13 +46,13 @@ namespace SpanJson
         {
             if (value == null)
             {
-                writer.WriteNull();
+                writer.WriteUtf16Null();
                 return;
             }
 
             var memberInfos = Resolver.GetDynamicMemberInfos(value);
             int counter = 0;
-            writer.WriteBeginObject();
+            writer.WriteUtf16BeginObject();
             foreach (var memberInfo in memberInfos)
             {
                 var child = GetObjectDynamically(memberInfo.MemberName, value);
@@ -63,12 +63,12 @@ namespace SpanJson
 
                 if (counter++ > 0)
                 {
-                    writer.WriteValueSeparator();
+                    writer.WriteUtf16ValueSeparator();
                 }
-                writer.WriteName(memberInfo.Name);
+                writer.WriteUtf16Name(memberInfo.Name);
                 RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child);
             }
-            writer.WriteEndObject();
+            writer.WriteUtf16EndObject();
         }
 
         private static object GetObjectDynamically(string memberName, T target)

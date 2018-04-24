@@ -65,7 +65,7 @@ namespace SpanJson.Formatters
                 var switchCase =
                     Expression.SwitchCase(
                         Expression.Call(writerParameter,
-                            FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteString)),
+                            FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16String)),
                             Expression.Constant(value.ToString())), Expression.Constant(value));
                 cases.Add(switchCase);
             }

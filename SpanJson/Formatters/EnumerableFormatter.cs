@@ -22,7 +22,7 @@ namespace SpanJson.Formatters
         {
             if (value == null)
             {
-                writer.WriteNull();
+                writer.WriteUtf16Null();
                 return;
             }
 
@@ -30,7 +30,7 @@ namespace SpanJson.Formatters
             try
             {
                 enumerator = value.GetEnumerator();
-                writer.WriteBeginArray();
+                writer.WriteUtf16BeginArray();
                 if (enumerator.MoveNext())
                 {
                     // first one, so we can write the separator prior to every following one
@@ -38,12 +38,12 @@ namespace SpanJson.Formatters
                     // write all the other ones
                     while (enumerator.MoveNext())
                     {
-                        writer.WriteValueSeparator();
+                        writer.WriteUtf16ValueSeparator();
                         formatter.Serialize(ref writer, enumerator.Current);
                     }
                 }
 
-                writer.WriteEndArray();
+                writer.WriteUtf16EndArray();
             }
             finally
             {

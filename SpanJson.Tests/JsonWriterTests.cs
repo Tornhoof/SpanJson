@@ -10,7 +10,7 @@ namespace SpanJson.Tests
         public void WriteEscaped(string input, string output)
         {
             var writer = new JsonWriter<char>(100);
-            writer.WriteString(input);
+            writer.WriteUtf16String(input);
             var serialized = writer.ToString();
             Assert.Equal(output, serialized);
         }
