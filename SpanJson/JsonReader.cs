@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using SpanJson.Formatters.Dynamic;
 using SpanJson.Helpers;
 
@@ -16,6 +17,7 @@ namespace SpanJson
         private static readonly char[] NullTerminatorUtf16 = {'\0'};
         private static readonly byte[] NullTerminatorUtf8 = {(byte) NullTerminatorUtf16[0]};
         private int _pos;
+        private readonly Decoder _decoder;
 
         public JsonReader(ReadOnlySpan<TSymbol> input)
         {
@@ -25,10 +27,12 @@ namespace SpanJson
             if (typeof(TSymbol) == typeof(char))
             {
                 _chars = MemoryMarshal.Cast<TSymbol, char>(input);
+                _decoder = null;
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
                 _bytes = MemoryMarshal.Cast<TSymbol, byte>(input);
+                _decoder = Encoding.UTF8.GetDecoder();
             }
             else
             {

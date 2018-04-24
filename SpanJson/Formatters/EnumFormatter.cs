@@ -24,6 +24,7 @@ namespace SpanJson.Formatters
             Serializer(ref writer, value);
         }
 
+        // TODO too many strings
         private static DeserializeDelegate BuildDeserializeDelegate()
         {
             var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");

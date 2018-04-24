@@ -34,8 +34,9 @@ namespace SpanJson
 
         public byte[] ToByteArray()
         {
-            //return Array.Empty<byte>();
-            return _bytes.Slice(0, _pos).ToArray();
+            var result =  _bytes.Slice(0, _pos).ToArray();
+            Dispose();
+            return result;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -202,7 +203,108 @@ namespace SpanJson
             }
 
             WriteUtf8DoubleQuote();
-            switch (value)
+            char[] array = null;
+            try
+            {
+                array = ArrayPool<char>.Shared.Rent(1);
+                array[0] = value; // TODO find better way
+                WriteUtf8CharInternal(ref pos, array, 0);
+            }
+            finally
+            {
+                if (array != null)
+                {
+                    ArrayPool<char>.Shared.Return(array);
+                }
+            }
+
+            WriteUtf8DoubleQuote();
+        }
+
+        public void WriteUtf8DateTime(DateTime value)
+        {
+            ref var pos = ref _pos;
+            const int dtSize = 35; // Form o + two JsonConstant.DoubleQuote
+            if (pos > _bytes.Length - dtSize)
+            {
+                Grow(dtSize);
+            }
+
+            WriteUtf8DoubleQuote();
+            Utf8Formatter.TryFormat(value, _bytes.Slice(pos), out var bytesWritten, 'O');
+            pos += bytesWritten;
+            WriteUtf8DoubleQuote();
+        }
+
+        public void WriteUtf8DateTimeOffset(DateTimeOffset value)
+        {
+            ref var pos = ref _pos;
+            const int dtSize = 35; // Form o + two JsonConstant.DoubleQuote
+            if (pos > _bytes.Length - dtSize)
+            {
+                Grow(dtSize);
+            }
+
+            WriteUtf8DoubleQuote();
+            Utf8Formatter.TryFormat(value, _bytes.Slice(pos), out var bytesWritten, 'O');
+            pos += bytesWritten;
+            WriteUtf8DoubleQuote();
+        }
+
+        public void WriteUtf8TimeSpan(TimeSpan value)
+        {
+            ref var pos = ref _pos;
+            const int dtSize = 20; // Form o + two JsonConstant.DoubleQuote
+            if (pos > _bytes.Length - dtSize)
+            {
+                Grow(dtSize);
+            }
+
+            WriteUtf8DoubleQuote();
+            Utf8Formatter.TryFormat(value, _bytes.Slice(pos), out var bytesWritten);
+            pos += bytesWritten;
+            WriteUtf8DoubleQuote();
+        }
+
+        public void WriteUtf8Guid(Guid value)
+        {
+            ref var pos = ref _pos;
+            const int guidSize = 42; // Format D + two JsonConstant.DoubleQuote;
+            if (pos > _bytes.Length - guidSize)
+            {
+                Grow(guidSize);
+            }
+
+            WriteUtf8DoubleQuote();
+            Utf8Formatter.TryFormat(value, _bytes.Slice(pos), out var bytesWritten);
+            pos += bytesWritten;
+            WriteUtf8DoubleQuote();
+        }
+
+        public void WriteUtf8String(string value)
+        {
+            ref var pos = ref _pos;
+            var sLength = value.Length + 2;
+            if (pos > _bytes.Length - sLength)
+            {
+                Grow(sLength);
+            }
+
+            WriteUtf8DoubleQuote();
+            var span = value.AsSpan();
+            for (int i = 0; i < span.Length; i++)
+            {
+                WriteUtf8CharInternal(ref pos, span, i);
+            }
+
+            WriteUtf8DoubleQuote();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void WriteUtf8CharInternal(ref int pos, ReadOnlySpan<char> span, int offset)
+        {
+            ref readonly var current = ref span[offset];
+            switch (current)
             {
                 case JsonConstant.DoubleQuote:
                     WriteUtf8SingleEscapedChar(JsonConstant.DoubleQuote);
@@ -307,102 +409,22 @@ namespace SpanJson
                     WriteUtf8DoubleEscapedChar('1', 'F');
                     break;
                 default:
-                    _bytes[pos++] = (byte)value;
+                    if (current < 0x100)
+                    {
+                        _bytes[pos++] = (byte) current;
+                    }
+                    else
+                    {
+                        WriteNonAsciiUtf8Char(ref pos, span);
+                    }
+
                     break;
             }
-
-            WriteUtf8DoubleQuote();
-        }
-
-        public void WriteUtf8DateTime(DateTime value)
-        {
-            ref var pos = ref _pos;
-            const int dtSize = 35; // Form o + two JsonConstant.DoubleQuote
-            if (pos > _bytes.Length - dtSize)
-            {
-                Grow(dtSize);
-            }
-
-            WriteUtf8DoubleQuote();
-            Utf8Formatter.TryFormat(value, _bytes.Slice(pos), out var bytesWritten, 'O');
-            pos += bytesWritten;
-            WriteUtf8DoubleQuote();
-        }
-
-        public void WriteUtf8DateTimeOffset(DateTimeOffset value)
-        {
-            ref var pos = ref _pos;
-            const int dtSize = 35; // Form o + two JsonConstant.DoubleQuote
-            if (pos > _bytes.Length - dtSize)
-            {
-                Grow(dtSize);
-            }
-
-            WriteUtf8DoubleQuote();
-            Utf8Formatter.TryFormat(value, _bytes.Slice(pos), out var bytesWritten, 'O');
-            pos += bytesWritten;
-            WriteUtf8DoubleQuote();
-        }
-
-        public void WriteUtf8TimeSpan(TimeSpan value)
-        {
-            ref var pos = ref _pos;
-            const int dtSize = 20; // Form o + two JsonConstant.DoubleQuote
-            if (pos > _bytes.Length - dtSize)
-            {
-                Grow(dtSize);
-            }
-
-            WriteUtf8DoubleQuote();
-            Utf8Formatter.TryFormat(value, _bytes.Slice(pos), out var bytesWritten);
-            pos += bytesWritten;
-            WriteUtf8DoubleQuote();
-        }
-
-        public void WriteUtf8Guid(Guid value)
-        {
-            ref var pos = ref _pos;
-            const int guidSize = 42; // Format D + two JsonConstant.DoubleQuote;
-            if (pos > _bytes.Length - guidSize)
-            {
-                Grow(guidSize);
-            }
-
-            WriteUtf8DoubleQuote();
-            Utf8Formatter.TryFormat(value, _bytes.Slice(pos), out var bytesWritten);
-            pos += bytesWritten;
-            WriteUtf8DoubleQuote();
-        }
-
-        public void WriteUtf8String(string value)
-        {
-            ref var pos = ref _pos;
-            var sLength = value.Length + 2;
-            if (pos > _bytes.Length - sLength)
-            {
-                Grow(sLength);
-            }
-            WriteUtf8DoubleQuote();
-            var span = value.AsSpan();
-            for (int i = 0; i < span.Length; i++)
-            {
-                ref readonly var current = ref span[i];
-                if (current < 0x100)
-                {
-                    _bytes[pos++] = (byte) current;
-                }
-                else
-                {
-                    WriteNonAsciiUtf8Char(ref pos, span);
-                }
-            }
-
-            WriteUtf8DoubleQuote();
         }
 
         private void WriteNonAsciiUtf8Char(ref int pos, ReadOnlySpan<char> span)
         {
-            var spanOffset = pos;
+            var spanOffset = 0;
             bool completed;
             do
             {

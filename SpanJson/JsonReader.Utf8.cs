@@ -283,6 +283,13 @@ namespace SpanJson
                         break;
                 }
             }
+            else
+            {
+                Span<char> charSpan = stackalloc char[1];
+                _decoder.Convert(span, charSpan, false, out _, out _, out _);
+                _decoder.Reset();
+                return charSpan[0];
+            }
 
             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(byte));
             return default;
