@@ -202,21 +202,27 @@ namespace SpanJson.Resolvers
             var allTypes = typeof(TResolver).Assembly.GetTypes();
             foreach (var allType in allTypes)
             {
-                if (allType.IsGenericTypeDefinition && allType.ContainsGenericParameters && allType.IsGenericType)
+                if (allType.IsGenericTypeDefinition && allType.ContainsGenericParameters && allType.IsGenericType && allType.GetGenericArguments().Length == 1)
                 {
-                    var genericArgs = allType.GetGenericArguments();
-                    if (genericArgs.Length == 2 && typeof(IJsonFormatterResolver).IsAssignableFrom(genericArgs[1]))
+                    var genericArg = allType.GetGenericArguments().Single();
+                    if ( typeof(IJsonFormatterResolver).IsAssignableFrom(genericArg))
                     {
-                        var iface = typeof(IJsonFormatter<,,>).MakeGenericType(type, genericArgs[0], genericArgs[1]);
-                        if (iface.IsAssignableFrom(allType))
+                        var constraint = genericArg.GetGenericParameterConstraints()[0];
+                        var firstConstraintArg = constraint.GetGenericArguments()[0];
+                        if (firstConstraintArg == typeof(TSymbol)) // make sure it's the proper one
                         {
-                            return GetDefaultOrCreate(allType.MakeGenericType(typeof(TSymbol), typeof(TResolver)));
+                            var iface = typeof(IJsonFormatter<,,>).MakeGenericType(type, typeof(TSymbol), genericArg);
+                            if (iface.IsAssignableFrom(allType))
+                            {
+                                return GetDefaultOrCreate(allType.MakeGenericType(typeof(TResolver)));
+                            }
                         }
                     }
                 }
             }
 
             return null;
+
         }
 
         // ReSharper disable StaticMemberInGenericType

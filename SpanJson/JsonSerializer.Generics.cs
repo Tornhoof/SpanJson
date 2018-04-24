@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -78,7 +79,8 @@ namespace SpanJson
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSize);
                     Formatter.Serialize(ref jsonWriter, input);
                     _lastSerializationSize = jsonWriter.Position;
-                    var data = jsonWriter.Data;
+                    var temp = jsonWriter.Data;
+                    var data = Unsafe.As<TSymbol[], char[]>(ref temp);
                     var result = writer.WriteAsync(data, 0, _lastSerializationSize);
                     if (result.IsCompletedSuccessfully)
                     {

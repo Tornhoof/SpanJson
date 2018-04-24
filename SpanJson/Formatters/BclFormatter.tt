@@ -28,6 +28,11 @@
 		typeof(Version),
 		typeof(Uri)
     };
+	var symbols = new []
+	{
+		typeof(char),
+		typeof(byte),
+	};
 #>
 using System;
 using System.Collections.Generic;
@@ -37,12 +42,23 @@ using SpanJson.Formatters;
 // ReSharper disable BuiltInTypeReferenceStyle
 namespace SpanJson.Formatters
 {
-<# foreach(var t in types) {  #>
-    public sealed class <#= t.Name #>Formatter<TSymbol, TResolver> : IJsonFormatter<<#= t.Name #>, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+<# foreach(var t in types) {
+   foreach(var symbol in symbols) { 
+	string utfName = null;
+	if(symbol == typeof(char))
+	{
+		utfName = "Utf16";
+	}
+	else if(symbol == typeof(byte))
+	{
+		utfName = "Utf8";
+	}
+#>
+    public sealed class <#= t.Name #><#= utfName #>Formatter<TResolver> : IJsonFormatter<<#= t.Name #>, <#= symbol.Name #>, TResolver> where TResolver : IJsonFormatterResolver<<#= symbol.Name #>, TResolver>, new()
     {
-        public static readonly <#= t.Name #>Formatter<TSymbol,TResolver> Default = new <#= t.Name #>Formatter<TSymbol,TResolver>();
+        public static readonly <#= t.Name #><#= utfName #>Formatter<TResolver> Default = new <#= t.Name #><#= utfName #>Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, <#= t.Name #> value)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #> value)
         {
 <# if(!t.IsValueType) { #>
 			if(value == null)
@@ -54,87 +70,88 @@ namespace SpanJson.Formatters
             writer.WriteUtf16<#= t.Name #>(value);
         }
 
-        public <#= t.Name #> Deserialize(ref JsonReader<TSymbol> reader)
+        public <#= t.Name #> Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
         {
             return reader.ReadUtf16<#= t.Name #>();
         }
 	} 
 <# if(t.IsValueType) { #>
-	public sealed class Nullable<#= t.Name #>Formatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<<#= t.Name #>?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class Nullable<#= t.Name #><#= utfName #>Formatter<TResolver> : NullableFormatter, IJsonFormatter<<#= t.Name #>?, <#= symbol.Name #>,TResolver> where TResolver : IJsonFormatterResolver<<#= symbol.Name #>, TResolver>, new()
     {
-        public static readonly Nullable<#= t.Name #>Formatter<TSymbol,TResolver> Default = new Nullable<#= t.Name #>Formatter<TSymbol,TResolver>();
+        public static readonly Nullable<#= t.Name #><#= utfName #>Formatter<TResolver> Default = new Nullable<#= t.Name #><#= utfName #>Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, <#= t.Name #>? value)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>? value)
         {
-            Serialize(ref writer, value, <#= t.Name #>Formatter<TSymbol,TResolver>.Default);
+            Serialize(ref writer, value, <#= t.Name #><#= utfName #>Formatter<TResolver>.Default);
         }
 
-        public <#= t.Name #>? Deserialize(ref JsonReader<TSymbol> reader)
+        public <#= t.Name #>? Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
         {
-			return Deserialize(ref reader, <#= t.Name #>Formatter<TSymbol,TResolver>.Default);
+			return Deserialize(ref reader, <#= t.Name #><#= utfName #>Formatter<TResolver>.Default);
         }
 	}
-    public sealed class Nullable<#= t.Name #>ArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<<#= t.Name #>?[], TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class Nullable<#= t.Name #><#= utfName #>ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<<#= t.Name #>?[], <#= symbol.Name #>,TResolver> where TResolver : IJsonFormatterResolver<<#= symbol.Name #>, TResolver>, new()
     {
-        public static readonly Nullable<#= t.Name #>ArrayFormatter<TSymbol,TResolver> Default = new Nullable<#= t.Name #>ArrayFormatter<TSymbol,TResolver>();
+        public static readonly Nullable<#= t.Name #><#= utfName #>ArrayFormatter<TResolver> Default = new Nullable<#= t.Name #><#= utfName #>ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, <#= t.Name #>?[] value)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>?[] value)
         {
-			Serialize(ref writer, value, Nullable<#= t.Name #>Formatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, Nullable<#= t.Name #><#= utfName #>Formatter<TResolver>.Default);
         }
 
-        public <#= t.Name #>?[] Deserialize(ref JsonReader<TSymbol> reader)
+        public <#= t.Name #>?[] Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
         {
-            return Deserialize(ref reader, Nullable<#= t.Name #>Formatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, Nullable<#= t.Name #><#= utfName #>Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class Nullable<#= t.Name #>ListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<<#= t.Name #>?>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class Nullable<#= t.Name #><#= utfName #>ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<<#= t.Name #>?>, <#= symbol.Name #>,TResolver> where TResolver : IJsonFormatterResolver<<#= symbol.Name #>, TResolver>, new()
     {
-        public static readonly Nullable<#= t.Name #>ListFormatter<TSymbol,TResolver> Default = new Nullable<#= t.Name #>ListFormatter<TSymbol,TResolver>();
+        public static readonly Nullable<#= t.Name #><#= utfName #>ListFormatter<TResolver> Default = new Nullable<#= t.Name #><#= utfName #>ListFormatter<TResolver>();
 		private static readonly Func<List<<#= t.Name #>?>> CreateFunctor = () => new List<<#= t.Name #>?>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<<#= t.Name #>?> value)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, List<<#= t.Name #>?> value)
         {
-			Serialize(ref writer, value, Nullable<#= t.Name #>Formatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, Nullable<#= t.Name #><#= utfName #>Formatter<TResolver>.Default);
         }
 
-        public List<<#= t.Name #>?> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<<#= t.Name #>?> Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
         {
-            return Deserialize(ref reader, Nullable<#= t.Name #>Formatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, Nullable<#= t.Name #><#= utfName #>Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 <# } #>
 
-    public sealed class <#= t.Name #>ArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<<#= t.Name #>[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class <#= t.Name #><#= utfName #>ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<<#= t.Name #>[], <#= symbol.Name #>, TResolver> where TResolver : IJsonFormatterResolver<<#= symbol.Name #>, TResolver>, new()
     {
-        public static readonly <#= t.Name #>ArrayFormatter<TSymbol,TResolver> Default = new <#= t.Name #>ArrayFormatter<TSymbol,TResolver>();
+        public static readonly <#= t.Name #><#= utfName #>ArrayFormatter<TResolver> Default = new <#= t.Name #><#= utfName #>ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, <#= t.Name #>[] value)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>[] value)
         {
-			Serialize(ref writer, value, <#= t.Name #>Formatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, <#= t.Name #><#= utfName #>Formatter<TResolver>.Default);
         }
 
-        public <#= t.Name #>[] Deserialize(ref JsonReader<TSymbol> reader)
+        public <#= t.Name #>[] Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
         {
-            return Deserialize(ref reader, <#= t.Name #>Formatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, <#= t.Name #><#= utfName #>Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class <#= t.Name #>ListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<<#= t.Name #>>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class <#= t.Name #><#= utfName #>ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<<#= t.Name #>>, <#= symbol.Name #>,TResolver> where TResolver : IJsonFormatterResolver<<#= symbol.Name #>, TResolver>, new()
     {
-        public static readonly <#= t.Name #>ListFormatter<TSymbol,TResolver> Default = new <#= t.Name #>ListFormatter<TSymbol, TResolver>();
+        public static readonly <#= t.Name #><#= utfName #>ListFormatter<TResolver> Default = new <#= t.Name #><#= utfName #>ListFormatter<TResolver>();
 		private static readonly Func<List<<#= t.Name #>>> CreateFunctor = () => new List<<#= t.Name #>>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<<#= t.Name #>> value)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, List<<#= t.Name #>> value)
         {
-			Serialize(ref writer, value, <#= t.Name #>Formatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, <#= t.Name #><#= utfName #>Formatter<TResolver>.Default);
         }
 
-        public List<<#= t.Name #>> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<<#= t.Name #>> Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
         {
-            return Deserialize(ref reader, <#= t.Name #>Formatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, <#= t.Name #><#= utfName #>Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
+<# } #>
 <# } #>
 }

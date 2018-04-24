@@ -6,1524 +6,3037 @@ using SpanJson.Formatters;
 // ReSharper disable BuiltInTypeReferenceStyle
 namespace SpanJson.Formatters
 {
-    public sealed class SByteFormatter<TSymbol, TResolver> : IJsonFormatter<SByte, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class SByteUtf16Formatter<TResolver> : IJsonFormatter<SByte, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly SByteFormatter<TSymbol,TResolver> Default = new SByteFormatter<TSymbol,TResolver>();
+        public static readonly SByteUtf16Formatter<TResolver> Default = new SByteUtf16Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, SByte value)
+        public void Serialize(ref JsonWriter<Char> writer, SByte value)
         {
             writer.WriteUtf16SByte(value);
         }
 
-        public SByte Deserialize(ref JsonReader<TSymbol> reader)
+        public SByte Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16SByte();
         }
 	} 
-	public sealed class NullableSByteFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<SByte?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableSByteUtf16Formatter<TResolver> : NullableFormatter, IJsonFormatter<SByte?, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableSByteFormatter<TSymbol,TResolver> Default = new NullableSByteFormatter<TSymbol,TResolver>();
+        public static readonly NullableSByteUtf16Formatter<TResolver> Default = new NullableSByteUtf16Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, SByte? value)
+        public void Serialize(ref JsonWriter<Char> writer, SByte? value)
         {
-            Serialize(ref writer, value, SByteFormatter<TSymbol,TResolver>.Default);
+            Serialize(ref writer, value, SByteUtf16Formatter<TResolver>.Default);
         }
 
-        public SByte? Deserialize(ref JsonReader<TSymbol> reader)
+        public SByte? Deserialize(ref JsonReader<Char> reader)
         {
-			return Deserialize(ref reader, SByteFormatter<TSymbol,TResolver>.Default);
+			return Deserialize(ref reader, SByteUtf16Formatter<TResolver>.Default);
         }
 	}
-    public sealed class NullableSByteArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<SByte?[], TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class NullableSByteUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<SByte?[], Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableSByteArrayFormatter<TSymbol,TResolver> Default = new NullableSByteArrayFormatter<TSymbol,TResolver>();
+        public static readonly NullableSByteUtf16ArrayFormatter<TResolver> Default = new NullableSByteUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, SByte?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, SByte?[] value)
         {
-			Serialize(ref writer, value, NullableSByteFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableSByteUtf16Formatter<TResolver>.Default);
         }
 
-        public SByte?[] Deserialize(ref JsonReader<TSymbol> reader)
+        public SByte?[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableSByteFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, NullableSByteUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class NullableSByteListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<SByte?>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableSByteUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<SByte?>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableSByteListFormatter<TSymbol,TResolver> Default = new NullableSByteListFormatter<TSymbol,TResolver>();
+        public static readonly NullableSByteUtf16ListFormatter<TResolver> Default = new NullableSByteUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<SByte?>> CreateFunctor = () => new List<SByte?>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<SByte?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<SByte?> value)
         {
-			Serialize(ref writer, value, NullableSByteFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableSByteUtf16Formatter<TResolver>.Default);
         }
 
-        public List<SByte?> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<SByte?> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableSByteFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, NullableSByteUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 
-    public sealed class SByteArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<SByte[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class SByteUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<SByte[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly SByteArrayFormatter<TSymbol,TResolver> Default = new SByteArrayFormatter<TSymbol,TResolver>();
+        public static readonly SByteUtf16ArrayFormatter<TResolver> Default = new SByteUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, SByte[] value)
+        public void Serialize(ref JsonWriter<Char> writer, SByte[] value)
         {
-			Serialize(ref writer, value, SByteFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, SByteUtf16Formatter<TResolver>.Default);
         }
 
-        public SByte[] Deserialize(ref JsonReader<TSymbol> reader)
+        public SByte[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, SByteFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, SByteUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class SByteListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<SByte>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class SByteUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<SByte>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly SByteListFormatter<TSymbol,TResolver> Default = new SByteListFormatter<TSymbol, TResolver>();
+        public static readonly SByteUtf16ListFormatter<TResolver> Default = new SByteUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<SByte>> CreateFunctor = () => new List<SByte>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<SByte> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<SByte> value)
         {
-			Serialize(ref writer, value, SByteFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, SByteUtf16Formatter<TResolver>.Default);
         }
 
-        public List<SByte> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<SByte> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, SByteFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, SByteUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class Int16Formatter<TSymbol, TResolver> : IJsonFormatter<Int16, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class SByteUtf8Formatter<TResolver> : IJsonFormatter<SByte, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly Int16Formatter<TSymbol,TResolver> Default = new Int16Formatter<TSymbol,TResolver>();
+        public static readonly SByteUtf8Formatter<TResolver> Default = new SByteUtf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Int16 value)
+        public void Serialize(ref JsonWriter<Byte> writer, SByte value)
+        {
+            writer.WriteUtf16SByte(value);
+        }
+
+        public SByte Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16SByte();
+        }
+	} 
+	public sealed class NullableSByteUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<SByte?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableSByteUtf8Formatter<TResolver> Default = new NullableSByteUtf8Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, SByte? value)
+        {
+            Serialize(ref writer, value, SByteUtf8Formatter<TResolver>.Default);
+        }
+
+        public SByte? Deserialize(ref JsonReader<Byte> reader)
+        {
+			return Deserialize(ref reader, SByteUtf8Formatter<TResolver>.Default);
+        }
+	}
+    public sealed class NullableSByteUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<SByte?[], Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableSByteUtf8ArrayFormatter<TResolver> Default = new NullableSByteUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, SByte?[] value)
+        {
+			Serialize(ref writer, value, NullableSByteUtf8Formatter<TResolver>.Default);
+        }
+
+        public SByte?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableSByteUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class NullableSByteUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<SByte?>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableSByteUtf8ListFormatter<TResolver> Default = new NullableSByteUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<SByte?>> CreateFunctor = () => new List<SByte?>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<SByte?> value)
+        {
+			Serialize(ref writer, value, NullableSByteUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<SByte?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableSByteUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+
+    public sealed class SByteUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<SByte[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly SByteUtf8ArrayFormatter<TResolver> Default = new SByteUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, SByte[] value)
+        {
+			Serialize(ref writer, value, SByteUtf8Formatter<TResolver>.Default);
+        }
+
+        public SByte[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, SByteUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class SByteUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<SByte>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly SByteUtf8ListFormatter<TResolver> Default = new SByteUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<SByte>> CreateFunctor = () => new List<SByte>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<SByte> value)
+        {
+			Serialize(ref writer, value, SByteUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<SByte> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, SByteUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class Int16Utf16Formatter<TResolver> : IJsonFormatter<Int16, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly Int16Utf16Formatter<TResolver> Default = new Int16Utf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, Int16 value)
         {
             writer.WriteUtf16Int16(value);
         }
 
-        public Int16 Deserialize(ref JsonReader<TSymbol> reader)
+        public Int16 Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16Int16();
         }
 	} 
-	public sealed class NullableInt16Formatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Int16?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableInt16Utf16Formatter<TResolver> : NullableFormatter, IJsonFormatter<Int16?, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableInt16Formatter<TSymbol,TResolver> Default = new NullableInt16Formatter<TSymbol,TResolver>();
+        public static readonly NullableInt16Utf16Formatter<TResolver> Default = new NullableInt16Utf16Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Int16? value)
+        public void Serialize(ref JsonWriter<Char> writer, Int16? value)
         {
-            Serialize(ref writer, value, Int16Formatter<TSymbol,TResolver>.Default);
+            Serialize(ref writer, value, Int16Utf16Formatter<TResolver>.Default);
         }
 
-        public Int16? Deserialize(ref JsonReader<TSymbol> reader)
+        public Int16? Deserialize(ref JsonReader<Char> reader)
         {
-			return Deserialize(ref reader, Int16Formatter<TSymbol,TResolver>.Default);
+			return Deserialize(ref reader, Int16Utf16Formatter<TResolver>.Default);
         }
 	}
-    public sealed class NullableInt16ArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Int16?[], TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class NullableInt16Utf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Int16?[], Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableInt16ArrayFormatter<TSymbol,TResolver> Default = new NullableInt16ArrayFormatter<TSymbol,TResolver>();
+        public static readonly NullableInt16Utf16ArrayFormatter<TResolver> Default = new NullableInt16Utf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Int16?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Int16?[] value)
         {
-			Serialize(ref writer, value, NullableInt16Formatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableInt16Utf16Formatter<TResolver>.Default);
         }
 
-        public Int16?[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Int16?[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableInt16Formatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, NullableInt16Utf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class NullableInt16ListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Int16?>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableInt16Utf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Int16?>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableInt16ListFormatter<TSymbol,TResolver> Default = new NullableInt16ListFormatter<TSymbol,TResolver>();
+        public static readonly NullableInt16Utf16ListFormatter<TResolver> Default = new NullableInt16Utf16ListFormatter<TResolver>();
 		private static readonly Func<List<Int16?>> CreateFunctor = () => new List<Int16?>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Int16?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Int16?> value)
         {
-			Serialize(ref writer, value, NullableInt16Formatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableInt16Utf16Formatter<TResolver>.Default);
         }
 
-        public List<Int16?> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Int16?> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableInt16Formatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, NullableInt16Utf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 
-    public sealed class Int16ArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Int16[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class Int16Utf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Int16[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly Int16ArrayFormatter<TSymbol,TResolver> Default = new Int16ArrayFormatter<TSymbol,TResolver>();
+        public static readonly Int16Utf16ArrayFormatter<TResolver> Default = new Int16Utf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Int16[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Int16[] value)
         {
-			Serialize(ref writer, value, Int16Formatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, Int16Utf16Formatter<TResolver>.Default);
         }
 
-        public Int16[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Int16[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, Int16Formatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, Int16Utf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class Int16ListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Int16>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class Int16Utf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Int16>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly Int16ListFormatter<TSymbol,TResolver> Default = new Int16ListFormatter<TSymbol, TResolver>();
+        public static readonly Int16Utf16ListFormatter<TResolver> Default = new Int16Utf16ListFormatter<TResolver>();
 		private static readonly Func<List<Int16>> CreateFunctor = () => new List<Int16>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Int16> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Int16> value)
         {
-			Serialize(ref writer, value, Int16Formatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, Int16Utf16Formatter<TResolver>.Default);
         }
 
-        public List<Int16> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Int16> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, Int16Formatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, Int16Utf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class Int32Formatter<TSymbol, TResolver> : IJsonFormatter<Int32, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class Int16Utf8Formatter<TResolver> : IJsonFormatter<Int16, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly Int32Formatter<TSymbol,TResolver> Default = new Int32Formatter<TSymbol,TResolver>();
+        public static readonly Int16Utf8Formatter<TResolver> Default = new Int16Utf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Int32 value)
+        public void Serialize(ref JsonWriter<Byte> writer, Int16 value)
+        {
+            writer.WriteUtf16Int16(value);
+        }
+
+        public Int16 Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16Int16();
+        }
+	} 
+	public sealed class NullableInt16Utf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Int16?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableInt16Utf8Formatter<TResolver> Default = new NullableInt16Utf8Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Int16? value)
+        {
+            Serialize(ref writer, value, Int16Utf8Formatter<TResolver>.Default);
+        }
+
+        public Int16? Deserialize(ref JsonReader<Byte> reader)
+        {
+			return Deserialize(ref reader, Int16Utf8Formatter<TResolver>.Default);
+        }
+	}
+    public sealed class NullableInt16Utf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Int16?[], Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableInt16Utf8ArrayFormatter<TResolver> Default = new NullableInt16Utf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Int16?[] value)
+        {
+			Serialize(ref writer, value, NullableInt16Utf8Formatter<TResolver>.Default);
+        }
+
+        public Int16?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableInt16Utf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class NullableInt16Utf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Int16?>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableInt16Utf8ListFormatter<TResolver> Default = new NullableInt16Utf8ListFormatter<TResolver>();
+		private static readonly Func<List<Int16?>> CreateFunctor = () => new List<Int16?>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Int16?> value)
+        {
+			Serialize(ref writer, value, NullableInt16Utf8Formatter<TResolver>.Default);
+        }
+
+        public List<Int16?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableInt16Utf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+
+    public sealed class Int16Utf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Int16[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly Int16Utf8ArrayFormatter<TResolver> Default = new Int16Utf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Int16[] value)
+        {
+			Serialize(ref writer, value, Int16Utf8Formatter<TResolver>.Default);
+        }
+
+        public Int16[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, Int16Utf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class Int16Utf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Int16>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly Int16Utf8ListFormatter<TResolver> Default = new Int16Utf8ListFormatter<TResolver>();
+		private static readonly Func<List<Int16>> CreateFunctor = () => new List<Int16>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Int16> value)
+        {
+			Serialize(ref writer, value, Int16Utf8Formatter<TResolver>.Default);
+        }
+
+        public List<Int16> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, Int16Utf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class Int32Utf16Formatter<TResolver> : IJsonFormatter<Int32, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly Int32Utf16Formatter<TResolver> Default = new Int32Utf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, Int32 value)
         {
             writer.WriteUtf16Int32(value);
         }
 
-        public Int32 Deserialize(ref JsonReader<TSymbol> reader)
+        public Int32 Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16Int32();
         }
 	} 
-	public sealed class NullableInt32Formatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Int32?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableInt32Utf16Formatter<TResolver> : NullableFormatter, IJsonFormatter<Int32?, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableInt32Formatter<TSymbol,TResolver> Default = new NullableInt32Formatter<TSymbol,TResolver>();
+        public static readonly NullableInt32Utf16Formatter<TResolver> Default = new NullableInt32Utf16Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Int32? value)
+        public void Serialize(ref JsonWriter<Char> writer, Int32? value)
         {
-            Serialize(ref writer, value, Int32Formatter<TSymbol,TResolver>.Default);
+            Serialize(ref writer, value, Int32Utf16Formatter<TResolver>.Default);
         }
 
-        public Int32? Deserialize(ref JsonReader<TSymbol> reader)
+        public Int32? Deserialize(ref JsonReader<Char> reader)
         {
-			return Deserialize(ref reader, Int32Formatter<TSymbol,TResolver>.Default);
+			return Deserialize(ref reader, Int32Utf16Formatter<TResolver>.Default);
         }
 	}
-    public sealed class NullableInt32ArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Int32?[], TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class NullableInt32Utf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Int32?[], Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableInt32ArrayFormatter<TSymbol,TResolver> Default = new NullableInt32ArrayFormatter<TSymbol,TResolver>();
+        public static readonly NullableInt32Utf16ArrayFormatter<TResolver> Default = new NullableInt32Utf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Int32?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Int32?[] value)
         {
-			Serialize(ref writer, value, NullableInt32Formatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableInt32Utf16Formatter<TResolver>.Default);
         }
 
-        public Int32?[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Int32?[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableInt32Formatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, NullableInt32Utf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class NullableInt32ListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Int32?>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableInt32Utf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Int32?>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableInt32ListFormatter<TSymbol,TResolver> Default = new NullableInt32ListFormatter<TSymbol,TResolver>();
+        public static readonly NullableInt32Utf16ListFormatter<TResolver> Default = new NullableInt32Utf16ListFormatter<TResolver>();
 		private static readonly Func<List<Int32?>> CreateFunctor = () => new List<Int32?>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Int32?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Int32?> value)
         {
-			Serialize(ref writer, value, NullableInt32Formatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableInt32Utf16Formatter<TResolver>.Default);
         }
 
-        public List<Int32?> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Int32?> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableInt32Formatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, NullableInt32Utf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 
-    public sealed class Int32ArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Int32[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class Int32Utf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Int32[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly Int32ArrayFormatter<TSymbol,TResolver> Default = new Int32ArrayFormatter<TSymbol,TResolver>();
+        public static readonly Int32Utf16ArrayFormatter<TResolver> Default = new Int32Utf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Int32[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Int32[] value)
         {
-			Serialize(ref writer, value, Int32Formatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, Int32Utf16Formatter<TResolver>.Default);
         }
 
-        public Int32[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Int32[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, Int32Formatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, Int32Utf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class Int32ListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Int32>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class Int32Utf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Int32>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly Int32ListFormatter<TSymbol,TResolver> Default = new Int32ListFormatter<TSymbol, TResolver>();
+        public static readonly Int32Utf16ListFormatter<TResolver> Default = new Int32Utf16ListFormatter<TResolver>();
 		private static readonly Func<List<Int32>> CreateFunctor = () => new List<Int32>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Int32> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Int32> value)
         {
-			Serialize(ref writer, value, Int32Formatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, Int32Utf16Formatter<TResolver>.Default);
         }
 
-        public List<Int32> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Int32> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, Int32Formatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, Int32Utf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class Int64Formatter<TSymbol, TResolver> : IJsonFormatter<Int64, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class Int32Utf8Formatter<TResolver> : IJsonFormatter<Int32, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly Int64Formatter<TSymbol,TResolver> Default = new Int64Formatter<TSymbol,TResolver>();
+        public static readonly Int32Utf8Formatter<TResolver> Default = new Int32Utf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Int64 value)
+        public void Serialize(ref JsonWriter<Byte> writer, Int32 value)
+        {
+            writer.WriteUtf16Int32(value);
+        }
+
+        public Int32 Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16Int32();
+        }
+	} 
+	public sealed class NullableInt32Utf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Int32?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableInt32Utf8Formatter<TResolver> Default = new NullableInt32Utf8Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Int32? value)
+        {
+            Serialize(ref writer, value, Int32Utf8Formatter<TResolver>.Default);
+        }
+
+        public Int32? Deserialize(ref JsonReader<Byte> reader)
+        {
+			return Deserialize(ref reader, Int32Utf8Formatter<TResolver>.Default);
+        }
+	}
+    public sealed class NullableInt32Utf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Int32?[], Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableInt32Utf8ArrayFormatter<TResolver> Default = new NullableInt32Utf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Int32?[] value)
+        {
+			Serialize(ref writer, value, NullableInt32Utf8Formatter<TResolver>.Default);
+        }
+
+        public Int32?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableInt32Utf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class NullableInt32Utf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Int32?>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableInt32Utf8ListFormatter<TResolver> Default = new NullableInt32Utf8ListFormatter<TResolver>();
+		private static readonly Func<List<Int32?>> CreateFunctor = () => new List<Int32?>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Int32?> value)
+        {
+			Serialize(ref writer, value, NullableInt32Utf8Formatter<TResolver>.Default);
+        }
+
+        public List<Int32?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableInt32Utf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+
+    public sealed class Int32Utf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Int32[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly Int32Utf8ArrayFormatter<TResolver> Default = new Int32Utf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Int32[] value)
+        {
+			Serialize(ref writer, value, Int32Utf8Formatter<TResolver>.Default);
+        }
+
+        public Int32[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, Int32Utf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class Int32Utf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Int32>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly Int32Utf8ListFormatter<TResolver> Default = new Int32Utf8ListFormatter<TResolver>();
+		private static readonly Func<List<Int32>> CreateFunctor = () => new List<Int32>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Int32> value)
+        {
+			Serialize(ref writer, value, Int32Utf8Formatter<TResolver>.Default);
+        }
+
+        public List<Int32> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, Int32Utf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class Int64Utf16Formatter<TResolver> : IJsonFormatter<Int64, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly Int64Utf16Formatter<TResolver> Default = new Int64Utf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, Int64 value)
         {
             writer.WriteUtf16Int64(value);
         }
 
-        public Int64 Deserialize(ref JsonReader<TSymbol> reader)
+        public Int64 Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16Int64();
         }
 	} 
-	public sealed class NullableInt64Formatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Int64?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableInt64Utf16Formatter<TResolver> : NullableFormatter, IJsonFormatter<Int64?, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableInt64Formatter<TSymbol,TResolver> Default = new NullableInt64Formatter<TSymbol,TResolver>();
+        public static readonly NullableInt64Utf16Formatter<TResolver> Default = new NullableInt64Utf16Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Int64? value)
+        public void Serialize(ref JsonWriter<Char> writer, Int64? value)
         {
-            Serialize(ref writer, value, Int64Formatter<TSymbol,TResolver>.Default);
+            Serialize(ref writer, value, Int64Utf16Formatter<TResolver>.Default);
         }
 
-        public Int64? Deserialize(ref JsonReader<TSymbol> reader)
+        public Int64? Deserialize(ref JsonReader<Char> reader)
         {
-			return Deserialize(ref reader, Int64Formatter<TSymbol,TResolver>.Default);
+			return Deserialize(ref reader, Int64Utf16Formatter<TResolver>.Default);
         }
 	}
-    public sealed class NullableInt64ArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Int64?[], TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class NullableInt64Utf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Int64?[], Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableInt64ArrayFormatter<TSymbol,TResolver> Default = new NullableInt64ArrayFormatter<TSymbol,TResolver>();
+        public static readonly NullableInt64Utf16ArrayFormatter<TResolver> Default = new NullableInt64Utf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Int64?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Int64?[] value)
         {
-			Serialize(ref writer, value, NullableInt64Formatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableInt64Utf16Formatter<TResolver>.Default);
         }
 
-        public Int64?[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Int64?[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableInt64Formatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, NullableInt64Utf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class NullableInt64ListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Int64?>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableInt64Utf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Int64?>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableInt64ListFormatter<TSymbol,TResolver> Default = new NullableInt64ListFormatter<TSymbol,TResolver>();
+        public static readonly NullableInt64Utf16ListFormatter<TResolver> Default = new NullableInt64Utf16ListFormatter<TResolver>();
 		private static readonly Func<List<Int64?>> CreateFunctor = () => new List<Int64?>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Int64?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Int64?> value)
         {
-			Serialize(ref writer, value, NullableInt64Formatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableInt64Utf16Formatter<TResolver>.Default);
         }
 
-        public List<Int64?> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Int64?> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableInt64Formatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, NullableInt64Utf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 
-    public sealed class Int64ArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Int64[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class Int64Utf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Int64[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly Int64ArrayFormatter<TSymbol,TResolver> Default = new Int64ArrayFormatter<TSymbol,TResolver>();
+        public static readonly Int64Utf16ArrayFormatter<TResolver> Default = new Int64Utf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Int64[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Int64[] value)
         {
-			Serialize(ref writer, value, Int64Formatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, Int64Utf16Formatter<TResolver>.Default);
         }
 
-        public Int64[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Int64[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, Int64Formatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, Int64Utf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class Int64ListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Int64>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class Int64Utf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Int64>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly Int64ListFormatter<TSymbol,TResolver> Default = new Int64ListFormatter<TSymbol, TResolver>();
+        public static readonly Int64Utf16ListFormatter<TResolver> Default = new Int64Utf16ListFormatter<TResolver>();
 		private static readonly Func<List<Int64>> CreateFunctor = () => new List<Int64>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Int64> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Int64> value)
         {
-			Serialize(ref writer, value, Int64Formatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, Int64Utf16Formatter<TResolver>.Default);
         }
 
-        public List<Int64> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Int64> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, Int64Formatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, Int64Utf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class ByteFormatter<TSymbol, TResolver> : IJsonFormatter<Byte, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class Int64Utf8Formatter<TResolver> : IJsonFormatter<Int64, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly ByteFormatter<TSymbol,TResolver> Default = new ByteFormatter<TSymbol,TResolver>();
+        public static readonly Int64Utf8Formatter<TResolver> Default = new Int64Utf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Byte value)
+        public void Serialize(ref JsonWriter<Byte> writer, Int64 value)
+        {
+            writer.WriteUtf16Int64(value);
+        }
+
+        public Int64 Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16Int64();
+        }
+	} 
+	public sealed class NullableInt64Utf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Int64?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableInt64Utf8Formatter<TResolver> Default = new NullableInt64Utf8Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Int64? value)
+        {
+            Serialize(ref writer, value, Int64Utf8Formatter<TResolver>.Default);
+        }
+
+        public Int64? Deserialize(ref JsonReader<Byte> reader)
+        {
+			return Deserialize(ref reader, Int64Utf8Formatter<TResolver>.Default);
+        }
+	}
+    public sealed class NullableInt64Utf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Int64?[], Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableInt64Utf8ArrayFormatter<TResolver> Default = new NullableInt64Utf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Int64?[] value)
+        {
+			Serialize(ref writer, value, NullableInt64Utf8Formatter<TResolver>.Default);
+        }
+
+        public Int64?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableInt64Utf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class NullableInt64Utf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Int64?>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableInt64Utf8ListFormatter<TResolver> Default = new NullableInt64Utf8ListFormatter<TResolver>();
+		private static readonly Func<List<Int64?>> CreateFunctor = () => new List<Int64?>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Int64?> value)
+        {
+			Serialize(ref writer, value, NullableInt64Utf8Formatter<TResolver>.Default);
+        }
+
+        public List<Int64?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableInt64Utf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+
+    public sealed class Int64Utf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Int64[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly Int64Utf8ArrayFormatter<TResolver> Default = new Int64Utf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Int64[] value)
+        {
+			Serialize(ref writer, value, Int64Utf8Formatter<TResolver>.Default);
+        }
+
+        public Int64[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, Int64Utf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class Int64Utf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Int64>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly Int64Utf8ListFormatter<TResolver> Default = new Int64Utf8ListFormatter<TResolver>();
+		private static readonly Func<List<Int64>> CreateFunctor = () => new List<Int64>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Int64> value)
+        {
+			Serialize(ref writer, value, Int64Utf8Formatter<TResolver>.Default);
+        }
+
+        public List<Int64> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, Int64Utf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class ByteUtf16Formatter<TResolver> : IJsonFormatter<Byte, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly ByteUtf16Formatter<TResolver> Default = new ByteUtf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, Byte value)
         {
             writer.WriteUtf16Byte(value);
         }
 
-        public Byte Deserialize(ref JsonReader<TSymbol> reader)
+        public Byte Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16Byte();
         }
 	} 
-	public sealed class NullableByteFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Byte?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableByteUtf16Formatter<TResolver> : NullableFormatter, IJsonFormatter<Byte?, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableByteFormatter<TSymbol,TResolver> Default = new NullableByteFormatter<TSymbol,TResolver>();
+        public static readonly NullableByteUtf16Formatter<TResolver> Default = new NullableByteUtf16Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Byte? value)
+        public void Serialize(ref JsonWriter<Char> writer, Byte? value)
         {
-            Serialize(ref writer, value, ByteFormatter<TSymbol,TResolver>.Default);
+            Serialize(ref writer, value, ByteUtf16Formatter<TResolver>.Default);
         }
 
-        public Byte? Deserialize(ref JsonReader<TSymbol> reader)
+        public Byte? Deserialize(ref JsonReader<Char> reader)
         {
-			return Deserialize(ref reader, ByteFormatter<TSymbol,TResolver>.Default);
+			return Deserialize(ref reader, ByteUtf16Formatter<TResolver>.Default);
         }
 	}
-    public sealed class NullableByteArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Byte?[], TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class NullableByteUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Byte?[], Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableByteArrayFormatter<TSymbol,TResolver> Default = new NullableByteArrayFormatter<TSymbol,TResolver>();
+        public static readonly NullableByteUtf16ArrayFormatter<TResolver> Default = new NullableByteUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Byte?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Byte?[] value)
         {
-			Serialize(ref writer, value, NullableByteFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableByteUtf16Formatter<TResolver>.Default);
         }
 
-        public Byte?[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Byte?[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableByteFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, NullableByteUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class NullableByteListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Byte?>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableByteUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Byte?>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableByteListFormatter<TSymbol,TResolver> Default = new NullableByteListFormatter<TSymbol,TResolver>();
+        public static readonly NullableByteUtf16ListFormatter<TResolver> Default = new NullableByteUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<Byte?>> CreateFunctor = () => new List<Byte?>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Byte?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Byte?> value)
         {
-			Serialize(ref writer, value, NullableByteFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableByteUtf16Formatter<TResolver>.Default);
         }
 
-        public List<Byte?> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Byte?> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableByteFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, NullableByteUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 
-    public sealed class ByteArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Byte[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class ByteUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Byte[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly ByteArrayFormatter<TSymbol,TResolver> Default = new ByteArrayFormatter<TSymbol,TResolver>();
+        public static readonly ByteUtf16ArrayFormatter<TResolver> Default = new ByteUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Byte[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Byte[] value)
         {
-			Serialize(ref writer, value, ByteFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, ByteUtf16Formatter<TResolver>.Default);
         }
 
-        public Byte[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Byte[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, ByteFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, ByteUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class ByteListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Byte>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class ByteUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Byte>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly ByteListFormatter<TSymbol,TResolver> Default = new ByteListFormatter<TSymbol, TResolver>();
+        public static readonly ByteUtf16ListFormatter<TResolver> Default = new ByteUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<Byte>> CreateFunctor = () => new List<Byte>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Byte> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Byte> value)
         {
-			Serialize(ref writer, value, ByteFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, ByteUtf16Formatter<TResolver>.Default);
         }
 
-        public List<Byte> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Byte> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, ByteFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, ByteUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class UInt16Formatter<TSymbol, TResolver> : IJsonFormatter<UInt16, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class ByteUtf8Formatter<TResolver> : IJsonFormatter<Byte, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly UInt16Formatter<TSymbol,TResolver> Default = new UInt16Formatter<TSymbol,TResolver>();
+        public static readonly ByteUtf8Formatter<TResolver> Default = new ByteUtf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, UInt16 value)
+        public void Serialize(ref JsonWriter<Byte> writer, Byte value)
+        {
+            writer.WriteUtf16Byte(value);
+        }
+
+        public Byte Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16Byte();
+        }
+	} 
+	public sealed class NullableByteUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Byte?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableByteUtf8Formatter<TResolver> Default = new NullableByteUtf8Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Byte? value)
+        {
+            Serialize(ref writer, value, ByteUtf8Formatter<TResolver>.Default);
+        }
+
+        public Byte? Deserialize(ref JsonReader<Byte> reader)
+        {
+			return Deserialize(ref reader, ByteUtf8Formatter<TResolver>.Default);
+        }
+	}
+    public sealed class NullableByteUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Byte?[], Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableByteUtf8ArrayFormatter<TResolver> Default = new NullableByteUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Byte?[] value)
+        {
+			Serialize(ref writer, value, NullableByteUtf8Formatter<TResolver>.Default);
+        }
+
+        public Byte?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableByteUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class NullableByteUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Byte?>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableByteUtf8ListFormatter<TResolver> Default = new NullableByteUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<Byte?>> CreateFunctor = () => new List<Byte?>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Byte?> value)
+        {
+			Serialize(ref writer, value, NullableByteUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<Byte?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableByteUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+
+    public sealed class ByteUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Byte[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly ByteUtf8ArrayFormatter<TResolver> Default = new ByteUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Byte[] value)
+        {
+			Serialize(ref writer, value, ByteUtf8Formatter<TResolver>.Default);
+        }
+
+        public Byte[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, ByteUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class ByteUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Byte>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly ByteUtf8ListFormatter<TResolver> Default = new ByteUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<Byte>> CreateFunctor = () => new List<Byte>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Byte> value)
+        {
+			Serialize(ref writer, value, ByteUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<Byte> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, ByteUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class UInt16Utf16Formatter<TResolver> : IJsonFormatter<UInt16, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly UInt16Utf16Formatter<TResolver> Default = new UInt16Utf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, UInt16 value)
         {
             writer.WriteUtf16UInt16(value);
         }
 
-        public UInt16 Deserialize(ref JsonReader<TSymbol> reader)
+        public UInt16 Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16UInt16();
         }
 	} 
-	public sealed class NullableUInt16Formatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<UInt16?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableUInt16Utf16Formatter<TResolver> : NullableFormatter, IJsonFormatter<UInt16?, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableUInt16Formatter<TSymbol,TResolver> Default = new NullableUInt16Formatter<TSymbol,TResolver>();
+        public static readonly NullableUInt16Utf16Formatter<TResolver> Default = new NullableUInt16Utf16Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, UInt16? value)
+        public void Serialize(ref JsonWriter<Char> writer, UInt16? value)
         {
-            Serialize(ref writer, value, UInt16Formatter<TSymbol,TResolver>.Default);
+            Serialize(ref writer, value, UInt16Utf16Formatter<TResolver>.Default);
         }
 
-        public UInt16? Deserialize(ref JsonReader<TSymbol> reader)
+        public UInt16? Deserialize(ref JsonReader<Char> reader)
         {
-			return Deserialize(ref reader, UInt16Formatter<TSymbol,TResolver>.Default);
+			return Deserialize(ref reader, UInt16Utf16Formatter<TResolver>.Default);
         }
 	}
-    public sealed class NullableUInt16ArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<UInt16?[], TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class NullableUInt16Utf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<UInt16?[], Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableUInt16ArrayFormatter<TSymbol,TResolver> Default = new NullableUInt16ArrayFormatter<TSymbol,TResolver>();
+        public static readonly NullableUInt16Utf16ArrayFormatter<TResolver> Default = new NullableUInt16Utf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, UInt16?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, UInt16?[] value)
         {
-			Serialize(ref writer, value, NullableUInt16Formatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableUInt16Utf16Formatter<TResolver>.Default);
         }
 
-        public UInt16?[] Deserialize(ref JsonReader<TSymbol> reader)
+        public UInt16?[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableUInt16Formatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, NullableUInt16Utf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class NullableUInt16ListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<UInt16?>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableUInt16Utf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<UInt16?>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableUInt16ListFormatter<TSymbol,TResolver> Default = new NullableUInt16ListFormatter<TSymbol,TResolver>();
+        public static readonly NullableUInt16Utf16ListFormatter<TResolver> Default = new NullableUInt16Utf16ListFormatter<TResolver>();
 		private static readonly Func<List<UInt16?>> CreateFunctor = () => new List<UInt16?>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<UInt16?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<UInt16?> value)
         {
-			Serialize(ref writer, value, NullableUInt16Formatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableUInt16Utf16Formatter<TResolver>.Default);
         }
 
-        public List<UInt16?> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<UInt16?> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableUInt16Formatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, NullableUInt16Utf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 
-    public sealed class UInt16ArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<UInt16[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class UInt16Utf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<UInt16[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly UInt16ArrayFormatter<TSymbol,TResolver> Default = new UInt16ArrayFormatter<TSymbol,TResolver>();
+        public static readonly UInt16Utf16ArrayFormatter<TResolver> Default = new UInt16Utf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, UInt16[] value)
+        public void Serialize(ref JsonWriter<Char> writer, UInt16[] value)
         {
-			Serialize(ref writer, value, UInt16Formatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, UInt16Utf16Formatter<TResolver>.Default);
         }
 
-        public UInt16[] Deserialize(ref JsonReader<TSymbol> reader)
+        public UInt16[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, UInt16Formatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, UInt16Utf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class UInt16ListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<UInt16>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class UInt16Utf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<UInt16>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly UInt16ListFormatter<TSymbol,TResolver> Default = new UInt16ListFormatter<TSymbol, TResolver>();
+        public static readonly UInt16Utf16ListFormatter<TResolver> Default = new UInt16Utf16ListFormatter<TResolver>();
 		private static readonly Func<List<UInt16>> CreateFunctor = () => new List<UInt16>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<UInt16> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<UInt16> value)
         {
-			Serialize(ref writer, value, UInt16Formatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, UInt16Utf16Formatter<TResolver>.Default);
         }
 
-        public List<UInt16> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<UInt16> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, UInt16Formatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, UInt16Utf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class UInt32Formatter<TSymbol, TResolver> : IJsonFormatter<UInt32, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class UInt16Utf8Formatter<TResolver> : IJsonFormatter<UInt16, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly UInt32Formatter<TSymbol,TResolver> Default = new UInt32Formatter<TSymbol,TResolver>();
+        public static readonly UInt16Utf8Formatter<TResolver> Default = new UInt16Utf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, UInt32 value)
+        public void Serialize(ref JsonWriter<Byte> writer, UInt16 value)
+        {
+            writer.WriteUtf16UInt16(value);
+        }
+
+        public UInt16 Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16UInt16();
+        }
+	} 
+	public sealed class NullableUInt16Utf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<UInt16?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableUInt16Utf8Formatter<TResolver> Default = new NullableUInt16Utf8Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, UInt16? value)
+        {
+            Serialize(ref writer, value, UInt16Utf8Formatter<TResolver>.Default);
+        }
+
+        public UInt16? Deserialize(ref JsonReader<Byte> reader)
+        {
+			return Deserialize(ref reader, UInt16Utf8Formatter<TResolver>.Default);
+        }
+	}
+    public sealed class NullableUInt16Utf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<UInt16?[], Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableUInt16Utf8ArrayFormatter<TResolver> Default = new NullableUInt16Utf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, UInt16?[] value)
+        {
+			Serialize(ref writer, value, NullableUInt16Utf8Formatter<TResolver>.Default);
+        }
+
+        public UInt16?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableUInt16Utf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class NullableUInt16Utf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<UInt16?>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableUInt16Utf8ListFormatter<TResolver> Default = new NullableUInt16Utf8ListFormatter<TResolver>();
+		private static readonly Func<List<UInt16?>> CreateFunctor = () => new List<UInt16?>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<UInt16?> value)
+        {
+			Serialize(ref writer, value, NullableUInt16Utf8Formatter<TResolver>.Default);
+        }
+
+        public List<UInt16?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableUInt16Utf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+
+    public sealed class UInt16Utf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<UInt16[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly UInt16Utf8ArrayFormatter<TResolver> Default = new UInt16Utf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, UInt16[] value)
+        {
+			Serialize(ref writer, value, UInt16Utf8Formatter<TResolver>.Default);
+        }
+
+        public UInt16[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, UInt16Utf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class UInt16Utf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<UInt16>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly UInt16Utf8ListFormatter<TResolver> Default = new UInt16Utf8ListFormatter<TResolver>();
+		private static readonly Func<List<UInt16>> CreateFunctor = () => new List<UInt16>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<UInt16> value)
+        {
+			Serialize(ref writer, value, UInt16Utf8Formatter<TResolver>.Default);
+        }
+
+        public List<UInt16> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, UInt16Utf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class UInt32Utf16Formatter<TResolver> : IJsonFormatter<UInt32, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly UInt32Utf16Formatter<TResolver> Default = new UInt32Utf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, UInt32 value)
         {
             writer.WriteUtf16UInt32(value);
         }
 
-        public UInt32 Deserialize(ref JsonReader<TSymbol> reader)
+        public UInt32 Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16UInt32();
         }
 	} 
-	public sealed class NullableUInt32Formatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<UInt32?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableUInt32Utf16Formatter<TResolver> : NullableFormatter, IJsonFormatter<UInt32?, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableUInt32Formatter<TSymbol,TResolver> Default = new NullableUInt32Formatter<TSymbol,TResolver>();
+        public static readonly NullableUInt32Utf16Formatter<TResolver> Default = new NullableUInt32Utf16Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, UInt32? value)
+        public void Serialize(ref JsonWriter<Char> writer, UInt32? value)
         {
-            Serialize(ref writer, value, UInt32Formatter<TSymbol,TResolver>.Default);
+            Serialize(ref writer, value, UInt32Utf16Formatter<TResolver>.Default);
         }
 
-        public UInt32? Deserialize(ref JsonReader<TSymbol> reader)
+        public UInt32? Deserialize(ref JsonReader<Char> reader)
         {
-			return Deserialize(ref reader, UInt32Formatter<TSymbol,TResolver>.Default);
+			return Deserialize(ref reader, UInt32Utf16Formatter<TResolver>.Default);
         }
 	}
-    public sealed class NullableUInt32ArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<UInt32?[], TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class NullableUInt32Utf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<UInt32?[], Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableUInt32ArrayFormatter<TSymbol,TResolver> Default = new NullableUInt32ArrayFormatter<TSymbol,TResolver>();
+        public static readonly NullableUInt32Utf16ArrayFormatter<TResolver> Default = new NullableUInt32Utf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, UInt32?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, UInt32?[] value)
         {
-			Serialize(ref writer, value, NullableUInt32Formatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableUInt32Utf16Formatter<TResolver>.Default);
         }
 
-        public UInt32?[] Deserialize(ref JsonReader<TSymbol> reader)
+        public UInt32?[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableUInt32Formatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, NullableUInt32Utf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class NullableUInt32ListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<UInt32?>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableUInt32Utf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<UInt32?>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableUInt32ListFormatter<TSymbol,TResolver> Default = new NullableUInt32ListFormatter<TSymbol,TResolver>();
+        public static readonly NullableUInt32Utf16ListFormatter<TResolver> Default = new NullableUInt32Utf16ListFormatter<TResolver>();
 		private static readonly Func<List<UInt32?>> CreateFunctor = () => new List<UInt32?>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<UInt32?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<UInt32?> value)
         {
-			Serialize(ref writer, value, NullableUInt32Formatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableUInt32Utf16Formatter<TResolver>.Default);
         }
 
-        public List<UInt32?> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<UInt32?> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableUInt32Formatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, NullableUInt32Utf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 
-    public sealed class UInt32ArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<UInt32[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class UInt32Utf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<UInt32[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly UInt32ArrayFormatter<TSymbol,TResolver> Default = new UInt32ArrayFormatter<TSymbol,TResolver>();
+        public static readonly UInt32Utf16ArrayFormatter<TResolver> Default = new UInt32Utf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, UInt32[] value)
+        public void Serialize(ref JsonWriter<Char> writer, UInt32[] value)
         {
-			Serialize(ref writer, value, UInt32Formatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, UInt32Utf16Formatter<TResolver>.Default);
         }
 
-        public UInt32[] Deserialize(ref JsonReader<TSymbol> reader)
+        public UInt32[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, UInt32Formatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, UInt32Utf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class UInt32ListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<UInt32>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class UInt32Utf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<UInt32>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly UInt32ListFormatter<TSymbol,TResolver> Default = new UInt32ListFormatter<TSymbol, TResolver>();
+        public static readonly UInt32Utf16ListFormatter<TResolver> Default = new UInt32Utf16ListFormatter<TResolver>();
 		private static readonly Func<List<UInt32>> CreateFunctor = () => new List<UInt32>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<UInt32> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<UInt32> value)
         {
-			Serialize(ref writer, value, UInt32Formatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, UInt32Utf16Formatter<TResolver>.Default);
         }
 
-        public List<UInt32> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<UInt32> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, UInt32Formatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, UInt32Utf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class UInt64Formatter<TSymbol, TResolver> : IJsonFormatter<UInt64, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class UInt32Utf8Formatter<TResolver> : IJsonFormatter<UInt32, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly UInt64Formatter<TSymbol,TResolver> Default = new UInt64Formatter<TSymbol,TResolver>();
+        public static readonly UInt32Utf8Formatter<TResolver> Default = new UInt32Utf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, UInt64 value)
+        public void Serialize(ref JsonWriter<Byte> writer, UInt32 value)
+        {
+            writer.WriteUtf16UInt32(value);
+        }
+
+        public UInt32 Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16UInt32();
+        }
+	} 
+	public sealed class NullableUInt32Utf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<UInt32?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableUInt32Utf8Formatter<TResolver> Default = new NullableUInt32Utf8Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, UInt32? value)
+        {
+            Serialize(ref writer, value, UInt32Utf8Formatter<TResolver>.Default);
+        }
+
+        public UInt32? Deserialize(ref JsonReader<Byte> reader)
+        {
+			return Deserialize(ref reader, UInt32Utf8Formatter<TResolver>.Default);
+        }
+	}
+    public sealed class NullableUInt32Utf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<UInt32?[], Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableUInt32Utf8ArrayFormatter<TResolver> Default = new NullableUInt32Utf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, UInt32?[] value)
+        {
+			Serialize(ref writer, value, NullableUInt32Utf8Formatter<TResolver>.Default);
+        }
+
+        public UInt32?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableUInt32Utf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class NullableUInt32Utf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<UInt32?>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableUInt32Utf8ListFormatter<TResolver> Default = new NullableUInt32Utf8ListFormatter<TResolver>();
+		private static readonly Func<List<UInt32?>> CreateFunctor = () => new List<UInt32?>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<UInt32?> value)
+        {
+			Serialize(ref writer, value, NullableUInt32Utf8Formatter<TResolver>.Default);
+        }
+
+        public List<UInt32?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableUInt32Utf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+
+    public sealed class UInt32Utf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<UInt32[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly UInt32Utf8ArrayFormatter<TResolver> Default = new UInt32Utf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, UInt32[] value)
+        {
+			Serialize(ref writer, value, UInt32Utf8Formatter<TResolver>.Default);
+        }
+
+        public UInt32[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, UInt32Utf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class UInt32Utf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<UInt32>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly UInt32Utf8ListFormatter<TResolver> Default = new UInt32Utf8ListFormatter<TResolver>();
+		private static readonly Func<List<UInt32>> CreateFunctor = () => new List<UInt32>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<UInt32> value)
+        {
+			Serialize(ref writer, value, UInt32Utf8Formatter<TResolver>.Default);
+        }
+
+        public List<UInt32> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, UInt32Utf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class UInt64Utf16Formatter<TResolver> : IJsonFormatter<UInt64, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly UInt64Utf16Formatter<TResolver> Default = new UInt64Utf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, UInt64 value)
         {
             writer.WriteUtf16UInt64(value);
         }
 
-        public UInt64 Deserialize(ref JsonReader<TSymbol> reader)
+        public UInt64 Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16UInt64();
         }
 	} 
-	public sealed class NullableUInt64Formatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<UInt64?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableUInt64Utf16Formatter<TResolver> : NullableFormatter, IJsonFormatter<UInt64?, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableUInt64Formatter<TSymbol,TResolver> Default = new NullableUInt64Formatter<TSymbol,TResolver>();
+        public static readonly NullableUInt64Utf16Formatter<TResolver> Default = new NullableUInt64Utf16Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, UInt64? value)
+        public void Serialize(ref JsonWriter<Char> writer, UInt64? value)
         {
-            Serialize(ref writer, value, UInt64Formatter<TSymbol,TResolver>.Default);
+            Serialize(ref writer, value, UInt64Utf16Formatter<TResolver>.Default);
         }
 
-        public UInt64? Deserialize(ref JsonReader<TSymbol> reader)
+        public UInt64? Deserialize(ref JsonReader<Char> reader)
         {
-			return Deserialize(ref reader, UInt64Formatter<TSymbol,TResolver>.Default);
+			return Deserialize(ref reader, UInt64Utf16Formatter<TResolver>.Default);
         }
 	}
-    public sealed class NullableUInt64ArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<UInt64?[], TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class NullableUInt64Utf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<UInt64?[], Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableUInt64ArrayFormatter<TSymbol,TResolver> Default = new NullableUInt64ArrayFormatter<TSymbol,TResolver>();
+        public static readonly NullableUInt64Utf16ArrayFormatter<TResolver> Default = new NullableUInt64Utf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, UInt64?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, UInt64?[] value)
         {
-			Serialize(ref writer, value, NullableUInt64Formatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableUInt64Utf16Formatter<TResolver>.Default);
         }
 
-        public UInt64?[] Deserialize(ref JsonReader<TSymbol> reader)
+        public UInt64?[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableUInt64Formatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, NullableUInt64Utf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class NullableUInt64ListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<UInt64?>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableUInt64Utf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<UInt64?>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableUInt64ListFormatter<TSymbol,TResolver> Default = new NullableUInt64ListFormatter<TSymbol,TResolver>();
+        public static readonly NullableUInt64Utf16ListFormatter<TResolver> Default = new NullableUInt64Utf16ListFormatter<TResolver>();
 		private static readonly Func<List<UInt64?>> CreateFunctor = () => new List<UInt64?>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<UInt64?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<UInt64?> value)
         {
-			Serialize(ref writer, value, NullableUInt64Formatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableUInt64Utf16Formatter<TResolver>.Default);
         }
 
-        public List<UInt64?> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<UInt64?> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableUInt64Formatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, NullableUInt64Utf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 
-    public sealed class UInt64ArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<UInt64[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class UInt64Utf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<UInt64[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly UInt64ArrayFormatter<TSymbol,TResolver> Default = new UInt64ArrayFormatter<TSymbol,TResolver>();
+        public static readonly UInt64Utf16ArrayFormatter<TResolver> Default = new UInt64Utf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, UInt64[] value)
+        public void Serialize(ref JsonWriter<Char> writer, UInt64[] value)
         {
-			Serialize(ref writer, value, UInt64Formatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, UInt64Utf16Formatter<TResolver>.Default);
         }
 
-        public UInt64[] Deserialize(ref JsonReader<TSymbol> reader)
+        public UInt64[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, UInt64Formatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, UInt64Utf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class UInt64ListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<UInt64>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class UInt64Utf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<UInt64>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly UInt64ListFormatter<TSymbol,TResolver> Default = new UInt64ListFormatter<TSymbol, TResolver>();
+        public static readonly UInt64Utf16ListFormatter<TResolver> Default = new UInt64Utf16ListFormatter<TResolver>();
 		private static readonly Func<List<UInt64>> CreateFunctor = () => new List<UInt64>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<UInt64> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<UInt64> value)
         {
-			Serialize(ref writer, value, UInt64Formatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, UInt64Utf16Formatter<TResolver>.Default);
         }
 
-        public List<UInt64> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<UInt64> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, UInt64Formatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, UInt64Utf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class SingleFormatter<TSymbol, TResolver> : IJsonFormatter<Single, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class UInt64Utf8Formatter<TResolver> : IJsonFormatter<UInt64, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly SingleFormatter<TSymbol,TResolver> Default = new SingleFormatter<TSymbol,TResolver>();
+        public static readonly UInt64Utf8Formatter<TResolver> Default = new UInt64Utf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Single value)
+        public void Serialize(ref JsonWriter<Byte> writer, UInt64 value)
+        {
+            writer.WriteUtf16UInt64(value);
+        }
+
+        public UInt64 Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16UInt64();
+        }
+	} 
+	public sealed class NullableUInt64Utf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<UInt64?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableUInt64Utf8Formatter<TResolver> Default = new NullableUInt64Utf8Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, UInt64? value)
+        {
+            Serialize(ref writer, value, UInt64Utf8Formatter<TResolver>.Default);
+        }
+
+        public UInt64? Deserialize(ref JsonReader<Byte> reader)
+        {
+			return Deserialize(ref reader, UInt64Utf8Formatter<TResolver>.Default);
+        }
+	}
+    public sealed class NullableUInt64Utf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<UInt64?[], Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableUInt64Utf8ArrayFormatter<TResolver> Default = new NullableUInt64Utf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, UInt64?[] value)
+        {
+			Serialize(ref writer, value, NullableUInt64Utf8Formatter<TResolver>.Default);
+        }
+
+        public UInt64?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableUInt64Utf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class NullableUInt64Utf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<UInt64?>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableUInt64Utf8ListFormatter<TResolver> Default = new NullableUInt64Utf8ListFormatter<TResolver>();
+		private static readonly Func<List<UInt64?>> CreateFunctor = () => new List<UInt64?>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<UInt64?> value)
+        {
+			Serialize(ref writer, value, NullableUInt64Utf8Formatter<TResolver>.Default);
+        }
+
+        public List<UInt64?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableUInt64Utf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+
+    public sealed class UInt64Utf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<UInt64[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly UInt64Utf8ArrayFormatter<TResolver> Default = new UInt64Utf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, UInt64[] value)
+        {
+			Serialize(ref writer, value, UInt64Utf8Formatter<TResolver>.Default);
+        }
+
+        public UInt64[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, UInt64Utf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class UInt64Utf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<UInt64>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly UInt64Utf8ListFormatter<TResolver> Default = new UInt64Utf8ListFormatter<TResolver>();
+		private static readonly Func<List<UInt64>> CreateFunctor = () => new List<UInt64>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<UInt64> value)
+        {
+			Serialize(ref writer, value, UInt64Utf8Formatter<TResolver>.Default);
+        }
+
+        public List<UInt64> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, UInt64Utf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class SingleUtf16Formatter<TResolver> : IJsonFormatter<Single, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly SingleUtf16Formatter<TResolver> Default = new SingleUtf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, Single value)
         {
             writer.WriteUtf16Single(value);
         }
 
-        public Single Deserialize(ref JsonReader<TSymbol> reader)
+        public Single Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16Single();
         }
 	} 
-	public sealed class NullableSingleFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Single?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableSingleUtf16Formatter<TResolver> : NullableFormatter, IJsonFormatter<Single?, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableSingleFormatter<TSymbol,TResolver> Default = new NullableSingleFormatter<TSymbol,TResolver>();
+        public static readonly NullableSingleUtf16Formatter<TResolver> Default = new NullableSingleUtf16Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Single? value)
+        public void Serialize(ref JsonWriter<Char> writer, Single? value)
         {
-            Serialize(ref writer, value, SingleFormatter<TSymbol,TResolver>.Default);
+            Serialize(ref writer, value, SingleUtf16Formatter<TResolver>.Default);
         }
 
-        public Single? Deserialize(ref JsonReader<TSymbol> reader)
+        public Single? Deserialize(ref JsonReader<Char> reader)
         {
-			return Deserialize(ref reader, SingleFormatter<TSymbol,TResolver>.Default);
+			return Deserialize(ref reader, SingleUtf16Formatter<TResolver>.Default);
         }
 	}
-    public sealed class NullableSingleArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Single?[], TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class NullableSingleUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Single?[], Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableSingleArrayFormatter<TSymbol,TResolver> Default = new NullableSingleArrayFormatter<TSymbol,TResolver>();
+        public static readonly NullableSingleUtf16ArrayFormatter<TResolver> Default = new NullableSingleUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Single?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Single?[] value)
         {
-			Serialize(ref writer, value, NullableSingleFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableSingleUtf16Formatter<TResolver>.Default);
         }
 
-        public Single?[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Single?[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableSingleFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, NullableSingleUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class NullableSingleListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Single?>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableSingleUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Single?>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableSingleListFormatter<TSymbol,TResolver> Default = new NullableSingleListFormatter<TSymbol,TResolver>();
+        public static readonly NullableSingleUtf16ListFormatter<TResolver> Default = new NullableSingleUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<Single?>> CreateFunctor = () => new List<Single?>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Single?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Single?> value)
         {
-			Serialize(ref writer, value, NullableSingleFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableSingleUtf16Formatter<TResolver>.Default);
         }
 
-        public List<Single?> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Single?> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableSingleFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, NullableSingleUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 
-    public sealed class SingleArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Single[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class SingleUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Single[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly SingleArrayFormatter<TSymbol,TResolver> Default = new SingleArrayFormatter<TSymbol,TResolver>();
+        public static readonly SingleUtf16ArrayFormatter<TResolver> Default = new SingleUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Single[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Single[] value)
         {
-			Serialize(ref writer, value, SingleFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, SingleUtf16Formatter<TResolver>.Default);
         }
 
-        public Single[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Single[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, SingleFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, SingleUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class SingleListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Single>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class SingleUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Single>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly SingleListFormatter<TSymbol,TResolver> Default = new SingleListFormatter<TSymbol, TResolver>();
+        public static readonly SingleUtf16ListFormatter<TResolver> Default = new SingleUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<Single>> CreateFunctor = () => new List<Single>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Single> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Single> value)
         {
-			Serialize(ref writer, value, SingleFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, SingleUtf16Formatter<TResolver>.Default);
         }
 
-        public List<Single> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Single> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, SingleFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, SingleUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class DoubleFormatter<TSymbol, TResolver> : IJsonFormatter<Double, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class SingleUtf8Formatter<TResolver> : IJsonFormatter<Single, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly DoubleFormatter<TSymbol,TResolver> Default = new DoubleFormatter<TSymbol,TResolver>();
+        public static readonly SingleUtf8Formatter<TResolver> Default = new SingleUtf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Double value)
+        public void Serialize(ref JsonWriter<Byte> writer, Single value)
+        {
+            writer.WriteUtf16Single(value);
+        }
+
+        public Single Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16Single();
+        }
+	} 
+	public sealed class NullableSingleUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Single?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableSingleUtf8Formatter<TResolver> Default = new NullableSingleUtf8Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Single? value)
+        {
+            Serialize(ref writer, value, SingleUtf8Formatter<TResolver>.Default);
+        }
+
+        public Single? Deserialize(ref JsonReader<Byte> reader)
+        {
+			return Deserialize(ref reader, SingleUtf8Formatter<TResolver>.Default);
+        }
+	}
+    public sealed class NullableSingleUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Single?[], Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableSingleUtf8ArrayFormatter<TResolver> Default = new NullableSingleUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Single?[] value)
+        {
+			Serialize(ref writer, value, NullableSingleUtf8Formatter<TResolver>.Default);
+        }
+
+        public Single?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableSingleUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class NullableSingleUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Single?>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableSingleUtf8ListFormatter<TResolver> Default = new NullableSingleUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<Single?>> CreateFunctor = () => new List<Single?>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Single?> value)
+        {
+			Serialize(ref writer, value, NullableSingleUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<Single?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableSingleUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+
+    public sealed class SingleUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Single[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly SingleUtf8ArrayFormatter<TResolver> Default = new SingleUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Single[] value)
+        {
+			Serialize(ref writer, value, SingleUtf8Formatter<TResolver>.Default);
+        }
+
+        public Single[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, SingleUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class SingleUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Single>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly SingleUtf8ListFormatter<TResolver> Default = new SingleUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<Single>> CreateFunctor = () => new List<Single>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Single> value)
+        {
+			Serialize(ref writer, value, SingleUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<Single> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, SingleUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class DoubleUtf16Formatter<TResolver> : IJsonFormatter<Double, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly DoubleUtf16Formatter<TResolver> Default = new DoubleUtf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, Double value)
         {
             writer.WriteUtf16Double(value);
         }
 
-        public Double Deserialize(ref JsonReader<TSymbol> reader)
+        public Double Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16Double();
         }
 	} 
-	public sealed class NullableDoubleFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Double?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableDoubleUtf16Formatter<TResolver> : NullableFormatter, IJsonFormatter<Double?, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableDoubleFormatter<TSymbol,TResolver> Default = new NullableDoubleFormatter<TSymbol,TResolver>();
+        public static readonly NullableDoubleUtf16Formatter<TResolver> Default = new NullableDoubleUtf16Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Double? value)
+        public void Serialize(ref JsonWriter<Char> writer, Double? value)
         {
-            Serialize(ref writer, value, DoubleFormatter<TSymbol,TResolver>.Default);
+            Serialize(ref writer, value, DoubleUtf16Formatter<TResolver>.Default);
         }
 
-        public Double? Deserialize(ref JsonReader<TSymbol> reader)
+        public Double? Deserialize(ref JsonReader<Char> reader)
         {
-			return Deserialize(ref reader, DoubleFormatter<TSymbol,TResolver>.Default);
+			return Deserialize(ref reader, DoubleUtf16Formatter<TResolver>.Default);
         }
 	}
-    public sealed class NullableDoubleArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Double?[], TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class NullableDoubleUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Double?[], Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableDoubleArrayFormatter<TSymbol,TResolver> Default = new NullableDoubleArrayFormatter<TSymbol,TResolver>();
+        public static readonly NullableDoubleUtf16ArrayFormatter<TResolver> Default = new NullableDoubleUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Double?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Double?[] value)
         {
-			Serialize(ref writer, value, NullableDoubleFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableDoubleUtf16Formatter<TResolver>.Default);
         }
 
-        public Double?[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Double?[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableDoubleFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, NullableDoubleUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class NullableDoubleListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Double?>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableDoubleUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Double?>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableDoubleListFormatter<TSymbol,TResolver> Default = new NullableDoubleListFormatter<TSymbol,TResolver>();
+        public static readonly NullableDoubleUtf16ListFormatter<TResolver> Default = new NullableDoubleUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<Double?>> CreateFunctor = () => new List<Double?>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Double?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Double?> value)
         {
-			Serialize(ref writer, value, NullableDoubleFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableDoubleUtf16Formatter<TResolver>.Default);
         }
 
-        public List<Double?> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Double?> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableDoubleFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, NullableDoubleUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 
-    public sealed class DoubleArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Double[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class DoubleUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Double[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly DoubleArrayFormatter<TSymbol,TResolver> Default = new DoubleArrayFormatter<TSymbol,TResolver>();
+        public static readonly DoubleUtf16ArrayFormatter<TResolver> Default = new DoubleUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Double[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Double[] value)
         {
-			Serialize(ref writer, value, DoubleFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, DoubleUtf16Formatter<TResolver>.Default);
         }
 
-        public Double[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Double[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, DoubleFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, DoubleUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class DoubleListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Double>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class DoubleUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Double>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly DoubleListFormatter<TSymbol,TResolver> Default = new DoubleListFormatter<TSymbol, TResolver>();
+        public static readonly DoubleUtf16ListFormatter<TResolver> Default = new DoubleUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<Double>> CreateFunctor = () => new List<Double>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Double> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Double> value)
         {
-			Serialize(ref writer, value, DoubleFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, DoubleUtf16Formatter<TResolver>.Default);
         }
 
-        public List<Double> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Double> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, DoubleFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, DoubleUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class DecimalFormatter<TSymbol, TResolver> : IJsonFormatter<Decimal, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class DoubleUtf8Formatter<TResolver> : IJsonFormatter<Double, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly DecimalFormatter<TSymbol,TResolver> Default = new DecimalFormatter<TSymbol,TResolver>();
+        public static readonly DoubleUtf8Formatter<TResolver> Default = new DoubleUtf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Decimal value)
+        public void Serialize(ref JsonWriter<Byte> writer, Double value)
+        {
+            writer.WriteUtf16Double(value);
+        }
+
+        public Double Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16Double();
+        }
+	} 
+	public sealed class NullableDoubleUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Double?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableDoubleUtf8Formatter<TResolver> Default = new NullableDoubleUtf8Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Double? value)
+        {
+            Serialize(ref writer, value, DoubleUtf8Formatter<TResolver>.Default);
+        }
+
+        public Double? Deserialize(ref JsonReader<Byte> reader)
+        {
+			return Deserialize(ref reader, DoubleUtf8Formatter<TResolver>.Default);
+        }
+	}
+    public sealed class NullableDoubleUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Double?[], Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableDoubleUtf8ArrayFormatter<TResolver> Default = new NullableDoubleUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Double?[] value)
+        {
+			Serialize(ref writer, value, NullableDoubleUtf8Formatter<TResolver>.Default);
+        }
+
+        public Double?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableDoubleUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class NullableDoubleUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Double?>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableDoubleUtf8ListFormatter<TResolver> Default = new NullableDoubleUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<Double?>> CreateFunctor = () => new List<Double?>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Double?> value)
+        {
+			Serialize(ref writer, value, NullableDoubleUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<Double?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableDoubleUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+
+    public sealed class DoubleUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Double[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly DoubleUtf8ArrayFormatter<TResolver> Default = new DoubleUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Double[] value)
+        {
+			Serialize(ref writer, value, DoubleUtf8Formatter<TResolver>.Default);
+        }
+
+        public Double[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, DoubleUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class DoubleUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Double>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly DoubleUtf8ListFormatter<TResolver> Default = new DoubleUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<Double>> CreateFunctor = () => new List<Double>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Double> value)
+        {
+			Serialize(ref writer, value, DoubleUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<Double> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, DoubleUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class DecimalUtf16Formatter<TResolver> : IJsonFormatter<Decimal, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly DecimalUtf16Formatter<TResolver> Default = new DecimalUtf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, Decimal value)
         {
             writer.WriteUtf16Decimal(value);
         }
 
-        public Decimal Deserialize(ref JsonReader<TSymbol> reader)
+        public Decimal Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16Decimal();
         }
 	} 
-	public sealed class NullableDecimalFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Decimal?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableDecimalUtf16Formatter<TResolver> : NullableFormatter, IJsonFormatter<Decimal?, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableDecimalFormatter<TSymbol,TResolver> Default = new NullableDecimalFormatter<TSymbol,TResolver>();
+        public static readonly NullableDecimalUtf16Formatter<TResolver> Default = new NullableDecimalUtf16Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Decimal? value)
+        public void Serialize(ref JsonWriter<Char> writer, Decimal? value)
         {
-            Serialize(ref writer, value, DecimalFormatter<TSymbol,TResolver>.Default);
+            Serialize(ref writer, value, DecimalUtf16Formatter<TResolver>.Default);
         }
 
-        public Decimal? Deserialize(ref JsonReader<TSymbol> reader)
+        public Decimal? Deserialize(ref JsonReader<Char> reader)
         {
-			return Deserialize(ref reader, DecimalFormatter<TSymbol,TResolver>.Default);
+			return Deserialize(ref reader, DecimalUtf16Formatter<TResolver>.Default);
         }
 	}
-    public sealed class NullableDecimalArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Decimal?[], TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class NullableDecimalUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Decimal?[], Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableDecimalArrayFormatter<TSymbol,TResolver> Default = new NullableDecimalArrayFormatter<TSymbol,TResolver>();
+        public static readonly NullableDecimalUtf16ArrayFormatter<TResolver> Default = new NullableDecimalUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Decimal?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Decimal?[] value)
         {
-			Serialize(ref writer, value, NullableDecimalFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableDecimalUtf16Formatter<TResolver>.Default);
         }
 
-        public Decimal?[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Decimal?[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableDecimalFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, NullableDecimalUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class NullableDecimalListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Decimal?>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableDecimalUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Decimal?>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableDecimalListFormatter<TSymbol,TResolver> Default = new NullableDecimalListFormatter<TSymbol,TResolver>();
+        public static readonly NullableDecimalUtf16ListFormatter<TResolver> Default = new NullableDecimalUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<Decimal?>> CreateFunctor = () => new List<Decimal?>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Decimal?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Decimal?> value)
         {
-			Serialize(ref writer, value, NullableDecimalFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableDecimalUtf16Formatter<TResolver>.Default);
         }
 
-        public List<Decimal?> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Decimal?> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableDecimalFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, NullableDecimalUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 
-    public sealed class DecimalArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Decimal[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class DecimalUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Decimal[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly DecimalArrayFormatter<TSymbol,TResolver> Default = new DecimalArrayFormatter<TSymbol,TResolver>();
+        public static readonly DecimalUtf16ArrayFormatter<TResolver> Default = new DecimalUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Decimal[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Decimal[] value)
         {
-			Serialize(ref writer, value, DecimalFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, DecimalUtf16Formatter<TResolver>.Default);
         }
 
-        public Decimal[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Decimal[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, DecimalFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, DecimalUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class DecimalListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Decimal>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class DecimalUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Decimal>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly DecimalListFormatter<TSymbol,TResolver> Default = new DecimalListFormatter<TSymbol, TResolver>();
+        public static readonly DecimalUtf16ListFormatter<TResolver> Default = new DecimalUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<Decimal>> CreateFunctor = () => new List<Decimal>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Decimal> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Decimal> value)
         {
-			Serialize(ref writer, value, DecimalFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, DecimalUtf16Formatter<TResolver>.Default);
         }
 
-        public List<Decimal> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Decimal> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, DecimalFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, DecimalUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class BooleanFormatter<TSymbol, TResolver> : IJsonFormatter<Boolean, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class DecimalUtf8Formatter<TResolver> : IJsonFormatter<Decimal, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly BooleanFormatter<TSymbol,TResolver> Default = new BooleanFormatter<TSymbol,TResolver>();
+        public static readonly DecimalUtf8Formatter<TResolver> Default = new DecimalUtf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Boolean value)
+        public void Serialize(ref JsonWriter<Byte> writer, Decimal value)
+        {
+            writer.WriteUtf16Decimal(value);
+        }
+
+        public Decimal Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16Decimal();
+        }
+	} 
+	public sealed class NullableDecimalUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Decimal?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableDecimalUtf8Formatter<TResolver> Default = new NullableDecimalUtf8Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Decimal? value)
+        {
+            Serialize(ref writer, value, DecimalUtf8Formatter<TResolver>.Default);
+        }
+
+        public Decimal? Deserialize(ref JsonReader<Byte> reader)
+        {
+			return Deserialize(ref reader, DecimalUtf8Formatter<TResolver>.Default);
+        }
+	}
+    public sealed class NullableDecimalUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Decimal?[], Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableDecimalUtf8ArrayFormatter<TResolver> Default = new NullableDecimalUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Decimal?[] value)
+        {
+			Serialize(ref writer, value, NullableDecimalUtf8Formatter<TResolver>.Default);
+        }
+
+        public Decimal?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableDecimalUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class NullableDecimalUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Decimal?>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableDecimalUtf8ListFormatter<TResolver> Default = new NullableDecimalUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<Decimal?>> CreateFunctor = () => new List<Decimal?>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Decimal?> value)
+        {
+			Serialize(ref writer, value, NullableDecimalUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<Decimal?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableDecimalUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+
+    public sealed class DecimalUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Decimal[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly DecimalUtf8ArrayFormatter<TResolver> Default = new DecimalUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Decimal[] value)
+        {
+			Serialize(ref writer, value, DecimalUtf8Formatter<TResolver>.Default);
+        }
+
+        public Decimal[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, DecimalUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class DecimalUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Decimal>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly DecimalUtf8ListFormatter<TResolver> Default = new DecimalUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<Decimal>> CreateFunctor = () => new List<Decimal>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Decimal> value)
+        {
+			Serialize(ref writer, value, DecimalUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<Decimal> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, DecimalUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class BooleanUtf16Formatter<TResolver> : IJsonFormatter<Boolean, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly BooleanUtf16Formatter<TResolver> Default = new BooleanUtf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, Boolean value)
         {
             writer.WriteUtf16Boolean(value);
         }
 
-        public Boolean Deserialize(ref JsonReader<TSymbol> reader)
+        public Boolean Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16Boolean();
         }
 	} 
-	public sealed class NullableBooleanFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Boolean?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableBooleanUtf16Formatter<TResolver> : NullableFormatter, IJsonFormatter<Boolean?, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableBooleanFormatter<TSymbol,TResolver> Default = new NullableBooleanFormatter<TSymbol,TResolver>();
+        public static readonly NullableBooleanUtf16Formatter<TResolver> Default = new NullableBooleanUtf16Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Boolean? value)
+        public void Serialize(ref JsonWriter<Char> writer, Boolean? value)
         {
-            Serialize(ref writer, value, BooleanFormatter<TSymbol,TResolver>.Default);
+            Serialize(ref writer, value, BooleanUtf16Formatter<TResolver>.Default);
         }
 
-        public Boolean? Deserialize(ref JsonReader<TSymbol> reader)
+        public Boolean? Deserialize(ref JsonReader<Char> reader)
         {
-			return Deserialize(ref reader, BooleanFormatter<TSymbol,TResolver>.Default);
+			return Deserialize(ref reader, BooleanUtf16Formatter<TResolver>.Default);
         }
 	}
-    public sealed class NullableBooleanArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Boolean?[], TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class NullableBooleanUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Boolean?[], Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableBooleanArrayFormatter<TSymbol,TResolver> Default = new NullableBooleanArrayFormatter<TSymbol,TResolver>();
+        public static readonly NullableBooleanUtf16ArrayFormatter<TResolver> Default = new NullableBooleanUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Boolean?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Boolean?[] value)
         {
-			Serialize(ref writer, value, NullableBooleanFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableBooleanUtf16Formatter<TResolver>.Default);
         }
 
-        public Boolean?[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Boolean?[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableBooleanFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, NullableBooleanUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class NullableBooleanListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Boolean?>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableBooleanUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Boolean?>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableBooleanListFormatter<TSymbol,TResolver> Default = new NullableBooleanListFormatter<TSymbol,TResolver>();
+        public static readonly NullableBooleanUtf16ListFormatter<TResolver> Default = new NullableBooleanUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<Boolean?>> CreateFunctor = () => new List<Boolean?>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Boolean?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Boolean?> value)
         {
-			Serialize(ref writer, value, NullableBooleanFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableBooleanUtf16Formatter<TResolver>.Default);
         }
 
-        public List<Boolean?> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Boolean?> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableBooleanFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, NullableBooleanUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 
-    public sealed class BooleanArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Boolean[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class BooleanUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Boolean[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly BooleanArrayFormatter<TSymbol,TResolver> Default = new BooleanArrayFormatter<TSymbol,TResolver>();
+        public static readonly BooleanUtf16ArrayFormatter<TResolver> Default = new BooleanUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Boolean[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Boolean[] value)
         {
-			Serialize(ref writer, value, BooleanFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, BooleanUtf16Formatter<TResolver>.Default);
         }
 
-        public Boolean[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Boolean[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, BooleanFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, BooleanUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class BooleanListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Boolean>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class BooleanUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Boolean>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly BooleanListFormatter<TSymbol,TResolver> Default = new BooleanListFormatter<TSymbol, TResolver>();
+        public static readonly BooleanUtf16ListFormatter<TResolver> Default = new BooleanUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<Boolean>> CreateFunctor = () => new List<Boolean>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Boolean> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Boolean> value)
         {
-			Serialize(ref writer, value, BooleanFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, BooleanUtf16Formatter<TResolver>.Default);
         }
 
-        public List<Boolean> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Boolean> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, BooleanFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, BooleanUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class CharFormatter<TSymbol, TResolver> : IJsonFormatter<Char, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class BooleanUtf8Formatter<TResolver> : IJsonFormatter<Boolean, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly CharFormatter<TSymbol,TResolver> Default = new CharFormatter<TSymbol,TResolver>();
+        public static readonly BooleanUtf8Formatter<TResolver> Default = new BooleanUtf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Char value)
+        public void Serialize(ref JsonWriter<Byte> writer, Boolean value)
+        {
+            writer.WriteUtf16Boolean(value);
+        }
+
+        public Boolean Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16Boolean();
+        }
+	} 
+	public sealed class NullableBooleanUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Boolean?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableBooleanUtf8Formatter<TResolver> Default = new NullableBooleanUtf8Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Boolean? value)
+        {
+            Serialize(ref writer, value, BooleanUtf8Formatter<TResolver>.Default);
+        }
+
+        public Boolean? Deserialize(ref JsonReader<Byte> reader)
+        {
+			return Deserialize(ref reader, BooleanUtf8Formatter<TResolver>.Default);
+        }
+	}
+    public sealed class NullableBooleanUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Boolean?[], Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableBooleanUtf8ArrayFormatter<TResolver> Default = new NullableBooleanUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Boolean?[] value)
+        {
+			Serialize(ref writer, value, NullableBooleanUtf8Formatter<TResolver>.Default);
+        }
+
+        public Boolean?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableBooleanUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class NullableBooleanUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Boolean?>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableBooleanUtf8ListFormatter<TResolver> Default = new NullableBooleanUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<Boolean?>> CreateFunctor = () => new List<Boolean?>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Boolean?> value)
+        {
+			Serialize(ref writer, value, NullableBooleanUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<Boolean?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableBooleanUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+
+    public sealed class BooleanUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Boolean[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly BooleanUtf8ArrayFormatter<TResolver> Default = new BooleanUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Boolean[] value)
+        {
+			Serialize(ref writer, value, BooleanUtf8Formatter<TResolver>.Default);
+        }
+
+        public Boolean[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, BooleanUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class BooleanUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Boolean>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly BooleanUtf8ListFormatter<TResolver> Default = new BooleanUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<Boolean>> CreateFunctor = () => new List<Boolean>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Boolean> value)
+        {
+			Serialize(ref writer, value, BooleanUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<Boolean> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, BooleanUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class CharUtf16Formatter<TResolver> : IJsonFormatter<Char, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly CharUtf16Formatter<TResolver> Default = new CharUtf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, Char value)
         {
             writer.WriteUtf16Char(value);
         }
 
-        public Char Deserialize(ref JsonReader<TSymbol> reader)
+        public Char Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16Char();
         }
 	} 
-	public sealed class NullableCharFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Char?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableCharUtf16Formatter<TResolver> : NullableFormatter, IJsonFormatter<Char?, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableCharFormatter<TSymbol,TResolver> Default = new NullableCharFormatter<TSymbol,TResolver>();
+        public static readonly NullableCharUtf16Formatter<TResolver> Default = new NullableCharUtf16Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Char? value)
+        public void Serialize(ref JsonWriter<Char> writer, Char? value)
         {
-            Serialize(ref writer, value, CharFormatter<TSymbol,TResolver>.Default);
+            Serialize(ref writer, value, CharUtf16Formatter<TResolver>.Default);
         }
 
-        public Char? Deserialize(ref JsonReader<TSymbol> reader)
+        public Char? Deserialize(ref JsonReader<Char> reader)
         {
-			return Deserialize(ref reader, CharFormatter<TSymbol,TResolver>.Default);
+			return Deserialize(ref reader, CharUtf16Formatter<TResolver>.Default);
         }
 	}
-    public sealed class NullableCharArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Char?[], TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class NullableCharUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Char?[], Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableCharArrayFormatter<TSymbol,TResolver> Default = new NullableCharArrayFormatter<TSymbol,TResolver>();
+        public static readonly NullableCharUtf16ArrayFormatter<TResolver> Default = new NullableCharUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Char?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Char?[] value)
         {
-			Serialize(ref writer, value, NullableCharFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableCharUtf16Formatter<TResolver>.Default);
         }
 
-        public Char?[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Char?[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableCharFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, NullableCharUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class NullableCharListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Char?>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableCharUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Char?>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableCharListFormatter<TSymbol,TResolver> Default = new NullableCharListFormatter<TSymbol,TResolver>();
+        public static readonly NullableCharUtf16ListFormatter<TResolver> Default = new NullableCharUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<Char?>> CreateFunctor = () => new List<Char?>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Char?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Char?> value)
         {
-			Serialize(ref writer, value, NullableCharFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableCharUtf16Formatter<TResolver>.Default);
         }
 
-        public List<Char?> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Char?> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableCharFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, NullableCharUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 
-    public sealed class CharArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Char[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class CharUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Char[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly CharArrayFormatter<TSymbol,TResolver> Default = new CharArrayFormatter<TSymbol,TResolver>();
+        public static readonly CharUtf16ArrayFormatter<TResolver> Default = new CharUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Char[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Char[] value)
         {
-			Serialize(ref writer, value, CharFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, CharUtf16Formatter<TResolver>.Default);
         }
 
-        public Char[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Char[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, CharFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, CharUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class CharListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Char>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class CharUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Char>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly CharListFormatter<TSymbol,TResolver> Default = new CharListFormatter<TSymbol, TResolver>();
+        public static readonly CharUtf16ListFormatter<TResolver> Default = new CharUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<Char>> CreateFunctor = () => new List<Char>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Char> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Char> value)
         {
-			Serialize(ref writer, value, CharFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, CharUtf16Formatter<TResolver>.Default);
         }
 
-        public List<Char> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Char> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, CharFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, CharUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class DateTimeFormatter<TSymbol, TResolver> : IJsonFormatter<DateTime, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class CharUtf8Formatter<TResolver> : IJsonFormatter<Char, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly DateTimeFormatter<TSymbol,TResolver> Default = new DateTimeFormatter<TSymbol,TResolver>();
+        public static readonly CharUtf8Formatter<TResolver> Default = new CharUtf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, DateTime value)
+        public void Serialize(ref JsonWriter<Byte> writer, Char value)
+        {
+            writer.WriteUtf16Char(value);
+        }
+
+        public Char Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16Char();
+        }
+	} 
+	public sealed class NullableCharUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Char?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableCharUtf8Formatter<TResolver> Default = new NullableCharUtf8Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Char? value)
+        {
+            Serialize(ref writer, value, CharUtf8Formatter<TResolver>.Default);
+        }
+
+        public Char? Deserialize(ref JsonReader<Byte> reader)
+        {
+			return Deserialize(ref reader, CharUtf8Formatter<TResolver>.Default);
+        }
+	}
+    public sealed class NullableCharUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Char?[], Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableCharUtf8ArrayFormatter<TResolver> Default = new NullableCharUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Char?[] value)
+        {
+			Serialize(ref writer, value, NullableCharUtf8Formatter<TResolver>.Default);
+        }
+
+        public Char?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableCharUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class NullableCharUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Char?>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableCharUtf8ListFormatter<TResolver> Default = new NullableCharUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<Char?>> CreateFunctor = () => new List<Char?>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Char?> value)
+        {
+			Serialize(ref writer, value, NullableCharUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<Char?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableCharUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+
+    public sealed class CharUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Char[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly CharUtf8ArrayFormatter<TResolver> Default = new CharUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Char[] value)
+        {
+			Serialize(ref writer, value, CharUtf8Formatter<TResolver>.Default);
+        }
+
+        public Char[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, CharUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class CharUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Char>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly CharUtf8ListFormatter<TResolver> Default = new CharUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<Char>> CreateFunctor = () => new List<Char>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Char> value)
+        {
+			Serialize(ref writer, value, CharUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<Char> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, CharUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class DateTimeUtf16Formatter<TResolver> : IJsonFormatter<DateTime, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly DateTimeUtf16Formatter<TResolver> Default = new DateTimeUtf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, DateTime value)
         {
             writer.WriteUtf16DateTime(value);
         }
 
-        public DateTime Deserialize(ref JsonReader<TSymbol> reader)
+        public DateTime Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16DateTime();
         }
 	} 
-	public sealed class NullableDateTimeFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<DateTime?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableDateTimeUtf16Formatter<TResolver> : NullableFormatter, IJsonFormatter<DateTime?, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableDateTimeFormatter<TSymbol,TResolver> Default = new NullableDateTimeFormatter<TSymbol,TResolver>();
+        public static readonly NullableDateTimeUtf16Formatter<TResolver> Default = new NullableDateTimeUtf16Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, DateTime? value)
+        public void Serialize(ref JsonWriter<Char> writer, DateTime? value)
         {
-            Serialize(ref writer, value, DateTimeFormatter<TSymbol,TResolver>.Default);
+            Serialize(ref writer, value, DateTimeUtf16Formatter<TResolver>.Default);
         }
 
-        public DateTime? Deserialize(ref JsonReader<TSymbol> reader)
+        public DateTime? Deserialize(ref JsonReader<Char> reader)
         {
-			return Deserialize(ref reader, DateTimeFormatter<TSymbol,TResolver>.Default);
+			return Deserialize(ref reader, DateTimeUtf16Formatter<TResolver>.Default);
         }
 	}
-    public sealed class NullableDateTimeArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<DateTime?[], TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class NullableDateTimeUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<DateTime?[], Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableDateTimeArrayFormatter<TSymbol,TResolver> Default = new NullableDateTimeArrayFormatter<TSymbol,TResolver>();
+        public static readonly NullableDateTimeUtf16ArrayFormatter<TResolver> Default = new NullableDateTimeUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, DateTime?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, DateTime?[] value)
         {
-			Serialize(ref writer, value, NullableDateTimeFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableDateTimeUtf16Formatter<TResolver>.Default);
         }
 
-        public DateTime?[] Deserialize(ref JsonReader<TSymbol> reader)
+        public DateTime?[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableDateTimeFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, NullableDateTimeUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class NullableDateTimeListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<DateTime?>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableDateTimeUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<DateTime?>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableDateTimeListFormatter<TSymbol,TResolver> Default = new NullableDateTimeListFormatter<TSymbol,TResolver>();
+        public static readonly NullableDateTimeUtf16ListFormatter<TResolver> Default = new NullableDateTimeUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<DateTime?>> CreateFunctor = () => new List<DateTime?>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<DateTime?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<DateTime?> value)
         {
-			Serialize(ref writer, value, NullableDateTimeFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableDateTimeUtf16Formatter<TResolver>.Default);
         }
 
-        public List<DateTime?> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<DateTime?> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableDateTimeFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, NullableDateTimeUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 
-    public sealed class DateTimeArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<DateTime[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class DateTimeUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<DateTime[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly DateTimeArrayFormatter<TSymbol,TResolver> Default = new DateTimeArrayFormatter<TSymbol,TResolver>();
+        public static readonly DateTimeUtf16ArrayFormatter<TResolver> Default = new DateTimeUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, DateTime[] value)
+        public void Serialize(ref JsonWriter<Char> writer, DateTime[] value)
         {
-			Serialize(ref writer, value, DateTimeFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, DateTimeUtf16Formatter<TResolver>.Default);
         }
 
-        public DateTime[] Deserialize(ref JsonReader<TSymbol> reader)
+        public DateTime[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, DateTimeFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, DateTimeUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class DateTimeListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<DateTime>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class DateTimeUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<DateTime>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly DateTimeListFormatter<TSymbol,TResolver> Default = new DateTimeListFormatter<TSymbol, TResolver>();
+        public static readonly DateTimeUtf16ListFormatter<TResolver> Default = new DateTimeUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<DateTime>> CreateFunctor = () => new List<DateTime>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<DateTime> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<DateTime> value)
         {
-			Serialize(ref writer, value, DateTimeFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, DateTimeUtf16Formatter<TResolver>.Default);
         }
 
-        public List<DateTime> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<DateTime> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, DateTimeFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, DateTimeUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class DateTimeOffsetFormatter<TSymbol, TResolver> : IJsonFormatter<DateTimeOffset, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class DateTimeUtf8Formatter<TResolver> : IJsonFormatter<DateTime, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly DateTimeOffsetFormatter<TSymbol,TResolver> Default = new DateTimeOffsetFormatter<TSymbol,TResolver>();
+        public static readonly DateTimeUtf8Formatter<TResolver> Default = new DateTimeUtf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, DateTimeOffset value)
+        public void Serialize(ref JsonWriter<Byte> writer, DateTime value)
+        {
+            writer.WriteUtf16DateTime(value);
+        }
+
+        public DateTime Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16DateTime();
+        }
+	} 
+	public sealed class NullableDateTimeUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<DateTime?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableDateTimeUtf8Formatter<TResolver> Default = new NullableDateTimeUtf8Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, DateTime? value)
+        {
+            Serialize(ref writer, value, DateTimeUtf8Formatter<TResolver>.Default);
+        }
+
+        public DateTime? Deserialize(ref JsonReader<Byte> reader)
+        {
+			return Deserialize(ref reader, DateTimeUtf8Formatter<TResolver>.Default);
+        }
+	}
+    public sealed class NullableDateTimeUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<DateTime?[], Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableDateTimeUtf8ArrayFormatter<TResolver> Default = new NullableDateTimeUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, DateTime?[] value)
+        {
+			Serialize(ref writer, value, NullableDateTimeUtf8Formatter<TResolver>.Default);
+        }
+
+        public DateTime?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableDateTimeUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class NullableDateTimeUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<DateTime?>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableDateTimeUtf8ListFormatter<TResolver> Default = new NullableDateTimeUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<DateTime?>> CreateFunctor = () => new List<DateTime?>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<DateTime?> value)
+        {
+			Serialize(ref writer, value, NullableDateTimeUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<DateTime?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableDateTimeUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+
+    public sealed class DateTimeUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<DateTime[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly DateTimeUtf8ArrayFormatter<TResolver> Default = new DateTimeUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, DateTime[] value)
+        {
+			Serialize(ref writer, value, DateTimeUtf8Formatter<TResolver>.Default);
+        }
+
+        public DateTime[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, DateTimeUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class DateTimeUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<DateTime>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly DateTimeUtf8ListFormatter<TResolver> Default = new DateTimeUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<DateTime>> CreateFunctor = () => new List<DateTime>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<DateTime> value)
+        {
+			Serialize(ref writer, value, DateTimeUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<DateTime> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, DateTimeUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class DateTimeOffsetUtf16Formatter<TResolver> : IJsonFormatter<DateTimeOffset, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly DateTimeOffsetUtf16Formatter<TResolver> Default = new DateTimeOffsetUtf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, DateTimeOffset value)
         {
             writer.WriteUtf16DateTimeOffset(value);
         }
 
-        public DateTimeOffset Deserialize(ref JsonReader<TSymbol> reader)
+        public DateTimeOffset Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16DateTimeOffset();
         }
 	} 
-	public sealed class NullableDateTimeOffsetFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<DateTimeOffset?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableDateTimeOffsetUtf16Formatter<TResolver> : NullableFormatter, IJsonFormatter<DateTimeOffset?, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableDateTimeOffsetFormatter<TSymbol,TResolver> Default = new NullableDateTimeOffsetFormatter<TSymbol,TResolver>();
+        public static readonly NullableDateTimeOffsetUtf16Formatter<TResolver> Default = new NullableDateTimeOffsetUtf16Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, DateTimeOffset? value)
+        public void Serialize(ref JsonWriter<Char> writer, DateTimeOffset? value)
         {
-            Serialize(ref writer, value, DateTimeOffsetFormatter<TSymbol,TResolver>.Default);
+            Serialize(ref writer, value, DateTimeOffsetUtf16Formatter<TResolver>.Default);
         }
 
-        public DateTimeOffset? Deserialize(ref JsonReader<TSymbol> reader)
+        public DateTimeOffset? Deserialize(ref JsonReader<Char> reader)
         {
-			return Deserialize(ref reader, DateTimeOffsetFormatter<TSymbol,TResolver>.Default);
+			return Deserialize(ref reader, DateTimeOffsetUtf16Formatter<TResolver>.Default);
         }
 	}
-    public sealed class NullableDateTimeOffsetArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<DateTimeOffset?[], TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class NullableDateTimeOffsetUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<DateTimeOffset?[], Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableDateTimeOffsetArrayFormatter<TSymbol,TResolver> Default = new NullableDateTimeOffsetArrayFormatter<TSymbol,TResolver>();
+        public static readonly NullableDateTimeOffsetUtf16ArrayFormatter<TResolver> Default = new NullableDateTimeOffsetUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, DateTimeOffset?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, DateTimeOffset?[] value)
         {
-			Serialize(ref writer, value, NullableDateTimeOffsetFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableDateTimeOffsetUtf16Formatter<TResolver>.Default);
         }
 
-        public DateTimeOffset?[] Deserialize(ref JsonReader<TSymbol> reader)
+        public DateTimeOffset?[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableDateTimeOffsetFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, NullableDateTimeOffsetUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class NullableDateTimeOffsetListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<DateTimeOffset?>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableDateTimeOffsetUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<DateTimeOffset?>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableDateTimeOffsetListFormatter<TSymbol,TResolver> Default = new NullableDateTimeOffsetListFormatter<TSymbol,TResolver>();
+        public static readonly NullableDateTimeOffsetUtf16ListFormatter<TResolver> Default = new NullableDateTimeOffsetUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<DateTimeOffset?>> CreateFunctor = () => new List<DateTimeOffset?>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<DateTimeOffset?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<DateTimeOffset?> value)
         {
-			Serialize(ref writer, value, NullableDateTimeOffsetFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableDateTimeOffsetUtf16Formatter<TResolver>.Default);
         }
 
-        public List<DateTimeOffset?> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<DateTimeOffset?> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableDateTimeOffsetFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, NullableDateTimeOffsetUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 
-    public sealed class DateTimeOffsetArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<DateTimeOffset[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class DateTimeOffsetUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<DateTimeOffset[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly DateTimeOffsetArrayFormatter<TSymbol,TResolver> Default = new DateTimeOffsetArrayFormatter<TSymbol,TResolver>();
+        public static readonly DateTimeOffsetUtf16ArrayFormatter<TResolver> Default = new DateTimeOffsetUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, DateTimeOffset[] value)
+        public void Serialize(ref JsonWriter<Char> writer, DateTimeOffset[] value)
         {
-			Serialize(ref writer, value, DateTimeOffsetFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, DateTimeOffsetUtf16Formatter<TResolver>.Default);
         }
 
-        public DateTimeOffset[] Deserialize(ref JsonReader<TSymbol> reader)
+        public DateTimeOffset[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, DateTimeOffsetFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, DateTimeOffsetUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class DateTimeOffsetListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<DateTimeOffset>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class DateTimeOffsetUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<DateTimeOffset>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly DateTimeOffsetListFormatter<TSymbol,TResolver> Default = new DateTimeOffsetListFormatter<TSymbol, TResolver>();
+        public static readonly DateTimeOffsetUtf16ListFormatter<TResolver> Default = new DateTimeOffsetUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<DateTimeOffset>> CreateFunctor = () => new List<DateTimeOffset>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<DateTimeOffset> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<DateTimeOffset> value)
         {
-			Serialize(ref writer, value, DateTimeOffsetFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, DateTimeOffsetUtf16Formatter<TResolver>.Default);
         }
 
-        public List<DateTimeOffset> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<DateTimeOffset> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, DateTimeOffsetFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, DateTimeOffsetUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class TimeSpanFormatter<TSymbol, TResolver> : IJsonFormatter<TimeSpan, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class DateTimeOffsetUtf8Formatter<TResolver> : IJsonFormatter<DateTimeOffset, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly TimeSpanFormatter<TSymbol,TResolver> Default = new TimeSpanFormatter<TSymbol,TResolver>();
+        public static readonly DateTimeOffsetUtf8Formatter<TResolver> Default = new DateTimeOffsetUtf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, TimeSpan value)
+        public void Serialize(ref JsonWriter<Byte> writer, DateTimeOffset value)
+        {
+            writer.WriteUtf16DateTimeOffset(value);
+        }
+
+        public DateTimeOffset Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16DateTimeOffset();
+        }
+	} 
+	public sealed class NullableDateTimeOffsetUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<DateTimeOffset?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableDateTimeOffsetUtf8Formatter<TResolver> Default = new NullableDateTimeOffsetUtf8Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, DateTimeOffset? value)
+        {
+            Serialize(ref writer, value, DateTimeOffsetUtf8Formatter<TResolver>.Default);
+        }
+
+        public DateTimeOffset? Deserialize(ref JsonReader<Byte> reader)
+        {
+			return Deserialize(ref reader, DateTimeOffsetUtf8Formatter<TResolver>.Default);
+        }
+	}
+    public sealed class NullableDateTimeOffsetUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<DateTimeOffset?[], Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableDateTimeOffsetUtf8ArrayFormatter<TResolver> Default = new NullableDateTimeOffsetUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, DateTimeOffset?[] value)
+        {
+			Serialize(ref writer, value, NullableDateTimeOffsetUtf8Formatter<TResolver>.Default);
+        }
+
+        public DateTimeOffset?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableDateTimeOffsetUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class NullableDateTimeOffsetUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<DateTimeOffset?>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableDateTimeOffsetUtf8ListFormatter<TResolver> Default = new NullableDateTimeOffsetUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<DateTimeOffset?>> CreateFunctor = () => new List<DateTimeOffset?>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<DateTimeOffset?> value)
+        {
+			Serialize(ref writer, value, NullableDateTimeOffsetUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<DateTimeOffset?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableDateTimeOffsetUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+
+    public sealed class DateTimeOffsetUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<DateTimeOffset[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly DateTimeOffsetUtf8ArrayFormatter<TResolver> Default = new DateTimeOffsetUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, DateTimeOffset[] value)
+        {
+			Serialize(ref writer, value, DateTimeOffsetUtf8Formatter<TResolver>.Default);
+        }
+
+        public DateTimeOffset[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, DateTimeOffsetUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class DateTimeOffsetUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<DateTimeOffset>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly DateTimeOffsetUtf8ListFormatter<TResolver> Default = new DateTimeOffsetUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<DateTimeOffset>> CreateFunctor = () => new List<DateTimeOffset>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<DateTimeOffset> value)
+        {
+			Serialize(ref writer, value, DateTimeOffsetUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<DateTimeOffset> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, DateTimeOffsetUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class TimeSpanUtf16Formatter<TResolver> : IJsonFormatter<TimeSpan, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly TimeSpanUtf16Formatter<TResolver> Default = new TimeSpanUtf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, TimeSpan value)
         {
             writer.WriteUtf16TimeSpan(value);
         }
 
-        public TimeSpan Deserialize(ref JsonReader<TSymbol> reader)
+        public TimeSpan Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16TimeSpan();
         }
 	} 
-	public sealed class NullableTimeSpanFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<TimeSpan?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableTimeSpanUtf16Formatter<TResolver> : NullableFormatter, IJsonFormatter<TimeSpan?, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableTimeSpanFormatter<TSymbol,TResolver> Default = new NullableTimeSpanFormatter<TSymbol,TResolver>();
+        public static readonly NullableTimeSpanUtf16Formatter<TResolver> Default = new NullableTimeSpanUtf16Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, TimeSpan? value)
+        public void Serialize(ref JsonWriter<Char> writer, TimeSpan? value)
         {
-            Serialize(ref writer, value, TimeSpanFormatter<TSymbol,TResolver>.Default);
+            Serialize(ref writer, value, TimeSpanUtf16Formatter<TResolver>.Default);
         }
 
-        public TimeSpan? Deserialize(ref JsonReader<TSymbol> reader)
+        public TimeSpan? Deserialize(ref JsonReader<Char> reader)
         {
-			return Deserialize(ref reader, TimeSpanFormatter<TSymbol,TResolver>.Default);
+			return Deserialize(ref reader, TimeSpanUtf16Formatter<TResolver>.Default);
         }
 	}
-    public sealed class NullableTimeSpanArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<TimeSpan?[], TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class NullableTimeSpanUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<TimeSpan?[], Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableTimeSpanArrayFormatter<TSymbol,TResolver> Default = new NullableTimeSpanArrayFormatter<TSymbol,TResolver>();
+        public static readonly NullableTimeSpanUtf16ArrayFormatter<TResolver> Default = new NullableTimeSpanUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, TimeSpan?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, TimeSpan?[] value)
         {
-			Serialize(ref writer, value, NullableTimeSpanFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableTimeSpanUtf16Formatter<TResolver>.Default);
         }
 
-        public TimeSpan?[] Deserialize(ref JsonReader<TSymbol> reader)
+        public TimeSpan?[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableTimeSpanFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, NullableTimeSpanUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class NullableTimeSpanListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<TimeSpan?>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableTimeSpanUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<TimeSpan?>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableTimeSpanListFormatter<TSymbol,TResolver> Default = new NullableTimeSpanListFormatter<TSymbol,TResolver>();
+        public static readonly NullableTimeSpanUtf16ListFormatter<TResolver> Default = new NullableTimeSpanUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<TimeSpan?>> CreateFunctor = () => new List<TimeSpan?>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<TimeSpan?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<TimeSpan?> value)
         {
-			Serialize(ref writer, value, NullableTimeSpanFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableTimeSpanUtf16Formatter<TResolver>.Default);
         }
 
-        public List<TimeSpan?> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<TimeSpan?> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableTimeSpanFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, NullableTimeSpanUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 
-    public sealed class TimeSpanArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<TimeSpan[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class TimeSpanUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<TimeSpan[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly TimeSpanArrayFormatter<TSymbol,TResolver> Default = new TimeSpanArrayFormatter<TSymbol,TResolver>();
+        public static readonly TimeSpanUtf16ArrayFormatter<TResolver> Default = new TimeSpanUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, TimeSpan[] value)
+        public void Serialize(ref JsonWriter<Char> writer, TimeSpan[] value)
         {
-			Serialize(ref writer, value, TimeSpanFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, TimeSpanUtf16Formatter<TResolver>.Default);
         }
 
-        public TimeSpan[] Deserialize(ref JsonReader<TSymbol> reader)
+        public TimeSpan[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, TimeSpanFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, TimeSpanUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class TimeSpanListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<TimeSpan>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class TimeSpanUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<TimeSpan>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly TimeSpanListFormatter<TSymbol,TResolver> Default = new TimeSpanListFormatter<TSymbol, TResolver>();
+        public static readonly TimeSpanUtf16ListFormatter<TResolver> Default = new TimeSpanUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<TimeSpan>> CreateFunctor = () => new List<TimeSpan>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<TimeSpan> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<TimeSpan> value)
         {
-			Serialize(ref writer, value, TimeSpanFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, TimeSpanUtf16Formatter<TResolver>.Default);
         }
 
-        public List<TimeSpan> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<TimeSpan> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, TimeSpanFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, TimeSpanUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class GuidFormatter<TSymbol, TResolver> : IJsonFormatter<Guid, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class TimeSpanUtf8Formatter<TResolver> : IJsonFormatter<TimeSpan, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly GuidFormatter<TSymbol,TResolver> Default = new GuidFormatter<TSymbol,TResolver>();
+        public static readonly TimeSpanUtf8Formatter<TResolver> Default = new TimeSpanUtf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Guid value)
+        public void Serialize(ref JsonWriter<Byte> writer, TimeSpan value)
+        {
+            writer.WriteUtf16TimeSpan(value);
+        }
+
+        public TimeSpan Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16TimeSpan();
+        }
+	} 
+	public sealed class NullableTimeSpanUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<TimeSpan?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableTimeSpanUtf8Formatter<TResolver> Default = new NullableTimeSpanUtf8Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, TimeSpan? value)
+        {
+            Serialize(ref writer, value, TimeSpanUtf8Formatter<TResolver>.Default);
+        }
+
+        public TimeSpan? Deserialize(ref JsonReader<Byte> reader)
+        {
+			return Deserialize(ref reader, TimeSpanUtf8Formatter<TResolver>.Default);
+        }
+	}
+    public sealed class NullableTimeSpanUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<TimeSpan?[], Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableTimeSpanUtf8ArrayFormatter<TResolver> Default = new NullableTimeSpanUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, TimeSpan?[] value)
+        {
+			Serialize(ref writer, value, NullableTimeSpanUtf8Formatter<TResolver>.Default);
+        }
+
+        public TimeSpan?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableTimeSpanUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class NullableTimeSpanUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<TimeSpan?>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableTimeSpanUtf8ListFormatter<TResolver> Default = new NullableTimeSpanUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<TimeSpan?>> CreateFunctor = () => new List<TimeSpan?>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<TimeSpan?> value)
+        {
+			Serialize(ref writer, value, NullableTimeSpanUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<TimeSpan?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableTimeSpanUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+
+    public sealed class TimeSpanUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<TimeSpan[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly TimeSpanUtf8ArrayFormatter<TResolver> Default = new TimeSpanUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, TimeSpan[] value)
+        {
+			Serialize(ref writer, value, TimeSpanUtf8Formatter<TResolver>.Default);
+        }
+
+        public TimeSpan[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, TimeSpanUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class TimeSpanUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<TimeSpan>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly TimeSpanUtf8ListFormatter<TResolver> Default = new TimeSpanUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<TimeSpan>> CreateFunctor = () => new List<TimeSpan>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<TimeSpan> value)
+        {
+			Serialize(ref writer, value, TimeSpanUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<TimeSpan> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, TimeSpanUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class GuidUtf16Formatter<TResolver> : IJsonFormatter<Guid, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly GuidUtf16Formatter<TResolver> Default = new GuidUtf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, Guid value)
         {
             writer.WriteUtf16Guid(value);
         }
 
-        public Guid Deserialize(ref JsonReader<TSymbol> reader)
+        public Guid Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16Guid();
         }
 	} 
-	public sealed class NullableGuidFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Guid?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableGuidUtf16Formatter<TResolver> : NullableFormatter, IJsonFormatter<Guid?, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableGuidFormatter<TSymbol,TResolver> Default = new NullableGuidFormatter<TSymbol,TResolver>();
+        public static readonly NullableGuidUtf16Formatter<TResolver> Default = new NullableGuidUtf16Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Guid? value)
+        public void Serialize(ref JsonWriter<Char> writer, Guid? value)
         {
-            Serialize(ref writer, value, GuidFormatter<TSymbol,TResolver>.Default);
+            Serialize(ref writer, value, GuidUtf16Formatter<TResolver>.Default);
         }
 
-        public Guid? Deserialize(ref JsonReader<TSymbol> reader)
+        public Guid? Deserialize(ref JsonReader<Char> reader)
         {
-			return Deserialize(ref reader, GuidFormatter<TSymbol,TResolver>.Default);
+			return Deserialize(ref reader, GuidUtf16Formatter<TResolver>.Default);
         }
 	}
-    public sealed class NullableGuidArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Guid?[], TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class NullableGuidUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Guid?[], Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableGuidArrayFormatter<TSymbol,TResolver> Default = new NullableGuidArrayFormatter<TSymbol,TResolver>();
+        public static readonly NullableGuidUtf16ArrayFormatter<TResolver> Default = new NullableGuidUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Guid?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Guid?[] value)
         {
-			Serialize(ref writer, value, NullableGuidFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableGuidUtf16Formatter<TResolver>.Default);
         }
 
-        public Guid?[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Guid?[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableGuidFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, NullableGuidUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class NullableGuidListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Guid?>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class NullableGuidUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Guid?>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly NullableGuidListFormatter<TSymbol,TResolver> Default = new NullableGuidListFormatter<TSymbol,TResolver>();
+        public static readonly NullableGuidUtf16ListFormatter<TResolver> Default = new NullableGuidUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<Guid?>> CreateFunctor = () => new List<Guid?>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Guid?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Guid?> value)
         {
-			Serialize(ref writer, value, NullableGuidFormatter<TSymbol,TResolver>.Default);
+			Serialize(ref writer, value, NullableGuidUtf16Formatter<TResolver>.Default);
         }
 
-        public List<Guid?> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Guid?> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, NullableGuidFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, NullableGuidUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 
-    public sealed class GuidArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Guid[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class GuidUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Guid[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly GuidArrayFormatter<TSymbol,TResolver> Default = new GuidArrayFormatter<TSymbol,TResolver>();
+        public static readonly GuidUtf16ArrayFormatter<TResolver> Default = new GuidUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Guid[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Guid[] value)
         {
-			Serialize(ref writer, value, GuidFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, GuidUtf16Formatter<TResolver>.Default);
         }
 
-        public Guid[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Guid[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, GuidFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, GuidUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class GuidListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Guid>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class GuidUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Guid>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly GuidListFormatter<TSymbol,TResolver> Default = new GuidListFormatter<TSymbol, TResolver>();
+        public static readonly GuidUtf16ListFormatter<TResolver> Default = new GuidUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<Guid>> CreateFunctor = () => new List<Guid>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Guid> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Guid> value)
         {
-			Serialize(ref writer, value, GuidFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, GuidUtf16Formatter<TResolver>.Default);
         }
 
-        public List<Guid> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Guid> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, GuidFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, GuidUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class StringFormatter<TSymbol, TResolver> : IJsonFormatter<String, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class GuidUtf8Formatter<TResolver> : IJsonFormatter<Guid, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly StringFormatter<TSymbol,TResolver> Default = new StringFormatter<TSymbol,TResolver>();
+        public static readonly GuidUtf8Formatter<TResolver> Default = new GuidUtf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, String value)
+        public void Serialize(ref JsonWriter<Byte> writer, Guid value)
+        {
+            writer.WriteUtf16Guid(value);
+        }
+
+        public Guid Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16Guid();
+        }
+	} 
+	public sealed class NullableGuidUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Guid?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableGuidUtf8Formatter<TResolver> Default = new NullableGuidUtf8Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Guid? value)
+        {
+            Serialize(ref writer, value, GuidUtf8Formatter<TResolver>.Default);
+        }
+
+        public Guid? Deserialize(ref JsonReader<Byte> reader)
+        {
+			return Deserialize(ref reader, GuidUtf8Formatter<TResolver>.Default);
+        }
+	}
+    public sealed class NullableGuidUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Guid?[], Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableGuidUtf8ArrayFormatter<TResolver> Default = new NullableGuidUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Guid?[] value)
+        {
+			Serialize(ref writer, value, NullableGuidUtf8Formatter<TResolver>.Default);
+        }
+
+        public Guid?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableGuidUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class NullableGuidUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Guid?>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly NullableGuidUtf8ListFormatter<TResolver> Default = new NullableGuidUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<Guid?>> CreateFunctor = () => new List<Guid?>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Guid?> value)
+        {
+			Serialize(ref writer, value, NullableGuidUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<Guid?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, NullableGuidUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+
+    public sealed class GuidUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Guid[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly GuidUtf8ArrayFormatter<TResolver> Default = new GuidUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Guid[] value)
+        {
+			Serialize(ref writer, value, GuidUtf8Formatter<TResolver>.Default);
+        }
+
+        public Guid[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, GuidUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class GuidUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Guid>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly GuidUtf8ListFormatter<TResolver> Default = new GuidUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<Guid>> CreateFunctor = () => new List<Guid>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Guid> value)
+        {
+			Serialize(ref writer, value, GuidUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<Guid> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, GuidUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class StringUtf16Formatter<TResolver> : IJsonFormatter<String, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly StringUtf16Formatter<TResolver> Default = new StringUtf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, String value)
         {
 			if(value == null)
 			{	
@@ -1533,47 +3046,97 @@ namespace SpanJson.Formatters
             writer.WriteUtf16String(value);
         }
 
-        public String Deserialize(ref JsonReader<TSymbol> reader)
+        public String Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16String();
         }
 	} 
 
-    public sealed class StringArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<String[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class StringUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<String[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly StringArrayFormatter<TSymbol,TResolver> Default = new StringArrayFormatter<TSymbol,TResolver>();
+        public static readonly StringUtf16ArrayFormatter<TResolver> Default = new StringUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, String[] value)
+        public void Serialize(ref JsonWriter<Char> writer, String[] value)
         {
-			Serialize(ref writer, value, StringFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, StringUtf16Formatter<TResolver>.Default);
         }
 
-        public String[] Deserialize(ref JsonReader<TSymbol> reader)
+        public String[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, StringFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, StringUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class StringListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<String>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class StringUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<String>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly StringListFormatter<TSymbol,TResolver> Default = new StringListFormatter<TSymbol, TResolver>();
+        public static readonly StringUtf16ListFormatter<TResolver> Default = new StringUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<String>> CreateFunctor = () => new List<String>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<String> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<String> value)
         {
-			Serialize(ref writer, value, StringFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, StringUtf16Formatter<TResolver>.Default);
         }
 
-        public List<String> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<String> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, StringFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, StringUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class VersionFormatter<TSymbol, TResolver> : IJsonFormatter<Version, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class StringUtf8Formatter<TResolver> : IJsonFormatter<String, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly VersionFormatter<TSymbol,TResolver> Default = new VersionFormatter<TSymbol,TResolver>();
+        public static readonly StringUtf8Formatter<TResolver> Default = new StringUtf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Version value)
+        public void Serialize(ref JsonWriter<Byte> writer, String value)
+        {
+			if(value == null)
+			{	
+				writer.WriteUtf16Null();
+				return;
+			}
+            writer.WriteUtf16String(value);
+        }
+
+        public String Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16String();
+        }
+	} 
+
+    public sealed class StringUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<String[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly StringUtf8ArrayFormatter<TResolver> Default = new StringUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, String[] value)
+        {
+			Serialize(ref writer, value, StringUtf8Formatter<TResolver>.Default);
+        }
+
+        public String[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, StringUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class StringUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<String>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly StringUtf8ListFormatter<TResolver> Default = new StringUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<String>> CreateFunctor = () => new List<String>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<String> value)
+        {
+			Serialize(ref writer, value, StringUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<String> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, StringUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class VersionUtf16Formatter<TResolver> : IJsonFormatter<Version, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly VersionUtf16Formatter<TResolver> Default = new VersionUtf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, Version value)
         {
 			if(value == null)
 			{	
@@ -1583,47 +3146,97 @@ namespace SpanJson.Formatters
             writer.WriteUtf16Version(value);
         }
 
-        public Version Deserialize(ref JsonReader<TSymbol> reader)
+        public Version Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16Version();
         }
 	} 
 
-    public sealed class VersionArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Version[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class VersionUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Version[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly VersionArrayFormatter<TSymbol,TResolver> Default = new VersionArrayFormatter<TSymbol,TResolver>();
+        public static readonly VersionUtf16ArrayFormatter<TResolver> Default = new VersionUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Version[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Version[] value)
         {
-			Serialize(ref writer, value, VersionFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, VersionUtf16Formatter<TResolver>.Default);
         }
 
-        public Version[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Version[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, VersionFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, VersionUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class VersionListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Version>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class VersionUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Version>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly VersionListFormatter<TSymbol,TResolver> Default = new VersionListFormatter<TSymbol, TResolver>();
+        public static readonly VersionUtf16ListFormatter<TResolver> Default = new VersionUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<Version>> CreateFunctor = () => new List<Version>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Version> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Version> value)
         {
-			Serialize(ref writer, value, VersionFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, VersionUtf16Formatter<TResolver>.Default);
         }
 
-        public List<Version> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Version> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, VersionFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, VersionUtf16Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
-    public sealed class UriFormatter<TSymbol, TResolver> : IJsonFormatter<Uri, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class VersionUtf8Formatter<TResolver> : IJsonFormatter<Version, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
     {
-        public static readonly UriFormatter<TSymbol,TResolver> Default = new UriFormatter<TSymbol,TResolver>();
+        public static readonly VersionUtf8Formatter<TResolver> Default = new VersionUtf8Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Uri value)
+        public void Serialize(ref JsonWriter<Byte> writer, Version value)
+        {
+			if(value == null)
+			{	
+				writer.WriteUtf16Null();
+				return;
+			}
+            writer.WriteUtf16Version(value);
+        }
+
+        public Version Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16Version();
+        }
+	} 
+
+    public sealed class VersionUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Version[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly VersionUtf8ArrayFormatter<TResolver> Default = new VersionUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Version[] value)
+        {
+			Serialize(ref writer, value, VersionUtf8Formatter<TResolver>.Default);
+        }
+
+        public Version[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, VersionUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class VersionUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Version>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly VersionUtf8ListFormatter<TResolver> Default = new VersionUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<Version>> CreateFunctor = () => new List<Version>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Version> value)
+        {
+			Serialize(ref writer, value, VersionUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<Version> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, VersionUtf8Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class UriUtf16Formatter<TResolver> : IJsonFormatter<Uri, Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
+    {
+        public static readonly UriUtf16Formatter<TResolver> Default = new UriUtf16Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Char> writer, Uri value)
         {
 			if(value == null)
 			{	
@@ -1633,40 +3246,90 @@ namespace SpanJson.Formatters
             writer.WriteUtf16Uri(value);
         }
 
-        public Uri Deserialize(ref JsonReader<TSymbol> reader)
+        public Uri Deserialize(ref JsonReader<Char> reader)
         {
             return reader.ReadUtf16Uri();
         }
 	} 
 
-    public sealed class UriArrayFormatter<TSymbol,TResolver> : ArrayFormatter, IJsonFormatter<Uri[], TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class UriUtf16ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Uri[], Char, TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly UriArrayFormatter<TSymbol,TResolver> Default = new UriArrayFormatter<TSymbol,TResolver>();
+        public static readonly UriUtf16ArrayFormatter<TResolver> Default = new UriUtf16ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, Uri[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Uri[] value)
         {
-			Serialize(ref writer, value, UriFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, UriUtf16Formatter<TResolver>.Default);
         }
 
-        public Uri[] Deserialize(ref JsonReader<TSymbol> reader)
+        public Uri[] Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, UriFormatter<TSymbol,TResolver>.Default);
+            return Deserialize(ref reader, UriUtf16Formatter<TResolver>.Default);
         }
 	}
 
-	public sealed class UriListFormatter<TSymbol,TResolver> : ListFormatter, IJsonFormatter<List<Uri>, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+	public sealed class UriUtf16ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Uri>, Char,TResolver> where TResolver : IJsonFormatterResolver<Char, TResolver>, new()
     {
-        public static readonly UriListFormatter<TSymbol,TResolver> Default = new UriListFormatter<TSymbol, TResolver>();
+        public static readonly UriUtf16ListFormatter<TResolver> Default = new UriUtf16ListFormatter<TResolver>();
 		private static readonly Func<List<Uri>> CreateFunctor = () => new List<Uri>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, List<Uri> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Uri> value)
         {
-			Serialize(ref writer, value, UriFormatter<TSymbol, TResolver>.Default);
+			Serialize(ref writer, value, UriUtf16Formatter<TResolver>.Default);
         }
 
-        public List<Uri> Deserialize(ref JsonReader<TSymbol> reader)
+        public List<Uri> Deserialize(ref JsonReader<Char> reader)
         {
-            return Deserialize(ref reader, UriFormatter<TSymbol,TResolver>.Default, CreateFunctor);
+            return Deserialize(ref reader, UriUtf16Formatter<TResolver>.Default, CreateFunctor);
+        }	
+	}
+    public sealed class UriUtf8Formatter<TResolver> : IJsonFormatter<Uri, Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly UriUtf8Formatter<TResolver> Default = new UriUtf8Formatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Uri value)
+        {
+			if(value == null)
+			{	
+				writer.WriteUtf16Null();
+				return;
+			}
+            writer.WriteUtf16Uri(value);
+        }
+
+        public Uri Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf16Uri();
+        }
+	} 
+
+    public sealed class UriUtf8ArrayFormatter<TResolver> : ArrayFormatter, IJsonFormatter<Uri[], Byte, TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly UriUtf8ArrayFormatter<TResolver> Default = new UriUtf8ArrayFormatter<TResolver>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, Uri[] value)
+        {
+			Serialize(ref writer, value, UriUtf8Formatter<TResolver>.Default);
+        }
+
+        public Uri[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, UriUtf8Formatter<TResolver>.Default);
+        }
+	}
+
+	public sealed class UriUtf8ListFormatter<TResolver> : ListFormatter, IJsonFormatter<List<Uri>, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
+    {
+        public static readonly UriUtf8ListFormatter<TResolver> Default = new UriUtf8ListFormatter<TResolver>();
+		private static readonly Func<List<Uri>> CreateFunctor = () => new List<Uri>();
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<Uri> value)
+        {
+			Serialize(ref writer, value, UriUtf8Formatter<TResolver>.Default);
+        }
+
+        public List<Uri> Deserialize(ref JsonReader<Byte> reader)
+        {
+            return Deserialize(ref reader, UriUtf8Formatter<TResolver>.Default, CreateFunctor);
         }	
 	}
 }
