@@ -9,7 +9,13 @@ namespace SpanJson.Benchmarks.Fixture
 
         public object Generate()
         {
-            return (char)(_prng.Next() & 0xFFFF);
+            char codePoint;
+            do
+            {
+                codePoint = (char) (_prng.Next() & 0xFFFF);
+            } while (codePoint >= 0xD800 && codePoint <= 0xDFFF);
+
+            return codePoint;
         }
     }
 }

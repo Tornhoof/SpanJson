@@ -286,7 +286,7 @@ namespace SpanJson
             else
             {
                 Span<char> charSpan = stackalloc char[1];
-                _decoder.Convert(span, charSpan, false, out _, out _, out _);
+                _decoder.Convert(span, charSpan, false, out _, out _, out var completed);
                 _decoder.Reset();
                 return charSpan[0];
             }
@@ -930,7 +930,7 @@ namespace SpanJson
                         var dictionary = new Dictionary<string, object>();
                         while (!TryReadUtf8IsEndObjectOrValueSeparator(ref count))
                         {
-                            var name = ReadUtf8NameSpan().ToString();
+                            var name = ConvertToString(ReadUtf8NameSpan());
                             var value = ReadUtf8Dynamic(stack + 1);
                             dictionary[name] = value; // take last one
                         }

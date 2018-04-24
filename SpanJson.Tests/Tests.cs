@@ -12,7 +12,7 @@ namespace SpanJson.Tests
     {
         [Theory]
         [MemberData(nameof(GetModels))]
-        public void CanSerializeDeserializeAll(Type modelType)
+        public void CanSerializeDeserializeAllUtf16(Type modelType)
         {
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
@@ -24,6 +24,19 @@ namespace SpanJson.Tests
             Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
         }
 
+        [Theory]
+        [MemberData(nameof(GetModels))]
+        public void CanSerializeDeserializeAllUtf8(Type modelType)
+        {
+            var fixture = new ExpressionTreeFixture();
+            var model = fixture.Create(modelType);
+            var serialized = JsonSerializer.NonGeneric.SerializeToByteArray(model);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.NonGeneric.Deserialize(serialized, modelType);
+            Assert.NotNull(deserialized);
+            Assert.IsType(modelType, deserialized);
+            Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
+        }
 
         /// <summary>
         ///     Jil's fraction handling is wrong

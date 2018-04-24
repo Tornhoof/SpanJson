@@ -60,14 +60,36 @@ namespace SpanJson.Formatters.Dynamic
 
                     if (destinationType == typeof(string))
                     {
-                        value = reader.ReadUtf16String();
-                        return true;
+                        if (typeof(TSymbol) == typeof(char))
+                        {
+                            value = reader.ReadUtf16String();
+                            return true;
+                        }
+
+                        if (typeof(TSymbol) == typeof(byte))
+                        {
+                            value = reader.ReadUtf8String();
+                            return true;
+                        }
+                        throw new NotSupportedException();
                     }
 
                     if (destinationType.IsEnum)
                     {
+                        string data;
+                        if (typeof(TSymbol) == typeof(char))
+                        {
+                            data = reader.ReadUtf16String();
+                        }
+                        else if (typeof(TSymbol) == typeof(byte))
+                        {
+                            data = reader.ReadUtf8String();
+                        }
+                        else
+                        {
+                            throw new NotSupportedException();
+                        }
                         // TODO: Optimize
-                        var data = reader.ReadUtf16String();
                         if (Enum.TryParse(destinationType, data, out var enumValue))
                         {
                             value = enumValue;

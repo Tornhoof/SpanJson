@@ -13,7 +13,7 @@ namespace SpanJson.Tests
     {
         [Theory]
         [MemberData(nameof(GetModels))]
-        public void CanDeserializeAllDynamic(Type modelType)
+        public void CanDeserializeAllDynamicUtf16(Type modelType)
         {
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
@@ -24,6 +24,19 @@ namespace SpanJson.Tests
             Assert.Equal(model, deserialized, DynamicEqualityComparer.Default);
         }
 
+
+        [Theory]
+        [MemberData(nameof(GetModels))]
+        public void CanDeserializeAllDynamicUtf8(Type modelType)
+        {
+            var fixture = new ExpressionTreeFixture();
+            var model = fixture.Create(modelType);
+            var serialized = JsonSerializer.NonGeneric.SerializeToByteArray(model);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(model, deserialized, DynamicEqualityComparer.Default);
+        }
         public static IEnumerable<object[]> GetModels()
         {
             var models = typeof(AccessToken).Assembly
