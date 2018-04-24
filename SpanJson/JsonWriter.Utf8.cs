@@ -12,7 +12,7 @@ namespace SpanJson
     public ref partial struct JsonWriter<T> where T : struct
     {
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private void GrowUtf16(int requiredAdditionalCapacity)
+        private void GrowUtf8(int requiredAdditionalCapacity)
         {
             Debug.Assert(requiredAdditionalCapacity > 0);
 
@@ -29,28 +29,28 @@ namespace SpanJson
             }
         }
 
-        public void WriteUtf16SByte(sbyte value)
+        public void WriteUtf8SByte(sbyte value)
         {
-            WriteUtf16Int64Internal(value);
+            WriteUtf8Int64Internal(value);
         }
 
-        public void WriteUtf16Int16(short value)
+        public void WriteUtf8Int16(short value)
         {
-            WriteUtf16Int64Internal(value);
+            WriteUtf8Int64Internal(value);
         }
 
-        public void WriteUtf16Int32(int value)
+        public void WriteUtf8Int32(int value)
         {
-            WriteUtf16Int64Internal(value);
+            WriteUtf8Int64Internal(value);
         }
 
-        public void WriteUtf16Int64(long value)
+        public void WriteUtf8Int64(long value)
         {
-            WriteUtf16Int64Internal(value);
+            WriteUtf8Int64Internal(value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void WriteUtf16Int64Internal(long value)
+        private void WriteUtf8Int64Internal(long value)
         {
             ref var pos = ref _pos;
             if (value == long.MinValue)
@@ -74,11 +74,11 @@ namespace SpanJson
                 value = unchecked(-value);
             }
 
-            WriteUtf16UInt64Internal((ulong)value);
+            WriteUtf8UInt64Internal((ulong)value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void WriteUtf16UInt64Internal(ulong value)
+        private void WriteUtf8UInt64Internal(ulong value)
         {
             ref var pos = ref _pos;
             if (value < 10)
@@ -109,27 +109,27 @@ namespace SpanJson
             pos += digits;
         }
 
-        public void WriteUtf16Byte(byte value)
+        public void WriteUtf8Byte(byte value)
         {
-            WriteUtf16UInt64Internal(value);
+            WriteUtf8UInt64Internal(value);
         }
 
-        public void WriteUtf16UInt16(ushort value)
+        public void WriteUtf8UInt16(ushort value)
         {
-            WriteUtf16UInt64Internal(value);
+            WriteUtf8UInt64Internal(value);
         }
 
-        public void WriteUtf16UInt32(uint value)
+        public void WriteUtf8UInt32(uint value)
         {
-            WriteUtf16UInt64Internal(value);
+            WriteUtf8UInt64Internal(value);
         }
 
-        public void WriteUtf16UInt64(ulong value)
+        public void WriteUtf8UInt64(ulong value)
         {
-            WriteUtf16UInt64Internal(value);
+            WriteUtf8UInt64Internal(value);
         }
 
-        public void WriteUtf16Single(float value)
+        public void WriteUtf8Single(float value)
         {
             Span<char> span = stackalloc char[25]; // TODO find out how long
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
@@ -143,7 +143,7 @@ namespace SpanJson
             pos += written;
         }
 
-        public void WriteUtf16Double(double value)
+        public void WriteUtf8Double(double value)
         {
             Span<char> span = stackalloc char[50]; // TODO find out how long
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
@@ -157,7 +157,7 @@ namespace SpanJson
             pos += written;
         }
 
-        public void WriteUtf16Decimal(decimal value)
+        public void WriteUtf8Decimal(decimal value)
         {
             Span<char> span = stackalloc char[100]; // TODO find out how long
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
@@ -171,7 +171,7 @@ namespace SpanJson
             pos += written;
         }
 
-        public void WriteUtf16Boolean(bool value)
+        public void WriteUtf8Boolean(bool value)
         {
             ref var pos = ref _pos;
             if (value)
@@ -203,7 +203,7 @@ namespace SpanJson
             }
         }
 
-        public void WriteUtf16Char(char value)
+        public void WriteUtf8Char(char value)
         {
             ref var pos = ref _pos;
             const int size = 8; // 1-6 chars + two JsonConstant.DoubleQuote
@@ -212,120 +212,120 @@ namespace SpanJson
                 GrowUtf16(size);
             }
 
-            WriteUtf16DoubleQuote();
+            WriteUtf8DoubleQuote();
             switch (value)
             {
                 case JsonConstant.DoubleQuote:
-                    WriteUtf16SingleEscapedChar(JsonConstant.DoubleQuote);
+                    WriteUtf8SingleEscapedChar(JsonConstant.DoubleQuote);
                     break;
                 case JsonConstant.ReverseSolidus:
-                    WriteUtf16SingleEscapedChar(JsonConstant.ReverseSolidus);
+                    WriteUtf8SingleEscapedChar(JsonConstant.ReverseSolidus);
                     break;
                 case '\b':
-                    WriteUtf16SingleEscapedChar('b');
+                    WriteUtf8SingleEscapedChar('b');
                     break;
                 case '\f':
-                    WriteUtf16SingleEscapedChar('f');
+                    WriteUtf8SingleEscapedChar('f');
                     break;
                 case '\n':
-                    WriteUtf16SingleEscapedChar('n');
+                    WriteUtf8SingleEscapedChar('n');
                     break;
                 case '\r':
-                    WriteUtf16SingleEscapedChar('r');
+                    WriteUtf8SingleEscapedChar('r');
                     break;
                 case '\t':
-                    WriteUtf16SingleEscapedChar('t');
+                    WriteUtf8SingleEscapedChar('t');
                     break;
                 case '\x0':
-                    WriteUtf16DoubleEscapedChar('0', '0');
+                    WriteUtf8DoubleEscapedChar('0', '0');
                     break;
                 case '\x1':
-                    WriteUtf16DoubleEscapedChar('0', '1');
+                    WriteUtf8DoubleEscapedChar('0', '1');
                     break;
                 case '\x2':
-                    WriteUtf16DoubleEscapedChar('0', '2');
+                    WriteUtf8DoubleEscapedChar('0', '2');
                     break;
                 case '\x3':
-                    WriteUtf16DoubleEscapedChar('0', '3');
+                    WriteUtf8DoubleEscapedChar('0', '3');
                     break;
                 case '\x4':
-                    WriteUtf16DoubleEscapedChar('0', '4');
+                    WriteUtf8DoubleEscapedChar('0', '4');
                     break;
                 case '\x5':
-                    WriteUtf16DoubleEscapedChar('0', '5');
+                    WriteUtf8DoubleEscapedChar('0', '5');
                     break;
                 case '\x6':
-                    WriteUtf16DoubleEscapedChar('0', '6');
+                    WriteUtf8DoubleEscapedChar('0', '6');
                     break;
                 case '\x7':
-                    WriteUtf16DoubleEscapedChar('0', '7');
+                    WriteUtf8DoubleEscapedChar('0', '7');
                     break;
                 case '\xB':
-                    WriteUtf16DoubleEscapedChar('0', 'B');
+                    WriteUtf8DoubleEscapedChar('0', 'B');
                     break;
                 case '\xE':
-                    WriteUtf16DoubleEscapedChar('0', 'E');
+                    WriteUtf8DoubleEscapedChar('0', 'E');
                     break;
                 case '\xF':
-                    WriteUtf16DoubleEscapedChar('0', 'F');
+                    WriteUtf8DoubleEscapedChar('0', 'F');
                     break;
                 case '\x10':
-                    WriteUtf16DoubleEscapedChar('1', '0');
+                    WriteUtf8DoubleEscapedChar('1', '0');
                     break;
                 case '\x11':
-                    WriteUtf16DoubleEscapedChar('1', '1');
+                    WriteUtf8DoubleEscapedChar('1', '1');
                     break;
                 case '\x12':
-                    WriteUtf16DoubleEscapedChar('1', '2');
+                    WriteUtf8DoubleEscapedChar('1', '2');
                     break;
                 case '\x13':
-                    WriteUtf16DoubleEscapedChar('1', '3');
+                    WriteUtf8DoubleEscapedChar('1', '3');
                     break;
                 case '\x14':
-                    WriteUtf16DoubleEscapedChar('1', '4');
+                    WriteUtf8DoubleEscapedChar('1', '4');
                     break;
                 case '\x15':
-                    WriteUtf16DoubleEscapedChar('1', '5');
+                    WriteUtf8DoubleEscapedChar('1', '5');
                     break;
                 case '\x16':
-                    WriteUtf16DoubleEscapedChar('1', '6');
+                    WriteUtf8DoubleEscapedChar('1', '6');
                     break;
                 case '\x17':
-                    WriteUtf16DoubleEscapedChar('1', '7');
+                    WriteUtf8DoubleEscapedChar('1', '7');
                     break;
                 case '\x18':
-                    WriteUtf16DoubleEscapedChar('1', '8');
+                    WriteUtf8DoubleEscapedChar('1', '8');
                     break;
                 case '\x19':
-                    WriteUtf16DoubleEscapedChar('1', '9');
+                    WriteUtf8DoubleEscapedChar('1', '9');
                     break;
                 case '\x1A':
-                    WriteUtf16DoubleEscapedChar('1', 'A');
+                    WriteUtf8DoubleEscapedChar('1', 'A');
                     break;
                 case '\x1B':
-                    WriteUtf16DoubleEscapedChar('1', 'B');
+                    WriteUtf8DoubleEscapedChar('1', 'B');
                     break;
                 case '\x1C':
-                    WriteUtf16DoubleEscapedChar('1', 'C');
+                    WriteUtf8DoubleEscapedChar('1', 'C');
                     break;
                 case '\x1D':
-                    WriteUtf16DoubleEscapedChar('1', 'D');
+                    WriteUtf8DoubleEscapedChar('1', 'D');
                     break;
                 case '\x1E':
-                    WriteUtf16DoubleEscapedChar('1', 'E');
+                    WriteUtf8DoubleEscapedChar('1', 'E');
                     break;
                 case '\x1F':
-                    WriteUtf16DoubleEscapedChar('1', 'F');
+                    WriteUtf8DoubleEscapedChar('1', 'F');
                     break;
                 default:
                     _chars[pos++] = value;
                     break;
             }
 
-            WriteUtf16DoubleQuote();
+            WriteUtf8DoubleQuote();
         }
 
-        public void WriteUtf16DateTime(DateTime value)
+        public void WriteUtf8DateTime(DateTime value)
         {
             ref var pos = ref _pos;
             const int dtSize = 35; // Form o + two JsonConstant.DoubleQuote
@@ -334,13 +334,13 @@ namespace SpanJson
                 GrowUtf16(dtSize);
             }
 
-            WriteUtf16DoubleQuote();
+            WriteUtf8DoubleQuote();
             value.TryFormat(_chars.Slice(pos), out var written, "O", CultureInfo.InvariantCulture);
             pos += written;
-            WriteUtf16DoubleQuote();
+            WriteUtf8DoubleQuote();
         }
 
-        public void WriteUtf16DateTimeOffset(DateTimeOffset value)
+        public void WriteUtf8DateTimeOffset(DateTimeOffset value)
         {
             ref var pos = ref _pos;
             const int dtSize = 35; // Form o + two JsonConstant.DoubleQuote
@@ -349,13 +349,13 @@ namespace SpanJson
                 GrowUtf16(dtSize);
             }
 
-            WriteUtf16DoubleQuote();
+            WriteUtf8DoubleQuote();
             value.TryFormat(_chars.Slice(pos), out var written, "O", CultureInfo.InvariantCulture);
             pos += written;
-            WriteUtf16DoubleQuote();
+            WriteUtf8DoubleQuote();
         }
 
-        public void WriteUtf16TimeSpan(TimeSpan value)
+        public void WriteUtf8TimeSpan(TimeSpan value)
         {
             ref var pos = ref _pos;
             const int dtSize = 20; // Form o + two JsonConstant.DoubleQuote
@@ -364,13 +364,13 @@ namespace SpanJson
                 GrowUtf16(dtSize);
             }
 
-            WriteUtf16DoubleQuote();
+            WriteUtf8DoubleQuote();
             value.TryFormat(_chars.Slice(pos), out var written, "c", CultureInfo.InvariantCulture);
             pos += written;
-            WriteUtf16DoubleQuote();
+            WriteUtf8DoubleQuote();
         }
 
-        public void WriteUtf16Guid(Guid value)
+        public void WriteUtf8Guid(Guid value)
         {
             ref var pos = ref _pos;
             const int guidSize = 42; // Format D + two JsonConstant.DoubleQuote;
@@ -379,13 +379,13 @@ namespace SpanJson
                 GrowUtf16(guidSize);
             }
 
-            WriteUtf16DoubleQuote();
+            WriteUtf8DoubleQuote();
             value.TryFormat(_chars.Slice(pos), out var written);
             pos += written;
-            WriteUtf16DoubleQuote();
+            WriteUtf8DoubleQuote();
         }
 
-        public void WriteUtf16String(string value)
+        public void WriteUtf8String(string value)
         {
             ref var pos = ref _pos;
             var sLength = value.Length + 2;
@@ -394,7 +394,7 @@ namespace SpanJson
                 GrowUtf16(sLength);
             }
 
-            WriteUtf16DoubleQuote();
+            WriteUtf8DoubleQuote();
             var remaining = value.AsSpan();
             for (var i = 0; i < remaining.Length; i++)
             {
@@ -402,120 +402,120 @@ namespace SpanJson
                 switch (c)
                 {
                     case JsonConstant.DoubleQuote:
-                        CopyUtf16AndEscape(ref remaining, ref i, JsonConstant.DoubleQuote);
+                        CopyUtf8AndEscape(ref remaining, ref i, JsonConstant.DoubleQuote);
                         break;
                     case JsonConstant.ReverseSolidus:
-                        CopyUtf16AndEscape(ref remaining, ref i, JsonConstant.ReverseSolidus);
+                        CopyUtf8AndEscape(ref remaining, ref i, JsonConstant.ReverseSolidus);
                         break;
                     case '\b':
-                        CopyUtf16AndEscape(ref remaining, ref i, 'b');
+                        CopyUtf8AndEscape(ref remaining, ref i, 'b');
                         break;
                     case '\f':
-                        CopyUtf16AndEscape(ref remaining, ref i, 'f');
+                        CopyUtf8AndEscape(ref remaining, ref i, 'f');
                         break;
                     case '\n':
-                        CopyUtf16AndEscape(ref remaining, ref i, 'n');
+                        CopyUtf8AndEscape(ref remaining, ref i, 'n');
                         break;
                     case '\r':
-                        CopyUtf16AndEscape(ref remaining, ref i, 'r');
+                        CopyUtf8AndEscape(ref remaining, ref i, 'r');
                         break;
                     case '\t':
-                        CopyUtf16AndEscape(ref remaining, ref i, 't');
+                        CopyUtf8AndEscape(ref remaining, ref i, 't');
                         break;
                     case '\x0':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '0', '0');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', '0');
                         break;
                     case '\x1':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '0', '1');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', '1');
                         break;
                     case '\x2':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '0', '2');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', '2');
                         break;
                     case '\x3':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '0', '3');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', '3');
                         break;
                     case '\x4':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '0', '4');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', '4');
                         break;
                     case '\x5':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '0', '5');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', '5');
                         break;
                     case '\x6':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '0', '6');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', '6');
                         break;
                     case '\x7':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '0', '7');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', '7');
                         break;
                     case '\xB':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '0', 'B');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', 'B');
                         break;
                     case '\xE':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '0', 'E');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', 'E');
                         break;
                     case '\xF':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '0', 'F');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', 'F');
                         break;
                     case '\x10':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '1', '0');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '0');
                         break;
                     case '\x11':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '1', '1');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '1');
                         break;
                     case '\x12':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '1', '2');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '2');
                         break;
                     case '\x13':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '1', '3');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '3');
                         break;
                     case '\x14':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '1', '4');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '4');
                         break;
                     case '\x15':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '1', '5');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '5');
                         break;
                     case '\x16':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '1', '6');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '6');
                         break;
                     case '\x17':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '1', '7');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '7');
                         break;
                     case '\x18':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '1', '8');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '8');
                         break;
                     case '\x19':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '1', '9');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '9');
                         break;
                     case '\x1A':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '1', 'A');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', 'A');
                         break;
                     case '\x1B':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '1', 'B');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', 'B');
                         break;
                     case '\x1C':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '1', 'C');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', 'C');
                         break;
                     case '\x1D':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '1', 'D');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', 'D');
                         break;
                     case '\x1E':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '1', 'E');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', 'E');
                         break;
                     case '\x1F':
-                        CopyUtf16AndEscapeUnicode(ref remaining, ref i, '1', 'F');
+                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', 'F');
                         break;
                 }
             }
 
             remaining.CopyTo(_chars.Slice(pos)); // if there is still something to copy we continue here
             pos += remaining.Length;
-            WriteUtf16DoubleQuote();
+            WriteUtf8DoubleQuote();
         }
 
         /// <summary>
         ///     The value should already be properly escaped
         /// </summary>
         /// <param name="value"></param>
-        public void WriteUtf16Name(string value)
+        public void WriteUtf8Name(string value)
         {
             ref var pos = ref _pos;
             var sLength = value.Length + 3;
@@ -524,18 +524,18 @@ namespace SpanJson
                 GrowUtf16(sLength);
             }
 
-            WriteUtf16DoubleQuote();
+            WriteUtf8DoubleQuote();
             value.AsSpan().CopyTo(_chars.Slice(pos));
             pos += value.Length;
-            WriteUtf16DoubleQuote();
+            WriteUtf8DoubleQuote();
             _chars[pos++] = JsonConstant.NameSeparator;
         }
 
         /// <summary>
-        ///     We need copy the span up to the current index, then WriteUtf16 the escape char and continue
+        ///     We need copy the span up to the current index, then WriteUtf8 the escape char and continue
         ///     This is one messy thing, resetting the iterator
         /// </summary>
-        private void CopyUtf16AndEscape(ref ReadOnlySpan<char> remaining, ref int i, char toEscape)
+        private void CopyUtf8AndEscape(ref ReadOnlySpan<char> remaining, ref int i, char toEscape)
         {
             ref var pos = ref _pos;
             remaining.Slice(0, i).CopyTo(_chars.Slice(pos));
@@ -545,20 +545,20 @@ namespace SpanJson
                 GrowUtf16(1);
             }
 
-            WriteUtf16SingleEscapedChar(toEscape);
+            WriteUtf8SingleEscapedChar(toEscape);
             remaining = remaining.Slice(i + 1); // continuing after the escaped char
             i = 0;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void WriteUtf16SingleEscapedChar(char toEscape)
+        private void WriteUtf8SingleEscapedChar(char toEscape)
         {
             ref var pos = ref _pos;
             _chars[pos++] = JsonConstant.ReverseSolidus;
             _chars[pos++] = toEscape;
         }
 
-        private void CopyUtf16AndEscapeUnicode(ref ReadOnlySpan<char> remaining, ref int i, char firstToEscape, char secondToEscape)
+        private void CopyUtf8AndEscapeUnicode(ref ReadOnlySpan<char> remaining, ref int i, char firstToEscape, char secondToEscape)
         {
             ref var pos = ref _pos;
             remaining.Slice(0, i).CopyTo(_chars.Slice(pos));
@@ -569,13 +569,13 @@ namespace SpanJson
                 GrowUtf16(length);
             }
 
-            WriteUtf16DoubleEscapedChar(firstToEscape, secondToEscape);
+            WriteUtf8DoubleEscapedChar(firstToEscape, secondToEscape);
             remaining = remaining.Slice(i + 1); // continuing after the escaped char
             i = 0;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void WriteUtf16DoubleEscapedChar(char firstToEscape, char secondToEscape)
+        private void WriteUtf8DoubleEscapedChar(char firstToEscape, char secondToEscape)
         {
             ref var pos = ref _pos;
             _chars[pos++] = JsonConstant.ReverseSolidus;
@@ -587,7 +587,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteUtf16BeginObject()
+        public void WriteUtf8BeginObject()
         {
             ref var pos = ref _pos;
             if (pos > _chars.Length - 1)
@@ -599,7 +599,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteUtf16EndObject()
+        public void WriteUtf8EndObject()
         {
             ref var pos = ref _pos;
             if (pos > _chars.Length - 1)
@@ -611,7 +611,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteUtf16BeginArray()
+        public void WriteUtf8BeginArray()
         {
             ref var pos = ref _pos;
             if (pos > _chars.Length - 1)
@@ -623,7 +623,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteUtf16EndArray()
+        public void WriteUtf8EndArray()
         {
             ref var pos = ref _pos;
             if (pos > _chars.Length - 1)
@@ -635,7 +635,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteUtf16ValueSeparator()
+        public void WriteUtf8ValueSeparator()
         {
             ref var pos = ref _pos;
             if (pos > _chars.Length - 1)
@@ -647,7 +647,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteUtf16Null()
+        public void WriteUtf8Null()
         {
             ref var pos = ref _pos;
             const int nullLength = 4;
@@ -663,14 +663,14 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void WriteUtf16DoubleQuote()
+        private void WriteUtf8DoubleQuote()
         {
             _chars[_pos++] = JsonConstant.String;
         }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteUtf16Version(Version value)
+        public void WriteUtf8Version(Version value)
         {
             ref var pos = ref _pos;
             const int versionLength = 45; // 4 * int + 3 . + 2 double quote
@@ -679,17 +679,17 @@ namespace SpanJson
                 GrowUtf16(versionLength);
             }
 
-            WriteUtf16DoubleQuote();
+            WriteUtf8DoubleQuote();
             value.TryFormat(_chars.Slice(pos), out var written);
             pos += written;
-            WriteUtf16DoubleQuote();
+            WriteUtf8DoubleQuote();
         }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteUtf16Uri(Uri value)
+        public void WriteUtf8Uri(Uri value)
         {
-            WriteUtf16String(value.ToString()); // Uri does not implement ISpanFormattable
+            WriteUtf8String(value.ToString()); // Uri does not implement ISpanFormattable
         }
     }
 }

@@ -2,36 +2,52 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Dynamic;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace SpanJson.Formatters.Dynamic
 {
-    public sealed class SpanJsonDynamicString<TSymbol> : DynamicObject, ISpanJsonDynamicValue where TSymbol : struct 
+    public sealed class SpanJsonDynamicString<TSymbol> : DynamicObject, ISpanJsonDynamicValue<TSymbol> where TSymbol : struct 
     {
         private static readonly DynamicTypeConverter Converter = new DynamicTypeConverter();
 
-        public SpanJsonDynamicString(ReadOnlySpan<char> span)
+        public SpanJsonDynamicString(ReadOnlySpan<TSymbol> span)
         {
-            Chars = span.ToArray();
+            Symbols = span.ToArray();
         }
 
-        public char[] Chars { get; }
+        public TSymbol[] Symbols { get; }
 
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
             var returnType = Nullable.GetUnderlyingType(binder.ReturnType) ?? binder.ReturnType;
-            return Converter.TryConvertTo(returnType, Chars, out result);
+            return Converter.TryConvertTo(returnType, Symbols, out result);
         }
 
         public override string ToString()
         {
-            return new string(Chars);
+            if (typeof(TSymbol) == typeof(char))
+            {
+                var temp = Symbols;
+                var chars = Unsafe.As<TSymbol[], char[]>(ref temp);
+                return new string(chars);
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                var temp = Symbols;
+                var bytes = Unsafe.As<TSymbol[], byte[]>(ref temp);
+                return Encoding.UTF8.GetString(bytes);
+            }
+
+            throw new NotSupportedException();
         }
 
         public sealed class DynamicTypeConverter : BaseDynamicTypeConverter<TSymbol>
         {
             private static readonly Dictionary<Type, ConvertDelegate> Converters = BuildDelegates();
 
-            public override bool TryConvertTo(Type destinationType, in ReadOnlySpan<char> span, out object value)
+            public override bool TryConvertTo(Type destinationType, in ReadOnlySpan<TSymbol> span, out object value)
             {
                 try
                 {

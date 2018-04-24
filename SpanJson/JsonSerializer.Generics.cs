@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using SpanJson.Resolvers;
@@ -23,7 +24,7 @@ namespace SpanJson
 
             public static T Deserialize<T>(ReadOnlySpan<char> input)
             {
-                return Deserialize<T,char, ExcludeNullsOriginalCaseResolver<char>>(input);
+                return Deserialize<T, char, ExcludeNullsOriginalCaseResolver<char>>(input);
             }
 
             public static string Serialize<T, TSymbol, TResolver>(T input)
@@ -34,7 +35,7 @@ namespace SpanJson
 
             public static ValueTask<T> DeserializeAsync<T>(TextReader reader, CancellationToken cancellationToken = default)
             {
-                return DeserializeAsync<T,char, ExcludeNullsOriginalCaseResolver<char>>(reader, cancellationToken);
+                return DeserializeAsync<T, char, ExcludeNullsOriginalCaseResolver<char>>(reader, cancellationToken);
             }
 
             public static ValueTask SerializeAsync<T, TSymbol, TResolver>(T input, TextWriter writer, CancellationToken cancellationToken = default)
@@ -43,7 +44,7 @@ namespace SpanJson
                 return Inner<T, TSymbol, TResolver>.InnerSerializeAsync(input, writer, cancellationToken);
             }
 
-            public static T Deserialize<T, TSymbol, TResolver>(ReadOnlySpan<char> input)
+            public static T Deserialize<T, TSymbol, TResolver>(ReadOnlySpan<TSymbol> input)
                 where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
             {
                 return Inner<T, TSymbol, TResolver>.InnerDeserialize(input);
@@ -96,7 +97,7 @@ namespace SpanJson
                     ArrayPool<char>.Shared.Return(data);
                 }
 
-                public static T InnerDeserialize(ReadOnlySpan<char> input)
+                public static T InnerDeserialize(ReadOnlySpan<TSymbol> input)
                 {
                     var jsonReader = new JsonReader<TSymbol>(input);
                     return Formatter.Deserialize(ref jsonReader);
@@ -107,7 +108,7 @@ namespace SpanJson
                     var input = reader.ReadToEndAsync();
                     if (input.IsCompletedSuccessfully)
                     {
-                        return new ValueTask<T>(InnerDeserialize(input.Result));
+                        return new ValueTask<T>(InnerDeserialize(MemoryMarshal.Cast<char, TSymbol>(input.Result)));
                     }
 
                     return AwaitDeSerializeAsync(input);
@@ -116,7 +117,7 @@ namespace SpanJson
                 private static async ValueTask<T> AwaitDeSerializeAsync(Task<string> task)
                 {
                     var input = await task.ConfigureAwait(false);
-                    return InnerDeserialize(input);
+                    return InnerDeserialize(MemoryMarshal.Cast<char, TSymbol>(input));
                 }
             }
         }

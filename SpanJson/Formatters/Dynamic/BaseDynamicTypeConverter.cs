@@ -43,8 +43,8 @@ namespace SpanJson.Formatters.Dynamic
             else
             {
                 destinationType = Nullable.GetUnderlyingType(destinationType) ?? destinationType;
-                var input = (ISpanJsonDynamicValue) value;
-                if (TryConvertTo(destinationType, input.Chars, out var temp))
+                var input = (ISpanJsonDynamicValue<TSymbol>) value;
+                if (TryConvertTo(destinationType, input.Symbols, out var temp))
                 {
                     return temp;
                 }
@@ -53,7 +53,7 @@ namespace SpanJson.Formatters.Dynamic
         }
 
 
-        public abstract bool TryConvertTo(Type destinationType, in ReadOnlySpan<char> span, out object value);
+        public abstract bool TryConvertTo(Type destinationType, in ReadOnlySpan<TSymbol> span, out object value);
 
         public abstract bool IsSupported(Type destinationType);
 
@@ -78,8 +78,8 @@ namespace SpanJson.Formatters.Dynamic
         protected delegate object ConvertDelegate(in JsonReader<TSymbol> reader);
     }
 
-    public interface ISpanJsonDynamicValue
+    public interface ISpanJsonDynamicValue<out TSymbol> where TSymbol : struct
     {
-        char[] Chars { get; }
+        TSymbol[] Symbols { get; }
     }
 }

@@ -1,4 +1,6 @@
-﻿using BenchmarkDotNet.Running;
+﻿using System;
+using BenchmarkDotNet.Running;
+using SpanJson.Helpers;
 
 namespace SpanJson.Benchmarks
 {
