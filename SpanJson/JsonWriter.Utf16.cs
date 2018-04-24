@@ -501,6 +501,19 @@ namespace SpanJson
             WriteUtf16DoubleQuote();
         }
 
+        public void WriteUtf16Verbatim(ReadOnlySpan<char> value)
+        {
+            ref var pos = ref _pos;
+            var sLength = value.Length;
+            if (pos > _chars.Length - sLength)
+            {
+                Grow(sLength);
+            }
+
+            value.CopyTo(_chars.Slice(pos));
+            pos += value.Length;
+        }
+
         /// <summary>
         ///     The value should already be properly escaped
         /// </summary>

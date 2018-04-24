@@ -78,28 +78,16 @@ namespace SpanJson.Benchmarks
         //    return Utf8JsonSerializer.Deserialize<Answer>(AnswerSerializedByteArray);
         //}
 
-        //[Benchmark]
-        //public string SerializeAnswerWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Serialize(Answer);
-        //}
-
-        //[Benchmark]
-        //public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
-        //{
-        //    return JsonSerializer.Generic.SerializeToByteArray(Answer);
-        //}
-
         [Benchmark]
-        public string SerializeAccessTokenWithSpanJsonSerializer()
+        public string SerializeAnswerWithSpanJsonSerializer()
         {
-            return SpanJsonSerializer.Serialize(AccessToken);
+            return SpanJsonSerializer.Serialize(Answer);
         }
 
         [Benchmark]
-        public byte[] SerializeAccessTokenWithSpanJsonSerializerUtf8()
+        public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
         {
-            return JsonSerializer.Generic.SerializeToByteArray(AccessToken);
+            return JsonSerializer.Generic.SerializeToByteArray(Answer);
         }
 
 

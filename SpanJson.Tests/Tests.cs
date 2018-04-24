@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Jil;
 using SpanJson.Benchmarks.Fixture;
 using SpanJson.Benchmarks.Models;
@@ -33,6 +34,21 @@ namespace SpanJson.Tests
             var serialized = JsonSerializer.NonGeneric.SerializeToByteArray(model);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.NonGeneric.Deserialize(serialized, modelType);
+            Assert.NotNull(deserialized);
+            Assert.IsType(modelType, deserialized);
+            Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetModels))]
+        public void CanSerializeDeserializeAllMixed(Type modelType)
+        {
+            var fixture = new ExpressionTreeFixture();
+            var model = fixture.Create(modelType);
+            var serialized = JsonSerializer.NonGeneric.SerializeToString(model);
+            var utf8Bytes = Encoding.UTF8.GetBytes(serialized);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.NonGeneric.Deserialize(utf8Bytes, modelType);
             Assert.NotNull(deserialized);
             Assert.IsType(modelType, deserialized);
             Assert.Equal(model, deserialized, GenericEqualityComparer.Default);

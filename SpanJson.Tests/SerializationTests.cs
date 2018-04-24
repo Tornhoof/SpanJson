@@ -56,14 +56,62 @@ namespace SpanJson.Tests
 
 
         [Fact]
-        public void Utf8Test()
+        public void SerializeDeserializeOneChinesePropertyNameUtf16()
         {
-            var fixture = new ExpressionTreeFixture();
-            var answer = fixture.Create<Answer>();
-            var serialized = JsonSerializer.Generic.SerializeToByteArray(answer);
-            var deserialized = JsonSerializer.Generic.Deserialize<Answer>(serialized);
+            var wpn = new OneChinesePropertyName { 你好 = "Hello"};
+            var serialized = JsonSerializer.Generic.SerializeToString(wpn);
+            Assert.NotNull(serialized);
+            Assert.Contains("\"你好\":", serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<OneChinesePropertyName>(serialized);
             Assert.NotNull(deserialized);
-            Assert.Equal(answer, deserialized, GenericEqualityComparer.Default);
+            Assert.Equal(wpn.你好, deserialized.你好);
+        }
+
+        [Fact]
+        public void SerializeDeserializeOneChinesePropertyNameUtf8()
+        { 
+            var wpn = new OneChinesePropertyName { 你好 = "Hello" };
+            var serialized = JsonSerializer.Generic.SerializeToByteArray(wpn);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<OneChinesePropertyName>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(wpn.你好, deserialized.你好);
+        }
+
+
+        [Fact]
+        public void SerializeDeserializePartialChinesePropertyNameUtf16()
+        {
+            var wpn = new PartialChinesePropertyName { 你好 = "Hello", 你好你好 = "World"};
+            var serialized = JsonSerializer.Generic.SerializeToString(wpn);
+            Assert.NotNull(serialized);
+            Assert.Contains("\"你好\":", serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<OneChinesePropertyName>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(wpn.你好, deserialized.你好);
+        }
+
+        [Fact]
+        public void SerializeDeserializePartialChinesePropertyNameUtf8()
+        {
+            var wpn = new PartialChinesePropertyName() { 你好 = "Hello", 你好你好 = "World" };
+            var serialized = JsonSerializer.Generic.SerializeToByteArray(wpn);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<OneChinesePropertyName>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(wpn.你好, deserialized.你好);
+        }
+
+
+        public class OneChinesePropertyName
+        {
+            public string 你好 { get; set; }
+        }
+
+        public class PartialChinesePropertyName
+        {
+            public string 你好 { get; set; }
+            public string 你好你好 { get; set; }
         }
     }
 }

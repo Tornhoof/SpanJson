@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
@@ -26,20 +29,20 @@ namespace SpanJson.Formatters
             var valueParameter = Expression.Parameter(typeof(T), "value");
 
             var expressions = new List<Expression>();
-            MethodInfo propertyNameWriterMethodInfo = null;
-            MethodInfo seperatorWriteMethodInfo = null;
-            MethodInfo writeBeginObjectMethodInfo = null;
-            MethodInfo writeEndObjectMethodInfo = null;
+            MethodInfo propertyNameWriterMethodInfo;
+            MethodInfo seperatorWriteMethodInfo;
+            MethodInfo writeBeginObjectMethodInfo;
+            MethodInfo writeEndObjectMethodInfo;
             if (typeof(TSymbol) == typeof(char))
             {
-                propertyNameWriterMethodInfo = FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Name));
+                propertyNameWriterMethodInfo = FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim));
                 seperatorWriteMethodInfo =  FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16ValueSeparator));
                 writeBeginObjectMethodInfo = FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16BeginObject));
                 writeEndObjectMethodInfo = FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16EndObject));
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                propertyNameWriterMethodInfo = FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Name));
+                propertyNameWriterMethodInfo = FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim));
                 seperatorWriteMethodInfo = FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8ValueSeparator));
                 writeBeginObjectMethodInfo = FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8BeginObject));
                 writeEndObjectMethodInfo = FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8EndObject));
@@ -85,7 +88,21 @@ namespace SpanJson.Formatters
                         ));
                 }
 
-                valueExpressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo, Expression.Constant(memberInfo.Name)));
+                var writerName = $"\"{memberInfo.Name}\":";
+                Expression writerNameConstant;
+                if (typeof(TSymbol) == typeof(char))
+                {
+                    writerNameConstant = Expression.Convert(Expression.Constant(writerName), typeof(ReadOnlySpan<char>));
+                }
+                else if (typeof(TSymbol) == typeof(byte))
+                {
+                    writerNameConstant = Expression.Convert(Expression.Constant(Encoding.UTF8.GetBytes(writerName)), typeof(ReadOnlySpan<byte>));
+                }
+                else
+                {
+                    throw new NotSupportedException();
+                }
+                valueExpressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo, writerNameConstant));
                 Expression serializerCall = Expression.Call(formatterExpression, serializeMethodInfo, writerParameter, memberExpression);
                 if (runtimeDecisionExpression != null) // if we need to decide at runtime we 
                 {
@@ -286,16 +303,33 @@ namespace SpanJson.Formatters
 
             var cases = new List<SwitchCase>();
             var defaultValue = Expression.Call(readerParameter, skipNextMethodInfo);
+            // if any group key is not an ascii char we need to compare longer parts of the byte array 
+            var extendedComparisonNecessary = typeof(TSymbol) == typeof(byte) && group.Any(a => a.Key > 0xFF);
+            var extendedComparsionMethodInfo = extendedComparisonNecessary
+                ? typeof(ComplexFormatter).GetMethod(nameof(SwitchByteEquals), BindingFlags.NonPublic | BindingFlags.Static)
+                : null;
             foreach (var groupedMemberInfos in group)
             {
                 Expression switchKey;
+                Expression equalitySwitchValue = switchValue;
                 if (typeof(TSymbol) == typeof(char))
                 {
                     switchKey = Expression.Constant(groupedMemberInfos.Key);
                 }
                 else if (typeof(TSymbol) == typeof(byte))
                 {
-                    switchKey = Expression.Constant((byte) groupedMemberInfos.Key); // TODO this is wrong, what happens with non ascii keys
+                    if (extendedComparisonNecessary) // ascii key
+                    {
+                        var encoded = Encoding.UTF8.GetBytes(new[] {groupedMemberInfos.Key});
+                        indexedSwitchValue = Expression.Call(switchValue, "Slice", Type.EmptyTypes, Expression.Constant(index),
+                            Expression.Constant(encoded.Length));
+                        equalitySwitchValue = Expression.Call(switchValue, "Slice", Type.EmptyTypes, Expression.Constant(encoded.Length)); // For the equality comparison we need to change the switch value
+                        switchKey = Expression.Constant(encoded);
+                    }
+                    else
+                    {
+                        switchKey = Expression.Constant((byte)groupedMemberInfos.Key);
+                    }
                 }
                 else
                 {
@@ -307,8 +341,22 @@ namespace SpanJson.Formatters
                     var memberInfo = groupedMemberInfos.Single();
                     var formatter = resolver.GetFormatter(memberInfo.MemberType);
                     var checkLength = (prefix?.Length ?? 0) + 1;
-                    var testExpression = Expression.Call(equalityMethodInfo, switchValue, Expression.Constant(checkLength),
-                        Expression.Constant(memberInfo.Name.Substring(checkLength)));
+                    var equalityCheckStart = extendedComparisonNecessary ? 0 : checkLength;
+                    Expression memberInfoConstant;
+                    if (typeof(TSymbol) == typeof(char))
+                    {
+                        memberInfoConstant = Expression.Constant(memberInfo.Name.Substring(checkLength));
+                    }
+                    else if (typeof(TSymbol) == typeof(byte))
+                    {
+                        memberInfoConstant = Expression.Constant(Encoding.UTF8.GetBytes(memberInfo.Name.Substring(checkLength)));
+                    }
+                    else
+                    {
+                        throw new NotSupportedException();
+                    }
+
+                    var testExpression = Expression.Call(equalityMethodInfo, equalitySwitchValue, Expression.Constant(equalityCheckStart), memberInfoConstant);
                     var matchExpression = Expression.Assign(Expression.PropertyOrField(returnValue, memberInfo.MemberName),
                         Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"), readerParameter));
                     var switchCase = Expression.SwitchCase(Expression.IfThenElse(testExpression, matchExpression, defaultValue), switchKey);
@@ -334,26 +382,23 @@ namespace SpanJson.Formatters
                     cases.Add(switchCase);
                 }
             }
-            var switchExpression = Expression.Switch(typeof(void), indexedSwitchValue, defaultValue, null, cases.ToArray());
+            var switchExpression = Expression.Switch(typeof(void), indexedSwitchValue, defaultValue, extendedComparsionMethodInfo, cases.ToArray());
             return switchExpression;
         }
 
+        /// <summary>
+        /// Faster than SequenceEqual
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool StringEquals(ReadOnlySpan<char> span, int offset, string comparison)
-        {
-            return span.Slice(offset).SequenceEqual(comparison.AsSpan());
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool ByteEquals(ReadOnlySpan<byte> span, int offset, string comparison)
         {
             if (span.Length - offset != comparison.Length)
             {
                 return false;
             }
-            for (int i = 0; i < comparison.Length; i++)
+            for (var i = 0; i < comparison.Length; i++)
             {
-                ref readonly byte left = ref span[offset + i];
+                ref readonly var left = ref span[offset + i];
                 if (comparison[i] != left)
                 {
                     return false;
@@ -364,10 +409,38 @@ namespace SpanJson.Formatters
         }
 
         /// <summary>
+        /// Faster than SequenceEqual, this needs to be a byte array and not a string otherwise we might run into problems with non ascii property names
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool ByteEquals(ReadOnlySpan<byte> span, int offset, byte[] comparison)
+        {
+            if (span.Length - offset != comparison.Length)
+            {
+                return false;
+            }
+            for (var i = 0; i < comparison.Length; i++)
+            {
+                ref readonly var left = ref span[offset + i];
+                if (comparison[i] != left)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool SwitchByteEquals(ReadOnlySpan<byte> span, byte[] comparison)
+        {
+            return ByteEquals(span, 0, comparison);
+        }
+
+        /// <summary>
         ///     Couldn't get it working with Expression Trees,ref return lvalues do not work yet
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static char GetChar(in ReadOnlySpan<char> span, int index)
+        private static char GetChar(ReadOnlySpan<char> span, int index)
         {
             return span[index];
         }
@@ -376,7 +449,7 @@ namespace SpanJson.Formatters
         ///     Couldn't get it working with Expression Trees,ref return lvalues do not work yet
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static byte GetByte(in ReadOnlySpan<byte> span, int index)
+        private static byte GetByte(ReadOnlySpan<byte> span, int index)
         {
             return span[index];
         }
