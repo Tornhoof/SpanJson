@@ -15,7 +15,7 @@ namespace SpanJson.Formatters
 
         public object Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadDynamic();
+            return reader.ReadUtf16Dynamic();
         }
 
         public void Serialize(ref JsonWriter<TSymbol> writer, object value)

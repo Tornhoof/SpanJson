@@ -17,7 +17,7 @@ namespace SpanJson.Formatters
 
         public SByte Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadSByte();
+            return reader.ReadUtf16SByte();
         }
 	} 
 	public sealed class NullableSByteFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<SByte?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -106,7 +106,7 @@ namespace SpanJson.Formatters
 
         public Int16 Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadInt16();
+            return reader.ReadUtf16Int16();
         }
 	} 
 	public sealed class NullableInt16Formatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Int16?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -195,7 +195,7 @@ namespace SpanJson.Formatters
 
         public Int32 Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadInt32();
+            return reader.ReadUtf16Int32();
         }
 	} 
 	public sealed class NullableInt32Formatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Int32?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -284,7 +284,7 @@ namespace SpanJson.Formatters
 
         public Int64 Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadInt64();
+            return reader.ReadUtf16Int64();
         }
 	} 
 	public sealed class NullableInt64Formatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Int64?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -373,7 +373,7 @@ namespace SpanJson.Formatters
 
         public Byte Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadByte();
+            return reader.ReadUtf16Byte();
         }
 	} 
 	public sealed class NullableByteFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Byte?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -462,7 +462,7 @@ namespace SpanJson.Formatters
 
         public UInt16 Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadUInt16();
+            return reader.ReadUtf16UInt16();
         }
 	} 
 	public sealed class NullableUInt16Formatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<UInt16?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -551,7 +551,7 @@ namespace SpanJson.Formatters
 
         public UInt32 Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadUInt32();
+            return reader.ReadUtf16UInt32();
         }
 	} 
 	public sealed class NullableUInt32Formatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<UInt32?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -640,7 +640,7 @@ namespace SpanJson.Formatters
 
         public UInt64 Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadUInt64();
+            return reader.ReadUtf16UInt64();
         }
 	} 
 	public sealed class NullableUInt64Formatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<UInt64?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -729,7 +729,7 @@ namespace SpanJson.Formatters
 
         public Single Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadSingle();
+            return reader.ReadUtf16Single();
         }
 	} 
 	public sealed class NullableSingleFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Single?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -818,7 +818,7 @@ namespace SpanJson.Formatters
 
         public Double Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadDouble();
+            return reader.ReadUtf16Double();
         }
 	} 
 	public sealed class NullableDoubleFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Double?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -907,7 +907,7 @@ namespace SpanJson.Formatters
 
         public Decimal Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadDecimal();
+            return reader.ReadUtf16Decimal();
         }
 	} 
 	public sealed class NullableDecimalFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Decimal?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -996,7 +996,7 @@ namespace SpanJson.Formatters
 
         public Boolean Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadBoolean();
+            return reader.ReadUtf16Boolean();
         }
 	} 
 	public sealed class NullableBooleanFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Boolean?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -1085,7 +1085,7 @@ namespace SpanJson.Formatters
 
         public Char Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadChar();
+            return reader.ReadUtf16Char();
         }
 	} 
 	public sealed class NullableCharFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Char?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -1174,7 +1174,7 @@ namespace SpanJson.Formatters
 
         public DateTime Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadDateTime();
+            return reader.ReadUtf16DateTime();
         }
 	} 
 	public sealed class NullableDateTimeFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<DateTime?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -1263,7 +1263,7 @@ namespace SpanJson.Formatters
 
         public DateTimeOffset Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadDateTimeOffset();
+            return reader.ReadUtf16DateTimeOffset();
         }
 	} 
 	public sealed class NullableDateTimeOffsetFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<DateTimeOffset?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -1352,7 +1352,7 @@ namespace SpanJson.Formatters
 
         public TimeSpan Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadTimeSpan();
+            return reader.ReadUtf16TimeSpan();
         }
 	} 
 	public sealed class NullableTimeSpanFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<TimeSpan?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -1441,7 +1441,7 @@ namespace SpanJson.Formatters
 
         public Guid Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadGuid();
+            return reader.ReadUtf16Guid();
         }
 	} 
 	public sealed class NullableGuidFormatter<TSymbol,TResolver> : NullableFormatter, IJsonFormatter<Guid?, TSymbol,TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -1535,7 +1535,7 @@ namespace SpanJson.Formatters
 
         public String Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadString();
+            return reader.ReadUtf16String();
         }
 	} 
 
@@ -1585,7 +1585,7 @@ namespace SpanJson.Formatters
 
         public Version Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadVersion();
+            return reader.ReadUtf16Version();
         }
 	} 
 
@@ -1635,7 +1635,7 @@ namespace SpanJson.Formatters
 
         public Uri Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadUri();
+            return reader.ReadUtf16Uri();
         }
 	} 
 

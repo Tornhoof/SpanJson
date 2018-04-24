@@ -62,7 +62,7 @@ namespace SpanJson.Formatters.Dynamic
             var result = new Dictionary<Type, ConvertDelegate>();
             foreach (var allowedType in allowedTypes)
             {
-                var method = typeof(JsonReader<TSymbol>).GetMethod($"Read{allowedType.Name}");
+                var method = typeof(JsonReader<TSymbol>).GetMethod($"ReadUtf16{allowedType.Name}");
                 if (method != null)
                 {
                     var parameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");

@@ -24,18 +24,18 @@ namespace SpanJson
 
         public T Deserialize(ref JsonReader<TSymbol> reader)
         {
-            if (reader.ReadIsNull())
+            if (reader.ReadUtf16IsNull())
             {
                 return default;
             }
 
-            reader.ReadBeginObjectOrThrow();
+            reader.ReadUtf16BeginObjectOrThrow();
             var result = CreateFunctor();
             var count = 0;
-            while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
+            while (!reader.TryReadUtf16IsEndObjectOrValueSeparator(ref count))
             {
-                var name = reader.ReadEscapedName();
-                SetObjectDynamically(name, result, reader.ReadDynamic()); // todo improve?
+                var name = reader.ReadUtf16EscapedName();
+                SetObjectDynamically(name, result, reader.ReadUtf16Dynamic()); // todo improve?
             }
 
             return result;

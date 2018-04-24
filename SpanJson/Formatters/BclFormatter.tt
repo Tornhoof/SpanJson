@@ -56,7 +56,7 @@ namespace SpanJson.Formatters
 
         public <#= t.Name #> Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.Read<#= t.Name #>();
+            return reader.ReadUtf16<#= t.Name #>();
         }
 	} 
 <# if(t.IsValueType) { #>

@@ -12,19 +12,19 @@ namespace SpanJson.Tests
         public void ReadNextSegmentTest(string json, string expected)
         {
             var reader = new JsonReader<char>(json);
-            reader.ReadBeginObjectOrThrow();
+            reader.ReadUtf16BeginObjectOrThrow();
             var count = 0;
-            while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
+            while (!reader.TryReadUtf16IsEndObjectOrValueSeparator(ref count))
             {
-                var name = reader.ReadNameSpan();
+                var name = reader.ReadUtf16NameSpan();
                 if (name.ToString() == "Test")
                 {
-                    var value = reader.ReadString();
+                    var value = reader.ReadUtf16String();
                     Assert.Equal(expected, value);
                 }
                 else if (name.ToString() == "Name")
                 {
-                    reader.SkipNextSegment();
+                    reader.SkipNextUtf16Segment();
                 }
                 else
                 {
@@ -40,7 +40,7 @@ namespace SpanJson.Tests
         public void ReadString(string escaped, string comparison)
         {
             var reader = new JsonReader<char>(escaped);
-            var unescaped = reader.ReadString();
+            var unescaped = reader.ReadUtf16String();
             Assert.Equal(comparison, unescaped);
         }
 
@@ -92,7 +92,7 @@ namespace SpanJson.Tests
             foreach (var keyValuePair in chars)
             {
                 var reader = new JsonReader<char>(keyValuePair.Key);
-                var c = reader.ReadChar();
+                var c = reader.ReadUtf16Char();
                 Assert.Equal(keyValuePair.Value, c);
             }
         }

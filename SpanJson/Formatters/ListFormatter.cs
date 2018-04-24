@@ -9,15 +9,15 @@ namespace SpanJson.Formatters
         protected static TList Deserialize<TList, T, TSymbol, TResolver>(ref JsonReader<TSymbol> reader, IJsonFormatter<T, TSymbol, TResolver> formatter, Func<TList> createFunctor)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TList : class, IList<T>
         {
-            if (reader.ReadIsNull())
+            if (reader.ReadUtf16IsNull())
             {
                 return null;
             }
 
-            reader.ReadBeginArrayOrThrow();
+            reader.ReadUtf16BeginArrayOrThrow();
             var list = createFunctor();
             var count = 0;
-            while (!reader.TryReadIsEndArrayOrValueSeparator(ref count))
+            while (!reader.TryReadUtf16IsEndArrayOrValueSeparator(ref count))
             {
                 list.Add(formatter.Deserialize(ref reader));
             }

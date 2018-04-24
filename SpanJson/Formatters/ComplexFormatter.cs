@@ -181,15 +181,15 @@ namespace SpanJson.Formatters
             var returnValue = Expression.Variable(typeof(T), "result");
             var switchValue = Expression.Variable(typeof(ReadOnlySpan<char>), "switchValue");
             var switchValueAssignExpression = Expression.Assign(switchValue,
-                Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader<TSymbol>.ReadNameSpan))));
+                Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader<TSymbol>.ReadUtf16NameSpan))));
             var switchExpression = Expression.Block(new[] {switchValue}, switchValueAssignExpression,
                 BuildPropertyComparisonSwitchExpression<TSymbol, TResolver>(resolver, memberInfos, null, 0, switchValue, returnValue, readerParameter));
             var countExpression = Expression.Parameter(typeof(int), "count");
             var abortExpression = Expression.IsTrue(Expression.Call(readerParameter,
-                readerParameter.Type.GetMethod(nameof(JsonReader<TSymbol>.TryReadIsEndObjectOrValueSeparator)),
+                readerParameter.Type.GetMethod(nameof(JsonReader<TSymbol>.TryReadUtf16IsEndObjectOrValueSeparator)),
                 countExpression));
             var readBeginObject = Expression.Call(readerParameter,
-                FindMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadBeginObjectOrThrow)));
+                FindMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16BeginObjectOrThrow)));
             var loopAbort = Expression.Label(typeof(void));
             var returnTarget = Expression.Label(returnValue.Type);
             var block = Expression.Block(new[] {returnValue, countExpression}, readBeginObject,
@@ -232,7 +232,7 @@ namespace SpanJson.Formatters
             var cases = new List<SwitchCase>();
             var equalityMethod =
                 typeof(ComplexFormatter).GetMethod(nameof(StringEquals), BindingFlags.NonPublic | BindingFlags.Static);
-            var defaultValue = Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader<TSymbol>.SkipNextSegment)));
+            var defaultValue = Expression.Call(readerParameter, readerParameter.Type.GetMethod(nameof(JsonReader<TSymbol>.SkipNextUtf16Segment)));
             foreach (var groupedMemberInfos in group)
             {
                 var memberInfosPerChar = groupedMemberInfos.Count();

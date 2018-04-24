@@ -32,7 +32,7 @@ namespace SpanJson.Formatters
             var expressions = new List<Expression>
             {
                 Expression.Assign(jsonValue,
-                    Expression.Call(readerParameter, FindMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadString))))
+                    Expression.Call(readerParameter, FindMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16String))))
             };
             var cases = new List<SwitchCase>();
             foreach (var value in Enum.GetValues(typeof(T)))

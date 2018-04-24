@@ -10,17 +10,17 @@ namespace SpanJson.Formatters
             IJsonFormatter<T, TSymbol, TResolver> formatter, Func<TDictionary> createFunctor)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : class, IDictionary<string, T>
         {
-            if (reader.ReadIsNull())
+            if (reader.ReadUtf16IsNull())
             {
                 return null;
             }
 
-            reader.ReadBeginObjectOrThrow();
+            reader.ReadUtf16BeginObjectOrThrow();
             var result = createFunctor(); // using new T() is 5-10 times slower
             var count = 0;
-            while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
+            while (!reader.TryReadUtf16IsEndObjectOrValueSeparator(ref count))
             {
-                var key = reader.ReadEscapedName();
+                var key = reader.ReadUtf16EscapedName();
                 var value = formatter.Deserialize(ref reader);
                 result[key] = value;
             }

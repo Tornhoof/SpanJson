@@ -44,14 +44,14 @@ namespace SpanJson.Formatters.Dynamic
 
                     if (destinationType == typeof(string))
                     {
-                        value = reader.ReadString();
+                        value = reader.ReadUtf16String();
                         return true;
                     }
 
                     if (destinationType.IsEnum)
                     {
                         // TODO: Optimize
-                        var data = reader.ReadString();
+                        var data = reader.ReadUtf16String();
                         if (Enum.TryParse(destinationType, data, out var enumValue))
                         {
                             value = enumValue;
