@@ -31,6 +31,14 @@ namespace SpanJson
             WriteUtf16Int64Internal(value);
         }
 
+        public override string ToString()
+        {
+            var s = _chars.Slice(0, _pos).ToString();
+            Dispose();
+            return s;
+        }
+
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteUtf16Int64Internal(long value)
         {
@@ -603,6 +611,7 @@ namespace SpanJson
 
             _chars[pos++] = JsonConstant.BeginArray;
         }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf16EndArray()

@@ -15,14 +15,14 @@ namespace SpanJson.Formatters
 
         public object Deserialize(ref JsonReader<TSymbol> reader)
         {
-            return reader.ReadUtf16Dynamic();
+            return reader.ReadDynamic();
         }
 
         public void Serialize(ref JsonWriter<TSymbol> writer, object value)
         {
             if (value == null)
             {
-                writer.WriteUtf16Null();
+                writer.WriteNull();
                 return;
             }
 

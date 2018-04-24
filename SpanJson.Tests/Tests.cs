@@ -16,7 +16,7 @@ namespace SpanJson.Tests
         {
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
-            var serialized = JsonSerializer.NonGeneric.Serialize(model);
+            var serialized = JsonSerializer.NonGeneric.SerializeToString(model);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.NonGeneric.Deserialize(serialized, modelType);
             Assert.NotNull(deserialized);

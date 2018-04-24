@@ -36,13 +36,13 @@ namespace SpanJson.Tests
         public void Serialize()
         {
             var family = new Family { Child = new Daughter { DaughterSpecific = "Hello World", Name = "Daughter", Age = 5 } };
-            var serialized = JsonSerializer.Generic.Serialize(family);
+            var serialized = JsonSerializer.Generic.SerializeToString(family);
             Assert.NotNull(serialized);
             Assert.Contains(nameof(Child.Age), serialized);
             Assert.Contains(nameof(Daughter.DaughterSpecific), serialized);
 
             var anotherFamily = new Family { Child = new Son { SonSpecific = "Hello World", Name = "Son", Age = 5 } };
-            serialized = JsonSerializer.Generic.Serialize(anotherFamily);
+            serialized = JsonSerializer.Generic.SerializeToString(anotherFamily);
             Assert.NotNull(serialized);
             Assert.Contains(nameof(Child.Age), serialized);
             Assert.Contains(nameof(Son.SonSpecific), serialized);

@@ -8,7 +8,7 @@ using SpanJson.Helpers;
 
 namespace SpanJson
 {
-    public ref partial struct JsonReader<TSymbol> where TSymbol : struct 
+    public ref partial struct JsonReader<TSymbol> where TSymbol : struct
     {
         private readonly ReadOnlySpan<char> _chars;
         private readonly ReadOnlySpan<byte> _bytes;
@@ -48,5 +48,131 @@ namespace SpanJson
             throw new JsonParserException(error, _pos);
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ReadBeginArrayOrThrow()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                ReadUtf16BeginArrayOrThrow();
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                ReadUtf8BeginArrayOrThrow();
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+        private static void ThrowNotSupportedException()
+        {
+            throw new NotImplementedException();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool TryReadIsEndArrayOrValueSeparator(ref int count)
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return TryReadUtf16IsEndArrayOrValueSeparator(ref count);
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                return TryReadUtf8IsEndArrayOrValueSeparator(ref count);
+            }
+            else
+            {
+                ThrowNotSupportedException();
+                return default;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public object ReadDynamic()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return ReadUtf16Dynamic();
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                return ReadUtf8Dynamic();
+            }
+            else
+            {
+                ThrowNotSupportedException();
+                return default;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool ReadIsNull()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return ReadUtf16IsNull();
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                return ReadUtf8IsNull();
+            }
+            else
+            {
+                ThrowNotSupportedException();
+                return default;
+            }
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string ReadEscapedName()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return ReadUtf16EscapedName();
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                return ReadUtf8EscapedName();
+            }
+            else
+            {
+                ThrowNotSupportedException();
+                return default;
+            }
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool TryReadIsEndObjectOrValueSeparator(ref int count)
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return TryReadUtf16IsEndObjectOrValueSeparator(ref count);
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                return TryReadUtf8IsEndObjectOrValueSeparator(ref count);
+            }
+            else
+            {
+                ThrowNotSupportedException();
+                return default;
+            }
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ReadBeginObjectOrThrow()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                ReadUtf16BeginObjectOrThrow();
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                ReadUtf8BeginObjectOrThrow();
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
     }
 }

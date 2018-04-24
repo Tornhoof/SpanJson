@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using SpanJson.Benchmarks.Fixture;
+using SpanJson.Benchmarks.Models;
 using SpanJson.Resolvers;
 using Xunit;
 using Xunit.Sdk;
@@ -26,7 +28,7 @@ namespace SpanJson.Tests
         {
             var parent = new Parent { Age = 30, Name = "Adam", Children = new List<Child> { new Child { Name = "Cain", Age = 5 } } };
             var serializedWithCamelCase =
-                JsonSerializer.Generic.Serialize<Parent, char, ExcludeNullsOriginalCaseResolver<char>>(parent);
+                JsonSerializer.Generic.SerializeToString<Parent, char, ExcludeNullsOriginalCaseResolver<char>>(parent);
             serializedWithCamelCase = serializedWithCamelCase.ToLowerInvariant();
             Assert.Contains("age", serializedWithCamelCase);
             var deserialized =
@@ -51,5 +53,17 @@ namespace SpanJson.Tests
         //    //var serialized = JsonSerializer.Generic.Serialize(node);
         //    Assert.NotNull(serialized);
         //}
+
+
+        [Fact]
+        public void Utf8Test()
+        {
+            var fixture = new ExpressionTreeFixture();
+            var answer = fixture.Create<Answer>();
+            var serialized = JsonSerializer.Generic.SerializeToByteArray(answer);
+            var deserialized = JsonSerializer.Generic.Deserialize<Answer>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(answer, deserialized, GenericEqualityComparer.Default);
+        }
     }
 }

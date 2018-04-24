@@ -9,7 +9,7 @@ namespace SpanJson.Formatters
         protected static TEnumerable Deserialize<TEnumerable, T, TSymbol, TResolver>(ref JsonReader<TSymbol> reader, IJsonFormatter<T, TSymbol, TResolver> formatter)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TEnumerable : class, IEnumerable<T>
         {
-            if (reader.ReadUtf16IsNull())
+            if (reader.ReadIsNull())
             {
                 return null;
             }
@@ -22,7 +22,7 @@ namespace SpanJson.Formatters
         {
             if (value == null)
             {
-                writer.WriteUtf16Null();
+                writer.WriteNull();
                 return;
             }
 
@@ -30,7 +30,7 @@ namespace SpanJson.Formatters
             try
             {
                 enumerator = value.GetEnumerator();
-                writer.WriteUtf16BeginArray();
+                writer.WriteBeginArray();
                 if (enumerator.MoveNext())
                 {
                     // first one, so we can write the separator prior to every following one
@@ -38,12 +38,12 @@ namespace SpanJson.Formatters
                     // write all the other ones
                     while (enumerator.MoveNext())
                     {
-                        writer.WriteUtf16ValueSeparator();
+                        writer.WriteValueSeparator();
                         formatter.Serialize(ref writer, enumerator.Current);
                     }
                 }
 
-                writer.WriteUtf16EndArray();
+                writer.WriteEndArray();
             }
             finally
             {

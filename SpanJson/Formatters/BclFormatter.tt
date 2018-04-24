@@ -63,16 +63,16 @@ namespace SpanJson.Formatters
 <# if(!t.IsValueType) { #>
 			if(value == null)
 			{	
-				writer.WriteUtf16Null();
+				writer.Write<#= utfName #>Null();
 				return;
 			}
 <# } #>
-            writer.WriteUtf16<#= t.Name #>(value);
+            writer.Write<#= utfName #><#= t.Name #>(value);
         }
 
         public <#= t.Name #> Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
         {
-            return reader.ReadUtf16<#= t.Name #>();
+            return reader.Read<#= utfName #><#= t.Name #>();
         }
 	} 
 <# if(t.IsValueType) { #>

@@ -6,7 +6,8 @@ using System.Reflection;
 namespace SpanJson.Formatters
 {
     public sealed class EnumFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T, TSymbol, TResolver> where T : struct
-        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
+        where TSymbol : struct
     {
         private static readonly SerializeDelegate Serializer = BuildSerializeDelegate();
         private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
@@ -29,10 +30,24 @@ namespace SpanJson.Formatters
 
             var jsonValue = Expression.Variable(typeof(string), "jsonValue");
             var returnValue = Expression.Variable(typeof(T), "returnValue");
+            string methodName = null;
+            if (typeof(TSymbol) == typeof(char))
+            {
+                methodName = nameof(JsonReader<TSymbol>.ReadUtf16String);
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                methodName = nameof(JsonReader<TSymbol>.ReadUtf8String);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+
             var expressions = new List<Expression>
             {
                 Expression.Assign(jsonValue,
-                    Expression.Call(readerParameter, FindMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16String))))
+                    Expression.Call(readerParameter, FindMethod(readerParameter.Type, methodName)))
             };
             var cases = new List<SwitchCase>();
             foreach (var value in Enum.GetValues(typeof(T)))
@@ -58,6 +73,19 @@ namespace SpanJson.Formatters
         {
             var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
+            string methodName = null;
+            if (typeof(TSymbol) == typeof(char))
+            {
+                methodName = nameof(JsonWriter<TSymbol>.WriteUtf16String);
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                methodName = nameof(JsonWriter<TSymbol>.WriteUtf8String);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
 
             var cases = new List<SwitchCase>();
             foreach (var value in Enum.GetValues(typeof(T)))
@@ -65,7 +93,7 @@ namespace SpanJson.Formatters
                 var switchCase =
                     Expression.SwitchCase(
                         Expression.Call(writerParameter,
-                            FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16String)),
+                            FindMethod(writerParameter.Type, methodName),
                             Expression.Constant(value.ToString())), Expression.Constant(value));
                 cases.Add(switchCase);
             }

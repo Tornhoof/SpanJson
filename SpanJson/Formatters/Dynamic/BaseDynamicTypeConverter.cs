@@ -60,9 +60,24 @@ namespace SpanJson.Formatters.Dynamic
         protected static Dictionary<Type, ConvertDelegate> BuildDelegates(Type[] allowedTypes)
         {
             var result = new Dictionary<Type, ConvertDelegate>();
+            string utfType;
+            if (typeof(TSymbol) == typeof(char))
+            {
+                utfType = "Utf16";
+            }
+
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                utfType = "Utf8";
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+
             foreach (var allowedType in allowedTypes)
             {
-                var method = typeof(JsonReader<TSymbol>).GetMethod($"ReadUtf16{allowedType.Name}");
+                var method = typeof(JsonReader<TSymbol>).GetMethod($"Read{utfType}{allowedType.Name}");
                 if (method != null)
                 {
                     var parameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");

@@ -26,6 +26,12 @@ namespace SpanJson.Benchmarks
         private static readonly byte[] AnswerSerializedByteArray =
             Encoding.UTF8.GetBytes(AnswerSerializedString);
 
+        private static readonly AccessToken AccessToken = ExpressionTreeFixture.Create<AccessToken>();
+        private static readonly string AccessTokenSerializedString =
+            SpanJsonSerializer.Serialize(AccessToken);
+
+        private static readonly byte[] AccessTokenSerializedByteArray =
+            Encoding.UTF8.GetBytes(AccessTokenSerializedString);
 
         private static readonly JilSerializer JilSerializer = new JilSerializer();
 
@@ -37,6 +43,12 @@ namespace SpanJson.Benchmarks
         //public Answer DeserializeAnswerWithSpanJsonSerializer()
         //{
         //    return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
+        //}
+
+        //[Benchmark]
+        //public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
+        //{
+        //    return JsonSerializer.Generic.Deserialize<Answer>(AnswerSerializedByteArray);
         //}
 
         //[Benchmark]
@@ -66,11 +78,30 @@ namespace SpanJson.Benchmarks
         //    return Utf8JsonSerializer.Deserialize<Answer>(AnswerSerializedByteArray);
         //}
 
+        //[Benchmark]
+        //public string SerializeAnswerWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(Answer);
+        //}
+
+        //[Benchmark]
+        //public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
+        //{
+        //    return JsonSerializer.Generic.SerializeToByteArray(Answer);
+        //}
+
         [Benchmark]
-        public string SerializeAnswerWithSpanJsonSerializer()
+        public string SerializeAccessTokenWithSpanJsonSerializer()
         {
-            return SpanJsonSerializer.Serialize(Answer);
+            return SpanJsonSerializer.Serialize(AccessToken);
         }
+
+        [Benchmark]
+        public byte[] SerializeAccessTokenWithSpanJsonSerializerUtf8()
+        {
+            return JsonSerializer.Generic.SerializeToByteArray(AccessToken);
+        }
+
 
         //[Benchmark]
         //public async ValueTask<string> SerializeAnswerWithSpanJsonSerializerAsync()
@@ -108,6 +139,23 @@ namespace SpanJson.Benchmarks
         //{
         //    var JsonWriter<TSymbol> = new JsonWriterTest<byte>();
         //    return jsonWriter.Write((byte) 'a');
+        //}
+
+
+        //[Benchmark]
+        //public char[] WriteStringUtf16()
+        //{
+        //    var writer = new JsonWriter<char>(20);
+        //    writer.WriteUtf16String("Hello World");
+        //    return writer.Data;
+        //}
+
+        //[Benchmark]
+        //public byte[] WriteStringUtf8()
+        //{
+        //    var writer = new JsonWriter<byte>(20);
+        //    writer.WriteUtf8String("Hello World");
+        //    return writer.Data;
         //}
     }
 

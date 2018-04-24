@@ -18,14 +18,14 @@ namespace SpanJson
             NestingTooDeep
         }
 
-        public JsonParserException(ParserError error, int position) : base($"Error ReadUtf16ing JSON data: '{error}' at position: '{position}'.")
+        public JsonParserException(ParserError error, int position) : base($"Error Reading JSON data: '{error}' at position: '{position}'.")
         {
             Error = error;
             Position = position;
         }
 
         public JsonParserException(ParserError error, Type type, int position) : base(
-            $"Error ReadUtf16ing JSON data for type '{type.Name}': '{error}' at position: '{position}'.")
+            $"Error Reading JSON data for type '{type.Name}': '{error}' at position: '{position}'.")
         {
             Type = type;
         }

@@ -15,7 +15,7 @@
 
         public T Deserialize(ref JsonReader<TSymbol> reader)
         {
-            if (reader.ReadUtf16IsNull())
+            if (reader.ReadIsNull())
             {
                 return null;
             }
@@ -28,7 +28,7 @@
         {
             if (value == null)
             {
-                writer.WriteUtf16Null();
+                writer.WriteNull();
                 return;
             }
 

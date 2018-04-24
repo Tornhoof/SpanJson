@@ -9,7 +9,7 @@ namespace SpanJson.Formatters
         protected static T? Deserialize<T, TSymbol, TResolver>(ref JsonReader<TSymbol> reader, IJsonFormatter<T, TSymbol, TResolver> formatter)
             where T : struct where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
-            if (reader.ReadUtf16IsNull())
+            if (reader.ReadIsNull())
             {
                 return null;
             }
@@ -23,7 +23,7 @@ namespace SpanJson.Formatters
         {
             if (value == null)
             {
-                writer.WriteUtf16Null();
+                writer.WriteNull();
                 return;
             }
 

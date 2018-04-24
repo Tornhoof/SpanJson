@@ -10,17 +10,17 @@ namespace SpanJson.Formatters
             IJsonFormatter<T, TSymbol, TResolver> formatter, Func<TDictionary> createFunctor)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : class, IDictionary<string, T>
         {
-            if (reader.ReadUtf16IsNull())
+            if (reader.ReadIsNull())
             {
                 return null;
             }
 
-            reader.ReadUtf16BeginObjectOrThrow();
+            reader.ReadBeginObjectOrThrow();
             var result = createFunctor(); // using new T() is 5-10 times slower
             var count = 0;
-            while (!reader.TryReadUtf16IsEndObjectOrValueSeparator(ref count))
+            while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
             {
-                var key = reader.ReadUtf16EscapedName();
+                var key = reader.ReadEscapedName();
                 var value = formatter.Deserialize(ref reader);
                 result[key] = value;
             }
@@ -33,27 +33,27 @@ namespace SpanJson.Formatters
         {
             if (value == null)
             {
-                writer.WriteUtf16Null();
+                writer.WriteNull();
                 return;
             }
 
             var valueLength = value.Count;
-            writer.WriteUtf16BeginObject();
+            writer.WriteBeginObject();
             if (valueLength > 0)
             {
                 var counter = 0;
                 foreach (var kvp in value)
                 {
-                    writer.WriteUtf16Name(kvp.Key);
+                    writer.WriteName(kvp.Key);
                     formatter.Serialize(ref writer, kvp.Value);
                     if (counter++ < valueLength - 1)
                     {
-                        writer.WriteUtf16ValueSeparator();
+                        writer.WriteValueSeparator();
                     }
                 }
             }
 
-            writer.WriteUtf16EndObject();
+            writer.WriteEndObject();
         }
     }
 

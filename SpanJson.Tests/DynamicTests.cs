@@ -17,7 +17,7 @@ namespace SpanJson.Tests
         {
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
-            var serialized = JsonSerializer.NonGeneric.Serialize(model);
+            var serialized = JsonSerializer.NonGeneric.SerializeToString(model);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
@@ -39,7 +39,7 @@ namespace SpanJson.Tests
         {
             var fixture = new ExpressionTreeFixture();
             var data = fixture.Create<Answer>();
-            var serialized = JsonSerializer.Generic.Serialize(data);
+            var serialized = JsonSerializer.Generic.SerializeToString(data);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
@@ -71,7 +71,7 @@ namespace SpanJson.Tests
             dynamic dynamicObject = new MyDynamicObject();
             dynamicObject.Text = "Hello World";
 
-            var serialized = JsonSerializer.Generic.Serialize(dynamicObject);
+            var serialized = JsonSerializer.Generic.SerializeToString(dynamicObject);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Deserialize<MyDynamicObject>(serialized);
             Assert.NotNull(deserialized);
@@ -86,7 +86,7 @@ namespace SpanJson.Tests
             dynamicObject.Text = "Hello World";
             dynamicObject.Value = 5;
 
-            var serialized = JsonSerializer.Generic.Serialize(dynamicObject);
+            var serialized = JsonSerializer.Generic.SerializeToString(dynamicObject);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Deserialize<MyDynamicObject>(serialized);
             Assert.NotNull(deserialized);
@@ -102,7 +102,7 @@ namespace SpanJson.Tests
             dynamicObject.Value = 5;
             dynamicObject.NullValue = null;
 
-            var serialized = JsonSerializer.Generic.Serialize<MyDynamicObject, char, IncludeNullsOriginalCaseResolver<char>>(dynamicObject);
+            var serialized = JsonSerializer.Generic.SerializeToString<MyDynamicObject, char, IncludeNullsOriginalCaseResolver<char>>(dynamicObject);
             Assert.NotNull(serialized);
             Assert.Contains("null", serialized);
             var deserialized = JsonSerializer.Generic.Deserialize<MyDynamicObject, char, IncludeNullsOriginalCaseResolver<char>>(serialized);

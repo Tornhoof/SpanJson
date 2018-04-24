@@ -18,7 +18,7 @@ namespace SpanJson.Tests
         public void Serialize()
         {
             var list = new List<string> {"Hello", "World", "Universe"};
-            var serialized = JsonSerializer.Generic.Serialize(list);
+            var serialized = JsonSerializer.Generic.SerializeToString(list);
             Assert.Equal("[\"Hello\",\"World\",\"Universe\"]", serialized);
         }
 
@@ -26,7 +26,7 @@ namespace SpanJson.Tests
         public void SerializeDeserializeIList()
         {
             IList<string> list = new List<string> { "Hello", "World", "Universe" };
-            var serialized = JsonSerializer.Generic.Serialize(list);
+            var serialized = JsonSerializer.Generic.SerializeToString(list);
             Assert.Equal("[\"Hello\",\"World\",\"Universe\"]", serialized);
             var deserialized = JsonSerializer.Generic.Deserialize<IList<string>>(serialized);
             Assert.Equal(list, deserialized);
@@ -36,7 +36,7 @@ namespace SpanJson.Tests
         public void SerializeCollection()
         {
             var list = new LinkedList<string>(new[] {"Hello", "World", "Universe"});
-            var serialized = JsonSerializer.Generic.Serialize(list);
+            var serialized = JsonSerializer.Generic.SerializeToString(list);
             Assert.Equal("[\"Hello\",\"World\",\"Universe\"]", serialized);
         }
 
@@ -44,7 +44,7 @@ namespace SpanJson.Tests
         public void SerializeLinq()
         {
             var list = new List<string> { "Hello", "World", "Universe" };
-            var serialized = JsonSerializer.Generic.Serialize(list.Where(a => a != "Universe"));
+            var serialized = JsonSerializer.Generic.SerializeToString(list.Where(a => a != "Universe"));
             Assert.Equal("[\"Hello\",\"World\"]", serialized);
         }
     }

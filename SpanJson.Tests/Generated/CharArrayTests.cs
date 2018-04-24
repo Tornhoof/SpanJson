@@ -12,7 +12,7 @@ namespace SpanJson.Tests.Generated
         {
             var chars = new char[5];
             Array.Fill(chars, '\0');
-            var serialized = JsonSerializer.Generic.Serialize(chars);
+            var serialized = JsonSerializer.Generic.SerializeToString(chars);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Deserialize<char[]>(serialized);
             Assert.NotNull(deserialized);

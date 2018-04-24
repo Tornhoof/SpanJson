@@ -18,18 +18,20 @@ namespace SpanJson
         private Span<char> _chars;
         private Span<byte> _bytes;
         private int _pos;
+        private readonly Encoder _encoder;
 
         public JsonWriter(int initialSize)
         {
             _arrayToReturnToPool = ArrayPool<TSymbol>.Shared.Rent(initialSize);
             if (typeof(TSymbol) == typeof(char))
             {
-
                 _chars = MemoryMarshal.Cast<TSymbol, char>(_arrayToReturnToPool);
+                _encoder = null;
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
                 _bytes = MemoryMarshal.Cast<TSymbol, byte>(_arrayToReturnToPool);
+                _encoder = Encoding.UTF8.GetEncoder();
             }
             else
             {
@@ -37,13 +39,6 @@ namespace SpanJson
             }
 
             _pos = 0;
-        }
-
-        public override string ToString()
-        {
-            var s = _chars.Slice(0, _pos).ToString();
-            Dispose();
-            return s;
         }
 
         public int Position => _pos;
@@ -94,6 +89,137 @@ namespace SpanJson
             {
                 ArrayPool<TSymbol>.Shared.Return(toReturn);
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteEndArray()
+        {
+
+            if (typeof(TSymbol) == typeof(char))
+            {
+                WriteUtf16EndArray();
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                WriteUtf8EndArray();
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteBeginArray()
+        {
+
+            if (typeof(TSymbol) == typeof(char))
+            {
+                WriteUtf16BeginArray();
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                WriteUtf8BeginArray();
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteBeginObject()
+        {
+
+            if (typeof(TSymbol) == typeof(char))
+            {
+                WriteUtf16BeginObject();
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                WriteUtf8BeginObject();
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteEndObject()
+        {
+
+            if (typeof(TSymbol) == typeof(char))
+            {
+                WriteUtf16EndObject();
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                WriteUtf8EndObject();
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteValueSeparator()
+        {
+
+            if (typeof(TSymbol) == typeof(char))
+            {
+                WriteUtf16ValueSeparator();
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                WriteUtf8ValueSeparator();
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteNull()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                WriteUtf16Null();
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                WriteUtf8Null();
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+
+        public void WriteName(string name)
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                WriteUtf16Name(name);
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                WriteUtf8Name(name);
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+        private static void ThrowNotSupportedException()
+        {
+            throw new NotImplementedException();
         }
     }
 }

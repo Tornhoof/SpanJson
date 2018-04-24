@@ -101,12 +101,12 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, SByte value)
         {
-            writer.WriteUtf16SByte(value);
+            writer.WriteUtf8SByte(value);
         }
 
         public SByte Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16SByte();
+            return reader.ReadUtf8SByte();
         }
 	} 
 	public sealed class NullableSByteUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<SByte?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
@@ -279,12 +279,12 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, Int16 value)
         {
-            writer.WriteUtf16Int16(value);
+            writer.WriteUtf8Int16(value);
         }
 
         public Int16 Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16Int16();
+            return reader.ReadUtf8Int16();
         }
 	} 
 	public sealed class NullableInt16Utf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Int16?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
@@ -457,12 +457,12 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, Int32 value)
         {
-            writer.WriteUtf16Int32(value);
+            writer.WriteUtf8Int32(value);
         }
 
         public Int32 Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16Int32();
+            return reader.ReadUtf8Int32();
         }
 	} 
 	public sealed class NullableInt32Utf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Int32?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
@@ -635,12 +635,12 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, Int64 value)
         {
-            writer.WriteUtf16Int64(value);
+            writer.WriteUtf8Int64(value);
         }
 
         public Int64 Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16Int64();
+            return reader.ReadUtf8Int64();
         }
 	} 
 	public sealed class NullableInt64Utf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Int64?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
@@ -813,12 +813,12 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, Byte value)
         {
-            writer.WriteUtf16Byte(value);
+            writer.WriteUtf8Byte(value);
         }
 
         public Byte Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16Byte();
+            return reader.ReadUtf8Byte();
         }
 	} 
 	public sealed class NullableByteUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Byte?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
@@ -991,12 +991,12 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, UInt16 value)
         {
-            writer.WriteUtf16UInt16(value);
+            writer.WriteUtf8UInt16(value);
         }
 
         public UInt16 Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16UInt16();
+            return reader.ReadUtf8UInt16();
         }
 	} 
 	public sealed class NullableUInt16Utf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<UInt16?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
@@ -1169,12 +1169,12 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, UInt32 value)
         {
-            writer.WriteUtf16UInt32(value);
+            writer.WriteUtf8UInt32(value);
         }
 
         public UInt32 Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16UInt32();
+            return reader.ReadUtf8UInt32();
         }
 	} 
 	public sealed class NullableUInt32Utf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<UInt32?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
@@ -1347,12 +1347,12 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, UInt64 value)
         {
-            writer.WriteUtf16UInt64(value);
+            writer.WriteUtf8UInt64(value);
         }
 
         public UInt64 Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16UInt64();
+            return reader.ReadUtf8UInt64();
         }
 	} 
 	public sealed class NullableUInt64Utf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<UInt64?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
@@ -1525,12 +1525,12 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, Single value)
         {
-            writer.WriteUtf16Single(value);
+            writer.WriteUtf8Single(value);
         }
 
         public Single Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16Single();
+            return reader.ReadUtf8Single();
         }
 	} 
 	public sealed class NullableSingleUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Single?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
@@ -1703,12 +1703,12 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, Double value)
         {
-            writer.WriteUtf16Double(value);
+            writer.WriteUtf8Double(value);
         }
 
         public Double Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16Double();
+            return reader.ReadUtf8Double();
         }
 	} 
 	public sealed class NullableDoubleUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Double?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
@@ -1881,12 +1881,12 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, Decimal value)
         {
-            writer.WriteUtf16Decimal(value);
+            writer.WriteUtf8Decimal(value);
         }
 
         public Decimal Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16Decimal();
+            return reader.ReadUtf8Decimal();
         }
 	} 
 	public sealed class NullableDecimalUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Decimal?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
@@ -2059,12 +2059,12 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, Boolean value)
         {
-            writer.WriteUtf16Boolean(value);
+            writer.WriteUtf8Boolean(value);
         }
 
         public Boolean Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16Boolean();
+            return reader.ReadUtf8Boolean();
         }
 	} 
 	public sealed class NullableBooleanUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Boolean?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
@@ -2237,12 +2237,12 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, Char value)
         {
-            writer.WriteUtf16Char(value);
+            writer.WriteUtf8Char(value);
         }
 
         public Char Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16Char();
+            return reader.ReadUtf8Char();
         }
 	} 
 	public sealed class NullableCharUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Char?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
@@ -2415,12 +2415,12 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, DateTime value)
         {
-            writer.WriteUtf16DateTime(value);
+            writer.WriteUtf8DateTime(value);
         }
 
         public DateTime Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16DateTime();
+            return reader.ReadUtf8DateTime();
         }
 	} 
 	public sealed class NullableDateTimeUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<DateTime?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
@@ -2593,12 +2593,12 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, DateTimeOffset value)
         {
-            writer.WriteUtf16DateTimeOffset(value);
+            writer.WriteUtf8DateTimeOffset(value);
         }
 
         public DateTimeOffset Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16DateTimeOffset();
+            return reader.ReadUtf8DateTimeOffset();
         }
 	} 
 	public sealed class NullableDateTimeOffsetUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<DateTimeOffset?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
@@ -2771,12 +2771,12 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, TimeSpan value)
         {
-            writer.WriteUtf16TimeSpan(value);
+            writer.WriteUtf8TimeSpan(value);
         }
 
         public TimeSpan Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16TimeSpan();
+            return reader.ReadUtf8TimeSpan();
         }
 	} 
 	public sealed class NullableTimeSpanUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<TimeSpan?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
@@ -2949,12 +2949,12 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<Byte> writer, Guid value)
         {
-            writer.WriteUtf16Guid(value);
+            writer.WriteUtf8Guid(value);
         }
 
         public Guid Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16Guid();
+            return reader.ReadUtf8Guid();
         }
 	} 
 	public sealed class NullableGuidUtf8Formatter<TResolver> : NullableFormatter, IJsonFormatter<Guid?, Byte,TResolver> where TResolver : IJsonFormatterResolver<Byte, TResolver>, new()
@@ -3090,15 +3090,15 @@ namespace SpanJson.Formatters
         {
 			if(value == null)
 			{	
-				writer.WriteUtf16Null();
+				writer.WriteUtf8Null();
 				return;
 			}
-            writer.WriteUtf16String(value);
+            writer.WriteUtf8String(value);
         }
 
         public String Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16String();
+            return reader.ReadUtf8String();
         }
 	} 
 
@@ -3190,15 +3190,15 @@ namespace SpanJson.Formatters
         {
 			if(value == null)
 			{	
-				writer.WriteUtf16Null();
+				writer.WriteUtf8Null();
 				return;
 			}
-            writer.WriteUtf16Version(value);
+            writer.WriteUtf8Version(value);
         }
 
         public Version Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16Version();
+            return reader.ReadUtf8Version();
         }
 	} 
 
@@ -3290,15 +3290,15 @@ namespace SpanJson.Formatters
         {
 			if(value == null)
 			{	
-				writer.WriteUtf16Null();
+				writer.WriteUtf8Null();
 				return;
 			}
-            writer.WriteUtf16Uri(value);
+            writer.WriteUtf8Uri(value);
         }
 
         public Uri Deserialize(ref JsonReader<Byte> reader)
         {
-            return reader.ReadUtf16Uri();
+            return reader.ReadUtf8Uri();
         }
 	} 
 

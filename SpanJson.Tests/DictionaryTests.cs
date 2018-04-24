@@ -19,7 +19,7 @@ namespace SpanJson.Tests
                 {"Alice2", new DictionaryValue {Name = "Bob2"}},
                 {"Alice3", new DictionaryValue {Name = "Bob3"}},
             };
-            var serialized = JsonSerializer.Generic.Serialize(dictionary);
+            var serialized = JsonSerializer.Generic.SerializeToString(dictionary);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Deserialize<Dictionary<string, DictionaryValue>>(serialized);
             Assert.NotNull(deserialized);
@@ -36,7 +36,7 @@ namespace SpanJson.Tests
                 {"Alice2", new DictionaryValue {Name = "Bob2"}},
                 {"Alice3", new DictionaryValue {Name = "Bob3"}},
             };
-            var serialized = JsonSerializer.Generic.Serialize(dictionary);
+            var serialized = JsonSerializer.Generic.SerializeToString(dictionary);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Deserialize<IDictionary<string, DictionaryValue>>(serialized);
             Assert.NotNull(deserialized);
@@ -50,7 +50,7 @@ namespace SpanJson.Tests
             dictionary.TryAdd("Alice1", new DictionaryValue {Name = "Bob1"});
             dictionary.TryAdd("Alice2", new DictionaryValue {Name = "Bob2"});
             dictionary.TryAdd("Alice3", new DictionaryValue {Name = "Bob3"});
-            var serialized = JsonSerializer.Generic.Serialize(dictionary);
+            var serialized = JsonSerializer.Generic.SerializeToString(dictionary);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Deserialize<ConcurrentDictionary<string, DictionaryValue>>(serialized);
             Assert.NotNull(deserialized);
@@ -62,7 +62,7 @@ namespace SpanJson.Tests
         {
             var expando = new ExpandoObject();
             expando.TryAdd("Hello", "World");
-            var serialized = JsonSerializer.Generic.Serialize(expando);
+            var serialized = JsonSerializer.Generic.SerializeToString(expando);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Deserialize<ExpandoObject>(serialized);
             Assert.NotNull(deserialized);

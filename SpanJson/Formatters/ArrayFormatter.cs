@@ -14,9 +14,9 @@ namespace SpanJson.Formatters
             try
             {
                 temp = ArrayPool<T>.Shared.Rent(4);
-                reader.ReadUtf16BeginArrayOrThrow();
+                reader.ReadBeginArrayOrThrow();
                 var count = 0;
-                while (!reader.TryReadUtf16IsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
+                while (!reader.TryReadIsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
                 {
                     if (count == temp.Length)
                     {
@@ -60,23 +60,23 @@ namespace SpanJson.Formatters
         {
             if (value == null)
             {
-                writer.WriteUtf16Null();
+                writer.WriteNull();
                 return;
             }
 
             var valueLength = value.Length;
-            writer.WriteUtf16BeginArray();
+            writer.WriteBeginArray();
             if (valueLength > 0)
             {
                 formatter.Serialize(ref writer, value[0]);
                 for (var i = 1; i < valueLength; i++)
                 {
-                    writer.WriteUtf16ValueSeparator();
+                    writer.WriteValueSeparator();
                     formatter.Serialize(ref writer, value[i]);
                 }
             }
 
-            writer.WriteUtf16EndArray();
+            writer.WriteEndArray();
         }
     }
 
@@ -90,7 +90,6 @@ namespace SpanJson.Formatters
 
         private static readonly IJsonFormatter<T, TSymbol, TResolver> DefaultFormatter =
             StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
-        //private static readonly Func<int, T[]> C
 
         public T[] Deserialize(ref JsonReader<TSymbol> reader)
         {

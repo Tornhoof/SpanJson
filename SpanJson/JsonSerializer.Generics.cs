@@ -13,9 +13,14 @@ namespace SpanJson
     {
         public static class Generic
         {
-            public static string Serialize<T>(T input)
+            public static string SerializeToString<T>(T input)
             {
-                return Serialize<T, char, ExcludeNullsOriginalCaseResolver<char>>(input);
+                return SerializeToString<T, char, ExcludeNullsOriginalCaseResolver<char>>(input);
+            }
+
+            public static byte[] SerializeToByteArray<T>(T input)
+            {
+                return SerializeToByteArray<T, byte, ExcludeNullsOriginalCaseResolver<byte>>(input);
             }
 
             public static ValueTask SerializeAsync<T>(T input, TextWriter writer, CancellationToken cancellationToken = default)
@@ -28,10 +33,21 @@ namespace SpanJson
                 return Deserialize<T, char, ExcludeNullsOriginalCaseResolver<char>>(input);
             }
 
-            public static string Serialize<T, TSymbol, TResolver>(T input)
+            public static T Deserialize<T>(ReadOnlySpan<byte> input)
+            {
+                return Deserialize<T, byte, ExcludeNullsOriginalCaseResolver<byte>>(input);
+            }
+
+            public static string SerializeToString<T, TSymbol, TResolver>(T input)
                 where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
             {
-                return Inner<T, TSymbol, TResolver>.InnerSerialize(input);
+                return Inner<T, TSymbol, TResolver>.InnerSerializeToString(input);
+            }
+
+            public static byte[] SerializeToByteArray<T, TSymbol, TResolver>(T input)
+                where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+            {
+                return Inner<T, TSymbol, TResolver>.InnerSerializeToByteArray(input);
             }
 
             public static ValueTask<T> DeserializeAsync<T>(TextReader reader, CancellationToken cancellationToken = default)
@@ -65,12 +81,21 @@ namespace SpanJson
 
                 private static readonly IJsonFormatter<T, TSymbol, TResolver> Formatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
 
-                public static string InnerSerialize(T input)
+                public static string InnerSerializeToString(T input)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSize);
                     Formatter.Serialize(ref jsonWriter, input);
                     _lastSerializationSize = jsonWriter.Position;
                     var result = jsonWriter.ToString(); // includes Dispose
+                    return result;
+                }
+
+                public static byte[] InnerSerializeToByteArray(T input)
+                {
+                    var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSize);
+                    Formatter.Serialize(ref jsonWriter, input);
+                    _lastSerializationSize = jsonWriter.Position;
+                    var result = jsonWriter.ToByteArray();
                     return result;
                 }
 

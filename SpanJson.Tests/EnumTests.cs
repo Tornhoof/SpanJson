@@ -17,7 +17,7 @@ namespace SpanJson.Tests
         [InlineData(TestEnum.Universe)]
         public void Serialize(TestEnum value)
         {
-            var serialized = JsonSerializer.Generic.Serialize(value);
+            var serialized = JsonSerializer.Generic.SerializeToString(value);
             Assert.Equal($"\"{value}\"", serialized);
         }
 

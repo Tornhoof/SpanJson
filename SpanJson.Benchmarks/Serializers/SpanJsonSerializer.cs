@@ -9,7 +9,7 @@
 
         public override string Serialize<T>(T input)
         {
-            return JsonSerializer.Generic.Serialize(input);
+            return JsonSerializer.Generic.SerializeToString(input);
         }
     }
 }

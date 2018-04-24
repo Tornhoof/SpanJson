@@ -182,7 +182,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf8();
             ref var pos = ref _pos;
-            if (_bytes[pos] == JsonConstant.True) // just peek the byte
+            if (_bytes[pos] == (byte)JsonConstant.True) // just peek the byte
             {
                 if (_bytes[pos + 1] != 'r')
                 {
@@ -203,7 +203,7 @@ namespace SpanJson
                 return true;
             }
 
-            if (_bytes[pos] == JsonConstant.False) // just peek the byte
+            if (_bytes[pos] == (byte)JsonConstant.False) // just peek the byte
             {
                 if (_bytes[pos + 1] != 'a')
                 {
@@ -340,7 +340,7 @@ namespace SpanJson
         public ReadOnlySpan<byte> ReadUtf8NameSpan()
         {
             var span = ReadUtf8StringSpan();
-            if (_bytes[_pos++] != JsonConstant.NameSeparator)
+            if (_bytes[_pos++] != (byte)JsonConstant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
@@ -352,7 +352,7 @@ namespace SpanJson
         public string ReadUtf8EscapedName()
         {
             var span = ReadUtf8StringSpanInternal(out var escapedChars);
-            if (_bytes[_pos++] != JsonConstant.NameSeparator)
+            if (_bytes[_pos++] != (byte)JsonConstant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
@@ -369,7 +369,12 @@ namespace SpanJson
             }
 
             var span = ReadUtf8StringSpanInternal(out var escapedChars);
-            return escapedChars == 0 ? span.ToString() : UnescapeUtf8(span, escapedChars);
+            return escapedChars == 0 ? ConvertToString(span) : UnescapeUtf8(span, escapedChars);
+        }
+
+        private static string ConvertToString(ReadOnlySpan<byte> span)
+        {
+            return Encoding.UTF8.GetString(span);
         }
 
         private string UnescapeUtf8(in ReadOnlySpan<byte> span, int escapedChars)
@@ -455,7 +460,7 @@ namespace SpanJson
         private ReadOnlySpan<byte> ReadUtf8StringSpanInternal(out int escapedChars)
         {
             ref var pos = ref _pos;
-            if (_bytes[pos] != JsonConstant.String)
+            if (_bytes[pos] != (byte) JsonConstant.String)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
@@ -480,7 +485,7 @@ namespace SpanJson
         private ReadOnlySpan<byte> ReadUtf8StringSpanWithQuotes(out int escapedChars)
         {
             ref var pos = ref _pos;
-            if (_bytes[pos] != JsonConstant.String)
+            if (_bytes[pos] != (byte)JsonConstant.String)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
@@ -513,7 +518,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf8();
             ref var pos = ref _pos;
-            if (pos < _length && _bytes[pos] == JsonConstant.Null) // just peek the byte
+            if (pos < _length && _bytes[pos] == (byte)JsonConstant.Null) // just peek the byte
             {
                 if (_bytes[pos + 1] != 'u')
                 {
@@ -848,20 +853,20 @@ namespace SpanJson
             for (var i = pos; i < _bytes.Length; i++)
             {
                 ref readonly var c = ref _bytes[i];
-                if (c == JsonConstant.ReverseSolidus)
+                if (c == (byte)JsonConstant.ReverseSolidus)
                 {
                     escapedChars++;
                     ref readonly var nextChar = ref _bytes[i + 1];
-                    if (nextChar == 'u' || nextChar == 'U')
+                    if (nextChar == (byte)'u' || nextChar == (byte)'U')
                     {
                         escapedChars += 4; // add only 4 and not 5 as we still need one unescaped byte
                     }
                 }
-                else if (c == JsonConstant.String)
+                else if (c == (byte)JsonConstant.String)
                 {
-                    if (_bytes[i - 1] == JsonConstant.ReverseSolidus) // now it could be just an escaped JsonConstant.DoubleQuote
+                    if (_bytes[i - 1] == (byte)JsonConstant.ReverseSolidus) // now it could be just an escaped JsonConstant.DoubleQuote
                     {
-                        if (i - 2 >= 0 && _bytes[i - 2] != JsonConstant.ReverseSolidus) // it's an escaped string and not just an escaped JsonConstant.Escape
+                        if (i - 2 >= 0 && _bytes[i - 2] != (byte)JsonConstant.ReverseSolidus) // it's an escaped string and not just an escaped JsonConstant.Escape
                         {
                             continue;
                         }
