@@ -82,16 +82,5 @@ namespace SpanJson.Tests
                 .ToList();
             return models.Select(a => new object[] {a});
         }
-
-        [Fact]
-        public void TestMobilePrivilege()
-        {
-            var fixture = new ExpressionTreeFixture();
-            var privilege = fixture.Create<MobilePrivilege>();
-
-            var serialized = JsonSerializer.Generic.SerializeToString(privilege);
-            var deserialized = JsonSerializer.Generic.Deserialize<MobilePrivilege>(serialized);
-            Assert.Equal(privilege, deserialized, GenericEqualityComparer.Default);
-        }
     }
 }

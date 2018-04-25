@@ -14,7 +14,6 @@ namespace SpanJson
         private Span<char> _chars;
         private Span<byte> _bytes;
         private int _pos;
-        private readonly Encoder _encoder;
 
         public JsonWriter(int initialSize)
         {
@@ -22,12 +21,10 @@ namespace SpanJson
             if (typeof(TSymbol) == typeof(char))
             {
                 _chars = MemoryMarshal.Cast<TSymbol, char>(Data);
-                _encoder = null;
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
                 _bytes = MemoryMarshal.Cast<TSymbol, byte>(Data);
-                _encoder = Encoding.UTF8.GetEncoder();
             }
             else
             {

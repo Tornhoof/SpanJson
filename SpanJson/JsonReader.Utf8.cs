@@ -235,16 +235,16 @@ namespace SpanJson
         public char ReadUtf8Char()
         {
             var span = ReadUtf8StringSpan();
-            var pos = 0;
-            return ReadUtf8CharInternal(span, ref pos);
+            return ReadUtf8CharInternal(span);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private char ReadUtf8CharInternal(ReadOnlySpan<byte> span, ref int pos)
+        private char ReadUtf8CharInternal(ReadOnlySpan<byte> span)
         {
+            int pos = 0;
             if (span.Length == 1)
             {
-                return (char) span[pos++];
+                return (char) span[pos];
             }
 
             if (span[pos] == JsonConstant.ReverseSolidus)
@@ -274,7 +274,6 @@ namespace SpanJson
                         {
                             if (Utf8Parser.TryParse(span.Slice(2, 4), out int value, out var bytesConsumed, 'X'))
                             {
-                                pos += bytesConsumed;
                                 return (char) value;
                             }
                         }
@@ -285,8 +284,7 @@ namespace SpanJson
             else
             {
                 Span<char> charSpan = stackalloc char[1];
-                _decoder.Convert(span, charSpan, false, out _, out _, out var completed);
-                _decoder.Reset();
+                Encoding.UTF8.GetChars(span, charSpan);
                 return charSpan[0];
             }
 

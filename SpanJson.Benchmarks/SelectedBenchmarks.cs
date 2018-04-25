@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.InteropServices.ComTypes;
+using System.Text;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Jobs;
 using SpanJson.Benchmarks.Fixture;
@@ -16,6 +17,7 @@ namespace SpanJson.Benchmarks
         private static readonly AccessToken AccessToken = ExpressionTreeFixture.Create<AccessToken>();
 
         private static readonly SpanJsonSerializer SpanJsonSerializer = new SpanJsonSerializer();
+        private static readonly SpanJsonUtf8Serializer SpanJsonUtf8Serializer = new SpanJsonUtf8Serializer();
 
         private static readonly string AccessTokenSerializedString =
             SpanJsonSerializer.Serialize(AccessToken);
@@ -40,17 +42,17 @@ namespace SpanJson.Benchmarks
 
         private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
 
-        [Benchmark]
-        public Answer DeserializeAnswerWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
-        }
+        //[Benchmark]
+        //public Answer DeserializeAnswerWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
+        //}
 
-        [Benchmark]
-        public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
-        {
-            return JsonSerializer.Generic.Deserialize<Answer>(AnswerSerializedByteArray);
-        }
+        //[Benchmark]
+        //public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
+        //{
+        //    return JsonSerializer.Generic.Deserialize<Answer>(AnswerSerializedByteArray);
+        //}
 
         //[Benchmark]
         //public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsync()
@@ -178,5 +180,20 @@ namespace SpanJson.Benchmarks
         //    var jsonWriter = new JsonReader<byte>(Encoding.UTF8.GetBytes("\"Hello World\""));
         //    return jsonWriter.ReadStringSpan();
         //}
+
+        private static readonly char UInt64Input = ExpressionTreeFixture.Create<char>();
+
+        [Benchmark]
+        public System.String SerializeUInt64WithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Serialize(UInt64Input);
+        }
+
+
+        [Benchmark]
+        public System.Byte[] SerializeUInt64WithSpanJsonUtf8Serializer()
+        {
+            return SpanJsonUtf8Serializer.Serialize(UInt64Input);
+        }
     }
 }

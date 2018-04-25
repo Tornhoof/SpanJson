@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Buffers.Text;
 using System.Runtime.CompilerServices;
+using System.Text;
 using SpanJson.Helpers;
 
 namespace SpanJson
@@ -199,21 +200,7 @@ namespace SpanJson
             }
 
             WriteUtf8DoubleQuote();
-            char[] array = null;
-            try
-            {
-                array = ArrayPool<char>.Shared.Rent(1);
-                array[0] = value; // TODO find better way
-                WriteUtf8CharInternal(ref pos, array, 0);
-            }
-            finally
-            {
-                if (array != null)
-                {
-                    ArrayPool<char>.Shared.Return(array);
-                }
-            }
-
+            WriteUtf8CharInternal(value);
             WriteUtf8DoubleQuote();
         }
 
@@ -405,9 +392,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void EncodeChars(ReadOnlySpan<char> span, ref int pos)
         {
-            _encoder.Convert(span, _bytes.Slice(pos), true, out _, out var bytesUsed, out _);
-            pos += bytesUsed;
-            _encoder.Reset();
+            pos += Encoding.UTF8.GetBytes(span, _bytes.Slice(pos));
         }
 
         /// <summary>
@@ -444,10 +429,9 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void WriteUtf8CharInternal(ref int pos, ReadOnlySpan<char> span, int offset)
+        private void WriteUtf8CharInternal(char value)
         {
-            ref readonly var current = ref span[offset];
-            switch (current)
+            switch (value)
             {
                 case JsonConstant.DoubleQuote:
                     WriteUtf8SingleEscapedChar(JsonConstant.DoubleQuote);
@@ -552,41 +536,26 @@ namespace SpanJson
                     WriteUtf8DoubleEscapedChar('1', 'F');
                     break;
                 default:
-                    if (current < 0x80)
+                    ref var pos = ref _pos;
+                    if (value < 0x80)
                     {
-                        _bytes[pos++] = (byte) current;
+                        _bytes[pos++] = (byte) value;
                     }
                     else
                     {
-                        WriteNonAsciiUtf8Char(ref pos, span);
+                        Span<char> span = stackalloc char[1];
+                        span[0] = value;
+                        var length = Encoding.UTF8.GetByteCount(span);
+                        if (pos > _bytes.Length - length)
+                        {
+                            Grow(length);
+                        }
+
+                        pos += Encoding.UTF8.GetBytes(span, _bytes.Slice(pos));
                     }
 
                     break;
             }
-        }
-
-        private void WriteNonAsciiUtf8Char(ref int pos, ReadOnlySpan<char> span)
-        {
-            var spanOffset = 0;
-            bool completed;
-            do
-            {
-                _encoder.Convert(span.Slice(spanOffset, 1), _bytes.Slice(pos), false, out var charsUsed, out var bytesUsed, out completed);
-                if (!completed)
-                {
-                    spanOffset += charsUsed;
-                    Grow(4);
-                }
-
-                pos += bytesUsed;
-            } while (!completed);
-
-            _encoder.Reset();
-        }
-
-        public void WriteUtf8Verbatim(byte[] value)
-        {
-            WriteUtf8Verbatim(value.AsSpan());
         }
 
         public void WriteUtf8Verbatim(ReadOnlySpan<byte> value)
@@ -616,9 +585,7 @@ namespace SpanJson
             }
 
             WriteUtf8DoubleQuote();
-            _encoder.Convert(value, _bytes.Slice(pos), true, out _, out var bytesUsed, out _);
-            _encoder.Reset();
-            pos += bytesUsed;
+            pos += Encoding.UTF8.GetBytes(value, _bytes.Slice(pos));
             WriteUtf8DoubleQuote();
             _bytes[pos++] = (byte) JsonConstant.NameSeparator;
         }
@@ -740,9 +707,7 @@ namespace SpanJson
             WriteUtf8DoubleQuote();
             Span<char> tempSpan = stackalloc char[45];
             value.TryFormat(tempSpan, out _);
-            _encoder.Convert(tempSpan, _bytes.Slice(pos), true, out _, out var bytesUsed, out _);
-            _encoder.Reset();
-            pos += bytesUsed;
+            pos += Encoding.UTF8.GetBytes(tempSpan, _bytes.Slice(pos));
             WriteUtf8DoubleQuote();
         }
 
