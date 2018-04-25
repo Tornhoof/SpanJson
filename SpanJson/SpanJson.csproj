@@ -32,7 +32,7 @@
     <Compile Update="Formatters\BclFormatter.cs">
       <DependentUpon>BclFormatter.tt</DependentUpon>
       <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
+      <AutoGen>false</AutoGen>
     </Compile>
   </ItemGroup>
 </Project>

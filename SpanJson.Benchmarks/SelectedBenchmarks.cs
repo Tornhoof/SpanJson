@@ -116,21 +116,22 @@ namespace SpanJson.Benchmarks
         //    return Utf8JsonSerializer.Serialize(Answer);
         //}
 
-        private static readonly BadgeType BadgeType = BadgeType.named;
-
-        private static readonly string BageTypeSerializedString = JsonSerializer.Generic.SerializeToString(BadgeType);
-        private static readonly byte[] BageTypeSerializedByteArray = JsonSerializer.Generic.SerializeToByteArray(BadgeType);
+        private static readonly string TestString = "Hello  World and the Univer and Other Stuff";
 
         [Benchmark]
-        public BadgeType JsonTestChar()
+        public string JsonTestChar()
         {
-            return JsonSerializer.Generic.Deserialize<BadgeType>(BageTypeSerializedString);
+            var jsonWriter = new JsonWriter<char>(100);
+            jsonWriter.WriteUtf16Boolean(false);
+            return jsonWriter.ToString();
         }
 
         [Benchmark]
-        public BadgeType JsonTestByte()
+        public byte[] JsonTestByte()
         {
-            return JsonSerializer.Generic.Deserialize<BadgeType>(BageTypeSerializedString);
+            var jsonWriter = new JsonWriter<byte>(100);
+            jsonWriter.WriteUtf8Boolean(false);
+            return jsonWriter.ToByteArray();
         }
 
 

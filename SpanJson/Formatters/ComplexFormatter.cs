@@ -299,7 +299,7 @@ namespace SpanJson.Formatters
             var cases = new List<SwitchCase>();
             var defaultValue = Expression.Call(readerParameter, skipNextMethodInfo);
             // if any group key is not an ascii char we need to compare longer parts of the byte array 
-            var extendedComparisonNecessary = typeof(TSymbol) == typeof(byte) && group.Any(a => a.Key > 0xFF);
+            var extendedComparisonNecessary = typeof(TSymbol) == typeof(byte) && group.Any(a => a.Key > 0x7F);
             var extendedComparsionMethodInfo = extendedComparisonNecessary ? FindHelperMethod(nameof(SwitchByteEquals)) : null;
             foreach (var groupedMemberInfos in group)
             {

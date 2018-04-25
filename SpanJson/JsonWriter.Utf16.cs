@@ -388,7 +388,7 @@ namespace SpanJson
             var remaining = value.AsSpan();
             for (var i = 0; i < remaining.Length; i++)
             {
-                var c = remaining[i];
+                ref readonly var c = ref remaining[i];
                 switch (c)
                 {
                     case JsonConstant.DoubleQuote:
@@ -572,7 +572,7 @@ namespace SpanJson
             remaining.Slice(0, i).CopyTo(_chars.Slice(pos));
             pos += i;
             const int length = 6;
-            if (pos > _chars.Length - length) // one more now
+            if (pos > _chars.Length - length) // 6 more now
             {
                 Grow(length);
             }

@@ -34,7 +34,7 @@
     </None>
     <Compile Update="Generated\BclTests.cs">
       <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
+      <AutoGen>false</AutoGen>
       <DependentUpon>BclTests.tt</DependentUpon>
     </Compile>
   </ItemGroup>
