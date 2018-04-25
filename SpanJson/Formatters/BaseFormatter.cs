@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
-using System.Reflection.Metadata.Ecma335;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace SpanJson.Formatters
 {
@@ -20,5 +21,78 @@ namespace SpanJson.Formatters
             }
             return Expression.Lambda<Func<T>>(Expression.New(type)).Compile();
         }
+
+        protected static MethodInfo FindPublicInstanceMethod(Type type, string name, params Type[] args)
+        {
+            return args?.Length > 0 ? type.GetMethod(name, args) : type.GetMethod(name);
+        }
+
+
+        protected static MethodInfo FindHelperMethod(string name, params Type[] args)
+        {
+            var flags = BindingFlags.NonPublic | BindingFlags.Static;
+            return args?.Length > 0
+                ? typeof(BaseFormatter).GetMethod(name, flags, null, CallingConventions.Any, args, null)
+                : typeof(BaseFormatter).GetMethod(name, flags);
+        }
+
+
+        /// <summary>
+        /// Faster than SequenceEqual
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static bool StringEquals(ReadOnlySpan<char> span, int offset, string comparison)
+        {
+            if (span.Length - offset != comparison.Length)
+            {
+                return false;
+            }
+            for (var i = 0; i < comparison.Length; i++)
+            {
+                ref readonly var left = ref span[offset + i];
+                if (comparison[i] != left)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static bool SwitchStringEquals(ReadOnlySpan<char> span, string comparison)
+        {
+            return StringEquals(span, 0, comparison);
+        }
+
+        /// <summary>
+        /// Faster than SequenceEqual, this needs to be a byte array and not a string otherwise we might run into problems with non ascii property names
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static bool ByteEquals(ReadOnlySpan<byte> span, int offset, byte[] comparison)
+        {
+            if (span.Length - offset != comparison.Length)
+            {
+                return false;
+            }
+            for (var i = 0; i < comparison.Length; i++)
+            {
+                ref readonly var left = ref span[offset + i];
+                if (comparison[i] != left)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static bool SwitchByteEquals(ReadOnlySpan<byte> span, byte[] comparison)
+        {
+            return ByteEquals(span, 0, comparison);
+        }
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using System.Buffers.Text;
+using Xunit;
 
 namespace SpanJson.Tests
 {
@@ -15,7 +16,7 @@ namespace SpanJson.Tests
         [InlineData(TestEnum.Hello)]
         [InlineData(TestEnum.World)]
         [InlineData(TestEnum.Universe)]
-        public void Serialize(TestEnum value)
+        public void SerializeUtf16(TestEnum value)
         {
             var serialized = JsonSerializer.Generic.SerializeToString(value);
             Assert.Equal($"\"{value}\"", serialized);
@@ -25,10 +26,22 @@ namespace SpanJson.Tests
         [InlineData("\"Hello\"", TestEnum.Hello)]
         [InlineData("\"World\"", TestEnum.World)]
         [InlineData("\"Universe\"", TestEnum.Universe)]
-        public void Deserialize(string value, TestEnum comparison)
+        public void DeserializeUtf16(string value, TestEnum comparison)
         {
             var deserialized = JsonSerializer.Generic.Deserialize<TestEnum>(value);
             Assert.Equal(deserialized, comparison);
+        }
+
+        [Theory]
+        [InlineData(TestEnum.Hello)]
+        [InlineData(TestEnum.World)]
+        [InlineData(TestEnum.Universe)]
+        public void SerializeDeserializeUtf8(TestEnum value)
+        {
+            var serialized = JsonSerializer.Generic.SerializeToByteArray(value);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<TestEnum>(serialized);
+            Assert.Equal(value, deserialized);
         }
     }
 }

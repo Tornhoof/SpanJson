@@ -35,17 +35,17 @@ namespace SpanJson.Formatters
             MethodInfo writeEndObjectMethodInfo;
             if (typeof(TSymbol) == typeof(char))
             {
-                propertyNameWriterMethodInfo = FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim));
-                seperatorWriteMethodInfo =  FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16ValueSeparator));
-                writeBeginObjectMethodInfo = FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16BeginObject));
-                writeEndObjectMethodInfo = FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16EndObject));
+                propertyNameWriterMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim), typeof(string));
+                seperatorWriteMethodInfo =  FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16ValueSeparator));
+                writeBeginObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16BeginObject));
+                writeEndObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16EndObject));
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                propertyNameWriterMethodInfo = FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim));
-                seperatorWriteMethodInfo = FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8ValueSeparator));
-                writeBeginObjectMethodInfo = FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8BeginObject));
-                writeEndObjectMethodInfo = FindMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8EndObject));
+                propertyNameWriterMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim), typeof(byte[]));
+                seperatorWriteMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8ValueSeparator));
+                writeBeginObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8BeginObject));
+                writeEndObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8EndObject));
             }
             else
             {
@@ -92,11 +92,11 @@ namespace SpanJson.Formatters
                 Expression writerNameConstant;
                 if (typeof(TSymbol) == typeof(char))
                 {
-                    writerNameConstant = Expression.Convert(Expression.Constant(writerName), typeof(ReadOnlySpan<char>));
+                    writerNameConstant = Expression.Constant(writerName);
                 }
                 else if (typeof(TSymbol) == typeof(byte))
                 {
-                    writerNameConstant = Expression.Convert(Expression.Constant(Encoding.UTF8.GetBytes(writerName)), typeof(ReadOnlySpan<byte>));
+                    writerNameConstant = Expression.Constant(Encoding.UTF8.GetBytes(writerName));
                 }
                 else
                 {
@@ -220,15 +220,15 @@ namespace SpanJson.Formatters
             MethodInfo beginObjectOrThrowMethodInfo;
             if (typeof(TSymbol) == typeof(char))
             {
-                nameSpanMethodInfo = FindMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16NameSpan));
-                tryReadEndObjectMethodInfo = FindMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.TryReadUtf16IsEndObjectOrValueSeparator));
-                beginObjectOrThrowMethodInfo = FindMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16BeginObjectOrThrow));
+                nameSpanMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16NameSpan));
+                tryReadEndObjectMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.TryReadUtf16IsEndObjectOrValueSeparator));
+                beginObjectOrThrowMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16BeginObjectOrThrow));
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                nameSpanMethodInfo = FindMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8NameSpan));
-                tryReadEndObjectMethodInfo = FindMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.TryReadUtf8IsEndObjectOrValueSeparator));
-                beginObjectOrThrowMethodInfo = FindMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8BeginObjectOrThrow));
+                nameSpanMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8NameSpan));
+                tryReadEndObjectMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.TryReadUtf8IsEndObjectOrValueSeparator));
+                beginObjectOrThrowMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8BeginObjectOrThrow));
             }
             else
             {
@@ -261,11 +261,6 @@ namespace SpanJson.Formatters
             return type.IsValueType || type.IsSealed;
         }
 
-        private static MethodInfo FindMethod(Type type, string name)
-        {
-            return type.GetMethod(name);
-        }
-
         /// <summary>
         ///     We group the field names by the nth character and nest the switch tables to find the appropriate field/property to
         ///     assign to
@@ -284,15 +279,15 @@ namespace SpanJson.Formatters
             Expression indexedSwitchValue;
             if (typeof(TSymbol) == typeof(char))
             {
-                skipNextMethodInfo = FindMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextUtf16Segment));
-                equalityMethodInfo = typeof(ComplexFormatter).GetMethod(nameof(StringEquals), BindingFlags.NonPublic | BindingFlags.Static);
+                skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextUtf16Segment));
+                equalityMethodInfo = FindHelperMethod(nameof(StringEquals));
                 indexedSwitchValue = Expression.Call(typeof(ComplexFormatter).GetMethod(nameof(GetChar), BindingFlags.NonPublic | BindingFlags.Static),
                     switchValue, Expression.Constant(index));
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                skipNextMethodInfo = FindMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextUtf8Segment));
-                equalityMethodInfo = typeof(ComplexFormatter).GetMethod(nameof(ByteEquals), BindingFlags.NonPublic | BindingFlags.Static);
+                skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextUtf8Segment));
+                equalityMethodInfo = FindHelperMethod(nameof(ByteEquals));
                 indexedSwitchValue = Expression.Call(typeof(ComplexFormatter).GetMethod(nameof(GetByte), BindingFlags.NonPublic | BindingFlags.Static),
                     switchValue, Expression.Constant(index));
             }
@@ -305,9 +300,7 @@ namespace SpanJson.Formatters
             var defaultValue = Expression.Call(readerParameter, skipNextMethodInfo);
             // if any group key is not an ascii char we need to compare longer parts of the byte array 
             var extendedComparisonNecessary = typeof(TSymbol) == typeof(byte) && group.Any(a => a.Key > 0xFF);
-            var extendedComparsionMethodInfo = extendedComparisonNecessary
-                ? typeof(ComplexFormatter).GetMethod(nameof(SwitchByteEquals), BindingFlags.NonPublic | BindingFlags.Static)
-                : null;
+            var extendedComparsionMethodInfo = extendedComparisonNecessary ? FindHelperMethod(nameof(SwitchByteEquals)) : null;
             foreach (var groupedMemberInfos in group)
             {
                 Expression switchKey;
@@ -386,55 +379,6 @@ namespace SpanJson.Formatters
             return switchExpression;
         }
 
-        /// <summary>
-        /// Faster than SequenceEqual
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool StringEquals(ReadOnlySpan<char> span, int offset, string comparison)
-        {
-            if (span.Length - offset != comparison.Length)
-            {
-                return false;
-            }
-            for (var i = 0; i < comparison.Length; i++)
-            {
-                ref readonly var left = ref span[offset + i];
-                if (comparison[i] != left)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Faster than SequenceEqual, this needs to be a byte array and not a string otherwise we might run into problems with non ascii property names
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool ByteEquals(ReadOnlySpan<byte> span, int offset, byte[] comparison)
-        {
-            if (span.Length - offset != comparison.Length)
-            {
-                return false;
-            }
-            for (var i = 0; i < comparison.Length; i++)
-            {
-                ref readonly var left = ref span[offset + i];
-                if (comparison[i] != left)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool SwitchByteEquals(ReadOnlySpan<byte> span, byte[] comparison)
-        {
-            return ByteEquals(span, 0, comparison);
-        }
 
         /// <summary>
         ///     Couldn't get it working with Expression Trees,ref return lvalues do not work yet

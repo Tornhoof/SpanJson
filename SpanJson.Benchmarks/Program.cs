@@ -8,7 +8,7 @@ namespace SpanJson.Benchmarks
     {
         private static void Main(string[] args)
         {
-            BenchmarkRunner.Run<ModelBenchmark>();
+            BenchmarkRunner.Run<SelectedBenchmarks>();
         }
     }
 }

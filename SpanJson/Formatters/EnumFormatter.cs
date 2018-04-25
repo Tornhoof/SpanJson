@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 
 namespace SpanJson.Formatters
 {
@@ -24,21 +26,27 @@ namespace SpanJson.Formatters
             Serializer(ref writer, value);
         }
 
-        // TODO too many strings
+        /// <summary>
+        /// Not sure if it's useful to build something like the automaton from the compelxformatter here
+        /// </summary>
+        /// <returns></returns>
         private static DeserializeDelegate BuildDeserializeDelegate()
         {
             var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
 
-            var jsonValue = Expression.Variable(typeof(string), "jsonValue");
+            var jsonValue = Expression.Variable(typeof(ReadOnlySpan<TSymbol>), "jsonValue");
             var returnValue = Expression.Variable(typeof(T), "returnValue");
-            string methodName = null;
+            MethodInfo readMethodInfo;
+            MethodInfo comparisonMethodInfo;
             if (typeof(TSymbol) == typeof(char))
             {
-                methodName = nameof(JsonReader<TSymbol>.ReadUtf16String);
+                readMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16StringSpan));
+                comparisonMethodInfo = FindHelperMethod(nameof(SwitchStringEquals));
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                methodName = nameof(JsonReader<TSymbol>.ReadUtf8String);
+                readMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8StringSpan));
+                comparisonMethodInfo = FindHelperMethod(nameof(SwitchByteEquals));
             }
             else
             {
@@ -48,18 +56,31 @@ namespace SpanJson.Formatters
             var expressions = new List<Expression>
             {
                 Expression.Assign(jsonValue,
-                    Expression.Call(readerParameter, FindMethod(readerParameter.Type, methodName)))
+                    Expression.Call(readerParameter, readMethodInfo))
             };
             var cases = new List<SwitchCase>();
             foreach (var value in Enum.GetValues(typeof(T)))
             {
-                var switchCase = Expression.SwitchCase(Expression.Assign(returnValue, Expression.Constant(value)),
-                    Expression.Constant(value.ToString()));
+                Expression constantExpression;
+                if (typeof(TSymbol) == typeof(char))
+                {
+                    constantExpression = Expression.Constant(value.ToString()); // TODO Escaping
+                }
+                else if (typeof(TSymbol) == typeof(byte))
+                {
+                    constantExpression = Expression.Constant(Encoding.UTF8.GetBytes(value.ToString())); // TODO Escaping
+                }
+                else
+                {
+                    throw new NotSupportedException();
+                }
+
+                var switchCase = Expression.SwitchCase(Expression.Assign(returnValue, Expression.Constant(value)), constantExpression);
                 cases.Add(switchCase);
             }
 
             var switchExpression = Expression.Switch(typeof(void), jsonValue,
-                Expression.Throw(Expression.Constant(new InvalidOperationException())), null, cases.ToArray());
+                Expression.Throw(Expression.Constant(new InvalidOperationException())), comparisonMethodInfo, cases.ToArray());
             expressions.Add(switchExpression);
             var returnTarget = Expression.Label(returnValue.Type);
             var returnLabel = Expression.Label(returnTarget, returnValue);
@@ -74,14 +95,14 @@ namespace SpanJson.Formatters
         {
             var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
-            string methodName = null;
+            MethodInfo writerMethodInfo;
             if (typeof(TSymbol) == typeof(char))
             {
-                methodName = nameof(JsonWriter<TSymbol>.WriteUtf16String);
+                writerMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim), typeof(string));
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                methodName = nameof(JsonWriter<TSymbol>.WriteUtf8String);
+                writerMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim), typeof(byte[]));
             }
             else
             {
@@ -91,11 +112,22 @@ namespace SpanJson.Formatters
             var cases = new List<SwitchCase>();
             foreach (var value in Enum.GetValues(typeof(T)))
             {
-                var switchCase =
-                    Expression.SwitchCase(
-                        Expression.Call(writerParameter,
-                            FindMethod(writerParameter.Type, methodName),
-                            Expression.Constant(value.ToString())), Expression.Constant(value));
+                Expression valueConstant;
+                var formattedValue = $"\"{value}\"";
+                if (typeof(TSymbol) == typeof(char))
+                {
+                    valueConstant = Expression.Constant(formattedValue); // TODO Escaping
+                }
+                else if (typeof(TSymbol) == typeof(byte))
+                {
+                    valueConstant = Expression.Constant(Encoding.UTF8.GetBytes(formattedValue)); // TODO Escaping
+                }
+                else
+                {
+                    throw new NotSupportedException();
+                }
+
+                var switchCase = Expression.SwitchCase(Expression.Call(writerParameter, writerMethodInfo, valueConstant), Expression.Constant(value));
                 cases.Add(switchCase);
             }
 
@@ -107,10 +139,6 @@ namespace SpanJson.Formatters
             return lambdaExpression.Compile();
         }
 
-        private static MethodInfo FindMethod(Type type, string name)
-        {
-            return type.GetMethod(name);
-        }
 
         private delegate T DeserializeDelegate(ref JsonReader<TSymbol> reader);
 

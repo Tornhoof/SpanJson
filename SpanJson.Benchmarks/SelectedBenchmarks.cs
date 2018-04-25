@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Jobs;
+using BenchmarkDotNet.Validators;
 using SpanJson.Benchmarks.Fixture;
 using SpanJson.Benchmarks.Models;
 using SpanJson.Benchmarks.Serializers;
@@ -78,17 +79,17 @@ namespace SpanJson.Benchmarks
         //    return Utf8JsonSerializer.Deserialize<Answer>(AnswerSerializedByteArray);
         //}
 
-        [Benchmark]
-        public string SerializeAnswerWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(Answer);
-        }
+        //[Benchmark]
+        //public string SerializeAnswerWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(Answer);
+        //}
 
-        [Benchmark]
-        public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
-        {
-            return JsonSerializer.Generic.SerializeToByteArray(Answer);
-        }
+        //[Benchmark]
+        //public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
+        //{
+        //    return JsonSerializer.Generic.SerializeToByteArray(Answer);
+        //}
 
 
         //[Benchmark]
@@ -115,19 +116,22 @@ namespace SpanJson.Benchmarks
         //    return Utf8JsonSerializer.Serialize(Answer);
         //}
 
-        //[Benchmark]
-        //public char JsonTestChar()
-        //{
-        //    var JsonWriter<TSymbol> = new JsonWriterTest<char>();
-        //    return  jsonWriter.Write('a');
-        //}
+        private static readonly BadgeType BadgeType = BadgeType.named;
 
-        //[Benchmark]
-        //public byte JsonTestByte()
-        //{
-        //    var JsonWriter<TSymbol> = new JsonWriterTest<byte>();
-        //    return jsonWriter.Write((byte) 'a');
-        //}
+        private static readonly string BageTypeSerializedString = JsonSerializer.Generic.SerializeToString(BadgeType);
+        private static readonly byte[] BageTypeSerializedByteArray = JsonSerializer.Generic.SerializeToByteArray(BadgeType);
+
+        [Benchmark]
+        public BadgeType JsonTestChar()
+        {
+            return JsonSerializer.Generic.Deserialize<BadgeType>(BageTypeSerializedString);
+        }
+
+        [Benchmark]
+        public BadgeType JsonTestByte()
+        {
+            return JsonSerializer.Generic.Deserialize<BadgeType>(BageTypeSerializedString);
+        }
 
 
         //[Benchmark]
@@ -145,30 +149,5 @@ namespace SpanJson.Benchmarks
         //    writer.WriteUtf8String("Hello World");
         //    return writer.Data;
         //}
-    }
-
-    public ref struct JsonWriterTest<T> where T : struct
-    {
-        public T Write(T value)
-        {
-            if (typeof(T) == typeof(char))
-            {
-                var c = Unsafe.As<T, char>(ref value);
-                return value;
-            }
-            if (typeof(T) == typeof(byte))
-            {
-                var c = Unsafe.As<T, byte>(ref value);
-                return value;
-            }
-
-            ThrowNotImplementedException();
-            return default;
-        }
-
-        private static void ThrowNotImplementedException()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -501,6 +501,11 @@ namespace SpanJson
             WriteUtf16DoubleQuote();
         }
 
+        public void WriteUtf16Verbatim(string value)
+        {
+            WriteUtf16Verbatim(value.AsSpan());
+        }
+
         public void WriteUtf16Verbatim(ReadOnlySpan<char> value)
         {
             ref var pos = ref _pos;
