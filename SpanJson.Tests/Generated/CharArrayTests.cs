@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Text;
-using SpanJson.Benchmarks.Fixture;
 using Xunit;
 
 namespace SpanJson.Tests.Generated

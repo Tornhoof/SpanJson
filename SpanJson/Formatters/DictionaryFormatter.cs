@@ -28,7 +28,8 @@ namespace SpanJson.Formatters
             return result;
         }
 
-        protected static void Serialize<TDictionary, T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, TDictionary value, IJsonFormatter<T, TSymbol, TResolver> formatter)
+        protected static void Serialize<TDictionary, T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, TDictionary value,
+            IJsonFormatter<T, TSymbol, TResolver> formatter)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : class, IDictionary<string, T>
         {
             if (value == null)
@@ -63,9 +64,9 @@ namespace SpanJson.Formatters
     public sealed class DictionaryFormatter<TDictionary, T, TSymbol, TResolver> : DictionaryFormatter, IJsonFormatter<TDictionary, TSymbol, TResolver>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : class, IDictionary<string, T>
     {
+        private static readonly Func<TDictionary> CreateFunctor = BuildCreateFunctor<TDictionary>(typeof(Dictionary<string, T>));
         public static readonly DictionaryFormatter<TDictionary, T, TSymbol, TResolver> Default = new DictionaryFormatter<TDictionary, T, TSymbol, TResolver>();
         private static readonly IJsonFormatter<T, TSymbol, TResolver> DefaultFormatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
-        private static readonly Func<TDictionary> CreateFunctor = BuildCreateFunctor<TDictionary>(typeof(Dictionary<string, T>));
 
         public TDictionary Deserialize(ref JsonReader<TSymbol> reader)
         {

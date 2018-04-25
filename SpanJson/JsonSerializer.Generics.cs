@@ -117,13 +117,6 @@ namespace SpanJson
                     return AwaitSerializeAsync(result, data);
                 }
 
-                // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
-                private static async ValueTask AwaitSerializeAsync(Task result, char[] data)
-                {
-                    await result.ConfigureAwait(false);
-                    ArrayPool<char>.Shared.Return(data);
-                }
-
                 public static T InnerDeserialize(ReadOnlySpan<TSymbol> input)
                 {
                     var jsonReader = new JsonReader<TSymbol>(input);
@@ -139,6 +132,13 @@ namespace SpanJson
                     }
 
                     return AwaitDeSerializeAsync(input);
+                }
+
+                // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
+                private static async ValueTask AwaitSerializeAsync(Task result, char[] data)
+                {
+                    await result.ConfigureAwait(false);
+                    ArrayPool<char>.Shared.Return(data);
                 }
 
                 private static async ValueTask<T> AwaitDeSerializeAsync(Task<string> task)

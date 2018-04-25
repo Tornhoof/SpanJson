@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Buffers.Text;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
 using SpanJson.Helpers;
 
 namespace SpanJson
@@ -442,6 +437,7 @@ namespace SpanJson
             {
                 Grow(length);
             }
+
             WriteUtf8DoubleEscapedChar(firstToEscape, secondToEscape);
             remaining = remaining.Slice(i + 1); // continuing after the escaped char
             i = 0;
@@ -657,7 +653,7 @@ namespace SpanJson
                 Grow(1);
             }
 
-            _bytes[pos++] = (byte)JsonConstant.BeginObject;
+            _bytes[pos++] = (byte) JsonConstant.BeginObject;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -669,7 +665,7 @@ namespace SpanJson
                 Grow(1);
             }
 
-            _bytes[pos++] = (byte)JsonConstant.EndObject;
+            _bytes[pos++] = (byte) JsonConstant.EndObject;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -681,7 +677,7 @@ namespace SpanJson
                 Grow(1);
             }
 
-            _bytes[pos++] = (byte)JsonConstant.BeginArray;
+            _bytes[pos++] = (byte) JsonConstant.BeginArray;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -693,7 +689,7 @@ namespace SpanJson
                 Grow(1);
             }
 
-            _bytes[pos++] = (byte)JsonConstant.EndArray;
+            _bytes[pos++] = (byte) JsonConstant.EndArray;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -705,7 +701,7 @@ namespace SpanJson
                 Grow(1);
             }
 
-            _bytes[pos++] = (byte)JsonConstant.ValueSeparator;
+            _bytes[pos++] = (byte) JsonConstant.ValueSeparator;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -718,10 +714,10 @@ namespace SpanJson
                 Grow(nullLength);
             }
 
-            _bytes[pos++] = (byte)JsonConstant.Null;
-            _bytes[pos++] = (byte)'u';
-            _bytes[pos++] = (byte)'l';
-            _bytes[pos++] = (byte)'l';
+            _bytes[pos++] = (byte) JsonConstant.Null;
+            _bytes[pos++] = (byte) 'u';
+            _bytes[pos++] = (byte) 'l';
+            _bytes[pos++] = (byte) 'l';
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -62,6 +62,7 @@ namespace SpanJson.Benchmarks.Models
             {
                 equality &= obj.sub_options != null && sub_options.TrueEqualsListDynamic((IEnumerable<dynamic>) obj.sub_options);
             }
+
             return equality;
         }
     }

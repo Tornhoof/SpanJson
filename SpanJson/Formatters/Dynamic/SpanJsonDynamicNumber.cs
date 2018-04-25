@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Dynamic;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -70,7 +69,7 @@ namespace SpanJson.Formatters.Dynamic
 
             public override bool IsSupported(Type type)
             {
-                var fix =  Converters.ContainsKey(type);
+                var fix = Converters.ContainsKey(type);
                 if (!fix)
                 {
                     var nullable = Nullable.GetUnderlyingType(type);

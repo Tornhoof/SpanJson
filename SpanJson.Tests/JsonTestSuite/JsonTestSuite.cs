@@ -9,12 +9,28 @@ using Xunit.Abstractions;
 namespace SpanJson.Tests.JsonTestSuite
 {
     /// <summary>
-    /// https://github.com/nst/JSONTestSuite
-    /// The json files are zipped, VS/Resharper wants to analyze the json content too much and half of them are invalid
+    ///     https://github.com/nst/JSONTestSuite
+    ///     The json files are zipped, VS/Resharper wants to analyze the json content too much and half of them are invalid
     /// </summary>
     public class JsonTestSuite
     {
-        private static  readonly string[] IgnoredErrors = new string[]
+        public enum Result
+        {
+            Accepted,
+            Rejected,
+            Both
+        }
+
+        public enum TestType
+        {
+            String,
+            Number,
+            Array,
+            Object,
+            Structure
+        }
+
+        private static readonly string[] IgnoredErrors =
         {
             "n_array_comma_after_close.json",
             "n_array_extra_close.json",
@@ -51,7 +67,7 @@ namespace SpanJson.Tests.JsonTestSuite
             "n_structure_number_with_trailing_garbage.json",
             "n_structure_object_followed_by_closing_object.json",
             "n_structure_object_with_trailing_garbage.json",
-            "n_structure_trailing_#.json",
+            "n_structure_trailing_#.json"
         };
 
         private readonly ITestOutputHelper _outputHelper;
@@ -96,54 +112,6 @@ namespace SpanJson.Tests.JsonTestSuite
             }
         }
 
-        private object Deserialize(string input, TestType type)
-        {
-            var array = input[0] == JsonConstant.BeginArray;
-            switch (type)
-            {
-                case TestType.String:
-                {
-                    if (array)
-                    {
-                        return JsonSerializer.Generic.Deserialize<string[]>(input);
-                    }
-                    else
-                    {
-                        return JsonSerializer.Generic.Deserialize<string>(input);
-                    }
-                }
-                case TestType.Number:
-                {
-                    if (array)
-                    {
-                        return JsonSerializer.Generic.Deserialize<double[]>(input);
-                    }
-                    else
-                    {
-                        return JsonSerializer.Generic.Deserialize<double>(input);
-                    }
-                }
-                case TestType.Array:
-                {
-                    return JsonSerializer.Generic.Deserialize<object[]>(input);
-                }
-                case TestType.Object:
-                case TestType.Structure:
-                {
-                    if (array)
-                    {
-                        return JsonSerializer.Generic.Deserialize<object[]>(input);
-                    }
-                    else
-                    {
-                        return JsonSerializer.Generic.Deserialize<object>(input);
-                    }
-                }
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
         public static IEnumerable<object[]> GetTestCases()
         {
             var result = new List<object[]>();
@@ -167,7 +135,7 @@ namespace SpanJson.Tests.JsonTestSuite
                             // We have a specific list of errors we currently do not parse as errors
                             if (IgnoredErrors.Contains(name))
                             {
-                                result.Add(new object[] { name, text, Result.Accepted, type });
+                                result.Add(new object[] {name, text, Result.Accepted, type});
                             }
                             else
                             {
@@ -183,6 +151,48 @@ namespace SpanJson.Tests.JsonTestSuite
             }
 
             return result;
+        }
+
+        private object Deserialize(string input, TestType type)
+        {
+            var array = input[0] == JsonConstant.BeginArray;
+            switch (type)
+            {
+                case TestType.String:
+                {
+                    if (array)
+                    {
+                        return JsonSerializer.Generic.Deserialize<string[]>(input);
+                    }
+
+                    return JsonSerializer.Generic.Deserialize<string>(input);
+                }
+                case TestType.Number:
+                {
+                    if (array)
+                    {
+                        return JsonSerializer.Generic.Deserialize<double[]>(input);
+                    }
+
+                    return JsonSerializer.Generic.Deserialize<double>(input);
+                }
+                case TestType.Array:
+                {
+                    return JsonSerializer.Generic.Deserialize<object[]>(input);
+                }
+                case TestType.Object:
+                case TestType.Structure:
+                {
+                    if (array)
+                    {
+                        return JsonSerializer.Generic.Deserialize<object[]>(input);
+                    }
+
+                    return JsonSerializer.Generic.Deserialize<object>(input);
+                }
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         private static TestType GetTestType(string name)
@@ -209,22 +219,5 @@ namespace SpanJson.Tests.JsonTestSuite
 
             return TestType.Structure;
         }
-
-        public enum TestType
-        {
-            String,
-            Number,
-            Array,
-            Object,
-            Structure,
-        }
-
-        public enum Result
-        {
-            Accepted,
-            Rejected,
-            Both,
-        }
-
     }
 }

@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using SpanJson.Formatters.Dynamic;
-using SpanJson.Helpers;
 
 namespace SpanJson
 {
@@ -82,15 +78,14 @@ namespace SpanJson
             {
                 return TryReadUtf16IsEndArrayOrValueSeparator(ref count);
             }
-            else if (typeof(TSymbol) == typeof(byte))
+
+            if (typeof(TSymbol) == typeof(byte))
             {
                 return TryReadUtf8IsEndArrayOrValueSeparator(ref count);
             }
-            else
-            {
-                ThrowNotSupportedException();
-                return default;
-            }
+
+            ThrowNotSupportedException();
+            return default;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -100,15 +95,14 @@ namespace SpanJson
             {
                 return ReadUtf16Dynamic();
             }
-            else if (typeof(TSymbol) == typeof(byte))
+
+            if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8Dynamic();
             }
-            else
-            {
-                ThrowNotSupportedException();
-                return default;
-            }
+
+            ThrowNotSupportedException();
+            return default;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -118,16 +112,16 @@ namespace SpanJson
             {
                 return ReadUtf16IsNull();
             }
-            else if (typeof(TSymbol) == typeof(byte))
+
+            if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8IsNull();
             }
-            else
-            {
-                ThrowNotSupportedException();
-                return default;
-            }
+
+            ThrowNotSupportedException();
+            return default;
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ReadEscapedName()
         {
@@ -135,16 +129,16 @@ namespace SpanJson
             {
                 return ReadUtf16EscapedName();
             }
-            else if (typeof(TSymbol) == typeof(byte))
+
+            if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8EscapedName();
             }
-            else
-            {
-                ThrowNotSupportedException();
-                return default;
-            }
+
+            ThrowNotSupportedException();
+            return default;
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryReadIsEndObjectOrValueSeparator(ref int count)
         {
@@ -152,16 +146,16 @@ namespace SpanJson
             {
                 return TryReadUtf16IsEndObjectOrValueSeparator(ref count);
             }
-            else if (typeof(TSymbol) == typeof(byte))
+
+            if (typeof(TSymbol) == typeof(byte))
             {
                 return TryReadUtf8IsEndObjectOrValueSeparator(ref count);
             }
-            else
-            {
-                ThrowNotSupportedException();
-                return default;
-            }
+
+            ThrowNotSupportedException();
+            return default;
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReadBeginObjectOrThrow()
         {
@@ -177,6 +171,75 @@ namespace SpanJson
             {
                 ThrowNotSupportedException();
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<TSymbol> ReadStringSpan()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return MemoryMarshal.Cast<char, TSymbol>(ReadUtf16StringSpan());
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                return MemoryMarshal.Cast<byte, TSymbol>(ReadUtf8StringSpan());
+            }
+
+            ThrowNotSupportedException();
+            return default;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SkipNextSegment()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                SkipNextUtf16Segment();
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                SkipNextUtf8Segment();
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<TSymbol> ReadNameSpan()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return MemoryMarshal.Cast<char, TSymbol>(ReadUtf16NameSpan());
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                return MemoryMarshal.Cast<byte, TSymbol>(ReadUtf8NameSpan());
+            }
+
+            ThrowNotSupportedException();
+            return default;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string ReadString()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return ReadUtf16String();
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                return ReadUtf8String();
+            }
+
+            ThrowNotSupportedException();
+            return default;
         }
     }
 }

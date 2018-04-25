@@ -6,7 +6,8 @@ namespace SpanJson.Formatters
 {
     public abstract class EnumerableFormatter : BaseFormatter
     {
-        protected static TEnumerable Deserialize<TEnumerable, T, TSymbol, TResolver>(ref JsonReader<TSymbol> reader, IJsonFormatter<T, TSymbol, TResolver> formatter)
+        protected static TEnumerable Deserialize<TEnumerable, T, TSymbol, TResolver>(ref JsonReader<TSymbol> reader,
+            IJsonFormatter<T, TSymbol, TResolver> formatter)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TEnumerable : class, IEnumerable<T>
         {
             if (reader.ReadIsNull())
@@ -18,7 +19,9 @@ namespace SpanJson.Formatters
         }
 
         protected static void Serialize<TEnumerable, T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, TEnumerable value,
-            IJsonFormatter<T, TSymbol, TResolver> formatter) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TEnumerable : class, IEnumerable<T>
+            IJsonFormatter<T, TSymbol, TResolver> formatter) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
+            where TSymbol : struct
+            where TEnumerable : class, IEnumerable<T>
         {
             if (value == null)
             {

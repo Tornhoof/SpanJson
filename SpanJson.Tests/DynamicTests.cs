@@ -37,6 +37,7 @@ namespace SpanJson.Tests
             Assert.NotNull(deserialized);
             Assert.Equal(model, deserialized, DynamicEqualityComparer.Default);
         }
+
         public static IEnumerable<object[]> GetModels()
         {
             var models = typeof(AccessToken).Assembly
@@ -45,6 +46,32 @@ namespace SpanJson.Tests
                             !t.IsAbstract)
                 .ToList();
             return models.Select(a => new object[] {a});
+        }
+
+        public class MyDynamicObject : DynamicObject
+        {
+            private readonly Dictionary<string, object> _dictionary = new Dictionary<string, object>();
+
+            public override IEnumerable<string> GetDynamicMemberNames()
+            {
+                return _dictionary.Keys;
+            }
+
+            public override bool TryGetMember(GetMemberBinder binder, out object result)
+            {
+                if (_dictionary.TryGetValue(binder.Name, out result))
+                {
+                    return true;
+                }
+
+                return base.TryGetMember(binder, out result);
+            }
+
+            public override bool TrySetMember(SetMemberBinder binder, object value)
+            {
+                _dictionary[binder.Name] = value;
+                return true;
+            }
         }
 
         [Fact]
@@ -103,8 +130,8 @@ namespace SpanJson.Tests
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Deserialize<MyDynamicObject>(serialized);
             Assert.NotNull(deserialized);
-            Assert.Equal("Hello World", (string)dynamicObject.Text);
-            Assert.Equal(5, (int)dynamicObject.Value);
+            Assert.Equal("Hello World", (string) dynamicObject.Text);
+            Assert.Equal(5, (int) dynamicObject.Value);
         }
 
         [Fact]
@@ -120,33 +147,9 @@ namespace SpanJson.Tests
             Assert.Contains("null", serialized);
             var deserialized = JsonSerializer.Generic.Deserialize<MyDynamicObject, char, IncludeNullsOriginalCaseResolver<char>>(serialized);
             Assert.NotNull(deserialized);
-            Assert.Equal("Hello World", (string)dynamicObject.Text);
-            Assert.Equal(5, (int)dynamicObject.Value);
+            Assert.Equal("Hello World", (string) dynamicObject.Text);
+            Assert.Equal(5, (int) dynamicObject.Value);
             Assert.Null(deserialized.NullValue);
-        }
-
-        public class MyDynamicObject : DynamicObject
-        {
-            private readonly Dictionary<string, object> _dictionary = new Dictionary<string, object>();
-            public override IEnumerable<string> GetDynamicMemberNames()
-            {
-                return _dictionary.Keys;
-            }
-
-            public override bool TryGetMember(GetMemberBinder binder, out object result)
-            {
-                if (_dictionary.TryGetValue(binder.Name, out result))
-                {
-                    return true;
-                }
-                return base.TryGetMember(binder, out result);
-            }
-
-            public override bool TrySetMember(SetMemberBinder binder, object value)
-            {
-                _dictionary[binder.Name] = value;
-                return true;
-            }
         }
     }
 }

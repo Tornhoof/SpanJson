@@ -2,45 +2,39 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Linq;
-using System.Text;
 using Xunit;
 
 namespace SpanJson.Tests
 {
     public class DictionaryTests
     {
-        [Fact]
-        public void SerializeDeserializeDictionary()
+        public class DictionaryValue : IEquatable<DictionaryValue>
         {
-            var dictionary = new Dictionary<string, DictionaryValue>
+            public string Name { get; set; }
+
+            public bool Equals(DictionaryValue other)
             {
-                {"Alice1", new DictionaryValue {Name = "Bob1"}},
-                {"Alice2", new DictionaryValue {Name = "Bob2"}},
-                {"Alice3", new DictionaryValue {Name = "Bob3"}},
-            };
-            var serialized = JsonSerializer.Generic.SerializeToString(dictionary);
-            Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<Dictionary<string, DictionaryValue>>(serialized);
-            Assert.NotNull(deserialized);
-            Assert.Equal(dictionary, deserialized);
+                return other?.Name == Name;
+            }
+
+            public override int GetHashCode()
+            {
+                return 0;
+            }
         }
 
-
         [Fact]
-        public void SerializeDeserializeIDictionary()
+        public void ExpandoObject()
         {
-            IDictionary<string, DictionaryValue> dictionary = new Dictionary<string, DictionaryValue>
-            {
-                {"Alice1", new DictionaryValue {Name = "Bob1"}},
-                {"Alice2", new DictionaryValue {Name = "Bob2"}},
-                {"Alice3", new DictionaryValue {Name = "Bob3"}},
-            };
-            var serialized = JsonSerializer.Generic.SerializeToString(dictionary);
+            var expando = new ExpandoObject();
+            expando.TryAdd("Hello", "World");
+            var serialized = JsonSerializer.Generic.SerializeToString(expando);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<IDictionary<string, DictionaryValue>>(serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<ExpandoObject>(serialized);
             Assert.NotNull(deserialized);
-            Assert.Equal(dictionary, deserialized);
+            var dict = (IDictionary<string, object>) expando;
+            Assert.NotNull(dict);
+            Assert.True(dict.ContainsKey("Hello"));
         }
 
         [Fact]
@@ -58,33 +52,36 @@ namespace SpanJson.Tests
         }
 
         [Fact]
-        public void ExpandoObject()
+        public void SerializeDeserializeDictionary()
         {
-            var expando = new ExpandoObject();
-            expando.TryAdd("Hello", "World");
-            var serialized = JsonSerializer.Generic.SerializeToString(expando);
+            var dictionary = new Dictionary<string, DictionaryValue>
+            {
+                {"Alice1", new DictionaryValue {Name = "Bob1"}},
+                {"Alice2", new DictionaryValue {Name = "Bob2"}},
+                {"Alice3", new DictionaryValue {Name = "Bob3"}}
+            };
+            var serialized = JsonSerializer.Generic.SerializeToString(dictionary);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<ExpandoObject>(serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<Dictionary<string, DictionaryValue>>(serialized);
             Assert.NotNull(deserialized);
-            var dict = (IDictionary<string, object>) expando;
-            Assert.NotNull(dict);
-            Assert.True(dict.ContainsKey("Hello"));
-
+            Assert.Equal(dictionary, deserialized);
         }
 
-        public class DictionaryValue : IEquatable<DictionaryValue>
+
+        [Fact]
+        public void SerializeDeserializeIDictionary()
         {
-            public string Name { get; set; }
-
-            public bool Equals(DictionaryValue other)
+            IDictionary<string, DictionaryValue> dictionary = new Dictionary<string, DictionaryValue>
             {
-                return other?.Name == Name;
-            }
-
-            public override int GetHashCode()
-            {
-                return 0;
-            }
+                {"Alice1", new DictionaryValue {Name = "Bob1"}},
+                {"Alice2", new DictionaryValue {Name = "Bob2"}},
+                {"Alice3", new DictionaryValue {Name = "Bob3"}}
+            };
+            var serialized = JsonSerializer.Generic.SerializeToString(dictionary);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<IDictionary<string, DictionaryValue>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(dictionary, deserialized);
         }
     }
 }

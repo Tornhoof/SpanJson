@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Runtime.CompilerServices;
-using SpanJson.Helpers;
 using System.Runtime.InteropServices;
 using SpanJson.Formatters.Dynamic;
+using SpanJson.Helpers;
 
 namespace SpanJson
 {
@@ -13,17 +12,17 @@ namespace SpanJson
     {
         public sbyte ReadUtf16SByte()
         {
-            return (sbyte)ReadUtf16NumberInt64();
+            return (sbyte) ReadUtf16NumberInt64();
         }
 
         public short ReadUtf16Int16()
         {
-            return (short)ReadUtf16NumberInt64();
+            return (short) ReadUtf16NumberInt64();
         }
 
         public int ReadUtf16Int32()
         {
-            return (int)ReadUtf16NumberInt64();
+            return (int) ReadUtf16NumberInt64();
         }
 
         public long ReadUtf16Int64()
@@ -33,17 +32,17 @@ namespace SpanJson
 
         public byte ReadUtf16Byte()
         {
-            return (byte)ReadUtf16NumberUInt64();
+            return (byte) ReadUtf16NumberUInt64();
         }
 
         public ushort ReadUtf16UInt16()
         {
-            return (ushort)ReadUtf16NumberUInt64();
+            return (ushort) ReadUtf16NumberUInt64();
         }
 
         public uint ReadUtf16UInt32()
         {
-            return (uint)ReadUtf16NumberUInt64();
+            return (uint) ReadUtf16NumberUInt64();
         }
 
         public ulong ReadUtf16UInt64()
@@ -270,7 +269,7 @@ namespace SpanJson
                     case 'u':
                         if (span.Length == 6)
                         {
-                            var result = (char)int.Parse(span.Slice(2, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture);
+                            var result = (char) int.Parse(span.Slice(2, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture);
                             pos += 4;
                             return result;
                         }
@@ -417,11 +416,11 @@ namespace SpanJson
                             break;
                         case 'U':
                         case 'u':
-                            {
-                                current = (char)int.Parse(span.Slice(index, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture);
-                                index += 4;
-                                break;
-                            }
+                        {
+                            current = (char) int.Parse(span.Slice(index, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture);
+                            index += 4;
+                            break;
+                        }
 
                         default:
                             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
@@ -551,10 +550,10 @@ namespace SpanJson
                     case '\t':
                     case '\r':
                     case '\n':
-                        {
-                            pos++;
-                            continue;
-                        }
+                    {
+                        pos++;
+                        continue;
+                    }
                     default:
                         return;
                 }
@@ -632,8 +631,6 @@ namespace SpanJson
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedBeginObject);
             }
         }
-
-
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -715,22 +712,22 @@ namespace SpanJson
                     break;
                 case JsonToken.BeginArray:
                 case JsonToken.BeginObject:
-                    {
-                        pos++;
-                        SkipNextUtf16Segment(stack + 1);
-                        break;
-                    }
+                {
+                    pos++;
+                    SkipNextUtf16Segment(stack + 1);
+                    break;
+                }
                 case JsonToken.EndObject:
                 case JsonToken.EndArray:
+                {
+                    pos++;
+                    if (stack - 1 > 0)
                     {
-                        pos++;
-                        if (stack - 1 > 0)
-                        {
-                            SkipNextUtf16Segment(stack - 1);
-                        }
-
-                        break;
+                        SkipNextUtf16Segment(stack - 1);
                     }
+
+                    break;
+                }
                 case JsonToken.Number:
                 case JsonToken.String:
                 case JsonToken.True:
@@ -738,20 +735,20 @@ namespace SpanJson
                 case JsonToken.Null:
                 case JsonToken.ValueSeparator:
                 case JsonToken.NameSeparator:
+                {
+                    do
                     {
-                        do
-                        {
-                            SkipNextUtf16Value(token);
-                            token = ReadUtf16NextToken();
-                        } while (stack > 0 && (byte)token > 4); // No None or the Begin/End-Array/Object tokens
+                        SkipNextUtf16Value(token);
+                        token = ReadUtf16NextToken();
+                    } while (stack > 0 && (byte) token > 4); // No None or the Begin/End-Array/Object tokens
 
-                        if (stack > 0)
-                        {
-                            SkipNextUtf16Segment(stack);
-                        }
-
-                        break;
+                    if (stack > 0)
+                    {
+                        SkipNextUtf16Segment(stack);
                     }
+
+                    break;
+                }
             }
         }
 
@@ -771,26 +768,26 @@ namespace SpanJson
                     pos++;
                     break;
                 case JsonToken.Number:
+                {
+                    if (TryFindEndOfUtf16Number(pos, out var charsConsumed))
                     {
-                        if (TryFindEndOfUtf16Number(pos, out var charsConsumed))
-                        {
-                            pos += charsConsumed;
-                        }
-
-                        break;
+                        pos += charsConsumed;
                     }
+
+                    break;
+                }
                 case JsonToken.String:
+                {
+                    pos++;
+                    if (TryFindEndOfUtf16String(pos, out var charsConsumed, out _))
                     {
-                        pos++;
-                        if (TryFindEndOfUtf16String(pos, out var charsConsumed, out _))
-                        {
-                            pos += charsConsumed + 1; // skip JsonConstant.DoubleQuote too
-                            return;
-                        }
-
-                        ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
-                        break;
+                        pos += charsConsumed + 1; // skip JsonConstant.DoubleQuote too
+                        return;
                     }
+
+                    ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
+                    break;
+                }
                 case JsonToken.Null:
                 case JsonToken.True:
                     pos += 4;
@@ -877,56 +874,56 @@ namespace SpanJson
             switch (nextToken)
             {
                 case JsonToken.Null:
-                    {
-                        ReadUtf16Null();
-                        return null;
-                    }
+                {
+                    ReadUtf16Null();
+                    return null;
+                }
                 case JsonToken.False:
                 case JsonToken.True:
-                    {
-                        return ReadUtf16Boolean();
-                    }
+                {
+                    return ReadUtf16Boolean();
+                }
                 case JsonToken.Number:
-                    {
-                        return new SpanJsonDynamicNumber<char>(ReadUtf16NumberInternal());
-                    }
+                {
+                    return new SpanJsonDynamicNumber<char>(ReadUtf16NumberInternal());
+                }
                 case JsonToken.String:
-                    {
-                        var span = ReadUtf16StringSpanWithQuotes(out _);
-                        return new SpanJsonDynamicString<char>(span);
-                    }
+                {
+                    var span = ReadUtf16StringSpanWithQuotes(out _);
+                    return new SpanJsonDynamicString<char>(span);
+                }
                 case JsonToken.BeginObject:
+                {
+                    pos++;
+                    var count = 0;
+                    var dictionary = new Dictionary<string, object>();
+                    while (!TryReadUtf16IsEndObjectOrValueSeparator(ref count))
                     {
-                        pos++;
-                        var count = 0;
-                        var dictionary = new Dictionary<string, object>();
-                        while (!TryReadUtf16IsEndObjectOrValueSeparator(ref count))
-                        {
-                            var name = ReadUtf16NameSpan().ToString();
-                            var value = ReadUtf16Dynamic(stack + 1);
-                            dictionary[name] = value; // take last one
-                        }
-
-                        return new SpanJsonDynamicObject(dictionary);
+                        var name = ReadUtf16NameSpan().ToString();
+                        var value = ReadUtf16Dynamic(stack + 1);
+                        dictionary[name] = value; // take last one
                     }
+
+                    return new SpanJsonDynamicObject(dictionary);
+                }
                 case JsonToken.BeginArray:
+                {
+                    pos++;
+                    var count = 0;
+                    var list = new List<object>();
+                    while (!TryReadUtf16IsEndArrayOrValueSeparator(ref count))
                     {
-                        pos++;
-                        var count = 0;
-                        var list = new List<object>();
-                        while (!TryReadUtf16IsEndArrayOrValueSeparator(ref count))
-                        {
-                            var value = ReadUtf16Dynamic(stack + 1);
-                            list.Add(value);
-                        }
+                        var value = ReadUtf16Dynamic(stack + 1);
+                        list.Add(value);
+                    }
 
-                        return new SpanJsonDynamicArray<TSymbol>(list.ToArray());
-                    }
+                    return new SpanJsonDynamicArray<TSymbol>(list.ToArray());
+                }
                 default:
-                    {
-                        ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
-                        return default;
-                    }
+                {
+                    ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
+                    return default;
+                }
             }
         }
 
@@ -979,6 +976,5 @@ namespace SpanJson
                     return JsonToken.None;
             }
         }
-
     }
 }

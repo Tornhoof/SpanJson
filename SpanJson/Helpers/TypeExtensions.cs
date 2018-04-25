@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SpanJson.Helpers
@@ -38,7 +37,7 @@ namespace SpanJson.Helpers
 
             var interfaces = type.GetInterfaces();
             var match = interfaces.FirstOrDefault(a => a.IsGenericType && interfaceType.IsAssignableFrom(a.GetGenericTypeDefinition()));
-            if(match != null)
+            if (match != null)
             {
                 argumentTypes = match.GetGenericArguments();
                 return true;

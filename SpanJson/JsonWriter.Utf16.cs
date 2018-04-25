@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
-using System.Text;
 using SpanJson.Helpers;
 
 namespace SpanJson
@@ -64,7 +60,7 @@ namespace SpanJson
                 value = unchecked(-value);
             }
 
-            WriteUtf16UInt64Internal((ulong)value);
+            WriteUtf16UInt64Internal((ulong) value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -78,7 +74,7 @@ namespace SpanJson
                     Grow(1);
                 }
 
-                _chars[pos++] = (char)('0' + value);
+                _chars[pos++] = (char) ('0' + value);
                 return;
             }
 
@@ -93,7 +89,7 @@ namespace SpanJson
             {
                 var temp = '0' + value;
                 value /= 10;
-                _chars[pos + i - 1] = (char)(temp - value * 10);
+                _chars[pos + i - 1] = (char) (temp - value * 10);
             }
 
             pos += digits;
@@ -501,7 +497,7 @@ namespace SpanJson
             WriteUtf16DoubleQuote();
         }
 
-        public void WriteUtf16Verbatim(string value)
+        public void WriteUtf16Verbatim(char[] value)
         {
             WriteUtf16Verbatim(value.AsSpan());
         }

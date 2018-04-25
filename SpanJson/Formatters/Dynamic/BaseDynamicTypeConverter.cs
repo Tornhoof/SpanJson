@@ -7,7 +7,7 @@ using SpanJson.Helpers;
 
 namespace SpanJson.Formatters.Dynamic
 {
-    public abstract class BaseDynamicTypeConverter<TSymbol> : TypeConverter where TSymbol : struct 
+    public abstract class BaseDynamicTypeConverter<TSymbol> : TypeConverter where TSymbol : struct
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
@@ -38,7 +38,7 @@ namespace SpanJson.Formatters.Dynamic
                 if (destinationType.IsNullable())
                 {
                     return null;
-                }                
+                }
             }
             else
             {
@@ -49,6 +49,7 @@ namespace SpanJson.Formatters.Dynamic
                     return temp;
                 }
             }
+
             throw new InvalidCastException();
         }
 

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Dynamic;
 using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace SpanJson.Formatters.Dynamic
 {
-    public sealed class SpanJsonDynamicString<TSymbol> : DynamicObject, ISpanJsonDynamicValue<TSymbol> where TSymbol : struct 
+    public sealed class SpanJsonDynamicString<TSymbol> : DynamicObject, ISpanJsonDynamicValue<TSymbol> where TSymbol : struct
     {
         private static readonly DynamicTypeConverter Converter = new DynamicTypeConverter();
 
@@ -60,36 +59,13 @@ namespace SpanJson.Formatters.Dynamic
 
                     if (destinationType == typeof(string))
                     {
-                        if (typeof(TSymbol) == typeof(char))
-                        {
-                            value = reader.ReadUtf16String();
-                            return true;
-                        }
-
-                        if (typeof(TSymbol) == typeof(byte))
-                        {
-                            value = reader.ReadUtf8String();
-                            return true;
-                        }
-                        throw new NotSupportedException();
+                        value = reader.ReadString();
+                        return true;
                     }
 
                     if (destinationType.IsEnum)
                     {
-                        string data;
-                        if (typeof(TSymbol) == typeof(char))
-                        {
-                            data = reader.ReadUtf16String();
-                        }
-                        else if (typeof(TSymbol) == typeof(byte))
-                        {
-                            data = reader.ReadUtf8String();
-                        }
-                        else
-                        {
-                            throw new NotSupportedException();
-                        }
-                        // TODO: Optimize
+                        var data = reader.ReadString();
                         if (Enum.TryParse(destinationType, data, out var enumValue))
                         {
                             value = enumValue;

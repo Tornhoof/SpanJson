@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -39,6 +37,27 @@ namespace SpanJson.Resolvers
             // ReSharper restore ConvertClosureToMethodGroup
         }
 
+        // TODO Extend with attributes and ShouldSerialize
+        public JsonMemberInfo[] GetDynamicMemberInfos(IDynamicMetaObjectProvider provider)
+        {
+            var metaObject = provider.GetMetaObject(Expression.Parameter(typeof(object)));
+            var members = metaObject.GetDynamicMemberNames();
+            var result = new List<JsonMemberInfo>();
+            foreach (var memberInfoName in members)
+            {
+                var name = Escape(memberInfoName);
+                if (_namingConventions == NamingConventions.CamelCase)
+                {
+                    name = MakeCamelCase(name);
+                }
+
+                result.Add(new JsonMemberInfo(memberInfoName, typeof(object), null, name,
+                    _nullOptions == NullOptions.ExcludeNulls, true, true));
+            }
+
+            return result.ToArray();
+        }
+
         public IJsonFormatter<T, TSymbol, TResolver> GetFormatter<T>()
         {
             return (IJsonFormatter<T, TSymbol, TResolver>) GetFormatter(typeof(T));
@@ -47,6 +66,16 @@ namespace SpanJson.Resolvers
         public JsonMemberInfo[] GetMemberInfos<T>()
         {
             return GetMemberInfos(typeof(T));
+        }
+
+        public static string MakeCamelCase(string name)
+        {
+            if (char.IsLower(name[0]))
+            {
+                return name;
+            }
+
+            return string.Concat(char.ToLowerInvariant(name[0]), name.Substring(1));
         }
 
         protected virtual JsonMemberInfo[] BuildMembers(Type type)
@@ -82,37 +111,6 @@ namespace SpanJson.Resolvers
             }
 
             return result.ToArray();
-        }
-
-        // TODO Extend with attributes and ShouldSerialize
-        public JsonMemberInfo[] GetDynamicMemberInfos(IDynamicMetaObjectProvider provider)
-        {
-            var metaObject = provider.GetMetaObject(Expression.Parameter(typeof(object)));
-            var members = metaObject.GetDynamicMemberNames();
-            var result = new List<JsonMemberInfo>();
-            foreach (var memberInfoName in members)
-            {
-                var name = Escape(memberInfoName);
-                if (_namingConventions == NamingConventions.CamelCase)
-                {
-                    name = MakeCamelCase(name);
-                }
-
-                result.Add(new JsonMemberInfo(memberInfoName, typeof(object), null, name,
-                    _nullOptions == NullOptions.ExcludeNulls, true, true));
-            }
-
-            return result.ToArray();
-        }
-
-        public static string MakeCamelCase(string name)
-        {
-            if (char.IsLower(name[0]))
-            {
-                return name;
-            }
-
-            return string.Concat(char.ToLowerInvariant(name[0]), name.Substring(1));
         }
 
         private string Escape(string input)
@@ -173,7 +171,8 @@ namespace SpanJson.Resolvers
 
             if (type.TryGetTypeOfGenericInterface(typeof(IEnumerable<>), out var enumArgumentTypes))
             {
-                return GetDefaultOrCreate(typeof(EnumerableFormatter<,,,>).MakeGenericType(type, enumArgumentTypes.Single(), typeof(TSymbol), typeof(TResolver)));
+                return GetDefaultOrCreate(
+                    typeof(EnumerableFormatter<,,,>).MakeGenericType(type, enumArgumentTypes.Single(), typeof(TSymbol), typeof(TResolver)));
             }
 
             if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(type))
@@ -202,7 +201,8 @@ namespace SpanJson.Resolvers
             var allTypes = typeof(TResolver).Assembly.GetTypes();
             foreach (var candidate in allTypes)
             {
-                if (candidate.IsGenericTypeDefinition && candidate.ContainsGenericParameters && candidate.IsGenericType && candidate.IsClass && !candidate.IsAbstract)
+                if (candidate.IsGenericTypeDefinition && candidate.ContainsGenericParameters && candidate.IsGenericType && candidate.IsClass &&
+                    !candidate.IsAbstract)
                 {
                     var genArgs = candidate.GetGenericArguments();
                     if (genArgs.Length == 1)
@@ -243,7 +243,6 @@ namespace SpanJson.Resolvers
             }
 
             return null;
-
         }
 
         // ReSharper disable StaticMemberInGenericType

@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
+using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
@@ -29,28 +28,10 @@ namespace SpanJson.Formatters
             var valueParameter = Expression.Parameter(typeof(T), "value");
 
             var expressions = new List<Expression>();
-            MethodInfo propertyNameWriterMethodInfo;
-            MethodInfo seperatorWriteMethodInfo;
-            MethodInfo writeBeginObjectMethodInfo;
-            MethodInfo writeEndObjectMethodInfo;
-            if (typeof(TSymbol) == typeof(char))
-            {
-                propertyNameWriterMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim), typeof(string));
-                seperatorWriteMethodInfo =  FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16ValueSeparator));
-                writeBeginObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16BeginObject));
-                writeEndObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16EndObject));
-            }
-            else if (typeof(TSymbol) == typeof(byte))
-            {
-                propertyNameWriterMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim), typeof(byte[]));
-                seperatorWriteMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8ValueSeparator));
-                writeBeginObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8BeginObject));
-                writeEndObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8EndObject));
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
+            var propertyNameWriterMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteVerbatim), typeof(TSymbol[]));
+            var seperatorWriteMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteValueSeparator));
+            var writeBeginObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteBeginObject));
+            var writeEndObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteEndObject));
             expressions.Add(Expression.Call(writerParameter, writeBeginObjectMethodInfo));
             var isReferenceOrContainsReference = RuntimeHelpers.IsReferenceOrContainsReferences<T>();
             var writeSeperator = Expression.Variable(typeof(bool), "writeSeperator");
@@ -88,20 +69,7 @@ namespace SpanJson.Formatters
                         ));
                 }
 
-                var writerName = $"\"{memberInfo.Name}\":";
-                Expression writerNameConstant;
-                if (typeof(TSymbol) == typeof(char))
-                {
-                    writerNameConstant = Expression.Constant(writerName);
-                }
-                else if (typeof(TSymbol) == typeof(byte))
-                {
-                    writerNameConstant = Expression.Constant(Encoding.UTF8.GetBytes(writerName));
-                }
-                else
-                {
-                    throw new NotSupportedException();
-                }
+                var writerNameConstant = GetConstantExpressionOfString<TSymbol>($"\"{memberInfo.Name}\":");
                 valueExpressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo, writerNameConstant));
                 Expression serializerCall = Expression.Call(formatterExpression, serializeMethodInfo, writerParameter, memberExpression);
                 if (runtimeDecisionExpression != null) // if we need to decide at runtime we 
@@ -120,6 +88,7 @@ namespace SpanJson.Formatters
                             Expression.Call(writerParameter, writeNullMi), serializerCall);
                     }
                 }
+
                 valueExpressions.Add(serializerCall);
                 valueExpressions.Add(Expression.Assign(writeSeperator, Expression.Constant(true)));
                 Expression testNullExpression = null;
@@ -131,7 +100,7 @@ namespace SpanJson.Formatters
                             Expression.PropertyOrField(valueParameter, memberInfo.MemberName),
                             Expression.Constant(null));
                     }
-                    else if (memberInfo.MemberType.IsValueType && Nullable.GetUnderlyingType(memberInfo.MemberType) != null) // nullable value type
+                    else if (memberInfo.MemberType.IsNullable()) // nullable value type
                     {
                         testNullExpression = Expression.IsTrue(
                             Expression.Property(Expression.PropertyOrField(valueParameter, memberInfo.MemberName), "HasValue"));
@@ -215,25 +184,9 @@ namespace SpanJson.Formatters
 
             var returnValue = Expression.Variable(typeof(T), "result");
             var switchValue = Expression.Variable(typeof(ReadOnlySpan<TSymbol>), "switchValue");
-            MethodInfo nameSpanMethodInfo;
-            MethodInfo tryReadEndObjectMethodInfo;
-            MethodInfo beginObjectOrThrowMethodInfo;
-            if (typeof(TSymbol) == typeof(char))
-            {
-                nameSpanMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16NameSpan));
-                tryReadEndObjectMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.TryReadUtf16IsEndObjectOrValueSeparator));
-                beginObjectOrThrowMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16BeginObjectOrThrow));
-            }
-            else if (typeof(TSymbol) == typeof(byte))
-            {
-                nameSpanMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8NameSpan));
-                tryReadEndObjectMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.TryReadUtf8IsEndObjectOrValueSeparator));
-                beginObjectOrThrowMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8BeginObjectOrThrow));
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
+            var nameSpanMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadNameSpan));
+            var tryReadEndObjectMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.TryReadIsEndObjectOrValueSeparator));
+            var beginObjectOrThrowMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadBeginObjectOrThrow));
 
             var switchValueAssignExpression = Expression.Assign(switchValue, Expression.Call(readerParameter, nameSpanMethodInfo));
             var switchExpression = Expression.Block(new[] {switchValue}, switchValueAssignExpression,
@@ -265,91 +218,66 @@ namespace SpanJson.Formatters
         ///     We group the field names by the nth character and nest the switch tables to find the appropriate field/property to
         ///     assign to
         /// </summary>
-        private static Expression BuildPropertyComparisonSwitchExpression<TSymbol, TResolver>(TResolver resolver, ICollection<JsonMemberInfo> memberInfos, string prefix,
+        private static Expression BuildPropertyComparisonSwitchExpression<TSymbol, TResolver>(TResolver resolver, ICollection<JsonMemberInfo> memberInfos,
+            string prefix,
             int index,
-            ParameterExpression switchValue, Expression returnValue, Expression readerParameter) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+            ParameterExpression switchValue, Expression returnValue, Expression readerParameter)
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             var group = memberInfos.Where(a => (prefix == null || a.Name.StartsWith(prefix)) && a.Name.Length > index).GroupBy(a => a.Name[index]).ToList();
             if (!group.Any())
             {
                 return null;
             }
-            MethodInfo skipNextMethodInfo;
-            MethodInfo equalityMethodInfo;
-            Expression indexedSwitchValue;
-            if (typeof(TSymbol) == typeof(char))
-            {
-                skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextUtf16Segment));
-                equalityMethodInfo = FindHelperMethod(nameof(StringEquals));
-                indexedSwitchValue = Expression.Call(typeof(ComplexFormatter).GetMethod(nameof(GetChar), BindingFlags.NonPublic | BindingFlags.Static),
-                    switchValue, Expression.Constant(index));
-            }
-            else if (typeof(TSymbol) == typeof(byte))
-            {
-                skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextUtf8Segment));
-                equalityMethodInfo = FindHelperMethod(nameof(ByteEquals));
-                indexedSwitchValue = Expression.Call(typeof(ComplexFormatter).GetMethod(nameof(GetByte), BindingFlags.NonPublic | BindingFlags.Static),
-                    switchValue, Expression.Constant(index));
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
 
+            var equalityMethodInfo = FindHelperMethod(nameof(SymbolSequenceEquals)).MakeGenericMethod(typeof(TSymbol));
+            var skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextSegment));
+            Expression indexedSwitchValue = Expression.Call(FindHelperMethod(nameof(GetSymbol)).MakeGenericMethod(typeof(TSymbol)), switchValue,
+                Expression.Constant(index));
             var cases = new List<SwitchCase>();
             var defaultValue = Expression.Call(readerParameter, skipNextMethodInfo);
             // if any group key is not an ascii char we need to compare longer parts of the byte array 
-            var extendedComparisonNecessary = typeof(TSymbol) == typeof(byte) && group.Any(a => a.Key > 0x7F);
-            var extendedComparsionMethodInfo = extendedComparisonNecessary ? FindHelperMethod(nameof(SwitchByteEquals)) : null;
+            var unicodeEqualsNecessary = typeof(TSymbol) == typeof(byte) && group.Any(a => a.Key > 0x7F);
+            var unicodeEqualsMethodInfo = unicodeEqualsNecessary ? FindHelperMethod(nameof(SymbolSequenceEquals)).MakeGenericMethod(typeof(TSymbol)) : null;
             foreach (var groupedMemberInfos in group)
             {
                 Expression switchKey;
-                Expression equalitySwitchValue = switchValue;
+                var checkLength = (prefix?.Length ?? 0) + 1;
+                var equalityCheckStart = unicodeEqualsNecessary ? 0 : checkLength;
+                var equalitySwitchValue = Expression.Call(switchValue, "Slice", Type.EmptyTypes, Expression.Constant(equalityCheckStart));
                 if (typeof(TSymbol) == typeof(char))
                 {
                     switchKey = Expression.Constant(groupedMemberInfos.Key);
                 }
                 else if (typeof(TSymbol) == typeof(byte))
                 {
-                    if (extendedComparisonNecessary) // ascii key
+                    if (unicodeEqualsNecessary) // unicode key
                     {
                         var encoded = Encoding.UTF8.GetBytes(new[] {groupedMemberInfos.Key});
                         indexedSwitchValue = Expression.Call(switchValue, "Slice", Type.EmptyTypes, Expression.Constant(index),
                             Expression.Constant(encoded.Length));
-                        equalitySwitchValue = Expression.Call(switchValue, "Slice", Type.EmptyTypes, Expression.Constant(encoded.Length)); // For the equality comparison we need to change the switch value
+                        equalitySwitchValue =
+                            Expression.Call(switchValue, "Slice", Type.EmptyTypes,
+                                Expression.Constant(encoded.Length)); // For the equality comparison we need to change the switch value
                         switchKey = Expression.Constant(encoded);
                     }
                     else
                     {
-                        switchKey = Expression.Constant((byte)groupedMemberInfos.Key);
+                        switchKey = Expression.Constant((byte) groupedMemberInfos.Key);
                     }
                 }
                 else
                 {
                     throw new NotSupportedException();
                 }
+
                 var memberInfosPerChar = groupedMemberInfos.Count();
                 if (memberInfosPerChar == 1) // only one hit, we compare the remaining name and and assign the field if true
                 {
                     var memberInfo = groupedMemberInfos.Single();
                     var formatter = resolver.GetFormatter(memberInfo.MemberType);
-                    var checkLength = (prefix?.Length ?? 0) + 1;
-                    var equalityCheckStart = extendedComparisonNecessary ? 0 : checkLength;
-                    Expression memberInfoConstant;
-                    if (typeof(TSymbol) == typeof(char))
-                    {
-                        memberInfoConstant = Expression.Constant(memberInfo.Name.Substring(checkLength));
-                    }
-                    else if (typeof(TSymbol) == typeof(byte))
-                    {
-                        memberInfoConstant = Expression.Constant(Encoding.UTF8.GetBytes(memberInfo.Name.Substring(checkLength)));
-                    }
-                    else
-                    {
-                        throw new NotSupportedException();
-                    }
-
-                    var testExpression = Expression.Call(equalityMethodInfo, equalitySwitchValue, Expression.Constant(equalityCheckStart), memberInfoConstant);
+                    Expression memberInfoConstant = GetConstantExpressionOfString<TSymbol>(memberInfo.Name.Substring(checkLength));
+                    var testExpression = Expression.Call(equalityMethodInfo, equalitySwitchValue, memberInfoConstant);
                     var matchExpression = Expression.Assign(Expression.PropertyOrField(returnValue, memberInfo.MemberName),
                         Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"), readerParameter));
                     var switchCase = Expression.SwitchCase(Expression.IfThenElse(testExpression, matchExpression, defaultValue), switchKey);
@@ -358,8 +286,30 @@ namespace SpanJson.Formatters
                 else // Either we have found an exact match for the name or we need to build a further level of nested switch tables
                 {
                     var nextPrefix = prefix + groupedMemberInfos.Key;
+                    var lcs = CalculateLongestCommonStartingSubstring(groupedMemberInfos.Select(a => a.MemberName).ToList(), index + 1);
+                    Expression lcsExpression = null;
+                    var nextIndex = index;
+                    if (lcs?.Length > 1
+                    ) // if we have a common starting substring in all memberInfos, we check if the input is the right one and skip to after it
+                    {
+                        var lcsEqualityMethodInfo = FindHelperMethod(nameof(SymbolSequenceEquals)).MakeGenericMethod(typeof(TSymbol));
+                        var memberInfoConstant = GetConstantExpressionOfString<TSymbol>(lcs);
+
+                        var lcsEqualityValue = Expression.Call(switchValue, "Slice", Type.EmptyTypes, Expression.Constant(nextIndex + 1),
+                            Expression.Constant(lcs.Length));
+                        nextPrefix += lcs;
+                        nextIndex += lcs.Length;
+                        lcsExpression = Expression.Call(lcsEqualityMethodInfo, lcsEqualityValue, memberInfoConstant);
+                    }
+
                     var nextSwitch =
-                        BuildPropertyComparisonSwitchExpression<TSymbol, TResolver>(resolver, memberInfos, nextPrefix, index + 1, switchValue, returnValue, readerParameter);
+                        BuildPropertyComparisonSwitchExpression<TSymbol, TResolver>(resolver, memberInfos, nextPrefix, nextIndex + 1, switchValue, returnValue,
+                            readerParameter);
+                    if (lcsExpression != null)
+                    {
+                        nextSwitch = Expression.IfThenElse(lcsExpression, nextSwitch, defaultValue);
+                    }
+
                     var exactMatch = groupedMemberInfos.SingleOrDefault(a => a.Name == nextPrefix);
                     Expression directMatchExpression = null;
                     if (exactMatch != null)
@@ -375,27 +325,35 @@ namespace SpanJson.Formatters
                     cases.Add(switchCase);
                 }
             }
-            var switchExpression = Expression.Switch(typeof(void), indexedSwitchValue, defaultValue, extendedComparsionMethodInfo, cases.ToArray());
+
+            var switchExpression = Expression.Switch(typeof(void), indexedSwitchValue, defaultValue, unicodeEqualsMethodInfo, cases.ToArray());
             return switchExpression;
         }
 
-
         /// <summary>
-        ///     Couldn't get it working with Expression Trees,ref return lvalues do not work yet
+        ///     Find longest common starting substring of all membernames from a start index
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static char GetChar(ReadOnlySpan<char> span, int index)
+        private static string CalculateLongestCommonStartingSubstring(List<string> memberNames, int start)
         {
-            return span[index];
-        }
+            var minLength = memberNames.Min(a => a.Length);
+            for (var i = start; i < minLength; i++)
+            {
+                var c = memberNames[0][i];
+                for (var j = 1; j < memberNames.Count; j++)
+                {
+                    if (memberNames[j][i] != c) // abort if any other string has no c in at the place
+                    {
+                        if (start == i)
+                        {
+                            return null;
+                        }
 
-        /// <summary>
-        ///     Couldn't get it working with Expression Trees,ref return lvalues do not work yet
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static byte GetByte(ReadOnlySpan<byte> span, int index)
-        {
-            return span[index];
+                        return memberNames[0].Substring(start, i - start);
+                    }
+                }
+            }
+
+            return null;
         }
 
         protected delegate T DeserializeDelegate<out T, TSymbol, in TResolver>(ref JsonReader<TSymbol> reader)

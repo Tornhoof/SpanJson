@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Buffers;
-using System.Buffers.Text;
 using System.Diagnostics;
-using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using SpanJson.Helpers;
 
 namespace SpanJson
 {
@@ -14,7 +11,6 @@ namespace SpanJson
     {
         private static readonly char[] LongMinValueUtf16 = long.MinValue.ToString().ToCharArray();
         private static readonly byte[] LongMinValueUtf8 = Encoding.UTF8.GetBytes(long.MinValue.ToString());
-        private TSymbol[] _arrayToReturnToPool;
         private Span<char> _chars;
         private Span<byte> _bytes;
         private int _pos;
@@ -22,15 +18,15 @@ namespace SpanJson
 
         public JsonWriter(int initialSize)
         {
-            _arrayToReturnToPool = ArrayPool<TSymbol>.Shared.Rent(initialSize);
+            Data = ArrayPool<TSymbol>.Shared.Rent(initialSize);
             if (typeof(TSymbol) == typeof(char))
             {
-                _chars = MemoryMarshal.Cast<TSymbol, char>(_arrayToReturnToPool);
+                _chars = MemoryMarshal.Cast<TSymbol, char>(Data);
                 _encoder = null;
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                _bytes = MemoryMarshal.Cast<TSymbol, byte>(_arrayToReturnToPool);
+                _bytes = MemoryMarshal.Cast<TSymbol, byte>(Data);
                 _encoder = Encoding.UTF8.GetEncoder();
             }
             else
@@ -43,14 +39,13 @@ namespace SpanJson
 
         public int Position => _pos;
 
-        public TSymbol[] Data => _arrayToReturnToPool;
-
+        public TSymbol[] Data { get; private set; }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void Dispose()
         {
-            var toReturn = _arrayToReturnToPool;
+            var toReturn = Data;
             this = default; // for safety, to avoid using pooled array if this instance is erroneously appended to again
             if (toReturn != null)
             {
@@ -64,7 +59,7 @@ namespace SpanJson
         {
             Debug.Assert(requiredAdditionalCapacity > 0);
 
-            var toReturn = _arrayToReturnToPool;
+            var toReturn = Data;
             if (typeof(TSymbol) == typeof(char))
             {
                 var poolArray =
@@ -72,7 +67,7 @@ namespace SpanJson
                 var converted = MemoryMarshal.Cast<TSymbol, char>(poolArray);
                 _chars.CopyTo(converted);
                 _chars = converted;
-                _arrayToReturnToPool = poolArray;
+                Data = poolArray;
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
@@ -81,7 +76,7 @@ namespace SpanJson
                 var converted = MemoryMarshal.Cast<TSymbol, byte>(poolArray);
                 _bytes.CopyTo(converted);
                 _bytes = converted;
-                _arrayToReturnToPool = poolArray;
+                Data = poolArray;
             }
 
 
@@ -94,7 +89,6 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteEndArray()
         {
-
             if (typeof(TSymbol) == typeof(char))
             {
                 WriteUtf16EndArray();
@@ -113,7 +107,6 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteBeginArray()
         {
-
             if (typeof(TSymbol) == typeof(char))
             {
                 WriteUtf16BeginArray();
@@ -132,7 +125,6 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteBeginObject()
         {
-
             if (typeof(TSymbol) == typeof(char))
             {
                 WriteUtf16BeginObject();
@@ -151,7 +143,6 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteEndObject()
         {
-
             if (typeof(TSymbol) == typeof(char))
             {
                 WriteUtf16EndObject();
@@ -169,7 +160,6 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteValueSeparator()
         {
-
             if (typeof(TSymbol) == typeof(char))
             {
                 WriteUtf16ValueSeparator();
@@ -183,6 +173,7 @@ namespace SpanJson
                 ThrowNotSupportedException();
             }
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteNull()
         {
@@ -200,7 +191,7 @@ namespace SpanJson
             }
         }
 
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteName(string name)
         {
             if (typeof(TSymbol) == typeof(char))
@@ -210,6 +201,23 @@ namespace SpanJson
             else if (typeof(TSymbol) == typeof(byte))
             {
                 WriteUtf8Name(name);
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteVerbatim(TSymbol[] values)
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                WriteUtf16Verbatim(MemoryMarshal.Cast<TSymbol, char>(values));
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                WriteUtf8Verbatim(MemoryMarshal.Cast<TSymbol, byte>(values));
             }
             else
             {

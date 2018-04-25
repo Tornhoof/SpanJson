@@ -47,14 +47,6 @@ namespace SpanJson.Formatters
             return result;
         }
 
-        private static void Grow<T>(ref T[] array)
-        {
-            var backup = array;
-            array = ArrayPool<T>.Shared.Rent(backup.Length * 2);
-            backup.CopyTo(array, 0);
-            ArrayPool<T>.Shared.Return(backup);
-        }
-
         protected static void Serialize<T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, T[] value, IJsonFormatter<T, TSymbol, TResolver> formatter)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
@@ -78,12 +70,20 @@ namespace SpanJson.Formatters
 
             writer.WriteEndArray();
         }
+
+        private static void Grow<T>(ref T[] array)
+        {
+            var backup = array;
+            array = ArrayPool<T>.Shared.Rent(backup.Length * 2);
+            backup.CopyTo(array, 0);
+            ArrayPool<T>.Shared.Return(backup);
+        }
     }
 
     /// <summary>
     ///     Used for types which are not built-in
     /// </summary>
-    public sealed class ArrayFormatter<T, TSymbol, TResolver> : ArrayFormatter, IJsonFormatter<T[],TSymbol, TResolver>
+    public sealed class ArrayFormatter<T, TSymbol, TResolver> : ArrayFormatter, IJsonFormatter<T[], TSymbol, TResolver>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
         public static readonly ArrayFormatter<T, TSymbol, TResolver> Default = new ArrayFormatter<T, TSymbol, TResolver>();

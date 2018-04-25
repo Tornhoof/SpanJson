@@ -22,6 +22,30 @@ namespace SpanJson.Tests
             }
         }
 
+
+        public class ShouldSerializeDO
+        {
+            public string First { get; set; }
+
+            public string Second { get; set; }
+
+            public bool ShouldSerializeFirst()
+            {
+                return First == "Hello World";
+            }
+
+            public bool ShouldSerializeSecond()
+            {
+                return Second == "Hello World";
+            }
+        }
+
+        public class EverythingNonOptional
+        {
+            public int First { get; set; }
+            public int Second { get; set; }
+        }
+
         [Fact]
         public void DifferentName()
         {
@@ -69,6 +93,16 @@ namespace SpanJson.Tests
         }
 
         [Fact]
+        public void SerializeEveryting()
+        {
+            var everything = new EverythingNonOptional {First = 5, Second = 10};
+            var serialized = JsonSerializer.Generic.SerializeToString(everything);
+            Assert.Contains(",", serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<EverythingNonOptional>(serialized);
+            Assert.NotNull(deserialized);
+        }
+
+        [Fact]
         public void ShouldSerializeTestAll()
         {
             var shouldSerializeAll = new ShouldSerializeDO {First = "Hello World", Second = "Hello World"};
@@ -83,19 +117,7 @@ namespace SpanJson.Tests
         [Fact]
         public void ShouldSerializeTestFirst()
         {
-            var shouldSerializeAll = new ShouldSerializeDO { First = "Hello World", Second = "Hello Universe" };
-            var serialized = JsonSerializer.Generic.SerializeToString(shouldSerializeAll);
-            Assert.NotNull(serialized);
-            Assert.False(serialized.StartsWith("{,"));
-            Assert.False(serialized.EndsWith(",}"));
-            var deserialized = JsonSerializer.Generic.Deserialize<ShouldSerializeDO>(serialized);
-            Assert.NotNull(deserialized);
-        }
-
-        [Fact]
-        public void ShouldSerializeTestSecond()
-        {
-            var shouldSerializeAll = new ShouldSerializeDO { First = "Hello Universe", Second = "Hello World" };
+            var shouldSerializeAll = new ShouldSerializeDO {First = "Hello World", Second = "Hello Universe"};
             var serialized = JsonSerializer.Generic.SerializeToString(shouldSerializeAll);
             Assert.NotNull(serialized);
             Assert.False(serialized.StartsWith("{,"));
@@ -107,7 +129,7 @@ namespace SpanJson.Tests
         [Fact]
         public void ShouldSerializeTestNone()
         {
-            var shouldSerializeAll = new ShouldSerializeDO { First = "Hello Universe", Second = "Hello Universe" };
+            var shouldSerializeAll = new ShouldSerializeDO {First = "Hello Universe", Second = "Hello Universe"};
             var serialized = JsonSerializer.Generic.SerializeToString(shouldSerializeAll);
             Assert.NotNull(serialized);
             Assert.False(serialized.StartsWith("{,"));
@@ -117,37 +139,15 @@ namespace SpanJson.Tests
         }
 
         [Fact]
-        public void SerializeEveryting()
+        public void ShouldSerializeTestSecond()
         {
-            var everything = new EverythingNonOptional {First = 5, Second = 10};
-            var serialized = JsonSerializer.Generic.SerializeToString(everything);
-            Assert.Contains(",", serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<EverythingNonOptional>(serialized);
+            var shouldSerializeAll = new ShouldSerializeDO {First = "Hello Universe", Second = "Hello World"};
+            var serialized = JsonSerializer.Generic.SerializeToString(shouldSerializeAll);
+            Assert.NotNull(serialized);
+            Assert.False(serialized.StartsWith("{,"));
+            Assert.False(serialized.EndsWith(",}"));
+            var deserialized = JsonSerializer.Generic.Deserialize<ShouldSerializeDO>(serialized);
             Assert.NotNull(deserialized);
-        }
-
-
-        public class ShouldSerializeDO
-        {
-            public string First { get; set; }
-
-            public bool ShouldSerializeFirst()
-            {
-                return First == "Hello World";
-            }
-
-            public string Second { get; set; }
-
-            public bool ShouldSerializeSecond()
-            {
-                return Second == "Hello World";
-            }
-        }
-
-        public class EverythingNonOptional
-        {
-            public int First { get; set; }
-            public int Second { get; set; }
         }
     }
 }

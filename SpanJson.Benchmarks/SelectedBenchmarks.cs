@@ -1,11 +1,6 @@
-﻿using System;
-using System.IO;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Jobs;
-using BenchmarkDotNet.Validators;
 using SpanJson.Benchmarks.Fixture;
 using SpanJson.Benchmarks.Models;
 using SpanJson.Benchmarks.Serializers;
@@ -14,43 +9,48 @@ namespace SpanJson.Benchmarks
 {
     [MemoryDiagnoser]
     [ShortRunJob]
-    [DisassemblyDiagnoser(printIL: true, recursiveDepth:2)]
+    [DisassemblyDiagnoser(printIL: true, recursiveDepth: 2)]
     public class SelectedBenchmarks
     {
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
+        private static readonly AccessToken AccessToken = ExpressionTreeFixture.Create<AccessToken>();
+
         private static readonly SpanJsonSerializer SpanJsonSerializer = new SpanJsonSerializer();
 
-        private static readonly Answer Answer = ExpressionTreeFixture.Create<Answer>();
-        private static readonly string AnswerSerializedString =            
-            SpanJsonSerializer.Serialize(Answer);
-
-        private static readonly byte[] AnswerSerializedByteArray =
-            Encoding.UTF8.GetBytes(AnswerSerializedString);
-
-        private static readonly AccessToken AccessToken = ExpressionTreeFixture.Create<AccessToken>();
         private static readonly string AccessTokenSerializedString =
             SpanJsonSerializer.Serialize(AccessToken);
 
         private static readonly byte[] AccessTokenSerializedByteArray =
             Encoding.UTF8.GetBytes(AccessTokenSerializedString);
 
+
+        private static readonly Answer Answer = ExpressionTreeFixture.Create<Answer>();
+
+        private static readonly string AnswerSerializedString =
+            SpanJsonSerializer.Serialize(Answer);
+
+        private static readonly byte[] AnswerSerializedByteArray =
+            Encoding.UTF8.GetBytes(AnswerSerializedString);
+
+
         private static readonly JilSerializer JilSerializer = new JilSerializer();
+
+        private static readonly StringBuilder StringBuilder = new StringBuilder();
 
 
         private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
-        private static readonly StringBuilder StringBuilder = new StringBuilder();
 
-        //[Benchmark]
-        //public Answer DeserializeAnswerWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
-        //}
+        [Benchmark]
+        public Answer DeserializeAnswerWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
+        }
 
-        //[Benchmark]
-        //public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
-        //{
-        //    return JsonSerializer.Generic.Deserialize<Answer>(AnswerSerializedByteArray);
-        //}
+        [Benchmark]
+        public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
+        {
+            return JsonSerializer.Generic.Deserialize<Answer>(AnswerSerializedByteArray);
+        }
 
         //[Benchmark]
         //public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsync()
@@ -116,23 +116,23 @@ namespace SpanJson.Benchmarks
         //    return Utf8JsonSerializer.Serialize(Answer);
         //}
 
-        private static readonly string TestString = "Hello  World and the Univer and Other Stuff";
+        //private static readonly string TestString = "Hello  World and the Univer and Other Stuff";
 
-        [Benchmark]
-        public string JsonTestChar()
-        {
-            var jsonWriter = new JsonWriter<char>(100);
-            jsonWriter.WriteUtf16Boolean(false);
-            return jsonWriter.ToString();
-        }
+        //[Benchmark]
+        //public string JsonTestChar()
+        //{
+        //    var jsonWriter = new JsonWriter<char>(100);
+        //    jsonWriter.WriteUtf16Boolean(false);
+        //    return jsonWriter.ToString();
+        //}
 
-        [Benchmark]
-        public byte[] JsonTestByte()
-        {
-            var jsonWriter = new JsonWriter<byte>(100);
-            jsonWriter.WriteUtf8Boolean(false);
-            return jsonWriter.ToByteArray();
-        }
+        //[Benchmark]
+        //public byte[] JsonTestByte()
+        //{
+        //    var jsonWriter = new JsonWriter<byte>(100);
+        //    jsonWriter.WriteUtf8Boolean(false);
+        //    return jsonWriter.ToByteArray();
+        //}
 
 
         //[Benchmark]
@@ -149,6 +149,34 @@ namespace SpanJson.Benchmarks
         //    var writer = new JsonWriter<byte>(20);
         //    writer.WriteUtf8String("Hello World");
         //    return writer.Data;
+        //}
+
+        //[Benchmark]
+        //public ReadOnlySpan<char> JsonTestCharDirect()
+        //{
+        //    var jsonWriter = new JsonReader<char>("\"Hello World\"");
+        //    return jsonWriter.ReadUtf16StringSpan();
+        //}
+
+        //[Benchmark]
+        //public ReadOnlySpan<byte> JsonTestByteDirect()
+        //{
+        //    var jsonWriter = new JsonReader<byte>(Encoding.UTF8.GetBytes("\"Hello World\""));
+        //    return jsonWriter.ReadUtf8StringSpan();
+        //}
+
+        //[Benchmark]
+        //public ReadOnlySpan<char> JsonTestCharInDirect()
+        //{
+        //    var jsonWriter = new JsonReader<char>("\"Hello World\"");
+        //    return jsonWriter.ReadStringSpan();
+        //}
+
+        //[Benchmark]
+        //public ReadOnlySpan<byte> JsonTestByteInDirect()
+        //{
+        //    var jsonWriter = new JsonReader<byte>(Encoding.UTF8.GetBytes("\"Hello World\""));
+        //    return jsonWriter.ReadStringSpan();
         //}
     }
 }

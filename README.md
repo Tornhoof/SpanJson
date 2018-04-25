@@ -10,11 +10,11 @@ Performance Issues:
 * Integer Parsing: derived from UTF8Json
 * DateTime/DateTimeOffset Parser: derived from UTf8Parser with modifications to support less than 7 digit fractions
 
+Note: Using shared code paths between UTF16 and UTF8 makes the library a bit slower, but otherwise the code is a large batch of if/then/else
 
 Todo:
 
 * Streams
-* Performance of Utf8
 
 ``` ini
 

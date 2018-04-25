@@ -1,5 +1,4 @@
-﻿using System.Buffers.Text;
-using Xunit;
+﻿using Xunit;
 
 namespace SpanJson.Tests
 {

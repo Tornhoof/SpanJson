@@ -43,31 +43,36 @@ namespace SpanJson
                 return DeserializeAsync<char, ExcludeNullsOriginalCaseResolver<char>>(reader, type, cancellationToken);
             }
 
-            public static object Deserialize<TSymbol, TResolver>(ReadOnlySpan<TSymbol> input, Type type) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+            public static object Deserialize<TSymbol, TResolver>(ReadOnlySpan<TSymbol> input, Type type)
+                where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
             {
                 return Inner<TSymbol, TResolver>.InnerDeserialize(input, type);
             }
 
-            public static string SerializeToString<TSymbol, TResolver>(object input) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+            public static string SerializeToString<TSymbol, TResolver>(object input) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
+                where TSymbol : struct
             {
                 return Inner<TSymbol, TResolver>.InnerSerializeToString(input);
             }
 
-            public static byte[] SerializeToByteArray<TSymbol, TResolver>(object input) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+            public static byte[] SerializeToByteArray<TSymbol, TResolver>(object input) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
+                where TSymbol : struct
             {
                 return Inner<TSymbol, TResolver>.InnerSerializeToByteArray(input);
             }
 
-            public static ValueTask<object> DeserializeAsync<TSymbol, TResolver>(TextReader reader, Type type, CancellationToken cancellationToken = default) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+            public static ValueTask<object> DeserializeAsync<TSymbol, TResolver>(TextReader reader, Type type, CancellationToken cancellationToken = default)
+                where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
             {
                 return Inner<TSymbol, TResolver>.InnerDeserializeAsync(reader, type, cancellationToken);
             }
 
-            public static ValueTask SerializeAsync<TSymbol, TResolver>(object input, TextWriter writer, CancellationToken cancellationToken = default) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+            public static ValueTask SerializeAsync<TSymbol, TResolver>(object input, TextWriter writer, CancellationToken cancellationToken = default)
+                where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
             {
                 return Inner<TSymbol, TResolver>.InnerSerializeAsync(input, writer, cancellationToken);
             }
-            
+
             private static class Inner<TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
             {
                 private static readonly ConcurrentDictionary<Type, Invoker> Invokers =
@@ -141,7 +146,8 @@ namespace SpanJson
 
                 private static Invoker BuildInvoker(Type type)
                 {
-                    return new Invoker(BuildToStringSerializer(type), BuildToByteArraySerializer(type),  BuildDeserializer(type), BuildAsyncSerializer(type), BuildAsyncDeserializer(type));
+                    return new Invoker(BuildToStringSerializer(type), BuildToByteArraySerializer(type), BuildDeserializer(type), BuildAsyncSerializer(type),
+                        BuildAsyncDeserializer(type));
                 }
 
                 private static SerializeToByteArrayDelegate BuildToByteArraySerializer(Type type)
@@ -151,7 +157,7 @@ namespace SpanJson
                     var lambdaExpression =
                         Expression.Lambda<SerializeToByteArrayDelegate>(
                             Expression.Call(typeof(Generic), nameof(Generic.SerializeToByteArray),
-                                new[] { type, typeof(TSymbol), typeof(TResolver) }, typedInputParam),
+                                new[] {type, typeof(TSymbol), typeof(TResolver)}, typedInputParam),
                             inputParam);
                     return lambdaExpression.Compile();
                 }
@@ -191,7 +197,7 @@ namespace SpanJson
                     var lambdaExpression =
                         Expression.Lambda<SerializeDelegateAsync>(
                             Expression.Call(typeof(Generic), nameof(Generic.SerializeAsync),
-                                new[] { type, typeof(TSymbol), typeof(TResolver) }, typedInputParam, textWriterParam, cancellationTokenParam),
+                                new[] {type, typeof(TSymbol), typeof(TResolver)}, typedInputParam, textWriterParam, cancellationTokenParam),
                             inputParam, textWriterParam, cancellationTokenParam);
                     return lambdaExpression.Compile();
                 }
@@ -207,7 +213,7 @@ namespace SpanJson
                 }
 
                 /// <summary>
-                /// This is necessary to convert ValueTask of T to ValueTask of object
+                ///     This is necessary to convert ValueTask of T to ValueTask of object
                 /// </summary>
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 private static async ValueTask<object> GenericObjectWrapper<T>(TextReader reader, CancellationToken cancellationToken = default)
@@ -216,15 +222,13 @@ namespace SpanJson
                 }
 
                 private delegate object DeserializeDelegate(ReadOnlySpan<TSymbol> input);
-                private delegate string SerializeToStringDelegate(object input);
-                private delegate byte[] SerializeToByteArrayDelegate(object input);
 
                 private delegate ValueTask<object> DeserializeDelegateAsync(TextReader textReader, CancellationToken cancellationToken = default);
-                private delegate ValueTask SerializeDelegateAsync(object input, TextWriter writer, CancellationToken cancellationToken = default);
 
                 private readonly struct Invoker
                 {
-                    public Invoker(SerializeToStringDelegate toStringSerializer, SerializeToByteArrayDelegate toByteArraySerializer, DeserializeDelegate deserializer, SerializeDelegateAsync serializeDelegateAsync, DeserializeDelegateAsync deserializeDelegateAsync)
+                    public Invoker(SerializeToStringDelegate toStringSerializer, SerializeToByteArrayDelegate toByteArraySerializer,
+                        DeserializeDelegate deserializer, SerializeDelegateAsync serializeDelegateAsync, DeserializeDelegateAsync deserializeDelegateAsync)
                     {
                         ToByteArraySerializer = toByteArraySerializer;
                         ToStringSerializer = toStringSerializer;
@@ -239,6 +243,12 @@ namespace SpanJson
                     public readonly SerializeDelegateAsync SerializerAsync;
                     public readonly DeserializeDelegateAsync DeserializerAsync;
                 }
+
+                private delegate ValueTask SerializeDelegateAsync(object input, TextWriter writer, CancellationToken cancellationToken = default);
+
+                private delegate byte[] SerializeToByteArrayDelegate(object input);
+
+                private delegate string SerializeToStringDelegate(object input);
             }
         }
     }

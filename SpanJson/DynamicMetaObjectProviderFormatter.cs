@@ -1,16 +1,16 @@
-﻿using Microsoft.CSharp.RuntimeBinder;
+﻿using System;
+using System.Dynamic;
+using System.Runtime.CompilerServices;
+using Microsoft.CSharp.RuntimeBinder;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
-using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 
 namespace SpanJson
 {
-    public class DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T, TSymbol, TResolver> where T : IDynamicMetaObjectProvider
-        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct  
+    public class DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T, TSymbol, TResolver>
+        where T : IDynamicMetaObjectProvider
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
+        where TSymbol : struct
     {
         private static readonly Func<T> CreateFunctor = BuildCreateFunctor<T>(null);
 
@@ -18,7 +18,6 @@ namespace SpanJson
             new DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver>();
 
         private static readonly TResolver Resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
-
         private static readonly IJsonFormatter<T, TSymbol, TResolver> DefaultFormatter = Resolver.GetFormatter<T>();
 
 
@@ -51,7 +50,7 @@ namespace SpanJson
             }
 
             var memberInfos = Resolver.GetDynamicMemberInfos(value);
-            int counter = 0;
+            var counter = 0;
             writer.WriteUtf16BeginObject();
             foreach (var memberInfo in memberInfos)
             {
@@ -65,9 +64,11 @@ namespace SpanJson
                 {
                     writer.WriteUtf16ValueSeparator();
                 }
+
                 writer.WriteUtf16Name(memberInfo.Name);
                 RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child);
             }
+
             writer.WriteUtf16EndObject();
         }
 
@@ -83,7 +84,8 @@ namespace SpanJson
         private static void SetObjectDynamically(string memberName, T target, object value)
         {
             var binder = Binder.SetMember(CSharpBinderFlags.None, memberName, null,
-                new[]{
+                new[]
+                {
                     CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null),
                     CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null)
                 });

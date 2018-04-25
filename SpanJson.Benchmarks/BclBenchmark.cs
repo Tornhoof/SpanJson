@@ -10,13 +10,10 @@ namespace SpanJson.Benchmarks
     {
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
         private static readonly bool BooleanInput = ExpressionTreeFixture.Create<bool>();
-
         private static readonly JilSerializer JilSerializer = new JilSerializer();
         private static readonly string BooleanOutputOfJilSerializer = JilSerializer.Serialize(BooleanInput);
-
         private static readonly SpanJsonSerializer SpanJsonSerializer = new SpanJsonSerializer();
         private static readonly string BooleanOutputOfJsonSpanSerializer = SpanJsonSerializer.Serialize(BooleanInput);
-
         private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
         private static readonly byte[] BooleanOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(BooleanInput);
 
