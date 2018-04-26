@@ -42,17 +42,30 @@ namespace SpanJson.Benchmarks
 
         private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
 
-        //[Benchmark]
-        //public Answer DeserializeAnswerWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
-        //}
+        [Benchmark]
+        public Answer DeserializeAnswerWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
+        }
 
-        //[Benchmark]
-        //public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
-        //{
-        //    return JsonSerializer.Generic.Deserialize<Answer>(AnswerSerializedByteArray);
-        //}
+        [Benchmark]
+        public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
+        {
+            return JsonSerializer.Generic.Deserialize<Answer>(AnswerSerializedByteArray);
+        }
+
+
+        [Benchmark]
+        public string SerializeAnswerWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Serialize(Answer);
+        }
+
+        [Benchmark]
+        public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
+        {
+            return JsonSerializer.Generic.SerializeToByteArray(Answer);
+        }
 
         //[Benchmark]
         //public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsync()
@@ -181,19 +194,19 @@ namespace SpanJson.Benchmarks
         //    return jsonWriter.ReadStringSpan();
         //}
 
-        private static readonly char UInt64Input = ExpressionTreeFixture.Create<char>();
+        //private static readonly char UInt64Input = ExpressionTreeFixture.Create<char>();
 
-        [Benchmark]
-        public System.String SerializeUInt64WithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(UInt64Input);
-        }
+        //[Benchmark]
+        //public System.String SerializeUInt64WithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(UInt64Input);
+        //}
 
 
-        [Benchmark]
-        public System.Byte[] SerializeUInt64WithSpanJsonUtf8Serializer()
-        {
-            return SpanJsonUtf8Serializer.Serialize(UInt64Input);
-        }
+        //[Benchmark]
+        //public System.Byte[] SerializeUInt64WithSpanJsonUtf8Serializer()
+        //{
+        //    return SpanJsonUtf8Serializer.Serialize(UInt64Input);
+        //}
     }
 }

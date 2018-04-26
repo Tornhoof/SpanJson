@@ -88,20 +88,7 @@ namespace SpanJson.Formatters
                         ));
                 }
 
-                var writerName = $"\"{memberInfo.Name}\":";
-                Expression writerNameConstant;
-                if (typeof(TSymbol) == typeof(char))
-                {
-                    writerNameConstant = Expression.Constant(writerName);
-                }
-                else if (typeof(TSymbol) == typeof(byte))
-                {
-                    writerNameConstant = Expression.Constant(Encoding.UTF8.GetBytes(writerName));
-                }
-                else
-                {
-                    throw new NotSupportedException();
-                }
+                var writerNameConstant = GetConstantExpressionOfString<TSymbol>($"\"{memberInfo.Name}\":");
                 valueExpressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo, writerNameConstant));
                 Expression serializerCall = Expression.Call(formatterExpression, serializeMethodInfo, writerParameter, memberExpression);
                 if (runtimeDecisionExpression != null) // if we need to decide at runtime we 
@@ -335,20 +322,7 @@ namespace SpanJson.Formatters
                     var formatter = resolver.GetFormatter(memberInfo.MemberType);
                     var checkLength = (prefix?.Length ?? 0) + 1;
                     var equalityCheckStart = extendedComparisonNecessary ? 0 : checkLength;
-                    Expression memberInfoConstant;
-                    if (typeof(TSymbol) == typeof(char))
-                    {
-                        memberInfoConstant = Expression.Constant(memberInfo.Name.Substring(checkLength));
-                    }
-                    else if (typeof(TSymbol) == typeof(byte))
-                    {
-                        memberInfoConstant = Expression.Constant(Encoding.UTF8.GetBytes(memberInfo.Name.Substring(checkLength)));
-                    }
-                    else
-                    {
-                        throw new NotSupportedException();
-                    }
-
+                    Expression memberInfoConstant = GetConstantExpressionOfString<TSymbol>(memberInfo.Name.Substring(checkLength));                
                     var testExpression = Expression.Call(equalityMethodInfo, equalitySwitchValue, Expression.Constant(equalityCheckStart), memberInfoConstant);
                     var matchExpression = Expression.Assign(Expression.PropertyOrField(returnValue, memberInfo.MemberName),
                         Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"), readerParameter));

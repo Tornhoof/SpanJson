@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace SpanJson.Formatters
 {
@@ -92,6 +93,21 @@ namespace SpanJson.Formatters
         protected static bool SwitchByteEquals(ReadOnlySpan<byte> span, byte[] comparison)
         {
             return ByteEquals(span, 0, comparison);
+        }
+
+        protected static ConstantExpression GetConstantExpressionOfString<TSymbol>(string input)
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return Expression.Constant(input);
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                return Expression.Constant(Encoding.UTF8.GetBytes(input));
+            }
+
+            throw new NotSupportedException();
         }
 
     }
