@@ -1,0 +1,50 @@
+﻿using System;
+using System.Dynamic;
+using System.Runtime.CompilerServices;
+using System.Text;
+
+namespace SpanJson.Formatters.Dynamic
+{
+    public abstract class SpanJsonDynamic<TSymbol> : DynamicObject, ISpanJsonDynamicValue<TSymbol> where TSymbol : struct
+    {
+        protected SpanJsonDynamic(ReadOnlySpan<TSymbol> span)
+        {
+            Symbols = span.ToArray();
+        }
+
+        public TSymbol[] Symbols { get; }
+
+        public override string ToString()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                var temp = Symbols;
+                var chars = Unsafe.As<TSymbol[], char[]>(ref temp);
+                return new string(chars);
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                var temp = Symbols;
+                var bytes = Unsafe.As<TSymbol[], byte[]>(ref temp);
+                return Encoding.UTF8.GetString(bytes);
+            }
+
+            throw new NotSupportedException();
+        }
+
+
+        public bool TryConvert(Type outputType, out object result)
+        {
+            var returnType = Nullable.GetUnderlyingType(outputType) ?? outputType;
+            return Converter.TryConvertTo(returnType, Symbols, out result);
+        }
+
+        public override bool TryConvert(ConvertBinder binder, out object result)
+        {
+            return TryConvert(binder.ReturnType, out result);
+        }
+
+        protected abstract BaseDynamicTypeConverter<TSymbol> Converter { get; }
+    }
+}

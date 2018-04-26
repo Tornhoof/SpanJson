@@ -1,46 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
-using System.Runtime.CompilerServices;
-using System.Text;
-
 namespace SpanJson.Formatters.Dynamic
 {
-    public abstract class SpanJsonDynamicString<TSymbol> : DynamicObject, ISpanJsonDynamicValue<TSymbol> where TSymbol : struct
+    /// <summary>
+    /// We should autogenerate the conversions etc.
+    /// </summary>
+    public abstract class SpanJsonDynamicString<TSymbol> : SpanJsonDynamic<TSymbol> where TSymbol : struct
     {
-        private static readonly DynamicTypeConverter Converter = new DynamicTypeConverter();
+        private static readonly DynamicTypeConverter DynamicConverter = new DynamicTypeConverter();
 
-        protected SpanJsonDynamicString(ReadOnlySpan<TSymbol> span)
+        protected SpanJsonDynamicString(ReadOnlySpan<TSymbol> span) : base(span)
         {
-            Symbols = span.ToArray();
         }
 
-        public TSymbol[] Symbols { get; }
-
-        public override bool TryConvert(ConvertBinder binder, out object result)
-        {
-            var returnType = Nullable.GetUnderlyingType(binder.ReturnType) ?? binder.ReturnType;
-            return Converter.TryConvertTo(returnType, Symbols, out result);
-        }
-
-        public override string ToString()
-        {
-            if (typeof(TSymbol) == typeof(char))
-            {
-                var temp = Symbols;
-                var chars = Unsafe.As<TSymbol[], char[]>(ref temp);
-                return new string(chars);
-            }
-
-            if (typeof(TSymbol) == typeof(byte))
-            {
-                var temp = Symbols;
-                var bytes = Unsafe.As<TSymbol[], byte[]>(ref temp);
-                return Encoding.UTF8.GetString(bytes);
-            }
-
-            throw new NotSupportedException();
-        }
+        protected override BaseDynamicTypeConverter<TSymbol> Converter => DynamicConverter;
 
         public sealed class DynamicTypeConverter : BaseDynamicTypeConverter<TSymbol>
         {
@@ -112,5 +85,47 @@ namespace SpanJson.Formatters.Dynamic
                 return BuildDelegates(allowedTypes);
             }
         }
+
+        // ReSharper disable PossibleNullReferenceException
+        public static implicit operator char(SpanJsonDynamicString<TSymbol> input)
+        {
+            return (char) DynamicConverter.ConvertTo(input, typeof(char));
+        }
+
+        public static implicit operator DateTime(SpanJsonDynamicString<TSymbol> input)
+        {
+            return (DateTime) DynamicConverter.ConvertTo(input, typeof(DateTime));
+        }
+
+        public static implicit operator DateTimeOffset(SpanJsonDynamicString<TSymbol> input)
+        {
+            return (DateTimeOffset) DynamicConverter.ConvertTo(input, typeof(DateTimeOffset));
+        }
+
+        public static implicit operator TimeSpan(SpanJsonDynamicString<TSymbol> input)
+        {
+            return (TimeSpan) DynamicConverter.ConvertTo(input, typeof(TimeSpan));
+        }
+
+        public static implicit operator Guid(SpanJsonDynamicString<TSymbol> input)
+        {
+            return (Guid) DynamicConverter.ConvertTo(input, typeof(Guid));
+        }
+
+        public static implicit operator string(SpanJsonDynamicString<TSymbol> input)
+        {
+            return (string) DynamicConverter.ConvertTo(input, typeof(string));
+        }
+
+        public static implicit operator Version(SpanJsonDynamicString<TSymbol> input)
+        {
+            return (Version) DynamicConverter.ConvertTo(input, typeof(Version));
+        }
+
+        public static implicit operator Uri(SpanJsonDynamicString<TSymbol> input)
+        {
+            return (Uri) DynamicConverter.ConvertTo(input, typeof(Uri));
+        }
+        // ReSharper restore PossibleNullReferenceException
     }
 }

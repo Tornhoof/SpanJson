@@ -177,5 +177,70 @@ namespace SpanJson.Tests
             var typeConverter = TypeDescriptor.GetConverter(deserialized);
             Assert.IsType(type, typeConverter);
         }
+
+        [Fact]
+        public void SerializeDeserializeDynamicChild()
+        {
+            var parent = new NonDynamicParent();
+            var child1 = new NonDynamicParent.DynamicChild {Fixed = Guid.NewGuid()};
+            child1.Add("Id", Guid.NewGuid());
+            parent.Children.Add(child1);
+            var child2 = new NonDynamicParent.DynamicChild {Fixed = Guid.NewGuid()};
+            child2.Add("Name", "Hello World");
+            parent.Children.Add(child2);
+            var serialized = JsonSerializer.Generic.SerializeToString(parent);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Deserialize<NonDynamicParent>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(parent.Children[0].Fixed, deserialized.Children[0].Fixed);
+            Assert.Equal(parent.Children[1].Fixed, deserialized.Children[1].Fixed);
+            dynamic dynamicChild1 = parent.Children[0];
+            dynamic dynamicChild2 = parent.Children[1];
+            dynamic deserializedDynamic = deserialized;
+            Assert.Equal(dynamicChild1.Id, deserializedDynamic.Children[0].Id);
+            Assert.Equal(dynamicChild2.Name, deserializedDynamic.Children[1].Name);
+
+        }
+
+        [Fact]
+        public void TestCastDirect()
+        {
+            var guidDynamic = new SpanJsonDynamicUtf16String($"\"{Guid.NewGuid()}\"");
+            var guid = (Guid) guidDynamic;
+        }
+
+        public class NonDynamicParent
+        {
+            public class DynamicChild : DynamicObject
+            {
+                public Guid Fixed { get; set; }
+                private static readonly string[] extraFields = new string[] {nameof(Fixed)};
+                private readonly Dictionary<string, object> _extra = new Dictionary<string, object>();
+                public override IEnumerable<string> GetDynamicMemberNames()
+                {
+                    return _extra.Keys.Concat(extraFields);
+                }
+
+                public override bool TryGetMember(GetMemberBinder binder, out object result)
+                {
+                    return _extra.TryGetValue(binder.Name, out result);
+                }
+
+                public override bool TrySetMember(SetMemberBinder binder, object value)
+                {
+                    if (extraFields.Contains(binder.Name))
+                    {
+                        return false;
+                    }
+                    return _extra.TryAdd(binder.Name, value);
+                }
+
+                public void Add(string key, object value)
+                {
+                    _extra.Add(key, value);
+                }
+            }
+            public List<DynamicChild> Children { get; set; } = new List<DynamicChild>();
+        }
     }
 }

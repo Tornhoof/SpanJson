@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Runtime.CompilerServices;
 using Microsoft.CSharp.RuntimeBinder;
@@ -20,6 +21,7 @@ namespace SpanJson
         private static readonly TResolver Resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
         private static readonly IJsonFormatter<T, TSymbol, TResolver> DefaultFormatter = Resolver.GetFormatter<T>();
 
+        //private static readonly Dictionary<string, IJsonFormatter<T, TSymbol, TResolver> FixedFormatters = BuildFixedFormatters();
 
         public T Deserialize(ref JsonReader<TSymbol> reader)
         {

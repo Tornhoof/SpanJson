@@ -6,42 +6,15 @@ using System.Text;
 
 namespace SpanJson.Formatters.Dynamic
 {
-    public abstract class SpanJsonDynamicNumber<TSymbol> : DynamicObject, ISpanJsonDynamicValue<TSymbol> where TSymbol : struct
+    public abstract class SpanJsonDynamicNumber<TSymbol> : SpanJsonDynamic<TSymbol> where TSymbol : struct
     {
-        private static readonly DynamicTypeConverter Converter = new DynamicTypeConverter();
+        private static readonly DynamicTypeConverter DynamicConverter = new DynamicTypeConverter();
 
-        public SpanJsonDynamicNumber(ReadOnlySpan<TSymbol> span)
+        protected SpanJsonDynamicNumber(ReadOnlySpan<TSymbol> span) : base(span)
         {
-            Symbols = span.ToArray();
         }
 
-
-        public TSymbol[] Symbols { get; }
-
-        public override bool TryConvert(ConvertBinder binder, out object result)
-        {
-            var returnType = Nullable.GetUnderlyingType(binder.ReturnType) ?? binder.ReturnType;
-            return Converter.TryConvertTo(returnType, Symbols, out result);
-        }
-
-        public override string ToString()
-        {
-            if (typeof(TSymbol) == typeof(char))
-            {
-                var temp = Symbols;
-                var chars = Unsafe.As<TSymbol[], char[]>(ref temp);
-                return new string(chars);
-            }
-
-            if (typeof(TSymbol) == typeof(byte))
-            {
-                var temp = Symbols;
-                var bytes = Unsafe.As<TSymbol[], byte[]>(ref temp);
-                return Encoding.UTF8.GetString(bytes);
-            }
-
-            throw new NotSupportedException();
-        }
+        protected override BaseDynamicTypeConverter<TSymbol> Converter => DynamicConverter;
 
         public sealed class DynamicTypeConverter : BaseDynamicTypeConverter<TSymbol>
         {
@@ -101,5 +74,62 @@ namespace SpanJson.Formatters.Dynamic
                 return BuildDelegates(allowedTypes);
             }
         }
+
+        // ReSharper disable PossibleNullReferenceException
+        public static implicit operator sbyte(SpanJsonDynamicNumber<TSymbol> input)
+        {
+            return (sbyte) DynamicConverter.ConvertTo(input, typeof(sbyte));
+        }
+
+        public static implicit operator short(SpanJsonDynamicNumber<TSymbol> input)
+        {
+            return (short) DynamicConverter.ConvertTo(input, typeof(short));
+        }
+
+        public static implicit operator int(SpanJsonDynamicNumber<TSymbol> input)
+        {
+            return (int) DynamicConverter.ConvertTo(input, typeof(int));
+        }
+
+        public static implicit operator long(SpanJsonDynamicNumber<TSymbol> input)
+        {
+            return (long) DynamicConverter.ConvertTo(input, typeof(long));
+        }
+
+        public static implicit operator byte(SpanJsonDynamicNumber<TSymbol> input)
+        {
+            return (byte) DynamicConverter.ConvertTo(input, typeof(byte));
+        }
+
+        public static implicit operator ushort(SpanJsonDynamicNumber<TSymbol> input)
+        {
+            return (ushort) DynamicConverter.ConvertTo(input, typeof(ushort));
+        }
+
+        public static implicit operator uint(SpanJsonDynamicNumber<TSymbol> input)
+        {
+            return (uint) DynamicConverter.ConvertTo(input, typeof(uint));
+        }
+
+        public static implicit operator ulong(SpanJsonDynamicNumber<TSymbol> input)
+        {
+            return (ulong) DynamicConverter.ConvertTo(input, typeof(ulong));
+        }
+
+        public static implicit operator float(SpanJsonDynamicNumber<TSymbol> input)
+        {
+            return (float) DynamicConverter.ConvertTo(input, typeof(float));
+        }
+
+        public static implicit operator double(SpanJsonDynamicNumber<TSymbol> input)
+        {
+            return (double) DynamicConverter.ConvertTo(input, typeof(double));
+        }
+
+        public static implicit operator decimal(SpanJsonDynamicNumber<TSymbol> input)
+        {
+            return (decimal) DynamicConverter.ConvertTo(input, typeof(decimal));
+        }
+        // ReSharper restore PossibleNullReferenceException
     }
 }
