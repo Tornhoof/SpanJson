@@ -83,8 +83,8 @@ namespace SpanJson.Tests
         {
             var fixture = new ExpressionTreeFixture();
             var dt = fixture.Create<DateTime>();
-            var serialized = JsonSerializer.Generic.SerializeToString(dt);
-            var deserialized = JsonSerializer.Generic.Deserialize<DateTime>(serialized);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(dt);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<DateTime>(serialized);
             Assert.Equal(dt, deserialized);
         }
 
@@ -93,8 +93,8 @@ namespace SpanJson.Tests
         {
             var fixture = new ExpressionTreeFixture();
             var dt = fixture.Create<DateTimeOffset>();
-            var serialized = JsonSerializer.Generic.SerializeToString(dt);
-            var deserialized = JsonSerializer.Generic.Deserialize<DateTimeOffset>(serialized);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(dt);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<DateTimeOffset>(serialized);
             Assert.Equal(dt, deserialized);
         }
     }

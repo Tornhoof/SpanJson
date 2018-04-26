@@ -40,13 +40,13 @@ namespace SpanJson.Tests
             var input = new AsyncTestObject {Text = "Hello World"};
             using (var tw = new StringWriter(sb))
             {
-                await JsonSerializer.Generic.SerializeAsync(input, tw);
+                await JsonSerializer.Generic.Utf8.SerializeAsync(input, tw);
             }
 
             AsyncTestObject deserialized = null;
             using (var tr = new StringReader(sb.ToString()))
             {
-                deserialized = await JsonSerializer.Generic.DeserializeAsync<AsyncTestObject>(tr);
+                deserialized = await JsonSerializer.Generic.Utf16.DeserializeAsync<AsyncTestObject>(tr);
             }
 
             Assert.Equal(input, deserialized);
@@ -59,13 +59,13 @@ namespace SpanJson.Tests
             var input = new AsyncTestObject {Text = "Hello World"};
             using (var tw = new StringWriter(sb))
             {
-                await JsonSerializer.NonGeneric.SerializeAsync(input, tw);
+                await JsonSerializer.NonGeneric.Utf16.SerializeAsync(input, tw);
             }
 
             AsyncTestObject deserialized = null;
             using (var tr = new StringReader(sb.ToString()))
             {
-                deserialized = (AsyncTestObject) await JsonSerializer.NonGeneric.DeserializeAsync(tr, typeof(AsyncTestObject));
+                deserialized = (AsyncTestObject) await JsonSerializer.NonGeneric.Utf16.DeserializeAsync(tr, typeof(AsyncTestObject));
             }
 
             Assert.Equal(input, deserialized);

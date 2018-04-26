@@ -43,7 +43,7 @@ namespace SpanJson.Tests
         {
             var parent = new Parent {Age = 30, Name = "Adam", Children = new List<Child> {new Child {Name = "Cain", Age = 5}}};
             var serializedWithCamelCase =
-                JsonSerializer.Generic.SerializeToString<Parent, char, ExcludeNullsOriginalCaseResolver<char>>(parent);
+                JsonSerializer.Generic.Utf16.Serialize<Parent, char, ExcludeNullsOriginalCaseResolver<char>>(parent);
             serializedWithCamelCase = serializedWithCamelCase.ToLowerInvariant();
             Assert.Contains("age", serializedWithCamelCase);
             var deserialized =
@@ -68,10 +68,10 @@ namespace SpanJson.Tests
         public void SerializeDeserializeOneChinesePropertyNameUtf16()
         {
             var wpn = new OneChinesePropertyName {你好 = "Hello"};
-            var serialized = JsonSerializer.Generic.SerializeToString(wpn);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(wpn);
             Assert.NotNull(serialized);
             Assert.Contains("\"你好\":", serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<OneChinesePropertyName>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<OneChinesePropertyName>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(wpn.你好, deserialized.你好);
         }
@@ -80,9 +80,9 @@ namespace SpanJson.Tests
         public void SerializeDeserializeOneChinesePropertyNameUtf8()
         {
             var wpn = new OneChinesePropertyName {你好 = "Hello"};
-            var serialized = JsonSerializer.Generic.SerializeToByteArray(wpn);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(wpn);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<OneChinesePropertyName>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<OneChinesePropertyName>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(wpn.你好, deserialized.你好);
         }
@@ -92,10 +92,10 @@ namespace SpanJson.Tests
         public void SerializeDeserializePartialChinesePropertyNameUtf16()
         {
             var wpn = new PartialChinesePropertyName {你好 = "Hello", 你好你好 = "World"};
-            var serialized = JsonSerializer.Generic.SerializeToString(wpn);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(wpn);
             Assert.NotNull(serialized);
             Assert.Contains("\"你好\":", serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<OneChinesePropertyName>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<OneChinesePropertyName>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(wpn.你好, deserialized.你好);
         }
@@ -104,9 +104,9 @@ namespace SpanJson.Tests
         public void SerializeDeserializePartialChinesePropertyNameUtf8()
         {
             var wpn = new PartialChinesePropertyName {你好 = "Hello", 你好你好 = "World"};
-            var serialized = JsonSerializer.Generic.SerializeToByteArray(wpn);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(wpn);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<OneChinesePropertyName>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<OneChinesePropertyName>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(wpn.你好, deserialized.你好);
         }

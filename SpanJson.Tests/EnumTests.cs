@@ -17,7 +17,7 @@ namespace SpanJson.Tests
         [InlineData(TestEnum.Universe)]
         public void SerializeUtf16(TestEnum value)
         {
-            var serialized = JsonSerializer.Generic.SerializeToString(value);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(value);
             Assert.Equal($"\"{value}\"", serialized);
         }
 
@@ -27,7 +27,7 @@ namespace SpanJson.Tests
         [InlineData("\"Universe\"", TestEnum.Universe)]
         public void DeserializeUtf16(string value, TestEnum comparison)
         {
-            var deserialized = JsonSerializer.Generic.Deserialize<TestEnum>(value);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<TestEnum>(value);
             Assert.Equal(deserialized, comparison);
         }
 
@@ -37,9 +37,9 @@ namespace SpanJson.Tests
         [InlineData(TestEnum.Universe)]
         public void SerializeDeserializeUtf8(TestEnum value)
         {
-            var serialized = JsonSerializer.Generic.SerializeToByteArray(value);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(value);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<TestEnum>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<TestEnum>(serialized);
             Assert.Equal(value, deserialized);
         }
     }

@@ -13,65 +13,73 @@ namespace SpanJson
     {
         public static class Generic
         {
-            public static string SerializeToString<T>(T input)
-            {
-                return SerializeToString<T, char, ExcludeNullsOriginalCaseResolver<char>>(input);
-            }
-
-            public static byte[] SerializeToByteArray<T>(T input)
-            {
-                return SerializeToByteArray<T, byte, ExcludeNullsOriginalCaseResolver<byte>>(input);
-            }
-
-            public static ValueTask SerializeAsync<T>(T input, TextWriter writer, CancellationToken cancellationToken = default)
-            {
-                return SerializeAsync<T, char, ExcludeNullsOriginalCaseResolver<char>>(input, writer, cancellationToken);
-            }
-
-            public static T Deserialize<T>(ReadOnlySpan<char> input)
-            {
-                return Deserialize<T, char, ExcludeNullsOriginalCaseResolver<char>>(input);
-            }
-
-            public static T Deserialize<T>(ReadOnlySpan<byte> input)
-            {
-                return Deserialize<T, byte, ExcludeNullsOriginalCaseResolver<byte>>(input);
-            }
-
-            public static string SerializeToString<T, TSymbol, TResolver>(T input)
-                where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
-            {
-                return Inner<T, TSymbol, TResolver>.InnerSerializeToString(input);
-            }
-
-            public static byte[] SerializeToByteArray<T, TSymbol, TResolver>(T input)
-                where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
-            {
-                return Inner<T, TSymbol, TResolver>.InnerSerializeToByteArray(input);
-            }
-
-            public static ValueTask<T> DeserializeAsync<T>(TextReader reader, CancellationToken cancellationToken = default)
-            {
-                return DeserializeAsync<T, char, ExcludeNullsOriginalCaseResolver<char>>(reader, cancellationToken);
-            }
-
-            public static ValueTask SerializeAsync<T, TSymbol, TResolver>(T input, TextWriter writer, CancellationToken cancellationToken = default)
-                where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
-            {
-                return Inner<T, TSymbol, TResolver>.InnerSerializeAsync(input, writer, cancellationToken);
-            }
-
             public static T Deserialize<T, TSymbol, TResolver>(ReadOnlySpan<TSymbol> input)
                 where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
             {
                 return Inner<T, TSymbol, TResolver>.InnerDeserialize(input);
             }
 
-            public static ValueTask<T> DeserializeAsync<T, TSymbol, TResolver>(TextReader reader, CancellationToken cancellationToken = default)
-                where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+            public static class Utf16
             {
-                return Inner<T, TSymbol, TResolver>.InnerDeserializeAsync(reader, cancellationToken);
+                public static string Serialize<T>(T input)
+                {
+                    return Serialize<T, char, ExcludeNullsOriginalCaseResolver<char>>(input);
+                }
+
+                public static string Serialize<T, TSymbol, TResolver>(T input)
+                    where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+                {
+                    return Inner<T, TSymbol, TResolver>.InnerSerializeToString(input);
+                }
+
+                public static T Deserialize<T>(ReadOnlySpan<char> input)
+                {
+                    return Deserialize<T, char, ExcludeNullsOriginalCaseResolver<char>>(input);
+                }
+
+                public static ValueTask<T> DeserializeAsync<T>(TextReader reader, CancellationToken cancellationToken = default)
+                {
+                    return DeserializeAsync<T, char, ExcludeNullsOriginalCaseResolver<char>>(reader, cancellationToken);
+                }
+
+                public static ValueTask SerializeAsync<T, TSymbol, TResolver>(T input, TextWriter writer, CancellationToken cancellationToken = default)
+                    where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+                {
+                    return Inner<T, TSymbol, TResolver>.InnerSerializeAsync(input, writer, cancellationToken);
+                }
+
+                public static ValueTask<T> DeserializeAsync<T, TSymbol, TResolver>(TextReader reader, CancellationToken cancellationToken = default)
+                    where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+                {
+                    return Inner<T, TSymbol, TResolver>.InnerDeserializeAsync(reader, cancellationToken);
+                }
             }
+
+            public static class Utf8
+            {
+                public static byte[] Serialize<T>(T input)
+                {
+                    return Serialize<T, byte, ExcludeNullsOriginalCaseResolver<byte>>(input);
+                }
+
+                public static ValueTask SerializeAsync<T>(T input, TextWriter writer, CancellationToken cancellationToken = default)
+                {
+                    return Utf16.SerializeAsync<T, char, ExcludeNullsOriginalCaseResolver<char>>(input, writer, cancellationToken);
+                }
+
+
+                public static T Deserialize<T>(ReadOnlySpan<byte> input)
+                {
+                    return Deserialize<T, byte, ExcludeNullsOriginalCaseResolver<byte>>(input);
+                }
+
+                public static byte[] Serialize<T, TSymbol, TResolver>(T input)
+                    where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+                {
+                    return Inner<T, TSymbol, TResolver>.InnerSerializeToByteArray(input);
+                }
+            }
+
 
             private static class Inner<T, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
             {

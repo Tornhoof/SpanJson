@@ -162,33 +162,33 @@ namespace SpanJson.Tests.JsonTestSuite
                 {
                     if (array)
                     {
-                        return JsonSerializer.Generic.Deserialize<string[]>(input);
+                        return JsonSerializer.Generic.Utf16.Deserialize<string[]>(input);
                     }
 
-                    return JsonSerializer.Generic.Deserialize<string>(input);
+                    return JsonSerializer.Generic.Utf16.Deserialize<string>(input);
                 }
                 case TestType.Number:
                 {
                     if (array)
                     {
-                        return JsonSerializer.Generic.Deserialize<double[]>(input);
+                        return JsonSerializer.Generic.Utf16.Deserialize<double[]>(input);
                     }
 
-                    return JsonSerializer.Generic.Deserialize<double>(input);
+                    return JsonSerializer.Generic.Utf16.Deserialize<double>(input);
                 }
                 case TestType.Array:
                 {
-                    return JsonSerializer.Generic.Deserialize<object[]>(input);
+                    return JsonSerializer.Generic.Utf16.Deserialize<object[]>(input);
                 }
                 case TestType.Object:
                 case TestType.Structure:
                 {
                     if (array)
                     {
-                        return JsonSerializer.Generic.Deserialize<object[]>(input);
+                        return JsonSerializer.Generic.Utf16.Deserialize<object[]>(input);
                     }
 
-                    return JsonSerializer.Generic.Deserialize<object>(input);
+                    return JsonSerializer.Generic.Utf16.Deserialize<object>(input);
                 }
                 default:
                     throw new NotImplementedException();

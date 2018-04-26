@@ -31,7 +31,7 @@ namespace SpanJson.Tests
         public void Int32(int value)
         {
             var text = value.ToString(CultureInfo.InvariantCulture);
-            var number = JsonSerializer.Generic.Deserialize<int>(text);
+            var number = JsonSerializer.Generic.Utf16.Deserialize<int>(text);
             Assert.Equal(value, number);
         }
 
@@ -50,7 +50,7 @@ namespace SpanJson.Tests
         public void Uint332(uint value)
         {
             var text = value.ToString(CultureInfo.InvariantCulture);
-            var number = JsonSerializer.Generic.Deserialize<uint>(text);
+            var number = JsonSerializer.Generic.Utf16.Deserialize<uint>(text);
             Assert.Equal(value, number);
         }
     }

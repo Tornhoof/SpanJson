@@ -10,9 +10,9 @@ namespace SpanJson.Tests.Generated
         {
             var chars = new char[5];
             Array.Fill(chars, '\0');
-            var serialized = JsonSerializer.Generic.SerializeToString(chars);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(chars);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<char[]>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<char[]>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(chars, deserialized);
         }
@@ -22,9 +22,9 @@ namespace SpanJson.Tests.Generated
         {
             var chars = new char[5];
             Array.Fill(chars, '\0');
-            var serialized = JsonSerializer.Generic.SerializeToByteArray(chars);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(chars);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<char[]>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<char[]>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(chars, deserialized);
         }

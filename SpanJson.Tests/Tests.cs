@@ -17,9 +17,9 @@ namespace SpanJson.Tests
         {
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
-            var serialized = JsonSerializer.NonGeneric.SerializeToString(model);
+            var serialized = JsonSerializer.NonGeneric.Utf16.Serialize(model);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.NonGeneric.Deserialize(serialized, modelType);
+            var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized, modelType);
             Assert.NotNull(deserialized);
             Assert.IsType(modelType, deserialized);
             Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
@@ -31,9 +31,9 @@ namespace SpanJson.Tests
         {
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
-            var serialized = JsonSerializer.NonGeneric.SerializeToByteArray(model);
+            var serialized = JsonSerializer.NonGeneric.Utf8.SerializeToByteArray(model);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.NonGeneric.Deserialize(serialized, modelType);
+            var deserialized = JsonSerializer.NonGeneric.Utf8.Deserialize(serialized, modelType);
             Assert.NotNull(deserialized);
             Assert.IsType(modelType, deserialized);
             Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
@@ -45,10 +45,10 @@ namespace SpanJson.Tests
         {
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
-            var serialized = JsonSerializer.NonGeneric.SerializeToString(model);
+            var serialized = JsonSerializer.NonGeneric.Utf16.Serialize(model);
             var utf8Bytes = Encoding.UTF8.GetBytes(serialized);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.NonGeneric.Deserialize(utf8Bytes, modelType);
+            var deserialized = JsonSerializer.NonGeneric.Utf8.Deserialize(utf8Bytes, modelType);
             Assert.NotNull(deserialized);
             Assert.IsType(modelType, deserialized);
             Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
@@ -67,7 +67,7 @@ namespace SpanJson.Tests
             var model = fixture.Create(modelType);
             var serialized = JSON.Serialize(model, Options.ISO8601ExcludeNullsIncludeInherited);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.NonGeneric.Deserialize(serialized, modelType);
+            var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized, modelType);
             Assert.NotNull(deserialized);
             Assert.IsType(modelType, deserialized);
             Assert.Equal(model, deserialized, GenericEqualityComparer.Default);

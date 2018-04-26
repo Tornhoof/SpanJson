@@ -51,7 +51,7 @@ namespace SpanJson.Benchmarks
         [Benchmark]
         public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
         {
-            return JsonSerializer.Generic.Deserialize<Answer>(AnswerSerializedByteArray);
+            return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
         }
 
 
@@ -64,7 +64,7 @@ namespace SpanJson.Benchmarks
         [Benchmark]
         public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
         {
-            return JsonSerializer.Generic.SerializeToByteArray(Answer);
+            return JsonSerializer.Generic.Utf8.Serialize(Answer);
         }
 
         //[Benchmark]
@@ -103,7 +103,7 @@ namespace SpanJson.Benchmarks
         //[Benchmark]
         //public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
         //{
-        //    return JsonSerializer.Generic.SerializeToByteArray(Answer);
+        //    return JsonSerializer.Generic.Serialize(Answer);
         //}
 
 

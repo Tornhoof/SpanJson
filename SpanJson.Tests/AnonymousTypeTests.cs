@@ -8,7 +8,7 @@ namespace SpanJson.Tests
         public void Test()
         {
             var x = new {Name = "Alice", Age = 25};
-            var output = JsonSerializer.Generic.SerializeToString(x);
+            var output = JsonSerializer.Generic.Utf16.Serialize(x);
             Assert.Equal("{\"Name\":\"Alice\",\"Age\":25}", output);
         }
     }

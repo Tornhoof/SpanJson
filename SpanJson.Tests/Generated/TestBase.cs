@@ -18,11 +18,11 @@ namespace SpanJson.Tests.Generated
         [MemberData(nameof(GenerateData))]
         public void SerializeDeserializeUtf16(T value)
         {
-            var serialized = JsonSerializer.Generic.SerializeToString(value);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(value);
             Assert.False(string.IsNullOrEmpty(serialized));
-            var deserialized = JsonSerializer.Generic.Deserialize<T>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<T>(serialized);
             Assert.Equal(value, deserialized);
-            var nonGeneric = JsonSerializer.NonGeneric.Deserialize(serialized, typeof(T));
+            var nonGeneric = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized, typeof(T));
             var typedNonGeneric = Assert.IsType<T>(nonGeneric);
             Assert.Equal(value, typedNonGeneric);
         }
@@ -31,11 +31,11 @@ namespace SpanJson.Tests.Generated
         [MemberData(nameof(GenerateData))]
         public void SerializeDeserializeUtf8(T value)
         {
-            var serialized = JsonSerializer.Generic.SerializeToByteArray(value);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(value);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<T>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<T>(serialized);
             Assert.Equal(value, deserialized);
-            var nonGeneric = JsonSerializer.NonGeneric.Deserialize(serialized, typeof(T));
+            var nonGeneric = JsonSerializer.NonGeneric.Utf8.Deserialize(serialized, typeof(T));
             var typedNonGeneric = Assert.IsType<T>(nonGeneric);
             Assert.Equal(value, typedNonGeneric);
         }
@@ -59,17 +59,17 @@ namespace SpanJson.Tests.Generated
         public void SerializeDeserializeNullUtf16()
         {
             const string input = "null";
-            var serialized = JsonSerializer.Generic.SerializeToString<List<T>>(null);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<List<T>>(null);
             Assert.Equal(input, serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<List<T>>(input);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<List<T>>(input);
             Assert.Null(deserialized);
         }
 
         [Fact]
         public void SerializeDeserializeNullUtf8()
         {
-            var serialized = JsonSerializer.Generic.SerializeToByteArray<List<T>>(null);
-            var deserialized = JsonSerializer.Generic.Deserialize<List<T>>(serialized);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize<List<T>>(null);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<List<T>>(serialized);
             Assert.Null(deserialized);
         }
 
@@ -77,11 +77,11 @@ namespace SpanJson.Tests.Generated
         public void SerializeDeserializeUtf16()
         {
             var value = new HashSet<T>(Fixture.CreateMany<T>(10)).ToList();
-            var serialized = JsonSerializer.Generic.SerializeToString(value);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(value);
             Assert.False(string.IsNullOrEmpty(serialized));
-            var deserialized = JsonSerializer.Generic.Deserialize<List<T>>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<List<T>>(serialized);
             Assert.Equal(value, deserialized);
-            var nonGeneric = JsonSerializer.NonGeneric.Deserialize(serialized, typeof(List<T>));
+            var nonGeneric = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized, typeof(List<T>));
             var typedNonGeneric = Assert.IsType<List<T>>(nonGeneric);
             Assert.Equal(value, typedNonGeneric);
         }
@@ -90,11 +90,11 @@ namespace SpanJson.Tests.Generated
         public void SerializeDeserializeUtf8()
         {
             var value = new HashSet<T>(Fixture.CreateMany<T>(10)).ToList();
-            var serialized = JsonSerializer.Generic.SerializeToByteArray(value);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(value);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<List<T>>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<List<T>>(serialized);
             Assert.Equal(value, deserialized);
-            var nonGeneric = JsonSerializer.NonGeneric.Deserialize(serialized, typeof(List<T>));
+            var nonGeneric = JsonSerializer.NonGeneric.Utf8.Deserialize(serialized, typeof(List<T>));
             var typedNonGeneric = Assert.IsType<List<T>>(nonGeneric);
             Assert.Equal(value, typedNonGeneric);
         }
@@ -106,9 +106,9 @@ namespace SpanJson.Tests.Generated
         public void SerializeDeserializeDynamicUtf16()
         {
             var input = Fixture.CreateMany<T>(10).ToArray();
-            var serialized = JsonSerializer.Generic.SerializeToString(input);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(input, (T[]) deserialized);
         }
@@ -117,9 +117,9 @@ namespace SpanJson.Tests.Generated
         public void SerializeDeserializeDynamicUtf8()
         {
             var input = Fixture.CreateMany<T>(10).ToArray();
-            var serialized = JsonSerializer.Generic.SerializeToByteArray(input);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(input);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(input, (T[]) deserialized);
         }
@@ -128,17 +128,17 @@ namespace SpanJson.Tests.Generated
         public void SerializeDeserializeNullUtf16()
         {
             const string input = "null";
-            var serialized = JsonSerializer.Generic.SerializeToString<List<T>>(null);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<List<T>>(null);
             Assert.Equal(input, serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<List<T>>(input);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<List<T>>(input);
             Assert.Null(deserialized);
         }
 
         [Fact]
         public void SerializeDeserializeNullUtf8()
         {
-            var serialized = JsonSerializer.Generic.SerializeToByteArray<List<T>>(null);
-            var deserialized = JsonSerializer.Generic.Deserialize<List<T>>(serialized);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize<List<T>>(null);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<List<T>>(serialized);
             Assert.Null(deserialized);
         }
 
@@ -146,11 +146,11 @@ namespace SpanJson.Tests.Generated
         public void SerializeDeserializeUtf16()
         {
             var value = new HashSet<T>(Fixture.CreateMany<T>(10)).ToArray();
-            var serialized = JsonSerializer.Generic.SerializeToString(value);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(value);
             Assert.False(string.IsNullOrEmpty(serialized));
-            var deserialized = JsonSerializer.Generic.Deserialize<T[]>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<T[]>(serialized);
             Assert.Equal(value, deserialized);
-            var nonGeneric = JsonSerializer.NonGeneric.Deserialize(serialized, typeof(T[]));
+            var nonGeneric = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized, typeof(T[]));
             var typedNonGeneric = Assert.IsType<T[]>(nonGeneric);
             Assert.Equal(value, typedNonGeneric);
         }
@@ -159,11 +159,11 @@ namespace SpanJson.Tests.Generated
         public void SerializeDeserializeUtf8()
         {
             var value = new HashSet<T>(Fixture.CreateMany<T>(10)).ToArray();
-            var serialized = JsonSerializer.Generic.SerializeToByteArray(value);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(value);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<T[]>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<T[]>(serialized);
             Assert.Equal(value, deserialized);
-            var nonGeneric = JsonSerializer.NonGeneric.Deserialize(serialized, typeof(T[]));
+            var nonGeneric = JsonSerializer.NonGeneric.Utf8.Deserialize(serialized, typeof(T[]));
             var typedNonGeneric = Assert.IsType<T[]>(nonGeneric);
             Assert.Equal(value, typedNonGeneric);
         }
@@ -183,9 +183,9 @@ namespace SpanJson.Tests.Generated
         public void SerializeDeserializeDynamicUtf16()
         {
             var input = Fixture.Create<T>();
-            var serialized = JsonSerializer.Generic.SerializeToString(input);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(input, (T) deserialized);
         }
@@ -194,9 +194,9 @@ namespace SpanJson.Tests.Generated
         public void SerializeDeserializeDynamicUtf8()
         {
             var input = Fixture.Create<T>();
-            var serialized = JsonSerializer.Generic.SerializeToByteArray(input);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(input);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(input, (T) deserialized);
         }
@@ -205,17 +205,17 @@ namespace SpanJson.Tests.Generated
         public void SerializeDeserializeNullUtf16()
         {
             const string input = "null";
-            var serialized = JsonSerializer.Generic.SerializeToString<T>(null);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<T>(null);
             Assert.Equal(input, serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<T>(input);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<T>(input);
             Assert.Null(deserialized);
         }
 
         [Fact]
         public void SerializeDeserializeNullUtf8()
         {
-            var serialized = JsonSerializer.Generic.SerializeToByteArray<T>(null);
-            var deserialized = JsonSerializer.Generic.Deserialize<T>(serialized);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize<T>(null);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<T>(serialized);
             Assert.Null(deserialized);
         }
     }
@@ -226,9 +226,9 @@ namespace SpanJson.Tests.Generated
         public void SerializeDeserializeDynamicUtf16()
         {
             var input = Fixture.Create<T>();
-            var serialized = JsonSerializer.Generic.SerializeToString(input);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(input, (T) deserialized);
             Assert.Equal(input, (T?) deserialized);
@@ -238,9 +238,9 @@ namespace SpanJson.Tests.Generated
         public void SerializeDeserializeDynamicUtf8()
         {
             var input = Fixture.Create<T>();
-            var serialized = JsonSerializer.Generic.SerializeToByteArray(input);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(input);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(input, (T) deserialized);
             Assert.Equal(input, (T?) deserialized);
@@ -250,17 +250,17 @@ namespace SpanJson.Tests.Generated
         public void SerializeDeserializeNullUtf16()
         {
             const string input = "null";
-            var serialized = JsonSerializer.Generic.SerializeToString<T?>(null);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<T?>(null);
             Assert.Equal(input, serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<T?>(input);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<T?>(input);
             Assert.Null(deserialized);
         }
 
         [Fact]
         public void SerializeDeserializeNullUtf8()
         {
-            var serialized = JsonSerializer.Generic.SerializeToByteArray<T?>(null);
-            var deserialized = JsonSerializer.Generic.Deserialize<T?>(serialized);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize<T?>(null);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<T?>(serialized);
             Assert.Null(deserialized);
         }
     }

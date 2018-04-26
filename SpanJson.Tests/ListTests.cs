@@ -10,7 +10,7 @@ namespace SpanJson.Tests
         public void Deserialize()
         {
             var list = new List<string> {"Hello", "World", "Universe"};
-            var deserialized = JsonSerializer.Generic.Deserialize<List<string>>("[\"Hello\",\"World\",\"Universe\"]");
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<List<string>>("[\"Hello\",\"World\",\"Universe\"]");
             Assert.Equal(list, deserialized);
         }
 
@@ -18,7 +18,7 @@ namespace SpanJson.Tests
         public void Serialize()
         {
             var list = new List<string> {"Hello", "World", "Universe"};
-            var serialized = JsonSerializer.Generic.SerializeToString(list);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(list);
             Assert.Equal("[\"Hello\",\"World\",\"Universe\"]", serialized);
         }
 
@@ -26,7 +26,7 @@ namespace SpanJson.Tests
         public void SerializeCollection()
         {
             var list = new LinkedList<string>(new[] {"Hello", "World", "Universe"});
-            var serialized = JsonSerializer.Generic.SerializeToString(list);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(list);
             Assert.Equal("[\"Hello\",\"World\",\"Universe\"]", serialized);
         }
 
@@ -34,9 +34,9 @@ namespace SpanJson.Tests
         public void SerializeDeserializeIList()
         {
             IList<string> list = new List<string> {"Hello", "World", "Universe"};
-            var serialized = JsonSerializer.Generic.SerializeToString(list);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(list);
             Assert.Equal("[\"Hello\",\"World\",\"Universe\"]", serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<IList<string>>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<IList<string>>(serialized);
             Assert.Equal(list, deserialized);
         }
 
@@ -44,7 +44,7 @@ namespace SpanJson.Tests
         public void SerializeLinq()
         {
             var list = new List<string> {"Hello", "World", "Universe"};
-            var serialized = JsonSerializer.Generic.SerializeToString(list.Where(a => a != "Universe"));
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(list.Where(a => a != "Universe"));
             Assert.Equal("[\"Hello\",\"World\"]", serialized);
         }
     }

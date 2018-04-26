@@ -4,12 +4,12 @@
     {
         public override byte[] Serialize<TInput>(TInput input)
         {
-            return JsonSerializer.Generic.SerializeToByteArray(input);
+            return JsonSerializer.Generic.Utf8.Serialize(input);
         }
 
         public override T Deserialize<T>(byte[] input)
         {
-            return JsonSerializer.Generic.Deserialize<T>(input);
+            return JsonSerializer.Generic.Utf8.Deserialize<T>(input);
         }
     }
 }

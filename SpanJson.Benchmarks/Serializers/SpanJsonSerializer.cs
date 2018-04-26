@@ -4,12 +4,12 @@
     {
         public override T Deserialize<T>(string input)
         {
-            return JsonSerializer.Generic.Deserialize<T>(input);
+            return JsonSerializer.Generic.Utf16.Deserialize<T>(input);
         }
 
         public override string Serialize<T>(T input)
         {
-            return JsonSerializer.Generic.SerializeToString(input);
+            return JsonSerializer.Generic.Utf16.Serialize(input);
         }
     }
 }

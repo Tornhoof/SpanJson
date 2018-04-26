@@ -20,9 +20,9 @@ namespace SpanJson.Tests
         {
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
-            var serialized = JsonSerializer.NonGeneric.SerializeToString(model);
+            var serialized = JsonSerializer.NonGeneric.Utf16.Serialize(model);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<object>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(model, deserialized, DynamicEqualityComparer.Default);
         }
@@ -34,9 +34,9 @@ namespace SpanJson.Tests
         {
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
-            var serialized = JsonSerializer.NonGeneric.SerializeToByteArray(model);
+            var serialized = JsonSerializer.NonGeneric.Utf8.SerializeToByteArray(model);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<object>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(model, deserialized, DynamicEqualityComparer.Default);
         }
@@ -82,9 +82,9 @@ namespace SpanJson.Tests
         {
             var fixture = new ExpressionTreeFixture();
             var data = fixture.Create<Answer>();
-            var serialized = JsonSerializer.Generic.SerializeToString(data);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(data);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
             var dt = (DateTime?) deserialized.locked_date;
             Assert.NotNull(dt);
@@ -114,9 +114,9 @@ namespace SpanJson.Tests
             dynamic dynamicObject = new MyDynamicObject();
             dynamicObject.Text = "Hello World";
 
-            var serialized = JsonSerializer.Generic.SerializeToString(dynamicObject);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<object>(dynamicObject);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<MyDynamicObject>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<MyDynamicObject>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal("Hello World", (string) dynamicObject.Text);
         }
@@ -129,9 +129,9 @@ namespace SpanJson.Tests
             dynamicObject.Text = "Hello World";
             dynamicObject.Value = 5;
 
-            var serialized = JsonSerializer.Generic.SerializeToString(dynamicObject);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<object>(dynamicObject);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<MyDynamicObject>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<MyDynamicObject>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal("Hello World", (string) dynamicObject.Text);
             Assert.Equal(5, (int) dynamicObject.Value);
@@ -145,7 +145,7 @@ namespace SpanJson.Tests
             dynamicObject.Value = 5;
             dynamicObject.NullValue = null;
 
-            var serialized = JsonSerializer.Generic.SerializeToString<MyDynamicObject, char, IncludeNullsOriginalCaseResolver<char>>(dynamicObject);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<MyDynamicObject, char, IncludeNullsOriginalCaseResolver<char>>(dynamicObject);
             Assert.NotNull(serialized);
             Assert.Contains("null", serialized);
             var deserialized = JsonSerializer.Generic.Deserialize<MyDynamicObject, char, IncludeNullsOriginalCaseResolver<char>>(serialized);
@@ -160,7 +160,7 @@ namespace SpanJson.Tests
         [InlineData("12345", typeof(SpanJsonDynamicNumber<char>.DynamicTypeConverter))]
         public void GetTypeConverterUtf16(string input, Type type)
         {
-            var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(input);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<object>(input);
             Assert.NotNull(deserialized);
             var typeConverter = TypeDescriptor.GetConverter(deserialized);
             Assert.IsType(type, typeConverter);
@@ -172,7 +172,7 @@ namespace SpanJson.Tests
         public void GetTypeConverterUtf8(string input, Type type)
         {
             var bytes = Encoding.UTF8.GetBytes(input);
-            var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(bytes);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<object>(bytes);
             Assert.NotNull(deserialized);
             var typeConverter = TypeDescriptor.GetConverter(deserialized);
             Assert.IsType(type, typeConverter);
@@ -188,9 +188,9 @@ namespace SpanJson.Tests
             var child2 = new NonDynamicParent.DynamicChild {Fixed = Guid.NewGuid()};
             child2.Add("Name", "Hello World");
             parent.Children.Add(child2);
-            var serialized = JsonSerializer.Generic.SerializeToString(parent);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(parent);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<NonDynamicParent>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<NonDynamicParent>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(parent.Children[0].Fixed, deserialized.Children[0].Fixed);
             Assert.Equal(parent.Children[1].Fixed, deserialized.Children[1].Fixed);
