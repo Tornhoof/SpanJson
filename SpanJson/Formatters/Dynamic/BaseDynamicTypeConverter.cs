@@ -93,9 +93,4 @@ namespace SpanJson.Formatters.Dynamic
 
         protected delegate object ConvertDelegate(in JsonReader<TSymbol> reader);
     }
-
-    public interface ISpanJsonDynamicValue<out TSymbol> where TSymbol : struct
-    {
-        TSymbol[] Symbols { get; }
-    }
 }

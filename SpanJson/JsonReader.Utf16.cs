@@ -885,12 +885,12 @@ namespace SpanJson
                 }
                 case JsonToken.Number:
                 {
-                    return new SpanJsonDynamicNumber<char>(ReadUtf16NumberInternal());
+                    return new SpanJsonDynamicUtf16Number(ReadUtf16NumberInternal());
                 }
                 case JsonToken.String:
                 {
                     var span = ReadUtf16StringSpanWithQuotes(out _);
-                    return new SpanJsonDynamicString<char>(span);
+                    return new SpanJsonDynamicUtf16String(span);
                 }
                 case JsonToken.BeginObject:
                 {

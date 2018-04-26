@@ -6,11 +6,11 @@ using System.Text;
 
 namespace SpanJson.Formatters.Dynamic
 {
-    public sealed class SpanJsonDynamicString<TSymbol> : DynamicObject, ISpanJsonDynamicValue<TSymbol> where TSymbol : struct
+    public abstract class SpanJsonDynamicString<TSymbol> : DynamicObject, ISpanJsonDynamicValue<TSymbol> where TSymbol : struct
     {
         private static readonly DynamicTypeConverter Converter = new DynamicTypeConverter();
 
-        public SpanJsonDynamicString(ReadOnlySpan<TSymbol> span)
+        protected SpanJsonDynamicString(ReadOnlySpan<TSymbol> span)
         {
             Symbols = span.ToArray();
         }

@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
+using System.Text;
 using SpanJson.Benchmarks.Fixture;
 using SpanJson.Benchmarks.Models;
+using SpanJson.Formatters.Dynamic;
 using SpanJson.Resolvers;
 using Xunit;
 
@@ -150,6 +153,29 @@ namespace SpanJson.Tests
             Assert.Equal("Hello World", (string) dynamicObject.Text);
             Assert.Equal(5, (int) dynamicObject.Value);
             Assert.Null(deserialized.NullValue);
+        }
+
+        [Theory]
+        [InlineData("\"Hello World\"", typeof(SpanJsonDynamicString<char>.DynamicTypeConverter))]
+        [InlineData("12345", typeof(SpanJsonDynamicNumber<char>.DynamicTypeConverter))]
+        public void GetTypeConverterUtf16(string input, Type type)
+        {
+            var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(input);
+            Assert.NotNull(deserialized);
+            var typeConverter = TypeDescriptor.GetConverter(deserialized);
+            Assert.IsType(type, typeConverter);
+        }
+
+        [Theory]
+        [InlineData("\"Hello World\"", typeof(SpanJsonDynamicString<byte>.DynamicTypeConverter))]
+        [InlineData("12345", typeof(SpanJsonDynamicNumber<byte>.DynamicTypeConverter))]
+        public void GetTypeConverterUtf8(string input, Type type)
+        {
+            var bytes = Encoding.UTF8.GetBytes(input);
+            var deserialized = JsonSerializer.Generic.Deserialize<dynamic>(bytes);
+            Assert.NotNull(deserialized);
+            var typeConverter = TypeDescriptor.GetConverter(deserialized);
+            Assert.IsType(type, typeConverter);
         }
     }
 }

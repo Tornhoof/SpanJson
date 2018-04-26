@@ -913,12 +913,12 @@ namespace SpanJson
                 }
                 case JsonToken.Number:
                 {
-                    return new SpanJsonDynamicNumber<byte>(ReadUtf8NumberInternal());
+                    return new SpanJsonDynamicUtf8Number(ReadUtf8NumberInternal());
                 }
                 case JsonToken.String:
                 {
                     var span = ReadUtf8StringSpanWithQuotes(out _);
-                    return new SpanJsonDynamicString<byte>(span);
+                    return new SpanJsonDynamicUtf8String(span);
                 }
                 case JsonToken.BeginObject:
                 {

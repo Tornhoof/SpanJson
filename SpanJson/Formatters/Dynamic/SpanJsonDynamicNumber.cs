@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SpanJson.Formatters.Dynamic
 {
-    public sealed class SpanJsonDynamicNumber<TSymbol> : DynamicObject, ISpanJsonDynamicValue<TSymbol> where TSymbol : struct
+    public abstract class SpanJsonDynamicNumber<TSymbol> : DynamicObject, ISpanJsonDynamicValue<TSymbol> where TSymbol : struct
     {
         private static readonly DynamicTypeConverter Converter = new DynamicTypeConverter();
 
