@@ -32,6 +32,12 @@ namespace SpanJson
                     return Inner<T, TSymbol, TResolver>.InnerSerializeToString(input);
                 }
 
+                public static ValueTask SerializeAsync<T>(T input, TextWriter writer, CancellationToken cancellationToken = default)
+                {
+                    return SerializeAsync<T, char, ExcludeNullsOriginalCaseResolver<char>>(input, writer, cancellationToken);
+                }
+
+
                 public static T Deserialize<T>(ReadOnlySpan<char> input)
                 {
                     return Deserialize<T, char, ExcludeNullsOriginalCaseResolver<char>>(input);
@@ -61,12 +67,6 @@ namespace SpanJson
                 {
                     return Serialize<T, byte, ExcludeNullsOriginalCaseResolver<byte>>(input);
                 }
-
-                public static ValueTask SerializeAsync<T>(T input, TextWriter writer, CancellationToken cancellationToken = default)
-                {
-                    return Utf16.SerializeAsync<T, char, ExcludeNullsOriginalCaseResolver<char>>(input, writer, cancellationToken);
-                }
-
 
                 public static T Deserialize<T>(ReadOnlySpan<byte> input)
                 {

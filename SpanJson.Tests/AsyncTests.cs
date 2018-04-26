@@ -40,7 +40,7 @@ namespace SpanJson.Tests
             var input = new AsyncTestObject {Text = "Hello World"};
             using (var tw = new StringWriter(sb))
             {
-                await JsonSerializer.Generic.Utf8.SerializeAsync(input, tw);
+                await JsonSerializer.Generic.Utf16.SerializeAsync(input, tw);
             }
 
             AsyncTestObject deserialized = null;
