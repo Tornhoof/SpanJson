@@ -492,6 +492,10 @@ namespace SpanJson
                 }
             }
 
+            if (pos > _chars.Length - remaining.Length)
+            {
+                Grow(remaining.Length);
+            }
             remaining.CopyTo(_chars.Slice(pos)); // if there is still something to copy we continue here
             pos += remaining.Length;
             WriteUtf16DoubleQuote();

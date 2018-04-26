@@ -78,6 +78,28 @@ namespace SpanJson
                 {
                     return Inner<T, TSymbol, TResolver>.InnerSerializeToByteArray(input);
                 }
+
+                public static ValueTask SerializeAsync<T>(T input, Stream stream, CancellationToken cancellationToken = default)
+                {
+                    return SerializeAsync<T, byte, ExcludeNullsOriginalCaseResolver<byte>>(input, stream, cancellationToken);
+                }
+
+                public static ValueTask<T> DeserializeAsync<T>(Stream stream, CancellationToken cancellationToken = default)
+                {
+                    return DeserializeAsync<T, byte, ExcludeNullsOriginalCaseResolver<byte>>(stream, cancellationToken);
+                }
+
+                public static ValueTask SerializeAsync<T, TSymbol, TResolver>(T input, Stream stream, CancellationToken cancellationToken = default)
+                    where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+                {
+                    return Inner<T, TSymbol, TResolver>.InnerSerializeAsync(input, stream, cancellationToken);
+                }
+
+                public static ValueTask<T> DeserializeAsync<T, TSymbol, TResolver>(Stream stream, CancellationToken cancellationToken = default)
+                    where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+                {
+                    return Inner<T, TSymbol, TResolver>.InnerDeserializeAsync(stream, cancellationToken);
+                }
             }
 
 
@@ -125,6 +147,24 @@ namespace SpanJson
                     return AwaitSerializeAsync(result, data);
                 }
 
+                public static ValueTask InnerSerializeAsync(T input, Stream stream, CancellationToken cancellationToken = default)
+                {
+                    var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSize);
+                    Formatter.Serialize(ref jsonWriter, input);
+                    _lastSerializationSize = jsonWriter.Position;
+                    var temp = jsonWriter.Data;
+                    var data = Unsafe.As<TSymbol[], byte[]>(ref temp);
+                    var result = stream.WriteAsync(data, 0, _lastSerializationSize, cancellationToken);
+                    if (result.IsCompletedSuccessfully)
+                    {
+                        // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
+                        ArrayPool<byte>.Shared.Return(data);
+                        return new ValueTask();
+                    }
+
+                    return AwaitSerializeAsync(result, data);
+                }
+
                 public static T InnerDeserialize(ReadOnlySpan<TSymbol> input)
                 {
                     var jsonReader = new JsonReader<TSymbol>(input);
@@ -139,7 +179,91 @@ namespace SpanJson
                         return new ValueTask<T>(InnerDeserialize(MemoryMarshal.Cast<char, TSymbol>(input.Result)));
                     }
 
-                    return AwaitDeSerializeAsync(input);
+                    return AwaitDeserializeAsync(input);
+                }
+
+                public static ValueTask<T> InnerDeserializeAsync(Stream stream, CancellationToken cancellationToken = default)
+                {
+                    if (stream is MemoryStream ms)
+                    {
+                        var span = new ReadOnlySpan<byte>(ms.GetBuffer(), 0, (int) ms.Length);
+                        return new ValueTask<T>(InnerDeserialize(MemoryMarshal.Cast<byte, TSymbol>(span)));
+                    }
+
+                    var input = stream.CanSeek ? ReadStreamFullAsync(stream, cancellationToken) : ReadStreamAsync(stream, cancellationToken);
+                    if (input.IsCompletedSuccessfully)
+                    {
+                        var memory = input.Result;
+                        return new ValueTask<T>(InnerDeserialize(memory));
+                    }
+
+                    return AwaitDeserializeAsync(input);
+                }
+
+                private static async ValueTask<Memory<byte>> ReadStreamFullAsync(Stream stream, CancellationToken cancellationToken = default)
+                {
+                    var buffer = ArrayPool<byte>.Shared.Rent((int) stream.Length);
+                    var read = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+                    return new Memory<byte>(buffer, 0, read);
+                }
+
+                private static T InnerDeserialize(Memory<byte> memory)
+                {
+                    var result = InnerDeserialize(MemoryMarshal.Cast<byte, TSymbol>(memory.Span));
+                    if (MemoryMarshal.TryGetArray<byte>(memory, out var segment))
+                    {
+                        ArrayPool<byte>.Shared.Return(segment.Array);
+                    }
+
+                    return result;
+                }
+
+                private static async ValueTask<Memory<byte>> ReadStreamAsync(Stream stream, CancellationToken cancellationToken = default)
+                {
+                    byte[] buffer = null;
+                    var totalSize = 0;
+                    byte[] tempBuffer = null;
+                    try
+                    {
+                        tempBuffer = ArrayPool<byte>.Shared.Rent(4096);
+                        var read = 0;
+                        do
+                        {
+                            read = await stream.ReadAsync(tempBuffer, 0, tempBuffer.Length, cancellationToken).ConfigureAwait(false);
+                            if (read > 0)
+                            {
+                                if (buffer == null)
+                                {
+                                    buffer = ArrayPool<byte>.Shared.Rent(4096);
+                                }
+                                else if (totalSize + read > buffer.Length)
+                                {
+                                    Grow(ref buffer);
+                                }
+
+                                Array.Copy(tempBuffer, 0, buffer, totalSize, read);
+                                totalSize += read;
+                            }
+
+                        } while (read > 0);
+                    }
+                    finally
+                    {
+                        if (tempBuffer != null)
+                        {
+                            ArrayPool<byte>.Shared.Return(tempBuffer);
+                        }
+                    }
+
+                    return new Memory<byte>(buffer, 0, totalSize);
+                }
+
+                private static void Grow(ref byte[] array)
+                {
+                    var backup = array;
+                    array = ArrayPool<byte>.Shared.Rent(backup.Length * 2);
+                    backup.CopyTo(array, 0);
+                    ArrayPool<byte>.Shared.Return(backup);
                 }
 
                 // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
@@ -149,10 +273,23 @@ namespace SpanJson
                     ArrayPool<char>.Shared.Return(data);
                 }
 
-                private static async ValueTask<T> AwaitDeSerializeAsync(Task<string> task)
+                // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
+                private static async ValueTask AwaitSerializeAsync(Task result, byte[] data)
+                {
+                    await result.ConfigureAwait(false);
+                    ArrayPool<byte>.Shared.Return(data);
+                }
+
+                private static async ValueTask<T> AwaitDeserializeAsync(Task<string> task)
                 {
                     var input = await task.ConfigureAwait(false);
                     return InnerDeserialize(MemoryMarshal.Cast<char, TSymbol>(input));
+                }
+
+                private static async ValueTask<T> AwaitDeserializeAsync(ValueTask<Memory<byte>> task)
+                {
+                    var input = await task.ConfigureAwait(false);
+                    return InnerDeserialize(input);
                 }
             }
         }

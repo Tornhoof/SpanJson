@@ -384,7 +384,10 @@ namespace SpanJson
                         break;
                 }
             }
-
+            if (pos > _bytes.Length - remaining.Length)
+            {
+                Grow(remaining.Length);
+            }
             EncodeChars(remaining, ref pos);
             WriteUtf8DoubleQuote();
         }

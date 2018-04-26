@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Xunit;
 
 namespace SpanJson.Tests
@@ -37,10 +38,21 @@ namespace SpanJson.Tests
         [InlineData("\"Hello\\nWorld\"", "Hello\nWorld")]
         [InlineData("\"Hello\\nWorld\\r\\tUniverse\"", "Hello\nWorld\r\tUniverse")]
         [InlineData("\"Hello\\u000AWorld\"", "Hello\nWorld")]
-        public void ReadString(string escaped, string comparison)
+        public void ReadStringUtf16(string escaped, string comparison)
         {
             var reader = new JsonReader<char>(escaped);
             var unescaped = reader.ReadUtf16String();
+            Assert.Equal(comparison, unescaped);
+        }
+
+        [Theory]
+        [InlineData("\"Hello\\nWorld\"", "Hello\nWorld")]
+        [InlineData("\"Hello\\nWorld\\r\\tUniverse\"", "Hello\nWorld\r\tUniverse")]
+        [InlineData("\"Hello\\u000AWorld\"", "Hello\nWorld")]
+        public void ReadStringUtf8(string escaped, string comparison)
+        {
+            var reader = new JsonReader<byte>(Encoding.UTF8.GetBytes(escaped));
+            var unescaped = reader.ReadUtf8String();
             Assert.Equal(comparison, unescaped);
         }
 

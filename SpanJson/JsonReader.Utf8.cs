@@ -355,13 +355,13 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ReadUtf8EscapedName()
         {
-            var span = ReadUtf8StringSpanInternal(out var escapedChars);
+            var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
             if (_bytes[_pos++] != (byte) JsonConstant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
 
-            return escapedChars == 0 ? span.ToString() : UnescapeUtf8(span, escapedChars);
+            return escapedCharsSize == 0 ? span.ToString() : UnescapeUtf8(span, escapedCharsSize);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -372,8 +372,8 @@ namespace SpanJson
                 return null;
             }
 
-            var span = ReadUtf8StringSpanInternal(out var escapedChars);
-            return escapedChars == 0 ? ConvertToString(span) : UnescapeUtf8(span, escapedChars);
+            var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
+            return escapedCharsSize == 0 ? ConvertToString(span) : UnescapeUtf8(span, escapedCharsSize);
         }
 
         private static string ConvertToString(ReadOnlySpan<byte> span)
@@ -381,9 +381,9 @@ namespace SpanJson
             return Encoding.UTF8.GetString(span);
         }
 
-        private string UnescapeUtf8(in ReadOnlySpan<byte> span, int escapedChars)
+        private string UnescapeUtf8(in ReadOnlySpan<byte> span, int escapedCharsSize)
         {
-            var unescapedLength = span.Length - escapedChars;
+            var unescapedLength = span.Length - escapedCharsSize;
             var result = new string('\0', unescapedLength);
             ref var c = ref MemoryMarshal.GetReference(result.AsSpan());
             var unescapedIndex = 0;
@@ -424,10 +424,11 @@ namespace SpanJson
                         case (byte) 'U':
                         case (byte) 'u':
                         {
-                            if (Utf8Parser.TryParse(span.Slice(2, 4), out int value, out var bytesConsumed, 'X'))
+                            if (Utf8Parser.TryParse(span.Slice(index, 4), out int value, out var bytesConsumed, 'X'))
                             {
                                 index += bytesConsumed;
                                 unescaped = (char) value;
+                                break;
                             }
 
                             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
@@ -461,7 +462,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ReadOnlySpan<byte> ReadUtf8StringSpanInternal(out int escapedChars)
+        private ReadOnlySpan<byte> ReadUtf8StringSpanInternal(out int escapedCharsSize)
         {
             ref var pos = ref _pos;
             if (_bytes[pos] != (byte) JsonConstant.String)
@@ -471,7 +472,7 @@ namespace SpanJson
 
             pos++;
             // We should also get info about how many escaped chars exist from here
-            if (TryFindEndOfUtf8String(pos, out var bytesConsumed, out escapedChars))
+            if (TryFindEndOfUtf8String(pos, out var bytesConsumed, out escapedCharsSize))
             {
                 var result = _bytes.Slice(pos, bytesConsumed);
                 pos += bytesConsumed + 1; // skip the JsonConstant.DoubleQuote too
@@ -486,7 +487,7 @@ namespace SpanJson
         ///     Includes the quotes on each end
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ReadOnlySpan<byte> ReadUtf8StringSpanWithQuotes(out int escapedChars)
+        private ReadOnlySpan<byte> ReadUtf8StringSpanWithQuotes(out int escapedCharsSize)
         {
             ref var pos = ref _pos;
             if (_bytes[pos] != (byte) JsonConstant.String)
@@ -495,7 +496,7 @@ namespace SpanJson
             }
 
             // We should also get info about how many escaped chars exist from here
-            if (TryFindEndOfUtf8String(pos + 1, out var bytesConsumed, out escapedChars))
+            if (TryFindEndOfUtf8String(pos + 1, out var bytesConsumed, out escapedCharsSize))
             {
                 var result = _bytes.Slice(pos, bytesConsumed + 2); // we include quotes in this version
                 pos += bytesConsumed + 2; // include both JsonConstant.DoubleQuote too 
@@ -850,32 +851,26 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool TryFindEndOfUtf8String(int pos, out int bytesConsumed, out int escapedChars)
+        private bool TryFindEndOfUtf8String(int pos, out int bytesConsumed, out int escapedCharsSize)
         {
-            escapedChars = 0;
+            escapedCharsSize = 0;
             for (var i = pos; i < _bytes.Length; i++)
             {
                 ref readonly var c = ref _bytes[i];
-                if (c == (byte) JsonConstant.ReverseSolidus)
+                if (c == JsonConstant.ReverseSolidus)
                 {
-                    escapedChars++;
-                    ref readonly var nextChar = ref _bytes[i + 1];
-                    if (nextChar == (byte) 'u' || nextChar == (byte) 'U')
+                    escapedCharsSize++;
+                    i++;
+                    ref readonly var nextByte = ref _bytes[i]; // check what type of escaped char it is
+                    if (nextByte == 'u' || nextByte == 'U')
                     {
-                        escapedChars += 4; // add only 4 and not 5 as we still need one unescaped byte
-                    }
-                }
-                else if (c == (byte) JsonConstant.String)
-                {
-                    if (_bytes[i - 1] == (byte) JsonConstant.ReverseSolidus) // now it could be just an escaped JsonConstant.DoubleQuote
-                    {
-                        if (i - 2 >= 0 && _bytes[i - 2] != (byte) JsonConstant.ReverseSolidus
-                        ) // it's an escaped string and not just an escaped JsonConstant.Escape
-                        {
-                            continue;
-                        }
+                        escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
+                        i += 4;
                     }
 
+                }
+                else if (c == JsonConstant.String)
+                {
                     bytesConsumed = i - pos;
                     return true;
                 }

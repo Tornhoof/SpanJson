@@ -324,7 +324,7 @@ namespace SpanJson.Tests.Generated
     {
     }
 
-    public class StringTests : ClassTestBase<String>
+    public partial class StringTests : ClassTestBase<String>
     {
     }
 
