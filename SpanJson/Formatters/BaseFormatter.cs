@@ -2,12 +2,12 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace SpanJson.Formatters
 {
     public abstract class BaseFormatter
     {
+
         protected static Func<T> BuildCreateFunctor<T>(Type defaultType)
         {
             var type = typeof(T);
@@ -19,7 +19,6 @@ namespace SpanJson.Formatters
                     return () => throw new NotSupportedException($"Can't create {defaultType.Name}");
                 }
             }
-
             return Expression.Lambda<Func<T>>(Expression.New(type)).Compile();
         }
 
@@ -31,59 +30,69 @@ namespace SpanJson.Formatters
 
         protected static MethodInfo FindHelperMethod(string name, params Type[] args)
         {
-            const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Static;
+            var flags = BindingFlags.NonPublic | BindingFlags.Static;
             return args?.Length > 0
                 ? typeof(BaseFormatter).GetMethod(name, flags, null, CallingConventions.Any, args, null)
                 : typeof(BaseFormatter).GetMethod(name, flags);
         }
 
+
         /// <summary>
-        ///     I don't know why this is faster than SequenceEqual for this case
+        /// Faster than SequenceEqual
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static bool SymbolSequenceEquals<TSymbol>(in ReadOnlySpan<TSymbol> input, TSymbol[] comparison) where TSymbol : struct, IEquatable<TSymbol>
+        protected static bool StringEquals(ReadOnlySpan<char> span, int offset, string comparison)
         {
-            if (input.Length != comparison.Length)
+            if (span.Length - offset != comparison.Length)
             {
                 return false;
             }
-
-            for (var i = 0; i < input.Length; i++)
+            for (var i = 0; i < comparison.Length; i++)
             {
-                ref readonly var lhs = ref input[i];
-                ref readonly var rhs = ref comparison[i];
-                if (!lhs.Equals(rhs))
+                ref readonly var left = ref span[offset + i];
+                if (comparison[i] != left)
                 {
                     return false;
                 }
             }
 
             return true;
-            //   return input.SequenceEqual(comparison);
         }
 
-        protected static ConstantExpression GetConstantExpressionOfString<TSymbol>(string input)
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static bool SwitchStringEquals(ReadOnlySpan<char> span, string comparison)
         {
-            if (typeof(TSymbol) == typeof(char))
-            {
-                return Expression.Constant(input.ToCharArray());
-            }
-
-            if (typeof(TSymbol) == typeof(byte))
-            {
-                return Expression.Constant(Encoding.UTF8.GetBytes(input));
-            }
-
-            throw new NotSupportedException();
+            return StringEquals(span, 0, comparison);
         }
 
         /// <summary>
-        ///     Couldn't get it working with Expression Trees,ref return lvalues do not work yet
+        /// Faster than SequenceEqual, this needs to be a byte array and not a string otherwise we might run into problems with non ascii property names
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static TSymbol GetSymbol<TSymbol>(ReadOnlySpan<TSymbol> span, int index)
+        protected static bool ByteEquals(ReadOnlySpan<byte> span, int offset, byte[] comparison)
         {
-            return span[index];
+            if (span.Length - offset != comparison.Length)
+            {
+                return false;
+            }
+            for (var i = 0; i < comparison.Length; i++)
+            {
+                ref readonly var left = ref span[offset + i];
+                if (comparison[i] != left)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static bool SwitchByteEquals(ReadOnlySpan<byte> span, byte[] comparison)
+        {
+            return ByteEquals(span, 0, comparison);
+        }
+
     }
 }

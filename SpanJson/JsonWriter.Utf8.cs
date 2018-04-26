@@ -558,6 +558,12 @@ namespace SpanJson
             }
         }
 
+        public void WriteUtf8Verbatim(byte[] value)
+        {
+            WriteUtf8Verbatim(value.AsSpan());
+        }
+
+
         public void WriteUtf8Verbatim(ReadOnlySpan<byte> value)
         {
             ref var pos = ref _pos;

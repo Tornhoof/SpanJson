@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Text;
 
 namespace SpanJson.Formatters
 {
@@ -24,7 +27,7 @@ namespace SpanJson.Formatters
         }
 
         /// <summary>
-        ///     Not sure if it's useful to build something like the automaton from the compelxformatter here
+        /// Not sure if it's useful to build something like the automaton from the compelxformatter here
         /// </summary>
         /// <returns></returns>
         private static DeserializeDelegate BuildDeserializeDelegate()
@@ -33,8 +36,23 @@ namespace SpanJson.Formatters
 
             var jsonValue = Expression.Variable(typeof(ReadOnlySpan<TSymbol>), "jsonValue");
             var returnValue = Expression.Variable(typeof(T), "returnValue");
-            var readMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadStringSpan));
-            var equalityMethodInfo = FindHelperMethod(nameof(SymbolSequenceEquals)).MakeGenericMethod(typeof(TSymbol));
+            MethodInfo readMethodInfo;
+            MethodInfo comparisonMethodInfo;
+            if (typeof(TSymbol) == typeof(char))
+            {
+                readMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16StringSpan));
+                comparisonMethodInfo = FindHelperMethod(nameof(SwitchStringEquals));
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                readMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8StringSpan));
+                comparisonMethodInfo = FindHelperMethod(nameof(SwitchByteEquals));
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+
             var expressions = new List<Expression>
             {
                 Expression.Assign(jsonValue,
@@ -43,18 +61,31 @@ namespace SpanJson.Formatters
             var cases = new List<SwitchCase>();
             foreach (var value in Enum.GetValues(typeof(T)))
             {
-                var constantExpression = GetConstantExpressionOfString<TSymbol>(value.ToString());
+                Expression constantExpression;
+                if (typeof(TSymbol) == typeof(char))
+                {
+                    constantExpression = Expression.Constant(value.ToString()); // TODO Escaping
+                }
+                else if (typeof(TSymbol) == typeof(byte))
+                {
+                    constantExpression = Expression.Constant(Encoding.UTF8.GetBytes(value.ToString())); // TODO Escaping
+                }
+                else
+                {
+                    throw new NotSupportedException();
+                }
+
                 var switchCase = Expression.SwitchCase(Expression.Assign(returnValue, Expression.Constant(value)), constantExpression);
                 cases.Add(switchCase);
             }
 
             var switchExpression = Expression.Switch(typeof(void), jsonValue,
-                Expression.Throw(Expression.Constant(new InvalidOperationException())), equalityMethodInfo, cases.ToArray());
+                Expression.Throw(Expression.Constant(new InvalidOperationException())), comparisonMethodInfo, cases.ToArray());
             expressions.Add(switchExpression);
             var returnTarget = Expression.Label(returnValue.Type);
             var returnLabel = Expression.Label(returnTarget, returnValue);
             expressions.Add(returnLabel);
-            var blockExpression = Expression.Block(new[] {jsonValue, returnValue}, expressions);
+            var blockExpression = Expression.Block(new[] { jsonValue, returnValue }, expressions);
             var lambdaExpression =
                 Expression.Lambda<DeserializeDelegate>(blockExpression, readerParameter);
             return lambdaExpression.Compile();
@@ -64,11 +95,38 @@ namespace SpanJson.Formatters
         {
             var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
-            var writerMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteVerbatim), typeof(TSymbol[]));
+            MethodInfo writerMethodInfo;
+            if (typeof(TSymbol) == typeof(char))
+            {
+                writerMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim), typeof(string));
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                writerMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim), typeof(byte[]));
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+
             var cases = new List<SwitchCase>();
             foreach (var value in Enum.GetValues(typeof(T)))
             {
-                var valueConstant = GetConstantExpressionOfString<TSymbol>($"\"{value}\"");
+                Expression valueConstant;
+                var formattedValue = $"\"{value}\"";
+                if (typeof(TSymbol) == typeof(char))
+                {
+                    valueConstant = Expression.Constant(formattedValue); // TODO Escaping
+                }
+                else if (typeof(TSymbol) == typeof(byte))
+                {
+                    valueConstant = Expression.Constant(Encoding.UTF8.GetBytes(formattedValue)); // TODO Escaping
+                }
+                else
+                {
+                    throw new NotSupportedException();
+                }
+
                 var switchCase = Expression.SwitchCase(Expression.Call(writerParameter, writerMethodInfo, valueConstant), Expression.Constant(value));
                 cases.Add(switchCase);
             }
