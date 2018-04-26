@@ -544,9 +544,9 @@ namespace SpanJson
             ref var pos = ref _pos;
             remaining.Slice(0, i).CopyTo(_chars.Slice(pos));
             pos += i;
-            if (pos > _chars.Length - 1) // one more now
+            if (pos > _chars.Length - 2) 
             {
-                Grow(1);
+                Grow(2); // grow to fit escaped char
             }
 
             WriteUtf16SingleEscapedChar(toEscape);

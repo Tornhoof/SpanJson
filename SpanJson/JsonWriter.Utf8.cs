@@ -403,9 +403,9 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             EncodeChars(remaining.Slice(0, i), ref pos);
-            if (pos > _bytes.Length - 1) // one more now
+            if (pos > _bytes.Length - 2)
             {
-                Grow(1);
+                Grow(2);
             }
 
             WriteUtf8SingleEscapedChar(toEscape);

@@ -197,16 +197,8 @@ namespace SpanJson.Tests
             dynamic dynamicChild1 = parent.Children[0];
             dynamic dynamicChild2 = parent.Children[1];
             dynamic deserializedDynamic = deserialized;
-            Assert.Equal(dynamicChild1.Id, deserializedDynamic.Children[0].Id);
-            Assert.Equal(dynamicChild2.Name, deserializedDynamic.Children[1].Name);
-
-        }
-
-        [Fact]
-        public void TestCastDirect()
-        {
-            var guidDynamic = new SpanJsonDynamicUtf16String($"\"{Guid.NewGuid()}\"");
-            var guid = (Guid) guidDynamic;
+            Assert.Equal(dynamicChild1.Id, (Guid) deserializedDynamic.Children[0].Id);
+            Assert.Equal(dynamicChild2.Name, (string) deserializedDynamic.Children[1].Name);
         }
 
         public class NonDynamicParent
@@ -214,7 +206,8 @@ namespace SpanJson.Tests
             public class DynamicChild : DynamicObject
             {
                 public Guid Fixed { get; set; }
-                private static readonly string[] extraFields = new string[] {nameof(Fixed)};
+                public string Name { get; } = "Hello World";
+                private static readonly string[] extraFields = new string[] {nameof(Fixed), nameof(Name)};
                 private readonly Dictionary<string, object> _extra = new Dictionary<string, object>();
                 public override IEnumerable<string> GetDynamicMemberNames()
                 {
@@ -228,10 +221,6 @@ namespace SpanJson.Tests
 
                 public override bool TrySetMember(SetMemberBinder binder, object value)
                 {
-                    if (extraFields.Contains(binder.Name))
-                    {
-                        return false;
-                    }
                     return _extra.TryAdd(binder.Name, value);
                 }
 
