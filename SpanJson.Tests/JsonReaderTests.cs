@@ -38,6 +38,7 @@ namespace SpanJson.Tests
         [InlineData("\"Hello\\nWorld\"", "Hello\nWorld")]
         [InlineData("\"Hello\\nWorld\\r\\tUniverse\"", "Hello\nWorld\r\tUniverse")]
         [InlineData("\"Hello\\u000AWorld\"", "Hello\nWorld")]
+        [InlineData("\"Test' \\\\\\\"@vnni47dg\"", "Test' \\\"@vnni47dg")]
         public void ReadStringUtf16(string escaped, string comparison)
         {
             var reader = new JsonReader<char>(escaped);
@@ -49,6 +50,7 @@ namespace SpanJson.Tests
         [InlineData("\"Hello\\nWorld\"", "Hello\nWorld")]
         [InlineData("\"Hello\\nWorld\\r\\tUniverse\"", "Hello\nWorld\r\tUniverse")]
         [InlineData("\"Hello\\u000AWorld\"", "Hello\nWorld")]
+        [InlineData("\"Test' \\\\\\\"@vnni47dg\"", "Test' \\\"@vnni47dg")]
         public void ReadStringUtf8(string escaped, string comparison)
         {
             var reader = new JsonReader<byte>(Encoding.UTF8.GetBytes(escaped));

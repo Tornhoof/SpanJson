@@ -403,7 +403,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             pos += EncodeChars(remaining.Slice(0,i));
             remaining = remaining.Slice(i + 1); // continuing after the escaped char
-            i = 0;
+            i = -1; // i++ in post increment
             var minWrite = 1 + remaining.Length;
             if (pos > _bytes.Length - minWrite)
             {
@@ -417,7 +417,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             pos += EncodeChars(remaining.Slice(0, i));
             remaining = remaining.Slice(i + 1); // continuing after the escaped char
-            i = 0;
+            i = -1; // i++ in post increment
             var minWrite = 5 + remaining.Length;
             if (pos > _bytes.Length - minWrite)
             {

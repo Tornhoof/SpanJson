@@ -8,8 +8,10 @@ namespace SpanJson.Tests
         [Theory]
         [InlineData("Hello \"World", "\"Hello \\\"World\"")]
         [InlineData("Hello \"Univ\"erse", "\"Hello \\\"Univ\\\"erse\"")]
+        [InlineData("Test' \\\"@vnni47dg", "\"Test' \\\\\\\"@vnni47dg\"")]
         public void WriteEscapedUtf16(string input, string output)
         {
+            var serializedJil = Jil.JSON.Serialize(input);
             var writer = new JsonWriter<char>(100);
             writer.WriteUtf16String(input);
             var serialized = writer.ToString();
@@ -19,6 +21,7 @@ namespace SpanJson.Tests
         [Theory]
         [InlineData("Hello \"World", "\"Hello \\\"World\"")]
         [InlineData("Hello \"Univ\"erse", "\"Hello \\\"Univ\\\"erse\"")]
+        [InlineData("Test' \\\"@vnni47dg", "\"Test' \\\\\\\"@vnni47dg\"")]
         public void WriteEscapedUtf8(string input, string output)
         {
             var writer = new JsonWriter<byte>(100);

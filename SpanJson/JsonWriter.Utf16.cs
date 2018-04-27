@@ -544,7 +544,7 @@ namespace SpanJson
             remaining.Slice(0, i).CopyTo(_chars.Slice(pos));
             pos += i;
             remaining = remaining.Slice(i + 1); // continuing after the escaped char
-            i = 0;
+            i = -1; // i++ in post increment
             var minWrite = 1 + remaining.Length;
             if (pos > _chars.Length - minWrite) 
             {
@@ -568,7 +568,7 @@ namespace SpanJson
             remaining.Slice(0, i).CopyTo(_chars.Slice(pos));
             pos += i;
             remaining = remaining.Slice(i + 1); // continuing after the escaped char
-            i = 0;
+            i = -1; // i++ in post increment
             var minWrite = 5 + remaining.Length; // we need 5 more chars to fit the escaped part
             if (pos > _chars.Length - minWrite)
             {
