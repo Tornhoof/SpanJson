@@ -184,9 +184,9 @@ namespace SpanJson
 
                 public static ValueTask<T> InnerDeserializeAsync(Stream stream, CancellationToken cancellationToken = default)
                 {
-                    if (stream is MemoryStream ms)
+                    if (stream is MemoryStream ms && ms.TryGetBuffer(out var buffer))
                     {
-                        var span = new ReadOnlySpan<byte>(ms.GetBuffer(), 0, (int) ms.Length);
+                        var span = new ReadOnlySpan<byte>(buffer.Array, buffer.Offset, buffer.Count);
                         return new ValueTask<T>(InnerDeserialize(MemoryMarshal.Cast<byte, TSymbol>(span)));
                     }
 

@@ -22,10 +22,12 @@ namespace SpanJson
             if (typeof(TSymbol) == typeof(char))
             {
                 _chars = MemoryMarshal.Cast<TSymbol, char>(input);
+                _bytes = null;
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
                 _bytes = MemoryMarshal.Cast<TSymbol, byte>(input);
+                _chars = null;
             }
             else
             {
