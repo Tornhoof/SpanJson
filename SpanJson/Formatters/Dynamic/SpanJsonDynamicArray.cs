@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 
 namespace SpanJson.Formatters.Dynamic
 {
-    public sealed class SpanJsonDynamicArray<TSymbol> : DynamicObject, IReadOnlyList<object> where TSymbol : struct
+    public sealed class SpanJsonDynamicArray<TSymbol> : DynamicObject, IEnumerable<object> where TSymbol : struct
     {
         private static readonly ConcurrentDictionary<Type, Func<object[], ICountableEnumerable>> Enumerables =
             new ConcurrentDictionary<Type, Func<object[], ICountableEnumerable>>();
@@ -20,10 +20,6 @@ namespace SpanJson.Formatters.Dynamic
         {
             _input = input;
         }
-
-        public int Count => _input.Length;
-
-        public object this[int index] => _input[index];
 
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -74,16 +70,9 @@ namespace SpanJson.Formatters.Dynamic
             return false;
         }
 
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
-        {
-            if (binder.Name == "Length")
-            {
-                result = _input.Length;
-                return true;
-            }
+        public object this[int index] => _input[index];
 
-            return base.TryGetMember(binder, out result);
-        }
+        public int Length => _input.Length;
 
         public override string ToString()
         {

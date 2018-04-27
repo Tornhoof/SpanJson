@@ -6,81 +6,13 @@ using System.Linq;
 
 namespace SpanJson.Formatters.Dynamic
 {
-    public sealed class SpanJsonDynamicObject : DynamicObject, IDictionary<string, object>
+    public sealed class SpanJsonDynamicObject : DynamicObject
     {
         private readonly Dictionary<string, object> _dictionary;
 
         internal SpanJsonDynamicObject(Dictionary<string, object> dictionary)
         {
             _dictionary = dictionary;
-        }
-
-
-        public int Count => _dictionary.Count;
-        public bool IsReadOnly { get; } = true;
-
-        public object this[string key]
-        {
-            get => _dictionary[key];
-            set => throw new NotImplementedException();
-        }
-
-        public ICollection<string> Keys => _dictionary.Keys;
-        public ICollection<object> Values => _dictionary.Values;
-
-        public void Add(KeyValuePair<string, object> item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Clear()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Contains(KeyValuePair<string, object> item)
-        {
-            return _dictionary.Contains(item);
-        }
-
-        public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
-        {
-            (_dictionary as IDictionary<string, object>).CopyTo(array, arrayIndex);
-        }
-
-        public bool Remove(KeyValuePair<string, object> item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Add(string key, object value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool ContainsKey(string key)
-        {
-            return _dictionary.ContainsKey(key);
-        }
-
-        public bool Remove(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool TryGetValue(string key, out object value)
-        {
-            return _dictionary.TryGetValue(key, out value);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
-        {
-            return _dictionary.GetEnumerator();
         }
 
         public override string ToString()
@@ -91,6 +23,16 @@ namespace SpanJson.Formatters.Dynamic
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
             return _dictionary.TryGetValue(binder.Name, out result);
+        }
+
+        public override bool TryConvert(ConvertBinder binder, out object result)
+        {
+            if (typeof(IDictionary<string, object>).IsAssignableFrom(binder.ReturnType))
+            {
+                result = _dictionary;
+                return true;
+            }
+            return base.TryConvert(binder, out result);
         }
 
         public override IEnumerable<string> GetDynamicMemberNames()

@@ -12,12 +12,13 @@ namespace SpanJson.Formatters
         protected static Func<T> BuildCreateFunctor<T>(Type defaultType)
         {
             var type = typeof(T);
-            if (type.IsInterface)
+            var ci = type.GetConstructor(Type.EmptyTypes);
+            if (type.IsInterface || ci == null)
             {
                 type = defaultType;
                 if (type == null)
                 {
-                    return () => throw new NotSupportedException($"Can't create {defaultType.Name}");
+                    return () => throw new NotSupportedException($"Can't create {typeof(T).Name}.");
                 }
             }
             return Expression.Lambda<Func<T>>(Expression.New(type)).Compile();

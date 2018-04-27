@@ -22,7 +22,7 @@ namespace SpanJson.Tests
             var model = fixture.Create(modelType);
             var serialized = JsonSerializer.NonGeneric.Utf16.Serialize(model);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<object>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(model, deserialized, DynamicEqualityComparer.Default);
         }
@@ -36,7 +36,7 @@ namespace SpanJson.Tests
             var model = fixture.Create(modelType);
             var serialized = JsonSerializer.NonGeneric.Utf8.Serialize(model);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<object>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(model, deserialized, DynamicEqualityComparer.Default);
         }
@@ -100,12 +100,8 @@ namespace SpanJson.Tests
                 Assert.NotNull(comment);
             }
 
-            for (var i = 0; i < deserialized.comments.Count; i++)
-            {
-                var comment = deserialized.comments[i];
-
-                Assert.NotNull(comment);
-            }
+            var dict = (IDictionary<string, dynamic>) deserialized;
+            Assert.NotNull(dict);
         }
 
         [Fact]
@@ -114,9 +110,9 @@ namespace SpanJson.Tests
             dynamic dynamicObject = new MyDynamicObject();
             dynamicObject.Text = "Hello World";
 
-            var serialized = JsonSerializer.Generic.Utf16.Serialize<object>(dynamicObject);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(dynamicObject);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<MyDynamicObject>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal("Hello World", (string) dynamicObject.Text);
         }
@@ -129,12 +125,27 @@ namespace SpanJson.Tests
             dynamicObject.Text = "Hello World";
             dynamicObject.Value = 5;
 
-            var serialized = JsonSerializer.Generic.Utf16.Serialize<object>(dynamicObject);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(dynamicObject);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<MyDynamicObject>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal("Hello World", (string) dynamicObject.Text);
             Assert.Equal(5, (int) dynamicObject.Value);
+        }
+
+        [Fact]
+        public void DynamicObjectSerializeTwice()
+        {
+            dynamic dynamicObject = new MyDynamicObject();
+            dynamicObject.Text = "Hello World";
+            dynamicObject.Value = 5;
+            dynamicObject.Array = new string[] {"Hello", "World"};
+
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(dynamicObject);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
+            var serialized2 = JsonSerializer.Generic.Utf16.Serialize(deserialized);
+            Assert.Equal(serialized, serialized2);
         }
 
         [Fact]

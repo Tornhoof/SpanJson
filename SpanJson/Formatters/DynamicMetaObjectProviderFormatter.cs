@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Microsoft.CSharp.RuntimeBinder;
+using SpanJson.Formatters.Dynamic;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
@@ -70,7 +71,6 @@ namespace SpanJson.Formatters
             reader.ReadBeginObjectOrThrow();
             var result = CreateFunctor();
             var count = 0;
-
             while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
             {
                 var name = reader.ReadEscapedName();
@@ -96,27 +96,34 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            var memberInfos = Resolver.GetDynamicMemberInfos(value);
-            var counter = 0;
-            writer.WriteBeginObject();
-            foreach (var memberInfo in memberInfos)
+            if (value is ISpanJsonDynamicValue<TSymbol> dynValue) // if we serialize our dynamic value again we simply write the symbols directly
             {
-                var child = GetObjectDynamically(memberInfo.MemberName, value);
-                if (memberInfo.ExcludeNull && child == null)
-                {
-                    continue;
-                }
-
-                if (counter++ > 0)
-                {
-                    writer.WriteValueSeparator();
-                }
-
-                writer.WriteName(memberInfo.Name);
-                RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child);
+                writer.WriteVerbatim(dynValue.Symbols);
             }
+            else
+            {
+                var memberInfos = Resolver.GetDynamicMemberInfos(value);
+                var counter = 0;
+                writer.WriteBeginObject();
+                foreach (var memberInfo in memberInfos)
+                {
+                    var child = GetObjectDynamically(memberInfo.MemberName, value);
+                    if (memberInfo.ExcludeNull && child == null)
+                    {
+                        continue;
+                    }
 
-            writer.WriteEndObject();
+                    if (counter++ > 0)
+                    {
+                        writer.WriteValueSeparator();
+                    }
+
+                    writer.WriteName(memberInfo.Name);
+                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child);
+                }
+
+                writer.WriteEndObject();
+            }
         }
 
         private static object GetObjectDynamically(string memberName, T target)
