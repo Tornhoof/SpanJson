@@ -541,8 +541,11 @@ namespace SpanJson
         private void CopyUtf16AndEscape(ref ReadOnlySpan<char> remaining, ref int i, char toEscape)
         {
             ref var pos = ref _pos;
-            remaining.Slice(0, i).CopyTo(_chars.Slice(pos));
-            pos += i;
+            if (i > 0)
+            {
+                remaining.Slice(0, i).CopyTo(_chars.Slice(pos));
+                pos += i;
+            }
             remaining = remaining.Slice(i + 1); // continuing after the escaped char
             i = -1; // i++ in post increment
             var minWrite = 1 + remaining.Length;
@@ -565,8 +568,11 @@ namespace SpanJson
         private void CopyUtf16AndEscapeUnicode(ref ReadOnlySpan<char> remaining, ref int i, char firstToEscape, char secondToEscape)
         {
             ref var pos = ref _pos;
-            remaining.Slice(0, i).CopyTo(_chars.Slice(pos));
-            pos += i;
+            if (i > 0)
+            {
+                remaining.Slice(0, i).CopyTo(_chars.Slice(pos));
+                pos += i;
+            }
             remaining = remaining.Slice(i + 1); // continuing after the escaped char
             i = -1; // i++ in post increment
             var minWrite = 5 + remaining.Length; // we need 5 more chars to fit the escaped part
