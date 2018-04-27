@@ -384,18 +384,14 @@ namespace SpanJson
                         break;
                 }
             }
-            if (pos > _bytes.Length - remaining.Length)
-            {
-                Grow(remaining.Length);
-            }
-            EncodeChars(remaining, ref pos);
+            pos += EncodeChars(remaining);
             WriteUtf8DoubleQuote();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void EncodeChars(ReadOnlySpan<char> span, ref int pos)
+        private int EncodeChars(ReadOnlySpan<char> span)
         {
-            pos += Encoding.UTF8.GetBytes(span, _bytes.Slice(pos));
+            return Encoding.UTF8.GetBytes(span, _bytes.Slice(_pos));
         }
 
         /// <summary>
@@ -405,30 +401,29 @@ namespace SpanJson
         private void CopyUtf8AndEscape(ref ReadOnlySpan<char> remaining, ref int i, char toEscape)
         {
             ref var pos = ref _pos;
-            EncodeChars(remaining.Slice(0, i), ref pos);
-            if (pos > _bytes.Length - 2)
-            {
-                Grow(2);
-            }
-
-            WriteUtf8SingleEscapedChar(toEscape);
+            pos += EncodeChars(remaining.Slice(0,i));
             remaining = remaining.Slice(i + 1); // continuing after the escaped char
             i = 0;
+            var minWrite = 1 + remaining.Length;
+            if (pos > _bytes.Length - minWrite)
+            {
+                Grow(minWrite); // grow to fit escaped char
+            }
+            WriteUtf8SingleEscapedChar(toEscape);
         }
 
         private void CopyUtf8AndEscapeUnicode(ref ReadOnlySpan<char> remaining, ref int i, char firstToEscape, char secondToEscape)
         {
             ref var pos = ref _pos;
-            EncodeChars(remaining.Slice(0, i), ref pos);
-            const int length = 6;
-            if (pos > _bytes.Length - length) // 6 more now
-            {
-                Grow(length);
-            }
-
-            WriteUtf8DoubleEscapedChar(firstToEscape, secondToEscape);
+            pos += EncodeChars(remaining.Slice(0, i));
             remaining = remaining.Slice(i + 1); // continuing after the escaped char
             i = 0;
+            var minWrite = 5 + remaining.Length;
+            if (pos > _bytes.Length - minWrite)
+            {
+                Grow(minWrite); // grow to fit escaped char
+            }
+            WriteUtf8DoubleEscapedChar(firstToEscape, secondToEscape);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

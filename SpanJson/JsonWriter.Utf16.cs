@@ -491,11 +491,6 @@ namespace SpanJson
                         break;
                 }
             }
-
-            if (pos > _chars.Length - remaining.Length)
-            {
-                Grow(remaining.Length);
-            }
             remaining.CopyTo(_chars.Slice(pos)); // if there is still something to copy we continue here
             pos += remaining.Length;
             WriteUtf16DoubleQuote();
@@ -548,14 +543,15 @@ namespace SpanJson
             ref var pos = ref _pos;
             remaining.Slice(0, i).CopyTo(_chars.Slice(pos));
             pos += i;
-            if (pos > _chars.Length - 2) 
+            remaining = remaining.Slice(i + 1); // continuing after the escaped char
+            i = 0;
+            var minWrite = 1 + remaining.Length;
+            if (pos > _chars.Length - minWrite) 
             {
-                Grow(2); // grow to fit escaped char
+                Grow(minWrite); // grow to fit escaped char
             }
 
             WriteUtf16SingleEscapedChar(toEscape);
-            remaining = remaining.Slice(i + 1); // continuing after the escaped char
-            i = 0;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -571,15 +567,14 @@ namespace SpanJson
             ref var pos = ref _pos;
             remaining.Slice(0, i).CopyTo(_chars.Slice(pos));
             pos += i;
-            const int length = 6;
-            if (pos > _chars.Length - length) // 6 more now
-            {
-                Grow(length);
-            }
-
-            WriteUtf16DoubleEscapedChar(firstToEscape, secondToEscape);
             remaining = remaining.Slice(i + 1); // continuing after the escaped char
             i = 0;
+            var minWrite = 5 + remaining.Length; // we need 5 more chars to fit the escaped part
+            if (pos > _chars.Length - minWrite)
+            {
+                Grow(minWrite);
+            }
+            WriteUtf16DoubleEscapedChar(firstToEscape, secondToEscape);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
