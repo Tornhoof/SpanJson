@@ -5,15 +5,7 @@
     <LangVersion>latest</LangVersion>
     <!--<RuntimeFrameworkVersion>2.1.0-preview2-26406-04</RuntimeFrameworkVersion>-->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.0.0-alpha-00044</Version>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Version>0.1.0.0-alpha-00048</Version>
   </PropertyGroup>
   
   <ItemGroup>

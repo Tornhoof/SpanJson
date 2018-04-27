@@ -44,70 +44,70 @@ namespace SpanJson.Benchmarks
 
         private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
 
-        [Benchmark]
-        public string SerializeAnswerWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(Answer);
-        }
+        //[Benchmark]
+        //public string SerializeAnswerWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(Answer);
+        //}
 
-        [Benchmark]
-        public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
-        {
-            return JsonSerializer.Generic.Utf8.Serialize(Answer);
-        }
+        //[Benchmark]
+        //public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
+        //{
+        //    return JsonSerializer.Generic.Utf8.Serialize(Answer);
+        //}
 
-        [Benchmark]
-        public Answer DeserializeAnswerWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
-        }
+        //[Benchmark]
+        //public Answer DeserializeAnswerWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
+        //}
 
-        [Benchmark]
-        public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
-        {
-            return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
-        }
+        //[Benchmark]
+        //public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
+        //{
+        //    return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
+        //}
 
-        [Benchmark]
-        public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsyncUtf8()
-        {
-            using (var ms = new MemoryStream(AnswerSerializedByteArray, 0, AnswerSerializedByteArray.Length, false, true))
-            {
-                return await JsonSerializer.Generic.Utf8.DeserializeAsync<Answer>(ms);
-            }
-        }
+        //[Benchmark]
+        //public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsyncUtf8()
+        //{
+        //    using (var ms = new MemoryStream(AnswerSerializedByteArray, 0, AnswerSerializedByteArray.Length, false, true))
+        //    {
+        //        return await JsonSerializer.Generic.Utf8.DeserializeAsync<Answer>(ms);
+        //    }
+        //}
 
-        [Benchmark]
-        public async ValueTask<byte[]> SerializeAnswerWithSpanJsonSerializerAsyncUtf8()
-        {
-            using (var ms = new MemoryStream())
-            {
-                await JsonSerializer.Generic.Utf8.SerializeAsync(Answer, ms);
-                return ms.ToArray();
-            }
-        }
+        //[Benchmark]
+        //public async ValueTask<byte[]> SerializeAnswerWithSpanJsonSerializerAsyncUtf8()
+        //{
+        //    using (var ms = new MemoryStream())
+        //    {
+        //        await JsonSerializer.Generic.Utf8.SerializeAsync(Answer, ms);
+        //        return ms.ToArray();
+        //    }
+        //}
 
-        [Benchmark]
-        public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsync()
-        {
-            using (var tr = new StringReader(AnswerSerializedString))
-            {
-                return await JsonSerializer.Generic.Utf16.DeserializeAsync<Answer>(tr);
-            }
-        }
+        //[Benchmark]
+        //public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsync()
+        //{
+        //    using (var tr = new StringReader(AnswerSerializedString))
+        //    {
+        //        return await JsonSerializer.Generic.Utf16.DeserializeAsync<Answer>(tr);
+        //    }
+        //}
 
 
-        [Benchmark]
-        public async ValueTask<string> SerializeAnswerWithSpanJsonSerializerAsync()
-        {
-            StringBuilder.Clear();
-            using (var tw = new StringWriter(StringBuilder))
-            {
-                await JsonSerializer.Generic.Utf16.SerializeAsync(Answer, tw);
+        //[Benchmark]
+        //public async ValueTask<string> SerializeAnswerWithSpanJsonSerializerAsync()
+        //{
+        //    StringBuilder.Clear();
+        //    using (var tw = new StringWriter(StringBuilder))
+        //    {
+        //        await JsonSerializer.Generic.Utf16.SerializeAsync(Answer, tw);
 
-            }
-            return StringBuilder.ToString();
-        }
+        //    }
+        //    return StringBuilder.ToString();
+        //}
 
 
         //[Benchmark]
@@ -196,21 +196,21 @@ namespace SpanJson.Benchmarks
         //}
 
 
-        //[Benchmark]
-        //public char[] WriteStringUtf16()
-        //{
-        //    var writer = new JsonWriter<char>(20);
-        //    writer.WriteUtf16String("Hello World");
-        //    return writer.Data;
-        //}
+        [Benchmark]
+        public char[] WriteStringUtf16()
+        {
+            var writer = new JsonWriter<char>(20);
+            writer.WriteUtf16String("Hello World");
+            return writer.Data;
+        }
 
-        //[Benchmark]
-        //public byte[] WriteStringUtf8()
-        //{
-        //    var writer = new JsonWriter<byte>(20);
-        //    writer.WriteUtf8String("Hello World");
-        //    return writer.Data;
-        //}
+        [Benchmark]
+        public byte[] WriteStringUtf8()
+        {
+            var writer = new JsonWriter<byte>(20);
+            writer.WriteUtf8String("Hello World");
+            return writer.Data;
+        }
 
         //[Benchmark]
         //public ReadOnlySpan<char> JsonTestCharDirect()

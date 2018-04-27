@@ -30,5 +30,26 @@ namespace SpanJson.Tests
             var outputBytes = Encoding.UTF8.GetBytes(output);
             Assert.Equal(outputBytes, serialized);
         }
+
+        [Fact]
+        public void WriteMultiCharStringUtf8()
+        {
+            var input = "칱칳칶칹칼캠츧";
+            var writer = new JsonWriter<byte>(4);
+            writer.WriteUtf8String(input);
+            var output = writer.ToByteArray();
+            Assert.Equal($"\"{input}\"", Encoding.UTF8.GetString(output));
+
+        }
+
+        [Fact]
+        public void WriteMultiCharStringUtf16()
+        {
+            var input = "칱칳칶칹칼캠츧";
+            var writer = new JsonWriter<char>(4);
+            writer.WriteUtf16String(input);
+            var output = writer.ToString();
+            Assert.Equal($"\"{input}\"", output);
+        }
     }
 }

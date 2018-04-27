@@ -149,6 +149,36 @@ namespace SpanJson.Tests
         }
 
         [Fact]
+        public void DynamicObjectSerializeTwiceDifferentEncodingFirst()
+        {
+            dynamic dynamicObject = new MyDynamicObject();
+            dynamicObject.Text = "Hello World";
+            dynamicObject.Value = 5;
+            dynamicObject.Array = new string[] { "Hello", "World" };
+
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(dynamicObject);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
+            var serialized2 = JsonSerializer.Generic.Utf16.Serialize(deserialized);
+            Assert.Equal(Encoding.UTF8.GetString(serialized), serialized2);
+        }
+
+        [Fact]
+        public void DynamicObjectSerializeTwiceDifferentEncodingSecond()
+        {
+            dynamic dynamicObject = new MyDynamicObject();
+            dynamicObject.Text = "Hello World";
+            dynamicObject.Value = 5;
+            dynamicObject.Array = new string[] { "Hello", "World" };
+
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(dynamicObject);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
+            var serialized2 = JsonSerializer.Generic.Utf8.Serialize(deserialized);
+            Assert.Equal(serialized, Encoding.UTF8.GetString(serialized2));
+        }
+
+        [Fact]
         public void DynamicObjectTestTwoPropertiesIncludeNull()
         {
             dynamic dynamicObject = new MyDynamicObject();

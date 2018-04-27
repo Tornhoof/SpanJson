@@ -384,14 +384,26 @@ namespace SpanJson
                         break;
                 }
             }
-            pos += EncodeChars(remaining);
+            EncodeChars(remaining);
             WriteUtf8DoubleQuote();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int EncodeChars(ReadOnlySpan<char> span)
+        private void EncodeChars(ReadOnlySpan<char> span)
         {
-            return Encoding.UTF8.GetBytes(span, _bytes.Slice(_pos));
+            ref var pos = ref _pos;
+            var encoder = Encoding.UTF8.GetEncoder();
+            bool completed;
+            do
+            {
+                encoder.Convert(span, _bytes.Slice(pos), true, out var charsUsed, out var bytesUsed, out completed);
+                pos += bytesUsed;
+                if (!completed)
+                {
+                    span = span.Slice(charsUsed);
+                    Grow(span.Length);
+                }
+
+            } while (!completed);        
         }
 
         /// <summary>
@@ -403,7 +415,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             if (i > 0)
             {
-                pos += EncodeChars(remaining.Slice(0, i));
+                EncodeChars(remaining.Slice(0, i));
             }
             remaining = remaining.Slice(i + 1); // continuing after the escaped char
             i = -1; // i++ in post increment
@@ -420,7 +432,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             if (i > 0)
             {
-                pos += EncodeChars(remaining.Slice(0, i));
+                EncodeChars(remaining.Slice(0, i));
             }
             remaining = remaining.Slice(i + 1); // continuing after the escaped char
             i = -1; // i++ in post increment
@@ -549,10 +561,9 @@ namespace SpanJson
                     {
                         Span<char> span = stackalloc char[1];
                         span[0] = value;
-                        var length = Encoding.UTF8.GetByteCount(span);
-                        if (pos > _bytes.Length - length)
+                        if (pos > _bytes.Length - 4) // not really correct, but that's the worst case
                         {
-                            Grow(length);
+                            Grow(4);
                         }
 
                         pos += Encoding.UTF8.GetBytes(span, _bytes.Slice(pos));

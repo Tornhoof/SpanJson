@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Microsoft.CSharp.RuntimeBinder;
 using SpanJson.Formatters.Dynamic;
 using SpanJson.Resolvers;
@@ -95,10 +96,20 @@ namespace SpanJson.Formatters
                 writer.WriteNull();
                 return;
             }
-
-            if (value is ISpanJsonDynamicValue<TSymbol> dynValue) // if we serialize our dynamic value again we simply write the symbols directly
+            // if we serialize our dynamic value again we simply write the symbols directly if it is the same type
+            if (value is ISpanJsonDynamicValue<TSymbol> dynamicValue) 
             {
-                writer.WriteVerbatim(dynValue.Symbols);
+                writer.WriteVerbatim(dynamicValue.Symbols);
+            }
+            else if (value is ISpanJsonDynamicValue<byte> bValue)
+            {
+                var chars = Encoding.UTF8.GetChars(bValue.Symbols);
+                writer.WriteUtf16Verbatim(chars);
+            }
+            else if (value is ISpanJsonDynamicValue<char> cValue)
+            {
+                var bytes = Encoding.UTF8.GetBytes(cValue.Symbols);
+                writer.WriteUtf8Verbatim(bytes);
             }
             else
             {
