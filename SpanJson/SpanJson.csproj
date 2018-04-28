@@ -5,11 +5,11 @@
     <LangVersion>latest</LangVersion>
     <!--<RuntimeFrameworkVersion>2.1.0-preview2-26406-04</RuntimeFrameworkVersion>-->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.0.0-alpha-00048</Version>
+    <Version>0.1.0.0-alpha-00052</Version>
   </PropertyGroup>
   
   <ItemGroup>
-  <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.0-preview2-26406-04" />
+  <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.0-rc1-26426-05" />
   </ItemGroup>
 
   <ItemGroup>

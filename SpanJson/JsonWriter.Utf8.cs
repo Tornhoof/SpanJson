@@ -269,13 +269,15 @@ namespace SpanJson
         /// We know that for a pure ascii string all characters will fit if there are no escapes
         /// We make sure that initially the buffer is large enough and an additional fully escaped char fits too
         /// After each escape we make sure that all remaining ascii chars and extra fully escaped char fit
+        /// For UTF8 encoded bytes we make sure that the 5 for the fully escaped value and 4 for the utf fit
+        /// That's all done to make sure we don't have resizing in the fast path (the ascii case)
         /// </summary>
         /// <param name="value"></param>
         public void WriteUtf8String(string value)
         {
             ref var pos = ref _pos;
             var valueLength = value.Length;
-            var sLength = valueLength + 7; // assume that a fully escaped char fits too
+            var sLength = valueLength + 7; // assume that a fully escaped char fits too + 2 double quotes
             if (pos > _bytes.Length - sLength)
             {
                 Grow(sLength);
@@ -296,12 +298,13 @@ namespace SpanJson
                         Grow(remaining);
                     }
                 }
-                else if (c > 0x7F) // UTF8 characters, we need to escpae them
+                else if (c > 0x7F) // UTF8 characters, we need to escape them
                 {
                     var temp = MemoryMarshal.CreateReadOnlySpan(ref c, 1);
-                    if (pos > _bytes.Length - 4) // not really correct, but that's the worst case
+                    var remaining = 9 + valueLength - i; // make sure that all characters, an extra 5 for a full escape and 4 for the utf8 bytes, still fit
+                    if (pos > _bytes.Length - remaining)
                     {
-                        Grow(4);
+                        Grow(remaining);
                     }
 
                     pos += Encoding.UTF8.GetBytes(temp, _bytes.Slice(pos));

@@ -110,5 +110,10 @@ namespace SpanJson.Tests
             Assert.NotNull(deserialized);
             Assert.Equal(wpn.你好, deserialized.你好);
         }
+
+        public class OutputModel
+        {
+            public string Name { get; set; }
+        }
     }
 }
