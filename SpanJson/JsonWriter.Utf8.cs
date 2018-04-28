@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Buffers.Text;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using SpanJson.Helpers;
 
@@ -264,193 +265,65 @@ namespace SpanJson
             WriteUtf8DoubleQuote();
         }
 
+        /// <summary>
+        /// We know that for a pure ascii string all characters will fit if there are no escapes
+        /// We make sure that initially the buffer is large enough and an additional fully escaped char fits too
+        /// After each escape we make sure that all remaining ascii chars and extra fully escaped char fit
+        /// </summary>
+        /// <param name="value"></param>
         public void WriteUtf8String(string value)
         {
             ref var pos = ref _pos;
-            var sLength = value.Length + 2;
+            var valueLength = value.Length;
+            var sLength = valueLength + 7; // assume that a fully escaped char fits too
             if (pos > _bytes.Length - sLength)
             {
                 Grow(sLength);
             }
 
             WriteUtf8DoubleQuote();
-            var remaining = value.AsSpan();
-            for (var i = 0; i < remaining.Length; i++)
+            var span = value.AsSpan();
+            ref var start = ref MemoryMarshal.GetReference(span);
+            for (var i = 0; i < valueLength; i++)
             {
-                ref readonly var c = ref remaining[i];
-                switch (c)
+                ref var c = ref Unsafe.Add(ref start, i);
+                if (c < 0x20 || c == JsonConstant.DoubleQuote || c == JsonConstant.Solidus || c == JsonConstant.ReverseSolidus)
                 {
-                    case JsonConstant.DoubleQuote:
-                        CopyUtf8AndEscape(ref remaining, ref i, JsonConstant.DoubleQuote);
-                        break;
-                    case JsonConstant.ReverseSolidus:
-                        CopyUtf8AndEscape(ref remaining, ref i, JsonConstant.ReverseSolidus);
-                        break;
-                    case '\b':
-                        CopyUtf8AndEscape(ref remaining, ref i, 'b');
-                        break;
-                    case '\f':
-                        CopyUtf8AndEscape(ref remaining, ref i, 'f');
-                        break;
-                    case '\n':
-                        CopyUtf8AndEscape(ref remaining, ref i, 'n');
-                        break;
-                    case '\r':
-                        CopyUtf8AndEscape(ref remaining, ref i, 'r');
-                        break;
-                    case '\t':
-                        CopyUtf8AndEscape(ref remaining, ref i, 't');
-                        break;
-                    case '\x0':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', '0');
-                        break;
-                    case '\x1':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', '1');
-                        break;
-                    case '\x2':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', '2');
-                        break;
-                    case '\x3':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', '3');
-                        break;
-                    case '\x4':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', '4');
-                        break;
-                    case '\x5':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', '5');
-                        break;
-                    case '\x6':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', '6');
-                        break;
-                    case '\x7':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', '7');
-                        break;
-                    case '\xB':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', 'B');
-                        break;
-                    case '\xE':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', 'E');
-                        break;
-                    case '\xF':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '0', 'F');
-                        break;
-                    case '\x10':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '0');
-                        break;
-                    case '\x11':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '1');
-                        break;
-                    case '\x12':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '2');
-                        break;
-                    case '\x13':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '3');
-                        break;
-                    case '\x14':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '4');
-                        break;
-                    case '\x15':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '5');
-                        break;
-                    case '\x16':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '6');
-                        break;
-                    case '\x17':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '7');
-                        break;
-                    case '\x18':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '8');
-                        break;
-                    case '\x19':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', '9');
-                        break;
-                    case '\x1A':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', 'A');
-                        break;
-                    case '\x1B':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', 'B');
-                        break;
-                    case '\x1C':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', 'C');
-                        break;
-                    case '\x1D':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', 'D');
-                        break;
-                    case '\x1E':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', 'E');
-                        break;
-                    case '\x1F':
-                        CopyUtf8AndEscapeUnicode(ref remaining, ref i, '1', 'F');
-                        break;
+                    WriteEscapedUtf8CharInternal(c);
+                    var remaining = 5 + valueLength - i; // make sure that all characters and an extra 5 for a full escape still fit
+                    if (pos > _bytes.Length - remaining)
+                    {
+                        Grow(remaining);
+                    }
+                }
+                else if (c > 0x7F) // UTF8 characters, we need to escpae them
+                {
+                    var temp = MemoryMarshal.CreateReadOnlySpan(ref c, 1);
+                    if (pos > _bytes.Length - 4) // not really correct, but that's the worst case
+                    {
+                        Grow(4);
+                    }
+
+                    pos += Encoding.UTF8.GetBytes(temp, _bytes.Slice(pos));
+                }
+                else
+                {
+                    _bytes[pos++] = (byte) c;
                 }
             }
-            EncodeChars(remaining);
+
             WriteUtf8DoubleQuote();
         }
 
-        private void EncodeChars(ReadOnlySpan<char> span)
-        {
-            ref var pos = ref _pos;
-            var encoder = Encoding.UTF8.GetEncoder();
-            bool completed;
-            do
-            {
-                encoder.Convert(span, _bytes.Slice(pos), true, out var charsUsed, out var bytesUsed, out completed);
-                pos += bytesUsed;
-                if (!completed)
-                {
-                    span = span.Slice(charsUsed);
-                    Grow(span.Length);
-                }
-
-            } while (!completed);        
-        }
-
-        /// <summary>
-        ///     We need copy the span up to the current index, then WriteUtf8 the escape char and continue
-        ///     This is one messy thing, resetting the iterator
-        /// </summary>
-        private void CopyUtf8AndEscape(ref ReadOnlySpan<char> remaining, ref int i, char toEscape)
-        {
-            ref var pos = ref _pos;
-            if (i > 0)
-            {
-                EncodeChars(remaining.Slice(0, i));
-            }
-            remaining = remaining.Slice(i + 1); // continuing after the escaped char
-            i = -1; // i++ in post increment
-            var minWrite = 1 + remaining.Length;
-            if (pos > _bytes.Length - minWrite)
-            {
-                Grow(minWrite); // grow to fit escaped char
-            }
-            WriteUtf8SingleEscapedChar(toEscape);
-        }
-
-        private void CopyUtf8AndEscapeUnicode(ref ReadOnlySpan<char> remaining, ref int i, char firstToEscape, char secondToEscape)
-        {
-            ref var pos = ref _pos;
-            if (i > 0)
-            {
-                EncodeChars(remaining.Slice(0, i));
-            }
-            remaining = remaining.Slice(i + 1); // continuing after the escaped char
-            i = -1; // i++ in post increment
-            var minWrite = 5 + remaining.Length;
-            if (pos > _bytes.Length - minWrite)
-            {
-                Grow(minWrite); // grow to fit escaped char
-            }
-            WriteUtf8DoubleEscapedChar(firstToEscape, secondToEscape);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void WriteUtf8CharInternal(char value)
+        private void WriteEscapedUtf8CharInternal(char value)
         {
             switch (value)
             {
                 case JsonConstant.DoubleQuote:
                     WriteUtf8SingleEscapedChar(JsonConstant.DoubleQuote);
+                    break;
+                case JsonConstant.Solidus:
+                    WriteUtf8SingleEscapedChar(JsonConstant.Solidus);
                     break;
                 case JsonConstant.ReverseSolidus:
                     WriteUtf8SingleEscapedChar(JsonConstant.ReverseSolidus);
@@ -551,25 +424,31 @@ namespace SpanJson
                 case '\x1F':
                     WriteUtf8DoubleEscapedChar('1', 'F');
                     break;
-                default:
-                    ref var pos = ref _pos;
-                    if (value < 0x80)
-                    {
-                        _bytes[pos++] = (byte) value;
-                    }
-                    else
-                    {
-                        Span<char> span = stackalloc char[1];
-                        span[0] = value;
-                        if (pos > _bytes.Length - 4) // not really correct, but that's the worst case
-                        {
-                            Grow(4);
-                        }
+            }
+        }
 
-                        pos += Encoding.UTF8.GetBytes(span, _bytes.Slice(pos));
-                    }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void WriteUtf8CharInternal(char value)
+        {
+            ref var pos = ref _pos;
+            if (value < 0x20 || value == JsonConstant.DoubleQuote || value == JsonConstant.Solidus || value == JsonConstant.ReverseSolidus)
+            {
+                WriteEscapedUtf8CharInternal(value);
+            }
 
-                    break;
+            else if (value < 0x80)
+            {
+                _bytes[pos++] = (byte) value;
+            }
+            else
+            {
+                var span = MemoryMarshal.CreateReadOnlySpan(ref value, 1);
+                if (pos > _bytes.Length - 4) // not really correct, but that's the worst case
+                {
+                    Grow(4);
+                }
+
+                pos += Encoding.UTF8.GetBytes(span, _bytes.Slice(pos));
             }
         }
 
