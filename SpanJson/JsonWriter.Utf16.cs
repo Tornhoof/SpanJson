@@ -415,6 +415,7 @@ namespace SpanJson
                     _chars[pos++] = c;
                 }
             }
+
             WriteUtf16DoubleQuote();
         }
 

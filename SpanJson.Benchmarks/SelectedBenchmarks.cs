@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
@@ -210,6 +211,23 @@ namespace SpanJson.Benchmarks
             var writer = new JsonWriter<byte>(20);
             writer.WriteUtf8String("Hello World");
             return writer.Data;
+        }
+
+        private static readonly string ReadInput = "\"Hello World\"";
+        private static readonly byte[] ReadInputBytes = Encoding.UTF8.GetBytes(ReadInput);
+
+        [Benchmark]
+        public string ReadStringUtf16()
+        {
+            var reader = new JsonReader<char>(ReadInput);
+            return reader.ReadUtf16String();
+        }
+
+        [Benchmark]
+        public string ReadStringUtf8()
+        {
+            var reader = new JsonReader<byte>(ReadInputBytes);
+            return reader.ReadUtf8String();
         }
 
         //[Benchmark]
