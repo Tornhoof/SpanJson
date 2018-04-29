@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Jobs;
 using BenchmarkDotNet.Running;
+using Jil;
 using SpanJson.Benchmarks.Fixture;
 using SpanJson.Benchmarks.Models;
 using SpanJson.Benchmarks.Serializers;
@@ -72,46 +73,67 @@ namespace SpanJson.Benchmarks
         //    return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
         //}
 
-        //[Benchmark]
-        //public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsyncUtf8()
-        //{
-        //    using (var ms = new MemoryStream(AnswerSerializedByteArray, 0, AnswerSerializedByteArray.Length, false, true))
-        //    {
-        //        return await JsonSerializer.Generic.Utf8.DeserializeAsync<Answer>(ms);
-        //    }
-        //}
+        [Benchmark]
+        public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsyncUtf8()
+        {
+            using (var ms = new MemoryStream(AnswerSerializedByteArray, 0, AnswerSerializedByteArray.Length, false, false))
+            {
+                return await JsonSerializer.Generic.Utf8.DeserializeAsync<Answer>(ms);
+            }
+        }
 
-        //[Benchmark]
-        //public async ValueTask<byte[]> SerializeAnswerWithSpanJsonSerializerAsyncUtf8()
-        //{
-        //    using (var ms = new MemoryStream())
-        //    {
-        //        await JsonSerializer.Generic.Utf8.SerializeAsync(Answer, ms);
-        //        return ms.ToArray();
-        //    }
-        //}
+        [Benchmark]
+        public async ValueTask<byte[]> SerializeAnswerWithSpanJsonSerializerAsyncUtf8()
+        {
+            using (var ms = new MemoryStream())
+            {
+                await JsonSerializer.Generic.Utf8.SerializeAsync(Answer, ms);
+                return ms.ToArray();
+            }
+        }
 
-        //[Benchmark]
-        //public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsync()
-        //{
-        //    using (var tr = new StringReader(AnswerSerializedString))
-        //    {
-        //        return await JsonSerializer.Generic.Utf16.DeserializeAsync<Answer>(tr);
-        //    }
-        //}
+        [Benchmark]
+        public async ValueTask<Answer> DeserializeAnswerWithJilSerializerAsync()
+        {
+            using (var tr = new StringReader(AnswerSerializedString))
+            {
+                return JSON.Deserialize<Answer>(tr, Options.ISO8601ExcludeNullsIncludeInherited);
+            }
+        }
 
 
-        //[Benchmark]
-        //public async ValueTask<string> SerializeAnswerWithSpanJsonSerializerAsync()
-        //{
-        //    StringBuilder.Clear();
-        //    using (var tw = new StringWriter(StringBuilder))
-        //    {
-        //        await JsonSerializer.Generic.Utf16.SerializeAsync(Answer, tw);
+        [Benchmark]
+        public async ValueTask<string> SerializeAnswerWithJilSerializerAsync()
+        {
+            StringBuilder.Clear();
+            using (var tw = new StringWriter(StringBuilder))
+            {
+               JSON.Serialize(Answer, tw, Options.ISO8601ExcludeNullsIncludeInherited);
+            }
+            return StringBuilder.ToString();
+        }
 
-        //    }
-        //    return StringBuilder.ToString();
-        //}
+        [Benchmark]
+        public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsync()
+        {
+            using (var tr = new StringReader(AnswerSerializedString))
+            {
+                return await JsonSerializer.Generic.Utf16.DeserializeAsync<Answer>(tr);
+            }
+        }
+
+
+        [Benchmark]
+        public async ValueTask<string> SerializeAnswerWithSpanJsonSerializerAsync()
+        {
+            StringBuilder.Clear();
+            using (var tw = new StringWriter(StringBuilder))
+            {
+                await JsonSerializer.Generic.Utf16.SerializeAsync(Answer, tw);
+
+            }
+            return StringBuilder.ToString();
+        }
 
 
         //[Benchmark]
@@ -200,38 +222,38 @@ namespace SpanJson.Benchmarks
         //}
 
 
-        [Benchmark]
-        public char[] WriteStringUtf16()
-        {
-            var writer = new JsonWriter<char>(20);
-            writer.WriteUtf16String("Hello World");
-            return writer.Data;
-        }
+        //[Benchmark]
+        //public char[] WriteStringUtf16()
+        //{
+        //    var writer = new JsonWriter<char>(20);
+        //    writer.WriteUtf16String("Hello World");
+        //    return writer.Data;
+        //}
 
-        [Benchmark]
-        public byte[] WriteStringUtf8()
-        {
-            var writer = new JsonWriter<byte>(20);
-            writer.WriteUtf8String("Hello World");
-            return writer.Data;
-        }
+        //[Benchmark]
+        //public byte[] WriteStringUtf8()
+        //{
+        //    var writer = new JsonWriter<byte>(20);
+        //    writer.WriteUtf8String("Hello World");
+        //    return writer.Data;
+        //}
 
-        private static readonly string ReadInput = "\"Hello World\"";
-        private static readonly byte[] ReadInputBytes = Encoding.UTF8.GetBytes(ReadInput);
+        //private static readonly string ReadInput = "\"Hello World\"";
+        //private static readonly byte[] ReadInputBytes = Encoding.UTF8.GetBytes(ReadInput);
 
-        [Benchmark]
-        public string ReadStringUtf16()
-        {
-            var reader = new JsonReader<char>(ReadInput);
-            return reader.ReadUtf16String();
-        }
+        //[Benchmark]
+        //public string ReadStringUtf16()
+        //{
+        //    var reader = new JsonReader<char>(ReadInput);
+        //    return reader.ReadUtf16String();
+        //}
 
-        [Benchmark]
-        public string ReadStringUtf8()
-        {
-            var reader = new JsonReader<byte>(ReadInputBytes);
-            return reader.ReadUtf8String();
-        }
+        //[Benchmark]
+        //public string ReadStringUtf8()
+        //{
+        //    var reader = new JsonReader<byte>(ReadInputBytes);
+        //    return reader.ReadUtf8String();
+        //}
 
         //[Benchmark]
         //public ReadOnlySpan<char> JsonTestCharDirect()
@@ -276,59 +298,59 @@ namespace SpanJson.Benchmarks
         //    return SpanJsonUtf8Serializer.Serialize(UInt64Input);
         //}
 
-        [Benchmark]
-        public System.String SerializeStringWithJilSerializer()
-        {
-            return JilSerializer.Serialize(StringInput);
-        }
+        //[Benchmark]
+        //public System.String SerializeStringWithJilSerializer()
+        //{
+        //    return JilSerializer.Serialize(StringInput);
+        //}
 
 
-        [Benchmark]
-        public System.String SerializeStringWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(StringInput);
-        }
+        //[Benchmark]
+        //public System.String SerializeStringWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(StringInput);
+        //}
 
 
-        [Benchmark]
-        public System.Byte[] SerializeStringWithSpanJsonUtf8Serializer()
-        {
-            return SpanJsonUtf8Serializer.Serialize(StringInput);
-        }
+        //[Benchmark]
+        //public System.Byte[] SerializeStringWithSpanJsonUtf8Serializer()
+        //{
+        //    return SpanJsonUtf8Serializer.Serialize(StringInput);
+        //}
 
 
-        [Benchmark]
-        public System.Byte[] SerializeStringWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(StringInput);
-        }
+        //[Benchmark]
+        //public System.Byte[] SerializeStringWithUtf8JsonSerializer()
+        //{
+        //    return Utf8JsonSerializer.Serialize(StringInput);
+        //}
 
-        private static readonly String StringOutputOfJilSerializer = JilSerializer.Serialize(StringInput);
-        [Benchmark]
-        public System.String DeserializeStringWithJilSerializer()
-        {
-            return JilSerializer.Deserialize<System.String>(StringOutputOfJilSerializer);
-        }
+        //private static readonly String StringOutputOfJilSerializer = JilSerializer.Serialize(StringInput);
+        //[Benchmark]
+        //public System.String DeserializeStringWithJilSerializer()
+        //{
+        //    return JilSerializer.Deserialize<System.String>(StringOutputOfJilSerializer);
+        //}
 
-        private static readonly String StringOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(StringInput);
-        [Benchmark]
-        public System.String DeserializeStringWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<System.String>(StringOutputOfSpanJsonSerializer);
-        }
+        //private static readonly String StringOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(StringInput);
+        //[Benchmark]
+        //public System.String DeserializeStringWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Deserialize<System.String>(StringOutputOfSpanJsonSerializer);
+        //}
 
-        private static readonly Byte[] StringOutputOfSpanJsonUtf8Serializer = SpanJsonUtf8Serializer.Serialize(StringInput);
-        [Benchmark]
-        public System.String DeserializeStringWithSpanJsonUtf8Serializer()
-        {
-            return SpanJsonUtf8Serializer.Deserialize<System.String>(StringOutputOfSpanJsonUtf8Serializer);
-        }
+        //private static readonly Byte[] StringOutputOfSpanJsonUtf8Serializer = SpanJsonUtf8Serializer.Serialize(StringInput);
+        //[Benchmark]
+        //public System.String DeserializeStringWithSpanJsonUtf8Serializer()
+        //{
+        //    return SpanJsonUtf8Serializer.Deserialize<System.String>(StringOutputOfSpanJsonUtf8Serializer);
+        //}
 
-        private static readonly Byte[] StringOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(StringInput);
-        [Benchmark]
-        public System.String DeserializeStringWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Deserialize<System.String>(StringOutputOfUtf8JsonSerializer);
-        }
+        //private static readonly Byte[] StringOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(StringInput);
+        //[Benchmark]
+        //public System.String DeserializeStringWithUtf8JsonSerializer()
+        //{
+        //    return Utf8JsonSerializer.Deserialize<System.String>(StringOutputOfUtf8JsonSerializer);
+        //}
     }
 }
