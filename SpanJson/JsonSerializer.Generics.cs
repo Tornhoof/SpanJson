@@ -13,6 +13,9 @@ namespace SpanJson
     {
         public static class Generic
         {
+            /// <summary>
+            /// This method is not encoding specific, but for symmetry reasons the public ones are in the respective encoding classes
+            /// </summary>
             internal static T DeserializeInternal<T, TSymbol, TResolver>(ReadOnlySpan<TSymbol> input)
                 where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
             {
