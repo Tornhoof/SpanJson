@@ -235,7 +235,7 @@ namespace SpanJson
                 private static DeserializeDelegate BuildDeserializer(Type type)
                 {
                     var inputParam = Expression.Parameter(typeof(ReadOnlySpan<TSymbol>), "input");
-                    Expression genericCall = Expression.Call(typeof(Generic), nameof(Generic.Deserialize),
+                    Expression genericCall = Expression.Call(typeof(Generic), nameof(Generic.DeserializeInternal),
                         new[] {type, typeof(TSymbol), typeof(TResolver)}, inputParam);
                     if (type.IsValueType)
                     {

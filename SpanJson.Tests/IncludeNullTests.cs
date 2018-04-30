@@ -65,7 +65,7 @@ namespace SpanJson.Tests
             var serialized = JsonSerializer.Generic.Utf16.Serialize<IncludeNull, char, IncludeNullsOriginalCaseResolver<char>>(includeNull);
             Assert.NotNull(serialized);
             Assert.Contains("null", serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<IncludeNull, char, IncludeNullsOriginalCaseResolver<char>>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<IncludeNull, char, IncludeNullsOriginalCaseResolver<char>>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(includeNull, deserialized);
         }

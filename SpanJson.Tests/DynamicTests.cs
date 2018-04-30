@@ -189,7 +189,7 @@ namespace SpanJson.Tests
             var serialized = JsonSerializer.Generic.Utf16.Serialize<MyDynamicObject, char, IncludeNullsOriginalCaseResolver<char>>(dynamicObject);
             Assert.NotNull(serialized);
             Assert.Contains("null", serialized);
-            var deserialized = JsonSerializer.Generic.Deserialize<MyDynamicObject, char, IncludeNullsOriginalCaseResolver<char>>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<MyDynamicObject, char, IncludeNullsOriginalCaseResolver<char>>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal("Hello World", (string) dynamicObject.Text);
             Assert.Equal(5, (int) dynamicObject.Value);

@@ -47,7 +47,7 @@ namespace SpanJson.Tests
             serializedWithCamelCase = serializedWithCamelCase.ToLowerInvariant();
             Assert.Contains("age", serializedWithCamelCase);
             var deserialized =
-                JsonSerializer.Generic.Deserialize<Parent, char, ExcludeNullsOriginalCaseResolver<char>>(serializedWithCamelCase);
+                JsonSerializer.Generic.Utf16.Deserialize<Parent, char, ExcludeNullsOriginalCaseResolver<char>>(serializedWithCamelCase);
             Assert.NotNull(deserialized);
             Assert.Null(deserialized.Children);
             Assert.Equal(0, deserialized.Age);

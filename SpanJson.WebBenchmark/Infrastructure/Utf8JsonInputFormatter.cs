@@ -1,22 +1,20 @@
 using System;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Utf8Json.Resolvers;
 
 namespace SpanJson.WebBenchmark.Infrastructure
 {
-    public class Utf8JsonInputFormatter : TextInputFormatter
+    public class Utf8JsonInputFormatter : InputFormatter
     {
         private const string Utf8JsonJsonMediaType = "application/utf8json+json";
 
         public Utf8JsonInputFormatter()
         {
             SupportedMediaTypes.Add(Utf8JsonJsonMediaType);
-            SupportedEncodings.Add(new UTF8Encoding(false, true));
         }
 
-        public override async Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context, Encoding encoding)
+        public override async Task<InputFormatterResult> ReadRequestBodyAsync(InputFormatterContext context)
         {
             try
             {

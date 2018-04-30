@@ -13,7 +13,7 @@ namespace SpanJson
     {
         public static class Generic
         {
-            public static T Deserialize<T, TSymbol, TResolver>(ReadOnlySpan<TSymbol> input)
+            internal static T DeserializeInternal<T, TSymbol, TResolver>(ReadOnlySpan<TSymbol> input)
                 where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
             {
                 return Inner<T, TSymbol, TResolver>.InnerDeserialize(input);
@@ -37,6 +37,11 @@ namespace SpanJson
                     return SerializeAsync<T, char, ExcludeNullsOriginalCaseResolver<char>>(input, writer, cancellationToken);
                 }
 
+                public static T Deserialize<T, TSymbol, TResolver>(ReadOnlySpan<TSymbol> input)
+                    where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+                {
+                    return DeserializeInternal<T, TSymbol, TResolver>(input);
+                }
 
                 public static T Deserialize<T>(ReadOnlySpan<char> input)
                 {
@@ -71,6 +76,12 @@ namespace SpanJson
                 public static T Deserialize<T>(ReadOnlySpan<byte> input)
                 {
                     return Deserialize<T, byte, ExcludeNullsOriginalCaseResolver<byte>>(input);
+                }
+
+                public static T Deserialize<T, TSymbol, TResolver>(ReadOnlySpan<TSymbol> input)
+                    where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+                {
+                    return DeserializeInternal<T, TSymbol, TResolver>(input);
                 }
 
                 public static byte[] Serialize<T, TSymbol, TResolver>(T input)

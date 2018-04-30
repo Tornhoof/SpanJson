@@ -55,7 +55,7 @@ namespace SpanJson.Tests
             Assert.False(serialized.EndsWith(",}"));
 
             var deserialized =
-                JsonSerializer.Generic.Deserialize<Optional, char, ExcludeNullsOriginalCaseResolver<char>>(
+                JsonSerializer.Generic.Utf16.Deserialize<Optional, char, ExcludeNullsOriginalCaseResolver<char>>(
                     "{\"AnotherName\": \"Hello World\"}");
             Assert.Equal("Hello World", deserialized.DifferentName);
         }
@@ -76,7 +76,7 @@ namespace SpanJson.Tests
             Assert.DoesNotContain("\"ExcludeNull\":", serialized);
 
             var deserialized =
-                JsonSerializer.Generic.Deserialize<Optional, char, ExcludeNullsOriginalCaseResolver<char>>("{\"Excluded\": 1}");
+                JsonSerializer.Generic.Utf16.Deserialize<Optional, char, ExcludeNullsOriginalCaseResolver<char>>("{\"Excluded\": 1}");
             Assert.Equal(0, deserialized.Excluded);
         }
 
