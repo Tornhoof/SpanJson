@@ -121,6 +121,7 @@ namespace SpanJson
             {
                 // ReSharper disable StaticMemberInGenericType
                 private static int _lastSerializationSize = 256; // initial size, get's updated with each serialization
+                private static int _lastDeserializationSize = 256; // initial size, get's updated with each deserialization
                 // ReSharper restore StaticMemberInGenericType
 
                 private static readonly IJsonFormatter<T, TSymbol, TResolver> Formatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
@@ -181,6 +182,7 @@ namespace SpanJson
 
                 public static T InnerDeserialize(ReadOnlySpan<TSymbol> input)
                 {
+                    _lastDeserializationSize = input.Length;
                     var jsonReader = new JsonReader<TSymbol>(input);
                     return Formatter.Deserialize(ref jsonReader);
                 }
@@ -204,7 +206,7 @@ namespace SpanJson
                         return new ValueTask<T>(InnerDeserialize(MemoryMarshal.Cast<byte, TSymbol>(span)));
                     }
 
-                    var input = stream.CanSeek ? ReadStreamFullAsync(stream, cancellationToken) : ReadStreamAsync(stream, cancellationToken);
+                    var input = stream.CanSeek ? ReadStreamFullAsync(stream, cancellationToken) : ReadStreamAsync(stream, _lastDeserializationSize, cancellationToken);
                     if (input.IsCompletedSuccessfully)
                     {
                         var memory = input.Result;
@@ -232,41 +234,19 @@ namespace SpanJson
                     return result;
                 }
 
-                private static async ValueTask<Memory<byte>> ReadStreamAsync(Stream stream, CancellationToken cancellationToken = default)
+                private static async ValueTask<Memory<byte>> ReadStreamAsync(Stream stream, int sizeHint, CancellationToken cancellationToken = default)
                 {
-                    byte[] buffer = null;
                     var totalSize = 0;
-                    byte[] tempBuffer = null;
-                    try
+                    var buffer = ArrayPool<byte>.Shared.Rent(sizeHint);
+                    int read;
+                    while ((read = await stream.ReadAsync(buffer, totalSize, buffer.Length - totalSize, cancellationToken).ConfigureAwait(false)) > 0)
                     {
-                        tempBuffer = ArrayPool<byte>.Shared.Rent(4096);
-                        var read = 0;
-                        do
+                        if (totalSize + read == buffer.Length)
                         {
-                            read = await stream.ReadAsync(tempBuffer, 0, tempBuffer.Length, cancellationToken).ConfigureAwait(false);
-                            if (read > 0)
-                            {
-                                if (buffer == null)
-                                {
-                                    buffer = ArrayPool<byte>.Shared.Rent(4096);
-                                }
-                                else if (totalSize + read > buffer.Length)
-                                {
-                                    Grow(ref buffer);
-                                }
-
-                                Array.Copy(tempBuffer, 0, buffer, totalSize, read);
-                                totalSize += read;
-                            }
-
-                        } while (read > 0);
-                    }
-                    finally
-                    {
-                        if (tempBuffer != null)
-                        {
-                            ArrayPool<byte>.Shared.Return(tempBuffer);
+                            Grow(ref buffer);
                         }
+
+                        totalSize += read;
                     }
 
                     return new Memory<byte>(buffer, 0, totalSize);

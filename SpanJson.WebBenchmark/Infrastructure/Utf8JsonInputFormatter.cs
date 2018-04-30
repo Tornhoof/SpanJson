@@ -18,13 +18,13 @@ namespace SpanJson.WebBenchmark.Infrastructure
         {
             try
             {
-                return await InputFormatterResult.SuccessAsync(await Utf8Json.JsonSerializer.NonGeneric.DeserializeAsync(context.ModelType,
+                return InputFormatterResult.Success(await Utf8Json.JsonSerializer.NonGeneric.DeserializeAsync(context.ModelType,
                     context.HttpContext.Request.Body, StandardResolver.ExcludeNull));
             }
             catch (Exception ex)
             {
                 context.ModelState.AddModelError("JSON", ex.Message);
-                return await InputFormatterResult.FailureAsync();
+                return InputFormatterResult.Failure();
             }
         }
     }
