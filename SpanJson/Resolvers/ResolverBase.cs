@@ -11,7 +11,11 @@ using SpanJson.Helpers;
 
 namespace SpanJson.Resolvers
 {
-    public abstract class ResolverBase<TSymbol, TResolver> : IJsonFormatterResolver<TSymbol, TResolver>
+    public abstract class ResolverBase
+    {
+        protected static readonly ParameterExpression DynamicMetaObjectParameterExpression = Expression.Parameter(typeof(object));
+    }
+    public abstract class ResolverBase<TSymbol, TResolver> : ResolverBase, IJsonFormatterResolver<TSymbol, TResolver>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
         private readonly NamingConventions _namingConventions;
@@ -42,7 +46,7 @@ namespace SpanJson.Resolvers
         /// </summary>
         public JsonMemberInfo[] GetDynamicMemberInfos(IDynamicMetaObjectProvider provider)
         {
-            var metaObject = provider.GetMetaObject(Expression.Parameter(typeof(object)));
+            var metaObject = provider.GetMetaObject(DynamicMetaObjectParameterExpression);
             var members = metaObject.GetDynamicMemberNames();
             var result = new List<JsonMemberInfo>();
             foreach (var memberInfoName in members)

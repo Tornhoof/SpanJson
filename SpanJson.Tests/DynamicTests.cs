@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
 using System.Text;
+using Jil;
 using SpanJson.Benchmarks.Fixture;
 using SpanJson.Benchmarks.Models;
 using SpanJson.Formatters.Dynamic;
@@ -117,6 +118,37 @@ namespace SpanJson.Tests
             Assert.Equal("Hello World", (string) dynamicObject.Text);
         }
 
+
+
+        [Fact]
+        public void DynamicObjectTestOnePropertyMultipleTimes()
+        {
+            dynamic dynamicObject = new MyDynamicObject();
+            dynamicObject.Text = "Hello World";
+            for (int i = 0; i < 10000; i++)
+            {
+                var serialized = JsonSerializer.Generic.Utf16.Serialize(dynamicObject);
+                Assert.NotNull(serialized);
+                var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
+                Assert.NotNull(deserialized);
+                Assert.Equal("Hello World", (string) dynamicObject.Text);
+            }
+        }
+
+        [Fact]
+        public void DynamicObjectTestOnePropertyMultipleTimesJil()
+        {
+            dynamic dynamicObject = new MyDynamicObject();
+            dynamicObject.Text = "Hello World";
+            var serialized = JSON.SerializeDynamic(dynamicObject);
+            Assert.NotNull(serialized);
+            for (int i = 0; i < 10000; i++)
+            {
+                var deserialized = JSON.DeserializeDynamic(serialized);
+                Assert.NotNull(deserialized);
+                Assert.Equal("Hello World", (string)dynamicObject.Text);
+            }
+        }
 
         [Fact]
         public void DynamicObjectTestTwoProperties()

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -82,13 +84,43 @@ namespace SpanJson.Formatters
                 }
                 else
                 {
-                    SetObjectDynamically(name, result, reader.ReadDynamic()); // todo improve?
+                    var setter = GetOrAddSetMember(name);
+                    setter(result, reader.ReadDynamic());
                 }
             }
 
             return result;
         }
 
+        private static readonly ConcurrentDictionary<string, Func<T,object>> GetMemberCache = new ConcurrentDictionary<string, Func<T, object>>();
+        private static readonly ConcurrentDictionary<string, Action<T, object>> SetMemberCache = new ConcurrentDictionary<string, Action<T, object>>();
+
+
+        private static Func<T, object> GetOrAddGetMember(string memberName)
+        {
+            return GetMemberCache.GetOrAdd(memberName, s =>
+            {
+                var binder = (GetMemberBinder) Binder.GetMember(CSharpBinderFlags.None, s, typeof(T),
+                    new[] {CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null)});
+                var callSite = CallSite<Func<CallSite, object, object>>.Create(binder);
+                return target => callSite.Target(callSite, target);
+            });
+        }
+
+        private static Action<T, object> GetOrAddSetMember(string memberName)
+        {
+            return SetMemberCache.GetOrAdd(memberName, s =>
+            {
+                var binder = Binder.SetMember(CSharpBinderFlags.None, memberName, null,
+                    new[]
+                    {
+                        CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null),
+                        CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null)
+                    });
+                var callsite = CallSite<Func<CallSite, object, object, object>>.Create(binder);
+                return (target, value) => callsite.Target(callsite, target, value);
+            });
+        }
 
         public void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
         {
@@ -120,7 +152,8 @@ namespace SpanJson.Formatters
                 writer.WriteBeginObject();
                 foreach (var memberInfo in memberInfos)
                 {
-                    var child = GetObjectDynamically(memberInfo.MemberName, value);
+                    var getter = GetOrAddGetMember(memberInfo.MemberName);
+                    var child = getter(value);
                     if (memberInfo.ExcludeNull && child == null)
                     {
                         continue;
@@ -139,28 +172,6 @@ namespace SpanJson.Formatters
                 writer.WriteEndObject();
             }
         }
-
-        private static object GetObjectDynamically(string memberName, T target)
-        {
-            var binder = Binder.GetMember(CSharpBinderFlags.None, memberName, null,
-                new[] {CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null)});
-            var callsite = CallSite<Func<CallSite, object, object>>.Create(binder);
-            return callsite.Target(callsite, target);
-        }
-
-
-        private static void SetObjectDynamically(string memberName, T target, object value)
-        {
-            var binder = Binder.SetMember(CSharpBinderFlags.None, memberName, null,
-                new[]
-                {
-                    CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null),
-                    CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null)
-                });
-            var callsite = CallSite<Func<CallSite, object, object, object>>.Create(binder);
-            callsite.Target(callsite, target, value);
-        }
-
         protected delegate void DeserializeDelegate(T input, ref JsonReader<TSymbol> reader);
     }
 }
