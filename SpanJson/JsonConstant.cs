@@ -1,6 +1,8 @@
-﻿namespace SpanJson
+﻿using System.Text;
+
+namespace SpanJson
 {
-    public class JsonConstant
+    public static class JsonConstant
     {
         public const char BeginArray = '[';
         public const char BeginObject = '{';
@@ -15,5 +17,14 @@
         public const char String = '"';
         public const char True = 't';
         public const char ValueSeparator = ',';
+
+        public static readonly char[] NullTerminatorUtf16 = { '\0' };
+        public static readonly byte[] NullTerminatorUtf8 = { (byte)NullTerminatorUtf16[0] };
+
+        public static readonly char[] LongMinValueUtf16 = long.MinValue.ToString().ToCharArray();
+        public static readonly byte[] LongMinValueUtf8 = Encoding.UTF8.GetBytes(long.MinValue.ToString());
+
+        public const int MaxNumberBufferSize = 32;
+        public const int MaxVersionLength = 45;  // 4 * int + 3 . + 2 double quote
     }
 }

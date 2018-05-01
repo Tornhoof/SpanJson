@@ -9,8 +9,7 @@ namespace SpanJson
 {
     public ref partial struct JsonWriter<TSymbol> where TSymbol : struct
     {
-        private static readonly char[] LongMinValueUtf16 = long.MinValue.ToString().ToCharArray();
-        private static readonly byte[] LongMinValueUtf8 = Encoding.UTF8.GetBytes(long.MinValue.ToString());
+
         private Span<char> _chars;
         private Span<byte> _bytes;
         private int _pos;

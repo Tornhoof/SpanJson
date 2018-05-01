@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Buffers.Text;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -48,8 +49,8 @@ namespace SpanJson
                     Grow(21);
                 }
 
-                LongMinValueUtf8.AsSpan().TryCopyTo(_bytes.Slice(pos));
-                pos += LongMinValueUtf16.Length;
+                JsonConstant.LongMinValueUtf8.AsSpan().TryCopyTo(_bytes.Slice(pos));
+                pos += JsonConstant.LongMinValueUtf8.Length;
             }
             else if (value < 0)
             {
@@ -119,35 +120,39 @@ namespace SpanJson
 
         public void WriteUtf8Single(float value)
         {
-            Span<byte> span = stackalloc byte[25]; // TODO find out how long
-            Utf8Formatter.TryFormat(value, span, out var bytesWritten);
+            Span<char> span = stackalloc char[JsonConstant.MaxNumberBufferSize];
+            value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
-            if (pos > _bytes.Length - bytesWritten)
+            if (pos > _bytes.Length - written)
             {
-                Grow(bytesWritten);
+                Grow(written);
             }
 
-            span.Slice(0, bytesWritten).CopyTo(_bytes.Slice(pos));
-            pos += bytesWritten;
+            for (int i = 0; i < written; i++)
+            {
+                _bytes[pos++] = (byte) span[i];
+            }
         }
 
         public void WriteUtf8Double(double value)
         {
-            Span<byte> span = stackalloc byte[50]; // TODO find out how long
-            Utf8Formatter.TryFormat(value, span, out var bytesWritten);
+            Span<char> span = stackalloc char[JsonConstant.MaxNumberBufferSize];
+            value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
-            if (pos > _bytes.Length - bytesWritten)
+            if (pos > _bytes.Length - written)
             {
-                Grow(bytesWritten);
+                Grow(written);
             }
 
-            span.Slice(0, bytesWritten).CopyTo(_bytes.Slice(pos));
-            pos += bytesWritten;
+            for (int i = 0; i < written; i++)
+            {
+                _bytes[pos++] = (byte)span[i];
+            }
         }
 
         public void WriteUtf8Decimal(decimal value)
         {
-            Span<byte> span = stackalloc byte[100]; // TODO find out how long
+            Span<byte> span = stackalloc byte[JsonConstant.MaxNumberBufferSize]; 
             Utf8Formatter.TryFormat(value, span, out var bytesWritten);
             ref var pos = ref _pos;
             if (pos > _bytes.Length - bytesWritten)
@@ -601,14 +606,13 @@ namespace SpanJson
         public void WriteUtf8Version(Version value)
         {
             ref var pos = ref _pos;
-            const int versionLength = 45; // 4 * int + 3 . + 2 double quote
-            if (pos > _bytes.Length - versionLength)
+            if (pos > _bytes.Length - JsonConstant.MaxVersionLength)
             {
-                Grow(versionLength);
+                Grow(JsonConstant.MaxVersionLength);
             }
 
             WriteUtf8DoubleQuote();
-            Span<char> tempSpan = stackalloc char[45];
+            Span<char> tempSpan = stackalloc char[JsonConstant.MaxVersionLength];
             value.TryFormat(tempSpan, out _);
             pos += Encoding.UTF8.GetBytes(tempSpan, _bytes.Slice(pos));
             WriteUtf8DoubleQuote();

@@ -6,6 +6,7 @@ This is basically the ValueStringBuilder from CoreFx with the TryFormat API for 
 The actual serializers are a T4 Template (BclFormatter.tt).
 
 Performance Issues:
+* Double Formatting: The UTF8 version uses the coreclr version + stackalloc, as UTF8Formatter uses ToString()
 * Integer Formatting: derived from UTF8Json as the CoreCLR version is two times slower.
 * Integer Parsing: derived from UTF8Json
 * DateTime/DateTimeOffset Parser: derived from UTf8Parser with modifications to support less than 7 digit fractions

@@ -48,8 +48,8 @@ namespace SpanJson
                     Grow(21);
                 }
 
-                LongMinValueUtf16.AsSpan().TryCopyTo(_chars.Slice(pos));
-                pos += LongMinValueUtf16.Length;
+                JsonConstant.LongMinValueUtf16.AsSpan().TryCopyTo(_chars.Slice(pos));
+                pos += JsonConstant.LongMinValueUtf16.Length;
             }
             else if (value < 0)
             {
@@ -119,7 +119,7 @@ namespace SpanJson
 
         public void WriteUtf16Single(float value)
         {
-            Span<char> span = stackalloc char[25]; // TODO find out how long
+            Span<char> span = stackalloc char[JsonConstant.MaxNumberBufferSize];
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
             if (pos > _chars.Length - written)
@@ -133,7 +133,7 @@ namespace SpanJson
 
         public void WriteUtf16Double(double value)
         {
-            Span<char> span = stackalloc char[50]; // TODO find out how long
+            Span<char> span = stackalloc char[JsonConstant.MaxNumberBufferSize]; 
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
             if (pos > _chars.Length - written)
@@ -147,7 +147,7 @@ namespace SpanJson
 
         public void WriteUtf16Decimal(decimal value)
         {
-            Span<char> span = stackalloc char[100]; // TODO find out how long
+            Span<char> span = stackalloc char[JsonConstant.MaxNumberBufferSize]; 
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
             if (pos > _chars.Length - written)
@@ -606,7 +606,7 @@ namespace SpanJson
         public void WriteUtf16Version(Version value)
         {
             ref var pos = ref _pos;
-            const int versionLength = 45; // 4 * int + 3 . + 2 double quote
+            const int versionLength = JsonConstant.MaxVersionLength;
             if (pos > _chars.Length - versionLength)
             {
                 Grow(versionLength);

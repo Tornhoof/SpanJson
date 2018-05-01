@@ -455,7 +455,7 @@ namespace SpanJson
         {
             if (ReadUtf8IsNull())
             {
-                return NullTerminatorUtf8;
+                return JsonConstant.NullTerminatorUtf8;
             }
 
             return ReadUtf8StringSpanInternal(out _);

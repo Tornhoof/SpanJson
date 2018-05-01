@@ -10,8 +10,7 @@ namespace SpanJson
         private readonly ReadOnlySpan<char> _chars;
         private readonly ReadOnlySpan<byte> _bytes;
         private readonly int _length;
-        private static readonly char[] NullTerminatorUtf16 = {'\0'};
-        private static readonly byte[] NullTerminatorUtf8 = {(byte) NullTerminatorUtf16[0]};
+
         private int _pos;
 
         public JsonReader(ReadOnlySpan<TSymbol> input)
