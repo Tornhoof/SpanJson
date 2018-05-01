@@ -5,7 +5,7 @@
     <LangVersion>latest</LangVersion>
     <!--<RuntimeFrameworkVersion>2.1.0-preview2-26406-04</RuntimeFrameworkVersion>-->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.0.0-alpha-00052</Version>
+    <Version>0.1.0.0-alpha-00056</Version>
   </PropertyGroup>
   
   <ItemGroup>

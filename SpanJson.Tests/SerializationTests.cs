@@ -111,9 +111,21 @@ namespace SpanJson.Tests
             Assert.Equal(wpn.你好, deserialized.你好);
         }
 
-        public class OutputModel
+        public class ObjectChildModel
         {
-            public string Name { get; set; }
+            public object Object { get; set; }
+        }
+
+        [Fact]
+        public void SerializeDeserializeObjectChildModel()
+        {
+            var ocm = new ObjectChildModel {Object = new object()};
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(ocm);
+            Assert.Contains("\"Object\":{}", serialized);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<ObjectChildModel>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.NotNull(deserialized.Object);
         }
     }
 }

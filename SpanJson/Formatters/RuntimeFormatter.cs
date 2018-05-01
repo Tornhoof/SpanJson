@@ -26,6 +26,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
+
             // ReSharper disable ConvertClosureToMethodGroup
             var serializer = RuntimeSerializerDictionary.GetOrAdd(value.GetType(), x => BuildSerializeDelegate(x));
             serializer(ref writer, value);
@@ -36,7 +37,14 @@ namespace SpanJson.Formatters
         {
             var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(object), "value");
-
+            if (type == typeof(object)) // if it's an object we can't do anything about so we write an empty object
+            {
+                return (ref JsonWriter<TSymbol> writer, object value) =>
+                {
+                    writer.WriteBeginObject();
+                    writer.WriteEndObject();
+                };
+            }
             var formatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter(type);
             var formatterExpression = Expression.Constant(formatter);
             var serializeMethodInfo = formatter.GetType().GetMethod("Serialize");
