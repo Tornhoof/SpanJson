@@ -58,7 +58,7 @@ namespace SpanJson.Formatters
     {
         public static readonly <#= t.Name #><#= utfName #>Formatter<TResolver> Default = new <#= t.Name #><#= utfName #>Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #> value)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #> value, int nestingLimit)
         {
 <# if(!t.IsValueType) { #>
 			if(value == null)
@@ -80,9 +80,9 @@ namespace SpanJson.Formatters
     {
         public static readonly Nullable<#= t.Name #><#= utfName #>Formatter<TResolver> Default = new Nullable<#= t.Name #><#= utfName #>Formatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>? value)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>? value, int nestingLimit)
         {
-            Serialize(ref writer, value, <#= t.Name #><#= utfName #>Formatter<TResolver>.Default);
+            Serialize(ref writer, value, <#= t.Name #><#= utfName #>Formatter<TResolver>.Default, nestingLimit);
         }
 
         public <#= t.Name #>? Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
@@ -94,9 +94,9 @@ namespace SpanJson.Formatters
     {
         public static readonly Nullable<#= t.Name #><#= utfName #>ArrayFormatter<TResolver> Default = new Nullable<#= t.Name #><#= utfName #>ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>?[] value)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>?[] value, int nestingLimit)
         {
-			Serialize(ref writer, value, Nullable<#= t.Name #><#= utfName #>Formatter<TResolver>.Default);
+			Serialize(ref writer, value, Nullable<#= t.Name #><#= utfName #>Formatter<TResolver>.Default, nestingLimit);
         }
 
         public <#= t.Name #>?[] Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
@@ -110,9 +110,9 @@ namespace SpanJson.Formatters
         public static readonly Nullable<#= t.Name #><#= utfName #>ListFormatter<TResolver> Default = new Nullable<#= t.Name #><#= utfName #>ListFormatter<TResolver>();
 		private static readonly Func<List<<#= t.Name #>?>> CreateFunctor = () => new List<<#= t.Name #>?>();
 
-        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, List<<#= t.Name #>?> value)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, List<<#= t.Name #>?> value, int nestingLimit)
         {
-			Serialize(ref writer, value, Nullable<#= t.Name #><#= utfName #>Formatter<TResolver>.Default);
+			Serialize(ref writer, value, Nullable<#= t.Name #><#= utfName #>Formatter<TResolver>.Default, nestingLimit);
         }
 
         public List<<#= t.Name #>?> Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
@@ -126,9 +126,9 @@ namespace SpanJson.Formatters
     {
         public static readonly <#= t.Name #><#= utfName #>ArrayFormatter<TResolver> Default = new <#= t.Name #><#= utfName #>ArrayFormatter<TResolver>();
 
-        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>[] value)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>[] value, int nestingLimit)
         {
-			Serialize(ref writer, value, <#= t.Name #><#= utfName #>Formatter<TResolver>.Default);
+			Serialize(ref writer, value, <#= t.Name #><#= utfName #>Formatter<TResolver>.Default, nestingLimit);
         }
 
         public <#= t.Name #>[] Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
@@ -142,9 +142,9 @@ namespace SpanJson.Formatters
         public static readonly <#= t.Name #><#= utfName #>ListFormatter<TResolver> Default = new <#= t.Name #><#= utfName #>ListFormatter<TResolver>();
 		private static readonly Func<List<<#= t.Name #>>> CreateFunctor = () => new List<<#= t.Name #>>();
 
-        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, List<<#= t.Name #>> value)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, List<<#= t.Name #>> value, int nestingLimit)
         {
-			Serialize(ref writer, value, <#= t.Name #><#= utfName #>Formatter<TResolver>.Default);
+			Serialize(ref writer, value, <#= t.Name #><#= utfName #>Formatter<TResolver>.Default, nestingLimit);
         }
 
         public List<<#= t.Name #>> Deserialize(ref JsonReader<<#= symbol.Name #>> reader)

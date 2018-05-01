@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
@@ -29,7 +30,7 @@ namespace SpanJson.Formatters
         }
 
         protected static void Serialize<TDictionary, T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, TDictionary value,
-            IJsonFormatter<T, TSymbol, TResolver> formatter)
+            IJsonFormatter<T, TSymbol, TResolver> formatter, int nestingLimit)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : class, IDictionary<string, T>
         {
             if (value == null)
@@ -37,7 +38,7 @@ namespace SpanJson.Formatters
                 writer.WriteNull();
                 return;
             }
-
+            var nextNestingLimit = RecursionCandidate<T>.IsRecursionCandidate ? nestingLimit + 1 : nestingLimit;
             var valueLength = value.Count;
             writer.WriteBeginObject();
             if (valueLength > 0)
@@ -46,7 +47,7 @@ namespace SpanJson.Formatters
                 foreach (var kvp in value)
                 {
                     writer.WriteName(kvp.Key);
-                    formatter.Serialize(ref writer, kvp.Value);
+                    formatter.Serialize(ref writer, kvp.Value, nextNestingLimit);
                     if (counter++ < valueLength - 1)
                     {
                         writer.WriteValueSeparator();
@@ -73,9 +74,9 @@ namespace SpanJson.Formatters
             return Deserialize(ref reader, DefaultFormatter, CreateFunctor);
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, TDictionary value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, TDictionary value, int nestingLimit)
         {
-            Serialize(ref writer, value, DefaultFormatter);
+            Serialize(ref writer, value, DefaultFormatter, nestingLimit);
         }
     }
 }

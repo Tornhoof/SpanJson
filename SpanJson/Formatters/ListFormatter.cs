@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
@@ -27,7 +28,7 @@ namespace SpanJson.Formatters
         }
 
         protected static void Serialize<TList, T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, TList value,
-            IJsonFormatter<T, TSymbol, TResolver> formatter) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
+            IJsonFormatter<T, TSymbol, TResolver> formatter, int nestingLimit) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
             where TSymbol : struct
             where TList : class, IList<T>
         {
@@ -37,15 +38,16 @@ namespace SpanJson.Formatters
                 return;
             }
 
+            var nextNestingLimit = RecursionCandidate<T>.IsRecursionCandidate ? nestingLimit + 1 : nestingLimit;
             var valueLength = value.Count;
             writer.WriteBeginArray();
             if (valueLength > 0)
             {
-                formatter.Serialize(ref writer, value[0]);
+                formatter.Serialize(ref writer, value[0], nextNestingLimit);
                 for (var i = 1; i < valueLength; i++)
                 {
                     writer.WriteValueSeparator();
-                    formatter.Serialize(ref writer, value[i]);
+                    formatter.Serialize(ref writer, value[i], nextNestingLimit);
                 }
             }
 
@@ -71,9 +73,9 @@ namespace SpanJson.Formatters
             return Deserialize(ref reader, DefaultFormatter, CreateFunctor);
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, TList value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, TList value, int nestingLimit)
         {
-            Serialize(ref writer, value, DefaultFormatter);
+            Serialize(ref writer, value, DefaultFormatter, nestingLimit);
         }
     }
 }

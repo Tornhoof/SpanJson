@@ -54,14 +54,14 @@ namespace SpanJson.Tests
             Assert.Null(deserialized.Name);
         }
 
-        //[Fact] // TODO Break Recursion
-        //public void Loops()
-        //{
-        //    var node = new Node {Id = Guid.NewGuid()};
-        //    node.Children.Add(node);
-        //    //var serialized = JsonSerializer.Generic.Serialize(node);
-        //    Assert.NotNull(serialized);
-        //}
+        [Fact]
+        public void Loops()
+        {
+            var node = new Node { Id = Guid.NewGuid() };
+            node.Children.Add(node);
+            var ex = Assert.Throws<InvalidOperationException>(() => JsonSerializer.Generic.Utf16.Serialize(node));
+            Assert.Contains("Nesting Limit", ex.Message);
+        }
 
 
         [Fact]

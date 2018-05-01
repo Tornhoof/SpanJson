@@ -13,7 +13,6 @@ Performance Issues:
 Todo:
 
 * Performance
-* Recursion checks
 
 ``` ini
 

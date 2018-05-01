@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
@@ -47,7 +48,8 @@ namespace SpanJson.Formatters
             return result;
         }
 
-        protected static void Serialize<T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, T[] value, IJsonFormatter<T, TSymbol, TResolver> formatter)
+        protected static void Serialize<T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, T[] value, IJsonFormatter<T, TSymbol, TResolver> formatter,
+            int nestingLimit)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             if (value == null)
@@ -56,15 +58,16 @@ namespace SpanJson.Formatters
                 return;
             }
 
+            var nextNestingLimit = RecursionCandidate<T>.IsRecursionCandidate ? nestingLimit + 1 : nestingLimit;
             var valueLength = value.Length;
             writer.WriteBeginArray();
             if (valueLength > 0)
             {
-                formatter.Serialize(ref writer, value[0]);
+                formatter.Serialize(ref writer, value[0], nextNestingLimit);
                 for (var i = 1; i < valueLength; i++)
                 {
                     writer.WriteValueSeparator();
-                    formatter.Serialize(ref writer, value[i]);
+                    formatter.Serialize(ref writer, value[i], nextNestingLimit);
                 }
             }
 
@@ -96,9 +99,9 @@ namespace SpanJson.Formatters
             return Deserialize(ref reader, DefaultFormatter);
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T[] value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T[] value, int nestingLimit)
         {
-            Serialize(ref writer, value, DefaultFormatter);
+            Serialize(ref writer, value, DefaultFormatter, nestingLimit);
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.CSharp.RuntimeBinder;
 using SpanJson.Formatters.Dynamic;
+using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
@@ -89,15 +90,16 @@ namespace SpanJson.Formatters
         }
 
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
         {
             if (value == null)
             {
                 writer.WriteNull();
                 return;
             }
+
             // if we serialize our dynamic value again we simply write the symbols directly if it is the same type
-            if (value is ISpanJsonDynamicValue<TSymbol> dynamicValue) 
+            if (value is ISpanJsonDynamicValue<TSymbol> dynamicValue)
             {
                 writer.WriteVerbatim(dynamicValue.Symbols);
             }
@@ -129,8 +131,9 @@ namespace SpanJson.Formatters
                         writer.WriteValueSeparator();
                     }
 
+                    var nextNestingLimit = RecursionCandidate.LookupRecursionCandidate(memberInfo.MemberType) ? nestingLimit + 1 : nestingLimit;
                     writer.WriteName(memberInfo.Name);
-                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child);
+                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child, nextNestingLimit);
                 }
 
                 writer.WriteEndObject();

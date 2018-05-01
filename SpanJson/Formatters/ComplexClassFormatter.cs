@@ -1,4 +1,6 @@
-﻿namespace SpanJson.Formatters
+﻿using System;
+
+namespace SpanJson.Formatters
 {
     /// <summary>
     ///     Used for types which are not built-in
@@ -23,8 +25,7 @@
             return Deserializer(ref reader);
         }
 
-
-        public void Serialize(ref JsonWriter<TSymbol> writer, T value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
         {
             if (value == null)
             {
@@ -32,7 +33,7 @@
                 return;
             }
 
-            Serializer(ref writer, value);
+            Serializer(ref writer, value, nestingLimit);
         }
     }
 }

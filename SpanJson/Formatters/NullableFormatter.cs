@@ -18,7 +18,7 @@ namespace SpanJson.Formatters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static void Serialize<T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, T? value, IJsonFormatter<T, TSymbol, TResolver> formatter)
+        protected static void Serialize<T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, T? value, IJsonFormatter<T, TSymbol, TResolver> formatter, int nestingLimit)
             where T : struct where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             if (value == null)
@@ -27,7 +27,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            formatter.Serialize(ref writer, value.Value);
+            formatter.Serialize(ref writer, value.Value, nestingLimit);
         }
     }
 
@@ -47,9 +47,9 @@ namespace SpanJson.Formatters
             return Deserialize(ref reader, DefaultFormatter);
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T? value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T? value, int nestingLimit)
         {
-            Serialize(ref writer, value, DefaultFormatter);
+            Serialize(ref writer, value, DefaultFormatter, nestingLimit);
         }
     }
 }

@@ -7,12 +7,14 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
     public abstract class ComplexFormatter : BaseFormatter
     {
+        private const int NestingLimit = 256;
         /// <summary>
         ///     if the propertyType is object, we need to do it during runtime
         ///     if the type is RuntimeHelpers.IsReferenceOrContainsReferences -> false, we can do everything statically (struct and
@@ -27,8 +29,17 @@ namespace SpanJson.Formatters
             var memberInfos = resolver.GetMemberInfos<T>().Where(a => a.CanRead).ToList();
             var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
-
+            var nestingLimitParameter = Expression.Parameter(typeof(int), "nestingLimit");
             var expressions = new List<Expression>();
+            if (RecursionCandidate<T>.IsRecursionCandidate)
+            {
+                expressions.Add(Expression.IfThen(
+                    Expression.GreaterThan(
+                        nestingLimitParameter, Expression.Constant(NestingLimit)),
+                    Expression.Throw(
+                        Expression.Constant(new InvalidOperationException($"Nesting Limit of {NestingLimit} exceeded in Type {typeof(T).Name}.")))));
+            }
+
             MethodInfo propertyNameWriterMethodInfo;
             MethodInfo seperatorWriteMethodInfo;
             MethodInfo writeBeginObjectMethodInfo;
@@ -64,6 +75,15 @@ namespace SpanJson.Formatters
                 Expression formatterExpression = Expression.Constant(formatter);
                 var serializeMethodInfo = formatter.GetType().GetMethod("Serialize");
                 var memberExpression = Expression.PropertyOrField(valueParameter, memberInfo.MemberName);
+                var parameterExpressions = new List<Expression> {writerParameter, memberExpression};
+                if (RecursionCandidate.LookupRecursionCandidate(memberInfo.MemberType)) // only for possible candidates
+                {
+                    parameterExpressions.Add(Expression.Add(nestingLimitParameter, Expression.Constant(1)));
+                }
+                else
+                {
+                    parameterExpressions.Add(nestingLimitParameter);
+                }
                 if (isReferenceOrContainsReference && !IsSealedOrStruct(memberInfo.MemberType)) // decide at runtime
                 {
                     var backupFormatter = RuntimeFormatter<TSymbol, TResolver>.Default;
@@ -90,11 +110,11 @@ namespace SpanJson.Formatters
 
                 var writerNameConstant = GetConstantExpressionOfString<TSymbol>($"\"{memberInfo.Name}\":");
                 valueExpressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo, writerNameConstant));
-                Expression serializerCall = Expression.Call(formatterExpression, serializeMethodInfo, writerParameter, memberExpression);
+                Expression serializerCall = Expression.Call(formatterExpression, serializeMethodInfo, parameterExpressions);
                 if (runtimeDecisionExpression != null) // if we need to decide at runtime we 
                 {
                     var backupSerializerCall = Expression.Call(runtimeFormatterExpression,
-                        runtimeSerializeMethodInfo, writerParameter, memberExpression);
+                        runtimeSerializeMethodInfo, parameterExpressions);
                     serializerCall = Expression.IfThenElse(runtimeDecisionExpression, serializerCall, backupSerializerCall);
                 }
 
@@ -155,7 +175,7 @@ namespace SpanJson.Formatters
             expressions.Add(Expression.Call(writerParameter, writeEndObjectMethodInfo));
             var blockExpression = Expression.Block(new[] { writeSeperator }, expressions);
             var lambda =
-                Expression.Lambda<SerializeDelegate<T, TSymbol, TResolver>>(blockExpression, writerParameter, valueParameter);
+                Expression.Lambda<SerializeDelegate<T, TSymbol, TResolver>>(blockExpression, writerParameter, valueParameter, nestingLimitParameter);
             return lambda.Compile();
         }
 
@@ -376,7 +396,7 @@ namespace SpanJson.Formatters
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct;
 
 
-        protected delegate void SerializeDelegate<in T, TSymbol, in TResolver>(ref JsonWriter<TSymbol> writer, T value)
+        protected delegate void SerializeDelegate<in T, TSymbol, in TResolver>(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct;
     }
 }

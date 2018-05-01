@@ -21,7 +21,7 @@ namespace SpanJson.Formatters
             return Deserializer(ref reader);
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
         {
             Serializer(ref writer, value);
         }
