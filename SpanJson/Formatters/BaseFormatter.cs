@@ -32,7 +32,7 @@ namespace SpanJson.Formatters
 
         protected static MethodInfo FindHelperMethod(string name, params Type[] args)
         {
-            var flags = BindingFlags.NonPublic | BindingFlags.Static;
+            const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Static;
             return args?.Length > 0
                 ? typeof(BaseFormatter).GetMethod(name, flags, null, CallingConventions.Any, args, null)
                 : typeof(BaseFormatter).GetMethod(name, flags);

@@ -32,7 +32,7 @@ namespace SpanJson.Formatters
             var memberInfos = resolver.GetMemberInfos<T>().ToList();
             var inputParameter = Expression.Parameter(typeof(T), "input");
             var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
-            var result = new Dictionary<string, DeserializeDelegate>();
+            var result = new Dictionary<string, DeserializeDelegate>(StringComparer.InvariantCulture);
             // can't deserialize abstract or interface
             foreach (var jsonMemberInfo in memberInfos)
             {

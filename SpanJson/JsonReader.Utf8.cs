@@ -53,13 +53,13 @@ namespace SpanJson
 
         public float ReadUtf8Single()
         {
-            Utf8Parser.TryParse(ReadUtf8NumberInternal(), out float value, out var consumed); // todo find out if correct
+            Utf8Parser.TryParse(ReadUtf8NumberInternal(), out float value, out var consumed);
             return value;
         }
 
         public double ReadUtf8Double()
         {
-            Utf8Parser.TryParse(ReadUtf8NumberInternal(), out double value, out var consumed); // todo find out if correct
+            Utf8Parser.TryParse(ReadUtf8NumberInternal(), out double value, out var consumed);
             return value;
         }
 

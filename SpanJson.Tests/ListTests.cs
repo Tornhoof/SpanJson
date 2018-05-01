@@ -47,5 +47,13 @@ namespace SpanJson.Tests
             var serialized = JsonSerializer.Generic.Utf16.Serialize(list.Where(a => a != "Universe"));
             Assert.Equal("[\"Hello\",\"World\"]", serialized);
         }
+
+        [Fact]
+        public void MultDimArray()
+        {
+            var jaggedArray = new int[][] { new[] { 1, 2, 3 }, new[] { 4, 5, 6 } };
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(jaggedArray);
+            Assert.Equal("[[1,2,3],[4,5,6]]", serialized);
+        }
     }
 }

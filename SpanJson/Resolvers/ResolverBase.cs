@@ -37,7 +37,9 @@ namespace SpanJson.Resolvers
             // ReSharper restore ConvertClosureToMethodGroup
         }
 
-        // TODO Extend with attributes and ShouldSerialize
+        /// <summary>
+        /// TODO Extend with attributes and ShouldSerialize
+        /// </summary>
         public JsonMemberInfo[] GetDynamicMemberInfos(IDynamicMetaObjectProvider provider)
         {
             var metaObject = provider.GetMetaObject(Expression.Parameter(typeof(object)));
@@ -113,17 +115,17 @@ namespace SpanJson.Resolvers
             return result.ToArray();
         }
 
-        private string Escape(string input)
+        private static string Escape(string input)
         {
-            return input; // todo later
+            return input; // TODO: Find out if necessary
         }
 
-        private bool IsIgnored(MemberInfo memberInfo)
+        private static bool IsIgnored(MemberInfo memberInfo)
         {
             return memberInfo.GetCustomAttribute<IgnoreDataMemberAttribute>() != null;
         }
 
-        private string GetAttributeName(MemberInfo memberInfo)
+        private static string GetAttributeName(MemberInfo memberInfo)
         {
             return memberInfo.GetCustomAttribute<DataMemberAttribute>()?.Name;
         }
@@ -142,7 +144,6 @@ namespace SpanJson.Resolvers
                 return integrated;
             }
 
-            // todo: support for multidimensional array
             if (type.IsArray)
             {
                 return GetDefaultOrCreate(typeof(ArrayFormatter<,,>).MakeGenericType(type.GetElementType(),

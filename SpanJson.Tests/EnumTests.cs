@@ -8,7 +8,7 @@ namespace SpanJson.Tests
         {
             Hello,
             World,
-            Universe
+            Universe,            
         }
 
         [Theory]

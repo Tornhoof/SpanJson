@@ -26,9 +26,6 @@ namespace SpanJson.Tests
             public string SonSpecific { get; set; }
         }
 
-        /// <summary>
-        ///     TODO: disable deserialization in case of abstract class
-        /// </summary>
         [Fact]
         public void Serialize()
         {

@@ -64,11 +64,11 @@ namespace SpanJson.Formatters
                 Expression constantExpression;
                 if (typeof(TSymbol) == typeof(char))
                 {
-                    constantExpression = Expression.Constant(value.ToString()); // TODO Escaping
+                    constantExpression = Expression.Constant(value.ToString());
                 }
                 else if (typeof(TSymbol) == typeof(byte))
                 {
-                    constantExpression = Expression.Constant(Encoding.UTF8.GetBytes(value.ToString())); // TODO Escaping
+                    constantExpression = Expression.Constant(Encoding.UTF8.GetBytes(value.ToString()));
                 }
                 else
                 {
@@ -116,11 +116,11 @@ namespace SpanJson.Formatters
                 var formattedValue = $"\"{value}\"";
                 if (typeof(TSymbol) == typeof(char))
                 {
-                    valueConstant = Expression.Constant(formattedValue); // TODO Escaping
+                    valueConstant = Expression.Constant(formattedValue);
                 }
                 else if (typeof(TSymbol) == typeof(byte))
                 {
-                    valueConstant = Expression.Constant(Encoding.UTF8.GetBytes(formattedValue)); // TODO Escaping
+                    valueConstant = Expression.Constant(Encoding.UTF8.GetBytes(formattedValue));
                 }
                 else
                 {
