@@ -7,6 +7,10 @@
     <!--<RuntimeFrameworkVersion>2.1.0-preview3-26411-01</RuntimeFrameworkVersion> -->
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;EPS06</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="BenchmarkDotNet.Artifacts\**" />
     <EmbeddedResource Remove="BenchmarkDotNet.Artifacts\**" />

@@ -90,7 +90,7 @@ namespace SpanJson.Formatters.Dynamic
             return lambda.Compile();
         }
 
-        private struct Enumerable<TOutput> : IReadOnlyCollection<TOutput>, ICountableEnumerable
+        private readonly struct Enumerable<TOutput> : IReadOnlyCollection<TOutput>, ICountableEnumerable
         {
             private readonly object[] _input;
 

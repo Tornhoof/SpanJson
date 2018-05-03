@@ -53,7 +53,7 @@ namespace SpanJson.Formatters.Dynamic
             throw new InvalidCastException();
         }
 
-        public abstract bool TryConvertTo(Type destinationType, in ReadOnlySpan<TSymbol> span, out object value);
+        public abstract bool TryConvertTo(Type destinationType, ReadOnlySpan<TSymbol> span, out object value);
 
         public abstract bool IsSupported(Type destinationType);
 

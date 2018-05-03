@@ -16,7 +16,7 @@ namespace SpanJson.Formatters.Dynamic
         {
             private static readonly Dictionary<Type, ConvertDelegate> Converters = BuildDelegates();
 
-            public override bool TryConvertTo(Type destinationType, in ReadOnlySpan<TSymbol> span, out object value)
+            public override bool TryConvertTo(Type destinationType, ReadOnlySpan<TSymbol> span, out object value)
             {
                 try
                 {

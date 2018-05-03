@@ -91,7 +91,7 @@ namespace SpanJson
                 return default;
             }
 
-            ref readonly var firstChar = ref _bytes[pos];
+            var firstChar = _bytes[pos];
             var neg = false;
             if (firstChar == '-')
             {
@@ -127,7 +127,7 @@ namespace SpanJson
                 return default;
             }
 
-            ref readonly var firstChar = ref _bytes[pos];
+            var firstChar = _bytes[pos];
             if (firstChar == '-')
             {
                 ThrowJsonParserException(JsonParserException.ParserError.InvalidNumberFormat);
@@ -381,7 +381,7 @@ namespace SpanJson
             return Encoding.UTF8.GetString(span);
         }
 
-        private string UnescapeUtf8(in ReadOnlySpan<byte> span, int escapedCharsSize)
+        private string UnescapeUtf8(ReadOnlySpan<byte> span, int escapedCharsSize)
         {
             var unescapedLength = span.Length - escapedCharsSize;
             var result = new string('\0', unescapedLength);
@@ -562,7 +562,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             while (pos < _length)
             {
-                ref readonly var c = ref _bytes[pos];
+                var c = _bytes[pos];
                 switch (c)
                 {
                     case (byte) ' ':
@@ -833,7 +833,7 @@ namespace SpanJson
             var length = _bytes.Length;
             for (; i < length; i++)
             {
-                ref readonly var c = ref _bytes[i];
+                var c = _bytes[i];
                 if (!IsNumericUtf8Symbol(c))
                 {
                     break;
@@ -856,12 +856,12 @@ namespace SpanJson
             escapedCharsSize = 0;
             for (var i = pos; i < _bytes.Length; i++)
             {
-                ref readonly var c = ref _bytes[i];
+                var c = _bytes[i];
                 if (c == JsonConstant.ReverseSolidus)
                 {
                     escapedCharsSize++;
                     i++;
-                    ref readonly var nextByte = ref _bytes[i]; // check what type of escaped char it is
+                    var nextByte = _bytes[i]; // check what type of escaped char it is
                     if (nextByte == 'u' || nextByte == 'U')
                     {
                         escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
@@ -959,7 +959,7 @@ namespace SpanJson
                 return JsonToken.None;
             }
 
-            ref readonly var c = ref _bytes[pos];
+            var c = _bytes[pos];
             switch (c)
             {
                 case (byte) JsonConstant.BeginObject:

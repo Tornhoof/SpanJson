@@ -71,7 +71,7 @@ namespace SpanJson.Tests
         }
 
 
-        private void AssertDateTime(in DateTime dateTime, int year, int month, int day, int hour, int minute,
+        private void AssertDateTime(DateTime dateTime, int year, int month, int day, int hour, int minute,
             int second, int fraction)
         {
             var comparison = new DateTime(year, month, day, hour, minute, second).AddTicks(fraction);

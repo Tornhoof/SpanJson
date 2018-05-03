@@ -9,7 +9,8 @@
   </PropertyGroup>
   
   <ItemGroup>
-  <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.0-rc1-26426-05" />
+    <PackageReference Include="ErrorProne.NET.Structs" Version="0.1.0" PrivateAssets="all" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.0-rc1-26426-05" />
   </ItemGroup>
 
   <ItemGroup>

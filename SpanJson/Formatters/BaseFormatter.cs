@@ -51,7 +51,7 @@ namespace SpanJson.Formatters
             }
             for (var i = 0; i < comparison.Length; i++)
             {
-                ref readonly var left = ref span[offset + i];
+                var left = span[offset + i];
                 if (comparison[i] != left)
                 {
                     return false;
@@ -80,7 +80,7 @@ namespace SpanJson.Formatters
             }
             for (var i = 0; i < comparison.Length; i++)
             {
-                ref readonly var left = ref span[offset + i];
+                var left = span[offset + i];
                 if (comparison[i] != left)
                 {
                     return false;
