@@ -3,14 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <!--<RuntimeFrameworkVersion>2.1.0-preview2-26406-04</RuntimeFrameworkVersion>-->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.0.0-alpha-00059</Version>
+    <Version>0.1.0.0-alpha-00064</Version>
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="ErrorProne.NET.Structs" Version="0.1.0" PrivateAssets="all" />
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.0-rc1-26426-05" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.0-rtm-26502-02" />
   </ItemGroup>
 
   <ItemGroup>
