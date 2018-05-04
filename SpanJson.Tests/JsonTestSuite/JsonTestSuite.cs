@@ -155,7 +155,7 @@ namespace SpanJson.Tests.JsonTestSuite
 
         private object Deserialize(string input, TestType type)
         {
-            var array = input[0] == JsonConstant.BeginArray;
+            var array = input[0] == JsonUtf8Constant.BeginArray;
             switch (type)
             {
                 case TestType.String:

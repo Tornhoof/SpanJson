@@ -49,8 +49,8 @@ namespace SpanJson
                     Grow(21);
                 }
 
-                JsonConstant.LongMinValueUtf8.AsSpan().TryCopyTo(_bytes.Slice(pos));
-                pos += JsonConstant.LongMinValueUtf8.Length;
+                JsonUtf8Constant.LongMinValue.AsSpan().TryCopyTo(_bytes.Slice(pos));
+                pos += JsonUtf8Constant.LongMinValue.Length;
             }
             else if (value < 0)
             {
@@ -120,7 +120,7 @@ namespace SpanJson
 
         public void WriteUtf8Single(float value)
         {
-            Span<char> span = stackalloc char[JsonConstant.MaxNumberBufferSize];
+            Span<char> span = stackalloc char[JsonSharedConstant.MaxNumberBufferSize];
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
             if (pos > _bytes.Length - written)
@@ -136,7 +136,7 @@ namespace SpanJson
 
         public void WriteUtf8Double(double value)
         {
-            Span<char> span = stackalloc char[JsonConstant.MaxNumberBufferSize];
+            Span<char> span = stackalloc char[JsonSharedConstant.MaxNumberBufferSize];
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
             if (pos > _bytes.Length - written)
@@ -152,7 +152,7 @@ namespace SpanJson
 
         public void WriteUtf8Decimal(decimal value)
         {
-            Span<byte> span = stackalloc byte[JsonConstant.MaxNumberBufferSize]; 
+            Span<byte> span = stackalloc byte[JsonSharedConstant.MaxNumberBufferSize]; 
             Utf8Formatter.TryFormat(value, span, out var bytesWritten);
             ref var pos = ref _pos;
             if (pos > _bytes.Length - bytesWritten)
@@ -175,7 +175,7 @@ namespace SpanJson
                     Grow(trueLength);
                 }
 
-                _bytes[pos++] = (byte) JsonConstant.True;
+                _bytes[pos++] = (byte) JsonUtf8Constant.True;
                 _bytes[pos++] = (byte) 'r';
                 _bytes[pos++] = (byte) 'u';
                 _bytes[pos++] = (byte) 'e';
@@ -188,7 +188,7 @@ namespace SpanJson
                     Grow(falseLength);
                 }
 
-                _bytes[pos++] = (byte) JsonConstant.False;
+                _bytes[pos++] = (byte) JsonUtf8Constant.False;
                 _bytes[pos++] = (byte) 'a';
                 _bytes[pos++] = (byte) 'l';
                 _bytes[pos++] = (byte) 's';
@@ -199,7 +199,7 @@ namespace SpanJson
         public void WriteUtf8Char(char value)
         {
             ref var pos = ref _pos;
-            const int size = 8; // 1-6 chars + two JsonConstant.DoubleQuote
+            const int size = 8; // 1-6 chars + two JsonUtf8Constant.DoubleQuote
             if (pos > _bytes.Length - size)
             {
                 Grow(size);
@@ -213,7 +213,7 @@ namespace SpanJson
         public void WriteUtf8DateTime(DateTime value)
         {
             ref var pos = ref _pos;
-            const int dtSize = 35; // Form o + two JsonConstant.DoubleQuote
+            const int dtSize = 35; // Form o + two JsonUtf8Constant.DoubleQuote
             if (pos > _bytes.Length - dtSize)
             {
                 Grow(dtSize);
@@ -228,7 +228,7 @@ namespace SpanJson
         public void WriteUtf8DateTimeOffset(DateTimeOffset value)
         {
             ref var pos = ref _pos;
-            const int dtSize = 35; // Form o + two JsonConstant.DoubleQuote
+            const int dtSize = 35; // Form o + two JsonUtf8Constant.DoubleQuote
             if (pos > _bytes.Length - dtSize)
             {
                 Grow(dtSize);
@@ -243,7 +243,7 @@ namespace SpanJson
         public void WriteUtf8TimeSpan(TimeSpan value)
         {
             ref var pos = ref _pos;
-            const int dtSize = 20; // Form o + two JsonConstant.DoubleQuote
+            const int dtSize = 20; // Form o + two JsonUtf8Constant.DoubleQuote
             if (pos > _bytes.Length - dtSize)
             {
                 Grow(dtSize);
@@ -258,7 +258,7 @@ namespace SpanJson
         public void WriteUtf8Guid(Guid value)
         {
             ref var pos = ref _pos;
-            const int guidSize = 42; // Format D + two JsonConstant.DoubleQuote;
+            const int guidSize = 42; // Format D + two JsonUtf8Constant.DoubleQuote;
             if (pos > _bytes.Length - guidSize)
             {
                 Grow(guidSize);
@@ -294,7 +294,7 @@ namespace SpanJson
             for (var i = 0; i < valueLength; i++)
             {
                 ref var c = ref Unsafe.Add(ref start, i);
-                if (c < 0x20 || c == JsonConstant.DoubleQuote || c == JsonConstant.Solidus || c == JsonConstant.ReverseSolidus)
+                if (c < 0x20 || c == JsonUtf8Constant.DoubleQuote || c == JsonUtf8Constant.Solidus || c == JsonUtf8Constant.ReverseSolidus)
                 {
                     WriteEscapedUtf8CharInternal(c);
                     var remaining = 5 + valueLength - i; // make sure that all characters and an extra 5 for a full escape still fit
@@ -327,14 +327,14 @@ namespace SpanJson
         {
             switch (value)
             {
-                case JsonConstant.DoubleQuote:
-                    WriteUtf8SingleEscapedChar(JsonConstant.DoubleQuote);
+                case JsonUtf16Constant.DoubleQuote:
+                    WriteUtf8SingleEscapedChar(JsonUtf16Constant.DoubleQuote);
                     break;
-                case JsonConstant.Solidus:
-                    WriteUtf8SingleEscapedChar(JsonConstant.Solidus);
+                case JsonUtf16Constant.Solidus:
+                    WriteUtf8SingleEscapedChar(JsonUtf16Constant.Solidus);
                     break;
-                case JsonConstant.ReverseSolidus:
-                    WriteUtf8SingleEscapedChar(JsonConstant.ReverseSolidus);
+                case JsonUtf16Constant.ReverseSolidus:
+                    WriteUtf8SingleEscapedChar(JsonUtf16Constant.ReverseSolidus);
                     break;
                 case '\b':
                     WriteUtf8SingleEscapedChar('b');
@@ -439,7 +439,7 @@ namespace SpanJson
         private void WriteUtf8CharInternal(char value)
         {
             ref var pos = ref _pos;
-            if (value < 0x20 || value == JsonConstant.DoubleQuote || value == JsonConstant.Solidus || value == JsonConstant.ReverseSolidus)
+            if (value < 0x20 || value == JsonUtf8Constant.DoubleQuote || value == JsonUtf8Constant.Solidus || value == JsonUtf8Constant.ReverseSolidus)
             {
                 WriteEscapedUtf8CharInternal(value);
             }
@@ -495,7 +495,7 @@ namespace SpanJson
             WriteUtf8DoubleQuote();
             pos += Encoding.UTF8.GetBytes(value, _bytes.Slice(pos));
             WriteUtf8DoubleQuote();
-            _bytes[pos++] = (byte) JsonConstant.NameSeparator;
+            _bytes[pos++] = (byte) JsonUtf8Constant.NameSeparator;
         }
 
 
@@ -503,7 +503,7 @@ namespace SpanJson
         private void WriteUtf8SingleEscapedChar(char toEscape)
         {
             ref var pos = ref _pos;
-            _bytes[pos++] = (byte) JsonConstant.ReverseSolidus;
+            _bytes[pos++] = (byte) JsonUtf8Constant.ReverseSolidus;
             _bytes[pos++] = (byte) toEscape;
         }
 
@@ -511,7 +511,7 @@ namespace SpanJson
         private void WriteUtf8DoubleEscapedChar(char firstToEscape, char secondToEscape)
         {
             ref var pos = ref _pos;
-            _bytes[pos++] = (byte) JsonConstant.ReverseSolidus;
+            _bytes[pos++] = (byte) JsonUtf8Constant.ReverseSolidus;
             _bytes[pos++] = (byte) 'u';
             _bytes[pos++] = (byte) '0';
             _bytes[pos++] = (byte) '0';
@@ -528,7 +528,7 @@ namespace SpanJson
                 Grow(1);
             }
 
-            _bytes[pos++] = (byte) JsonConstant.BeginObject;
+            _bytes[pos++] = (byte) JsonUtf8Constant.BeginObject;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -540,7 +540,7 @@ namespace SpanJson
                 Grow(1);
             }
 
-            _bytes[pos++] = (byte) JsonConstant.EndObject;
+            _bytes[pos++] = (byte) JsonUtf8Constant.EndObject;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -552,7 +552,7 @@ namespace SpanJson
                 Grow(1);
             }
 
-            _bytes[pos++] = (byte) JsonConstant.BeginArray;
+            _bytes[pos++] = (byte) JsonUtf8Constant.BeginArray;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -564,7 +564,7 @@ namespace SpanJson
                 Grow(1);
             }
 
-            _bytes[pos++] = (byte) JsonConstant.EndArray;
+            _bytes[pos++] = (byte) JsonUtf8Constant.EndArray;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -576,7 +576,7 @@ namespace SpanJson
                 Grow(1);
             }
 
-            _bytes[pos++] = (byte) JsonConstant.ValueSeparator;
+            _bytes[pos++] = (byte) JsonUtf8Constant.ValueSeparator;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -589,7 +589,7 @@ namespace SpanJson
                 Grow(nullLength);
             }
 
-            _bytes[pos++] = (byte) JsonConstant.Null;
+            _bytes[pos++] = (byte) JsonUtf8Constant.Null;
             _bytes[pos++] = (byte) 'u';
             _bytes[pos++] = (byte) 'l';
             _bytes[pos++] = (byte) 'l';
@@ -598,7 +598,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteUtf8DoubleQuote()
         {
-            _bytes[_pos++] = (byte) JsonConstant.String;
+            _bytes[_pos++] = (byte) JsonUtf8Constant.String;
         }
 
 
@@ -606,13 +606,13 @@ namespace SpanJson
         public void WriteUtf8Version(Version value)
         {
             ref var pos = ref _pos;
-            if (pos > _bytes.Length - JsonConstant.MaxVersionLength)
+            if (pos > _bytes.Length - JsonSharedConstant.MaxVersionLength)
             {
-                Grow(JsonConstant.MaxVersionLength);
+                Grow(JsonSharedConstant.MaxVersionLength);
             }
 
             WriteUtf8DoubleQuote();
-            Span<char> tempSpan = stackalloc char[JsonConstant.MaxVersionLength];
+            Span<char> tempSpan = stackalloc char[JsonSharedConstant.MaxVersionLength];
             value.TryFormat(tempSpan, out _);
             pos += Encoding.UTF8.GetBytes(tempSpan, _bytes.Slice(pos));
             WriteUtf8DoubleQuote();

@@ -181,7 +181,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf8();
             ref var pos = ref _pos;
-            if (_bytes[pos] == (byte) JsonConstant.True) // just peek the byte
+            if (_bytes[pos] == JsonUtf8Constant.True) // just peek the byte
             {
                 if (_bytes[pos + 1] != 'r')
                 {
@@ -202,7 +202,7 @@ namespace SpanJson
                 return true;
             }
 
-            if (_bytes[pos] == (byte) JsonConstant.False) // just peek the byte
+            if (_bytes[pos] == JsonUtf8Constant.False) // just peek the byte
             {
                 if (_bytes[pos + 1] != 'a')
                 {
@@ -247,17 +247,17 @@ namespace SpanJson
                 return (char) span[pos];
             }
 
-            if (span[pos] == JsonConstant.ReverseSolidus)
+            if (span[pos] == JsonUtf8Constant.ReverseSolidus)
             {
                 pos++;
-                switch (span[pos++])
+                switch (span[pos])
                 {
-                    case (byte) JsonConstant.DoubleQuote:
-                        return JsonConstant.DoubleQuote;
-                    case (byte) JsonConstant.ReverseSolidus:
-                        return JsonConstant.ReverseSolidus;
-                    case (byte) JsonConstant.Solidus:
-                        return JsonConstant.Solidus;
+                    case JsonUtf8Constant.DoubleQuote:
+                        return JsonUtf16Constant.DoubleQuote;
+                    case JsonUtf8Constant.ReverseSolidus:
+                        return JsonUtf16Constant.ReverseSolidus;
+                    case JsonUtf8Constant.Solidus:
+                        return JsonUtf16Constant.Solidus;
                     case (byte) 'b':
                         return '\b';
                     case (byte) 'f':
@@ -272,7 +272,7 @@ namespace SpanJson
                     case (byte) 'u':
                         if (span.Length == 6)
                         {
-                            if (Utf8Parser.TryParse(span.Slice(2, 4), out int value, out var bytesConsumed, 'X'))
+                            if (Utf8Parser.TryParse(span.Slice(2, 4), out int value, out _, 'X'))
                             {
                                 return (char) value;
                             }
@@ -344,7 +344,7 @@ namespace SpanJson
         public ReadOnlySpan<byte> ReadUtf8NameSpan()
         {
             var span = ReadUtf8StringSpan();
-            if (_bytes[_pos++] != (byte) JsonConstant.NameSeparator)
+            if (_bytes[_pos++] != JsonUtf8Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
@@ -356,7 +356,7 @@ namespace SpanJson
         public string ReadUtf8EscapedName()
         {
             var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
-            if (_bytes[_pos++] != (byte) JsonConstant.NameSeparator)
+            if (_bytes[_pos++] != JsonUtf8Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
@@ -392,19 +392,19 @@ namespace SpanJson
             {
                 var current = span[index++];
                 var unescaped = (char) current;
-                if (current == JsonConstant.ReverseSolidus)
+                if (current == JsonUtf8Constant.ReverseSolidus)
                 {
                     current = span[index++];
                     switch (current)
                     {
-                        case (byte) JsonConstant.DoubleQuote:
-                            unescaped = JsonConstant.DoubleQuote;
+                        case JsonUtf8Constant.DoubleQuote:
+                            unescaped = JsonUtf16Constant.DoubleQuote;
                             break;
-                        case (byte) JsonConstant.ReverseSolidus:
-                            unescaped = JsonConstant.ReverseSolidus;
+                        case JsonUtf8Constant.ReverseSolidus:
+                            unescaped = JsonUtf16Constant.ReverseSolidus;
                             break;
-                        case (byte) JsonConstant.Solidus:
-                            unescaped = JsonConstant.Solidus;
+                        case JsonUtf8Constant.Solidus:
+                            unescaped = JsonUtf16Constant.Solidus;
                             break;
                         case (byte) 'b':
                             unescaped = '\b';
@@ -455,7 +455,7 @@ namespace SpanJson
         {
             if (ReadUtf8IsNull())
             {
-                return JsonConstant.NullTerminatorUtf8;
+                return JsonUtf8Constant.NullTerminator;
             }
 
             return ReadUtf8StringSpanInternal(out _);
@@ -465,7 +465,7 @@ namespace SpanJson
         private ReadOnlySpan<byte> ReadUtf8StringSpanInternal(out int escapedCharsSize)
         {
             ref var pos = ref _pos;
-            if (_bytes[pos] != (byte) JsonConstant.String)
+            if (_bytes[pos] != JsonUtf8Constant.String)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
@@ -475,7 +475,7 @@ namespace SpanJson
             if (TryFindEndOfUtf8String(pos, out var bytesConsumed, out escapedCharsSize))
             {
                 var result = _bytes.Slice(pos, bytesConsumed);
-                pos += bytesConsumed + 1; // skip the JsonConstant.DoubleQuote too
+                pos += bytesConsumed + 1; // skip the JsonUtf8Constant.DoubleQuote too
                 return result;
             }
 
@@ -490,7 +490,7 @@ namespace SpanJson
         private ReadOnlySpan<byte> ReadUtf8StringSpanWithQuotes(out int escapedCharsSize)
         {
             ref var pos = ref _pos;
-            if (_bytes[pos] != (byte) JsonConstant.String)
+            if (_bytes[pos] != JsonUtf8Constant.String)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
@@ -499,7 +499,7 @@ namespace SpanJson
             if (TryFindEndOfUtf8String(pos + 1, out var bytesConsumed, out escapedCharsSize))
             {
                 var result = _bytes.Slice(pos, bytesConsumed + 2); // we include quotes in this version
-                pos += bytesConsumed + 2; // include both JsonConstant.DoubleQuote too 
+                pos += bytesConsumed + 2; // include both JsonUtf8Constant.DoubleQuote too 
                 return result;
             }
 
@@ -523,7 +523,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf8();
             ref var pos = ref _pos;
-            if (pos < _length && _bytes[pos] == (byte) JsonConstant.Null) // just peek the byte
+            if (pos < _length && _bytes[pos] == JsonUtf8Constant.Null) // just peek the byte
             {
                 if (_bytes[pos + 1] != 'u')
                 {
@@ -594,7 +594,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf8();
             ref var pos = ref _pos;
-            if (pos < _length && _bytes[pos] == JsonConstant.BeginArray)
+            if (pos < _length && _bytes[pos] == JsonUtf8Constant.BeginArray)
             {
                 pos++;
                 return true;
@@ -608,7 +608,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf8();
             ref var pos = ref _pos;
-            if (pos < _length && _bytes[pos] == JsonConstant.EndArray)
+            if (pos < _length && _bytes[pos] == JsonUtf8Constant.EndArray)
             {
                 pos++;
                 return true;
@@ -616,7 +616,7 @@ namespace SpanJson
 
             if (count++ > 0)
             {
-                if (pos < _length && _bytes[pos] == JsonConstant.ValueSeparator)
+                if (pos < _length && _bytes[pos] == JsonUtf8Constant.ValueSeparator)
                 {
                     pos++;
                     return false;
@@ -633,7 +633,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf8();
             ref var pos = ref _pos;
-            if (_bytes[pos] == JsonConstant.BeginObject)
+            if (_bytes[pos] == JsonUtf8Constant.BeginObject)
             {
                 pos++;
                 return true;
@@ -666,7 +666,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf8();
             ref var pos = ref _pos;
-            if (_bytes[pos] == JsonConstant.EndObject)
+            if (_bytes[pos] == JsonUtf8Constant.EndObject)
             {
                 pos++;
                 return true;
@@ -680,7 +680,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf8();
             ref var pos = ref _pos;
-            if (pos < _length && _bytes[pos] == JsonConstant.EndObject)
+            if (pos < _length && _bytes[pos] == JsonUtf8Constant.EndObject)
             {
                 pos++;
                 return true;
@@ -688,7 +688,7 @@ namespace SpanJson
 
             if (count++ > 0)
             {
-                if (_bytes[pos] == JsonConstant.ValueSeparator)
+                if (_bytes[pos] == JsonUtf8Constant.ValueSeparator)
                 {
                     pos++;
                     return false;
@@ -809,7 +809,7 @@ namespace SpanJson
                     pos++;
                     if (TryFindEndOfUtf8String(pos, out var bytesConsumed, out _))
                     {
-                        pos += bytesConsumed + 1; // skip JsonConstant.DoubleQuote too
+                        pos += bytesConsumed + 1; // skip JsonUtf8Constant.DoubleQuote too
                         return;
                     }
 
@@ -857,7 +857,7 @@ namespace SpanJson
             for (var i = pos; i < _bytes.Length; i++)
             {
                 var c = _bytes[i];
-                if (c == JsonConstant.ReverseSolidus)
+                if (c == JsonUtf8Constant.ReverseSolidus)
                 {
                     escapedCharsSize++;
                     i++;
@@ -869,7 +869,7 @@ namespace SpanJson
                     }
 
                 }
-                else if (c == JsonConstant.String)
+                else if (c == JsonUtf8Constant.String)
                 {
                     bytesConsumed = i - pos;
                     return true;
@@ -962,25 +962,25 @@ namespace SpanJson
             var c = _bytes[pos];
             switch (c)
             {
-                case (byte) JsonConstant.BeginObject:
+                case JsonUtf8Constant.BeginObject:
                     return JsonToken.BeginObject;
-                case (byte) JsonConstant.EndObject:
+                case JsonUtf8Constant.EndObject:
                     return JsonToken.EndObject;
-                case (byte) JsonConstant.BeginArray:
+                case JsonUtf8Constant.BeginArray:
                     return JsonToken.BeginArray;
-                case (byte) JsonConstant.EndArray:
+                case JsonUtf8Constant.EndArray:
                     return JsonToken.EndArray;
-                case (byte) JsonConstant.String:
+                case JsonUtf8Constant.String:
                     return JsonToken.String;
-                case (byte) JsonConstant.True:
+                case JsonUtf8Constant.True:
                     return JsonToken.True;
-                case (byte) JsonConstant.False:
+                case JsonUtf8Constant.False:
                     return JsonToken.False;
-                case (byte) JsonConstant.Null:
+                case JsonUtf8Constant.Null:
                     return JsonToken.Null;
-                case (byte) JsonConstant.ValueSeparator:
+                case JsonUtf8Constant.ValueSeparator:
                     return JsonToken.ValueSeparator;
-                case (byte) JsonConstant.NameSeparator:
+                case JsonUtf8Constant.NameSeparator:
                     return JsonToken.NameSeparator;
                 case (byte) '+':
                 case (byte) '-':
