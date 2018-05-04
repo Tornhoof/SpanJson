@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Buffers;
+using System.Runtime.CompilerServices;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public abstract class ArrayFormatter
+    public abstract class ArrayFormatter : BaseFormatter
     {
         protected static T[] Deserialize<T, TSymbol, TResolver>(ref JsonReader<TSymbol> reader, IJsonFormatter<T, TSymbol, TResolver> formatter)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -63,11 +64,11 @@ namespace SpanJson.Formatters
             writer.WriteBeginArray();
             if (valueLength > 0)
             {
-                formatter.Serialize(ref writer, value[0], nextNestingLimit);
+                SerializeInternal(ref writer, formatter, value[0], nextNestingLimit);
                 for (var i = 1; i < valueLength; i++)
                 {
                     writer.WriteValueSeparator();
-                    formatter.Serialize(ref writer, value[i], nextNestingLimit);
+                    SerializeInternal(ref writer, formatter, value[i], nextNestingLimit);
                 }
             }
 

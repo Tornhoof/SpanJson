@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
@@ -38,12 +39,12 @@ namespace SpanJson.Formatters
                 if (enumerator.MoveNext())
                 {
                     // first one, so we can write the separator prior to every following one
-                    formatter.Serialize(ref writer, enumerator.Current, nextNestingLimit);
+                    SerializeInternal(ref writer, formatter, enumerator.Current, nextNestingLimit);
                     // write all the other ones
                     while (enumerator.MoveNext())
                     {
                         writer.WriteValueSeparator();
-                        formatter.Serialize(ref writer, enumerator.Current, nextNestingLimit);
+                        SerializeInternal(ref writer, formatter, enumerator.Current, nextNestingLimit);
                     }
                 }
 
@@ -64,6 +65,7 @@ namespace SpanJson.Formatters
 
     {
         public static readonly EnumerableFormatter<TEnumerable, T, TSymbol, TResolver> Default = new EnumerableFormatter<TEnumerable, T, TSymbol, TResolver>();
+
 
         private static readonly IJsonFormatter<T, TSymbol, TResolver> DefaultFormatter =
             StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();

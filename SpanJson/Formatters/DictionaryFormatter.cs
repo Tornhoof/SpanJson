@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
@@ -38,6 +39,7 @@ namespace SpanJson.Formatters
                 writer.WriteNull();
                 return;
             }
+
             var nextNestingLimit = RecursionCandidate<T>.IsRecursionCandidate ? nestingLimit + 1 : nestingLimit;
             var valueLength = value.Count;
             writer.WriteBeginObject();
@@ -47,7 +49,7 @@ namespace SpanJson.Formatters
                 foreach (var kvp in value)
                 {
                     writer.WriteName(kvp.Key);
-                    formatter.Serialize(ref writer, kvp.Value, nextNestingLimit);
+                    SerializeInternal(ref writer, formatter, kvp.Value, nextNestingLimit);
                     if (counter++ < valueLength - 1)
                     {
                         writer.WriteValueSeparator();

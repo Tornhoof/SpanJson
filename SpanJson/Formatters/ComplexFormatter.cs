@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
@@ -63,19 +61,16 @@ namespace SpanJson.Formatters
                 throw new NotSupportedException();
             }
             expressions.Add(Expression.Call(writerParameter, writeBeginObjectMethodInfo));
-            var isReferenceOrContainsReference = RuntimeHelpers.IsReferenceOrContainsReferences<T>();
             var writeSeperator = Expression.Variable(typeof(bool), "writeSeperator");
             for (var i = 0; i < memberInfos.Count; i++)
             {
                 var memberInfo = memberInfos[i];
-                Expression runtimeFormatterExpression = null;
-                Expression runtimeDecisionExpression = null;
-                MethodInfo runtimeSerializeMethodInfo = null;
                 var formatter = resolver.GetFormatter(memberInfo.MemberType);
                 Expression formatterExpression = Expression.Constant(formatter);
-                var serializeMethodInfo = formatter.GetType().GetMethod("Serialize");
+                var serializeMethodInfo = typeof(BaseFormatter).GetMethod(nameof(SerializeInternal), BindingFlags.NonPublic | BindingFlags.Static)
+                    .MakeGenericMethod(memberInfo.MemberType, typeof(TSymbol), typeof(TResolver));
                 var memberExpression = Expression.PropertyOrField(valueParameter, memberInfo.MemberName);
-                var parameterExpressions = new List<Expression> {writerParameter, memberExpression};
+                var parameterExpressions = new List<Expression> {writerParameter, formatterExpression, memberExpression };
                 if (RecursionCandidate.LookupRecursionCandidate(memberInfo.MemberType)) // only for possible candidates
                 {
                     parameterExpressions.Add(Expression.Add(nestingLimitParameter, Expression.Constant(1)));
@@ -84,17 +79,8 @@ namespace SpanJson.Formatters
                 {
                     parameterExpressions.Add(nestingLimitParameter);
                 }
-                if (isReferenceOrContainsReference && !IsSealedOrStruct(memberInfo.MemberType)) // decide at runtime
-                {
-                    var backupFormatter = RuntimeFormatter<TSymbol, TResolver>.Default;
-                    runtimeFormatterExpression = Expression.Constant(backupFormatter);
-                    runtimeSerializeMethodInfo = backupFormatter.GetType().GetMethod("Serialize");
-                    // switch based on type to the static one or the runtime one, assuming the static one is the normal case
-                    var getTypeMethodInfo = typeof(object).GetMethod(nameof(GetType));
-                    runtimeDecisionExpression =
-                        Expression.Equal(Expression.Call(memberExpression, getTypeMethodInfo), Expression.Constant(memberInfo.MemberType));
-                }
 
+                var writerNameConstant = GetConstantExpressionOfString<TSymbol>($"\"{memberInfo.Name}\":");
                 var valueExpressions = new List<Expression>();
                 // we need to add the separator, but only if a value was written before
                 // we reset the indicator after each seperator write and set it after writing each field
@@ -108,26 +94,8 @@ namespace SpanJson.Formatters
                         ));
                 }
 
-                var writerNameConstant = GetConstantExpressionOfString<TSymbol>($"\"{memberInfo.Name}\":");
                 valueExpressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo, writerNameConstant));
-                Expression serializerCall = Expression.Call(formatterExpression, serializeMethodInfo, parameterExpressions);
-                if (runtimeDecisionExpression != null) // if we need to decide at runtime we 
-                {
-                    var backupSerializerCall = Expression.Call(runtimeFormatterExpression,
-                        runtimeSerializeMethodInfo, parameterExpressions);
-                    serializerCall = Expression.IfThenElse(runtimeDecisionExpression, serializerCall, backupSerializerCall);
-                }
-
-                if (!memberInfo.ExcludeNull)
-                {
-                    if (memberInfo.MemberType.IsClass)
-                    {
-                        var writeNullMi = writerParameter.Type.GetMethod(nameof(JsonWriter<TSymbol>.WriteUtf16Null));
-                        serializerCall = Expression.IfThenElse(Expression.ReferenceEqual(memberExpression, Expression.Constant(null)),
-                            Expression.Call(writerParameter, writeNullMi), serializerCall);
-                    }
-                }
-                valueExpressions.Add(serializerCall);
+                valueExpressions.Add(Expression.Call(null, serializeMethodInfo, parameterExpressions));
                 valueExpressions.Add(Expression.Assign(writeSeperator, Expression.Constant(true)));
                 Expression testNullExpression = null;
                 if (memberInfo.ExcludeNull)
@@ -261,11 +229,6 @@ namespace SpanJson.Formatters
 
             var lambda = Expression.Lambda<DeserializeDelegate<T, TSymbol, TResolver>>(block, readerParameter);
             return lambda.Compile();
-        }
-
-        private static bool IsSealedOrStruct(Type type)
-        {
-            return type.IsValueType || type.IsSealed;
         }
 
         /// <summary>

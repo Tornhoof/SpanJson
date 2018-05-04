@@ -7,17 +7,29 @@ namespace SpanJson.Tests
 {
     public class SerializationTests
     {
-        public class Parent
+        public abstract class Human
         {
-            public List<Child> Children { get; set; }
             public string Name { get; set; }
             public int Age { get; set; }
         }
-
-        public class Child
+        public class Parent : Human
         {
-            public string Name { get; set; }
-            public int Age { get; set; }
+            public List<Child> Children { get; set; }
+            public Human Partner { get; set; }
+        }
+
+        public class Child : Human
+        {
+        }
+
+        public class Son : Child
+        {
+            public bool SonSpecific { get; set; }
+        }
+
+        public class Daughter : Child
+        {
+            public bool DaughterSpecific { get; set; }
         }
 
         public class Node
@@ -126,6 +138,35 @@ namespace SpanJson.Tests
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<ObjectChildModel>(serialized);
             Assert.NotNull(deserialized);
             Assert.NotNull(deserialized.Object);
+        }
+
+        [Fact]
+        public void SerializePolymorphic()
+        {
+            var parent = new Parent
+            {
+                Age = 30,
+                Name = "Adam",
+                Children = new List<Child>
+                {
+                    new Son {Name = "Cain", Age = 5, SonSpecific = true},
+                    new Daughter {Name = "Lilith", Age = 8, DaughterSpecific = true}
+                },
+                Partner = new Parent
+                {
+                    Age = 30,
+                    Name = "Eve",
+                    Children = new List<Child>
+                    {
+                        new Son {Name = "Cain", Age = 5, SonSpecific = true},
+                        new Daughter {Name = "Lilith", Age = 8, DaughterSpecific = true}
+                    }
+                }            
+            };
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(parent);
+            Assert.Contains("\"Name\":\"Eve\"", serialized);
+            Assert.Contains("\"SonSpecific\":true", serialized);
+            Assert.Contains("\"DaughterSpecific\":true", serialized);
         }
     }
 }
