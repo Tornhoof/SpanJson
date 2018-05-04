@@ -457,29 +457,6 @@ namespace SpanJson
             _chars[pos++] = JsonConstant.NameSeparator;
         }
 
-        /// <summary>
-        ///     We need copy the span up to the current index, then WriteUtf16 the escape char and continue
-        ///     This is one messy thing, resetting the iterator
-        /// </summary>
-        private void CopyUtf16AndEscape(ref ReadOnlySpan<char> remaining, ref int i, char toEscape)
-        {
-            ref var pos = ref _pos;
-            if (i > 0)
-            {
-                remaining.Slice(0, i).CopyTo(_chars.Slice(pos));
-                pos += i;
-            }
-            remaining = remaining.Slice(i + 1); // continuing after the escaped char
-            i = -1; // i++ in post increment
-            var minWrite = 1 + remaining.Length;
-            if (pos > _chars.Length - minWrite) 
-            {
-                Grow(minWrite); // grow to fit escaped char
-            }
-
-            WriteUtf16SingleEscapedChar(toEscape);
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteUtf16SingleEscapedChar(char toEscape)
         {
@@ -488,23 +465,6 @@ namespace SpanJson
             _chars[pos++] = toEscape;
         }
 
-        private void CopyUtf16AndEscapeUnicode(ref ReadOnlySpan<char> remaining, ref int i, char firstToEscape, char secondToEscape)
-        {
-            ref var pos = ref _pos;
-            if (i > 0)
-            {
-                remaining.Slice(0, i).CopyTo(_chars.Slice(pos));
-                pos += i;
-            }
-            remaining = remaining.Slice(i + 1); // continuing after the escaped char
-            i = -1; // i++ in post increment
-            var minWrite = 5 + remaining.Length; // we need 5 more chars to fit the escaped part
-            if (pos > _chars.Length - minWrite)
-            {
-                Grow(minWrite);
-            }
-            WriteUtf16DoubleEscapedChar(firstToEscape, secondToEscape);
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteUtf16DoubleEscapedChar(char firstToEscape, char secondToEscape)
