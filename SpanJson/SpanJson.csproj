@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.0.0-alpha-00067</Version>
+    <Version>0.1.0.0-alpha-00068</Version>
   </PropertyGroup>
   
   <ItemGroup>

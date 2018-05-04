@@ -12,6 +12,11 @@ namespace SpanJson.Tests
             public string Name { get; set; }
             public int Age { get; set; }
         }
+
+        public class AnotherParent : Human
+        {
+            public List<Child> Children { get; set; }
+        }
         public class Parent : Human
         {
             public List<Child> Children { get; set; }
@@ -53,13 +58,13 @@ namespace SpanJson.Tests
         [Fact]
         public void NoNameMatches()
         {
-            var parent = new Parent {Age = 30, Name = "Adam", Children = new List<Child> {new Child {Name = "Cain", Age = 5}}};
+            var parent = new AnotherParent { Age = 30, Name = "Adam", Children = new List<Child> {new Child {Name = "Cain", Age = 5}}};
             var serializedWithCamelCase =
-                JsonSerializer.Generic.Utf16.Serialize<Parent, char, ExcludeNullsOriginalCaseResolver<char>>(parent);
+                JsonSerializer.Generic.Utf16.Serialize<AnotherParent, char, ExcludeNullsOriginalCaseResolver<char>>(parent);
             serializedWithCamelCase = serializedWithCamelCase.ToLowerInvariant();
             Assert.Contains("age", serializedWithCamelCase);
             var deserialized =
-                JsonSerializer.Generic.Utf16.Deserialize<Parent, char, ExcludeNullsOriginalCaseResolver<char>>(serializedWithCamelCase);
+                JsonSerializer.Generic.Utf16.Deserialize<AnotherParent, char, ExcludeNullsOriginalCaseResolver<char>>(serializedWithCamelCase);
             Assert.NotNull(deserialized);
             Assert.Null(deserialized.Children);
             Assert.Equal(0, deserialized.Age);

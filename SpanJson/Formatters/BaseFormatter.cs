@@ -114,19 +114,20 @@ namespace SpanJson.Formatters
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected static void SerializeInternal<T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, IJsonFormatter<T, TSymbol, TResolver> formatter,
-            T currentValue, int nextNestingLimit)
+            T value, int nextNestingLimit)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             // The first check is get around the runtime check for primitive types an structs without references, i.e most of the blc types from the bclformatter.tt
             // Then we specifically check for string as it is very common
-            // a null value can be serialized by both (doesn't matter, but we need to handle null for the runtime type check
-            if (!RuntimeHelpers.IsReferenceOrContainsReferences<T>() || typeof(T) == typeof(string) || currentValue == null || currentValue.GetType() == typeof(T))
+            // a null value can be serialized by both (doesn't matter, but we need to handle null for the runtime type check)
+            // Checking for things like IsValueType and/or IsSealed is actually several times more expensive than the type comparison
+            if (!RuntimeHelpers.IsReferenceOrContainsReferences<T>() || typeof(T) == typeof(string) || value == null || value.GetType() == typeof(T))
             {
-                formatter.Serialize(ref writer, currentValue, nextNestingLimit);
+                formatter.Serialize(ref writer, value, nextNestingLimit);
             }
             else
             {
-                RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, currentValue, nextNestingLimit);
+                RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, value, nextNestingLimit);
             }
         }
 

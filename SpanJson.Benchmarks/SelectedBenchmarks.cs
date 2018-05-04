@@ -47,31 +47,30 @@ namespace SpanJson.Benchmarks
 
         private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
 
-        private static readonly string StringInput = "private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();";
 
-        //[Benchmark]
-        //public string SerializeAnswerWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Serialize(Answer);
-        //}
+        [Benchmark]
+        public string SerializeAnswerWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Serialize(Answer);
+        }
 
-        //[Benchmark]
-        //public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
-        //{
-        //    return JsonSerializer.Generic.Utf8.Serialize(Answer);
-        //}
+        [Benchmark]
+        public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
+        {
+            return JsonSerializer.Generic.Utf8.Serialize(Answer);
+        }
 
-        //[Benchmark]
-        //public Answer DeserializeAnswerWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
-        //}
+        [Benchmark]
+        public Answer DeserializeAnswerWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
+        }
 
-        //[Benchmark]
-        //public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
-        //{
-        //    return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
-        //}
+        [Benchmark]
+        public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
+        {
+            return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
+        }
 
         //[Benchmark]
         //public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsyncUtf8()
@@ -353,32 +352,32 @@ namespace SpanJson.Benchmarks
         //    return Utf8JsonSerializer.Deserialize<System.String>(StringOutputOfUtf8JsonSerializer);
         //}
 
-        private static readonly System.Single SingleInput = ExpressionTreeFixture.Create<System.Single>();
+        //private static readonly System.Single SingleInput = ExpressionTreeFixture.Create<System.Single>();
 
-        private static readonly System.Double DoubleInput = ExpressionTreeFixture.Create<System.Double>();
+        //private static readonly System.Double DoubleInput = ExpressionTreeFixture.Create<System.Double>();
 
-        [Benchmark]
-        public System.String SerializeDoubleWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(DoubleInput);
-        }
+        //[Benchmark]
+        //public System.String SerializeDoubleWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(DoubleInput);
+        //}
 
-        [Benchmark]
-        public System.Byte[] SerializeDoubleWithSpanJsonUtf8Serializer()
-        {
-            return SpanJsonUtf8Serializer.Serialize(DoubleInput);
-        }
+        //[Benchmark]
+        //public System.Byte[] SerializeDoubleWithSpanJsonUtf8Serializer()
+        //{
+        //    return SpanJsonUtf8Serializer.Serialize(DoubleInput);
+        //}
 
-        [Benchmark]
-        public System.String SerializeSingleWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(SingleInput);
-        }
+        //[Benchmark]
+        //public System.String SerializeSingleWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(SingleInput);
+        //}
 
-        [Benchmark]
-        public System.Byte[] SerializeSingleWithSpanJsonUtf8Serializer()
-        {
-            return SpanJsonUtf8Serializer.Serialize(SingleInput);
-        }
+        //[Benchmark]
+        //public System.Byte[] SerializeSingleWithSpanJsonUtf8Serializer()
+        //{
+        //    return SpanJsonUtf8Serializer.Serialize(SingleInput);
+        //}
     }
 }
