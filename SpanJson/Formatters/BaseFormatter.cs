@@ -3,7 +3,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
@@ -113,8 +112,9 @@ namespace SpanJson.Formatters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static void SerializeInternal<T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, IJsonFormatter<T, TSymbol, TResolver> formatter,
-            T value, int nextNestingLimit)
+        protected static void SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer,
+            T value, IJsonFormatter<T, TSymbol, TResolver> formatter,
+            int nextNestingLimit)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             // The first check is get around the runtime check for primitive types an structs without references, i.e most of the blc types from the bclformatter.tt

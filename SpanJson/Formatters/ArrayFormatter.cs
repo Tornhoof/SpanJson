@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers;
-using System.Runtime.CompilerServices;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
@@ -48,7 +47,9 @@ namespace SpanJson.Formatters
 
             return result;
         }
-
+        /// <summary>
+        /// Special case, the included serializers do not need any runtime check
+        /// </summary>
         protected static void Serialize<T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, T[] value, IJsonFormatter<T, TSymbol, TResolver> formatter,
             int nestingLimit)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -64,11 +65,37 @@ namespace SpanJson.Formatters
             writer.WriteBeginArray();
             if (valueLength > 0)
             {
-                SerializeInternal(ref writer, formatter, value[0], nextNestingLimit);
+                formatter.Serialize(ref writer, value[0], nextNestingLimit);
                 for (var i = 1; i < valueLength; i++)
                 {
                     writer.WriteValueSeparator();
-                    SerializeInternal(ref writer, formatter, value[i], nextNestingLimit);
+                    formatter.Serialize(ref writer, value[i], nextNestingLimit);
+                }
+            }
+
+            writer.WriteEndArray();
+        }
+
+        protected static void SerializeRuntimeDecision<T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, T[] value, IJsonFormatter<T, TSymbol, TResolver> formatter,
+            int nestingLimit)
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+        {
+            if (value == null)
+            {
+                writer.WriteNull();
+                return;
+            }
+
+            var nextNestingLimit = RecursionCandidate<T>.IsRecursionCandidate ? nestingLimit + 1 : nestingLimit;
+            var valueLength = value.Length;
+            writer.WriteBeginArray();
+            if (valueLength > 0)
+            {
+                SerializeRuntimeDecisionInternal(ref writer, value[0], formatter, nextNestingLimit);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteValueSeparator();
+                    SerializeRuntimeDecisionInternal(ref writer, value[i], formatter, nextNestingLimit);
                 }
             }
 
@@ -102,7 +129,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, T[] value, int nestingLimit)
         {
-            Serialize(ref writer, value, DefaultFormatter, nestingLimit);
+            SerializeRuntimeDecision(ref writer, value, DefaultFormatter, nestingLimit);
         }
     }
 }

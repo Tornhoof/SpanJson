@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SpanJson.Formatters
+﻿namespace SpanJson.Formatters
 {
     /// <summary>
     ///     Used for types which are not built-in

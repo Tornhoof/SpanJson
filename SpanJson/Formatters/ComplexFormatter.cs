@@ -67,10 +67,21 @@ namespace SpanJson.Formatters
                 var memberInfo = memberInfos[i];
                 var formatter = resolver.GetFormatter(memberInfo.MemberType);
                 Expression formatterExpression = Expression.Constant(formatter);
-                var serializeMethodInfo = typeof(BaseFormatter).GetMethod(nameof(SerializeInternal), BindingFlags.NonPublic | BindingFlags.Static)
-                    .MakeGenericMethod(memberInfo.MemberType, typeof(TSymbol), typeof(TResolver));
+                Expression serializerInstance = null;
+                MethodInfo serializeMethodInfo;
                 var memberExpression = Expression.PropertyOrField(valueParameter, memberInfo.MemberName);
-                var parameterExpressions = new List<Expression> {writerParameter, formatterExpression, memberExpression };
+                var parameterExpressions = new List<Expression> {writerParameter, memberExpression};
+                if (IsNoRuntimeDecisionRequired(memberInfo.MemberType))
+                {
+                    serializeMethodInfo = formatter.GetType().GetMethod("Serialize", BindingFlags.Public | BindingFlags.Instance);
+                    serializerInstance = formatterExpression;
+                }
+                else
+                {
+                    serializeMethodInfo = typeof(BaseFormatter).GetMethod(nameof(SerializeRuntimeDecisionInternal), BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(memberInfo.MemberType, typeof(TSymbol), typeof(TResolver));
+                    parameterExpressions.Add(formatterExpression);
+                }
+
                 if (RecursionCandidate.LookupRecursionCandidate(memberInfo.MemberType)) // only for possible candidates
                 {
                     parameterExpressions.Add(Expression.Add(nestingLimitParameter, Expression.Constant(1)));
@@ -95,7 +106,7 @@ namespace SpanJson.Formatters
                 }
 
                 valueExpressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo, writerNameConstant));
-                valueExpressions.Add(Expression.Call(null, serializeMethodInfo, parameterExpressions));
+                valueExpressions.Add(Expression.Call(serializerInstance, serializeMethodInfo, parameterExpressions));
                 valueExpressions.Add(Expression.Assign(writeSeperator, Expression.Constant(true)));
                 Expression testNullExpression = null;
                 if (memberInfo.ExcludeNull)
@@ -145,6 +156,11 @@ namespace SpanJson.Formatters
             var lambda =
                 Expression.Lambda<SerializeDelegate<T, TSymbol, TResolver>>(blockExpression, writerParameter, valueParameter, nestingLimitParameter);
             return lambda.Compile();
+        }
+
+        private static bool IsNoRuntimeDecisionRequired(Type memberType)
+        {
+            return memberType.IsValueType || memberType.IsSealed;
         }
 
         protected static DeserializeDelegate<T, TSymbol, TResolver> BuildDeserializeDelegate<T, TSymbol, TResolver>()

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
@@ -19,7 +18,6 @@ namespace SpanJson.Formatters
 
             throw new NotImplementedException(); // generic IEnumerable<> deserialization is not supported
         }
-
         protected static void Serialize<TEnumerable, T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, TEnumerable value,
             IJsonFormatter<T, TSymbol, TResolver> formatter, int nestingLimit) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
             where TSymbol : struct
@@ -30,6 +28,7 @@ namespace SpanJson.Formatters
                 writer.WriteNull();
                 return;
             }
+
             var nextNestingLimit = RecursionCandidate<T>.IsRecursionCandidate ? nestingLimit + 1 : nestingLimit;
             IEnumerator<T> enumerator = null;
             try
@@ -39,12 +38,12 @@ namespace SpanJson.Formatters
                 if (enumerator.MoveNext())
                 {
                     // first one, so we can write the separator prior to every following one
-                    SerializeInternal(ref writer, formatter, enumerator.Current, nextNestingLimit);
+                    SerializeRuntimeDecisionInternal(ref writer, enumerator.Current, formatter, nextNestingLimit);
                     // write all the other ones
                     while (enumerator.MoveNext())
                     {
                         writer.WriteValueSeparator();
-                        SerializeInternal(ref writer, formatter, enumerator.Current, nextNestingLimit);
+                        SerializeRuntimeDecisionInternal(ref writer, enumerator.Current, formatter, nextNestingLimit);
                     }
                 }
 

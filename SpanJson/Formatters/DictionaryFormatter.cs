@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
@@ -30,7 +29,7 @@ namespace SpanJson.Formatters
             return result;
         }
 
-        protected static void Serialize<TDictionary, T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, TDictionary value,
+        protected static void SerializeRuntimeDecision<TDictionary, T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, TDictionary value,
             IJsonFormatter<T, TSymbol, TResolver> formatter, int nestingLimit)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : class, IDictionary<string, T>
         {
@@ -49,7 +48,7 @@ namespace SpanJson.Formatters
                 foreach (var kvp in value)
                 {
                     writer.WriteName(kvp.Key);
-                    SerializeInternal(ref writer, formatter, kvp.Value, nextNestingLimit);
+                    SerializeRuntimeDecisionInternal(ref writer, kvp.Value, formatter, nextNestingLimit);
                     if (counter++ < valueLength - 1)
                     {
                         writer.WriteValueSeparator();
@@ -78,7 +77,7 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref JsonWriter<TSymbol> writer, TDictionary value, int nestingLimit)
         {
-            Serialize(ref writer, value, DefaultFormatter, nestingLimit);
+            SerializeRuntimeDecision(ref writer, value, DefaultFormatter, nestingLimit);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Text;
-using BenchmarkDotNet.Running;
+﻿using BenchmarkDotNet.Running;
 
 namespace SpanJson.Benchmarks
 {
@@ -7,7 +6,7 @@ namespace SpanJson.Benchmarks
     {
         private static void Main(string[] args)
         {
-            BenchmarkRunner.Run<ModelBenchmark>();
+            BenchmarkRunner.Run<SelectedBenchmarks>();
         }
     }
 }
