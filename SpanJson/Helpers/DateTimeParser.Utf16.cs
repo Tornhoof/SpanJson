@@ -231,8 +231,9 @@ namespace SpanJson.Helpers
                     return false;
                 }
 
-                var maxDigits = Math.Min(6, source.Length - currentOffset); // max 6 remaining fraction digits
-                for (var i = 0; i < maxDigits; i++)
+                var maxDigits = source.Length - currentOffset;
+                int digitCount;
+                for (digitCount = 0; digitCount < maxDigits; digitCount++)
                 {
                     var digit = source[currentOffset] - 48U;
                     if (digit > 9)
@@ -240,11 +241,45 @@ namespace SpanJson.Helpers
                         break;
                     }
 
-                    temp = temp * 10 + digit;
+                    if (digitCount < 6)
+                    {
+                        temp = temp * 10 + digit;
+                    }
+
                     currentOffset++;
                 }
 
-                fraction = (int) temp;
+                digitCount++; // add one for the first digit
+                switch (digitCount)
+                {
+                    case 7:
+                        break;
+
+                    case 6:
+                        temp *= 10;
+                        break;
+
+                    case 5:
+                        temp *= 100;
+                        break;
+
+                    case 4:
+                        temp *= 1000;
+                        break;
+
+                    case 3:
+                        temp *= 10000;
+                        break;
+
+                    case 2:
+                        temp *= 100000;
+                        break;
+                    case 1:
+                        temp *= 1000000;
+                        break;
+                }
+
+                fraction = (int)temp;
             }
 
             var offsetChar = source.Length <= currentOffset ? default : source[currentOffset++];

@@ -54,16 +54,11 @@ namespace SpanJson.Tests
             Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
         }
 
-        /// <summary>
-        ///     Jil's fraction handling is wrong
-        /// </summary>
-        /// <param name="modelType"></param>
         [Theory]
         [MemberData(nameof(GetModels))]
         public void CanDeserializeAllFromJil(Type modelType)
         {
             var fixture = new ExpressionTreeFixture();
-            fixture.Configure<DateTimeValueFixture>().Increment(TimeSpan.TicksPerSecond); // seconds only to get around jil's fraction handling
             var model = fixture.Create(modelType);
             var serialized = JSON.Serialize(model, Options.ISO8601ExcludeNullsIncludeInherited);
             Assert.NotNull(serialized);

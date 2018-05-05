@@ -106,7 +106,7 @@ namespace SpanJson.Helpers
                 year = (int) (digit1 * 1000 + digit2 * 100 + digit3 * 10 + digit4);
             }
 
-            if (source[4] != '-')
+            if (source[4] != (byte) '-')
             {
                 value = default;
                 charsConsumed = 0;
@@ -128,7 +128,7 @@ namespace SpanJson.Helpers
                 month = (int) (digit1 * 10 + digit2);
             }
 
-            if (source[7] != '-')
+            if (source[7] != (byte) '-')
             {
                 value = default;
                 charsConsumed = 0;
@@ -150,7 +150,7 @@ namespace SpanJson.Helpers
                 day = (int) (digit1 * 10 + digit2);
             }
 
-            if (source[10] != 'T')
+            if (source[10] != (byte) 'T')
             {
                 value = default;
                 charsConsumed = 0;
@@ -172,7 +172,7 @@ namespace SpanJson.Helpers
                 hour = (int) (digit1 * 10 + digit2);
             }
 
-            if (source[13] != ':')
+            if (source[13] != (byte) ':')
             {
                 value = default;
                 charsConsumed = 0;
@@ -194,7 +194,7 @@ namespace SpanJson.Helpers
                 minute = (int) (digit1 * 10 + digit2);
             }
 
-            if (source[16] != ':')
+            if (source[16] != (byte) ':')
             {
                 value = default;
                 charsConsumed = 0;
@@ -220,7 +220,7 @@ namespace SpanJson.Helpers
 
 
             var fraction = 0;
-            if (source.Length > currentOffset + 1 && source[currentOffset] == '.')
+            if (source.Length > currentOffset + 1 && source[currentOffset] == (byte)'.')
             {
                 currentOffset++;
                 var temp = source[currentOffset++] - 48U; // one needs to exist
@@ -231,8 +231,9 @@ namespace SpanJson.Helpers
                     return false;
                 }
 
-                var maxDigits = Math.Min(6, source.Length - currentOffset); // max 6 remaining fraction digits
-                for (var i = 0; i < maxDigits; i++)
+                var maxDigits = source.Length - currentOffset;
+                int digitCount;
+                for (digitCount = 0; digitCount < maxDigits; digitCount++)
                 {
                     var digit = source[currentOffset] - 48U;
                     if (digit > 9)
@@ -240,29 +241,63 @@ namespace SpanJson.Helpers
                         break;
                     }
 
-                    temp = temp * 10 + digit;
+                    if (digitCount < 6)
+                    {
+                        temp = temp * 10 + digit;
+                    }
+
                     currentOffset++;
                 }
 
-                fraction = (int) temp;
+                digitCount++; // add one for the first digit
+                switch (digitCount)
+                {
+                    case 7:
+                        break;
+
+                    case 6:
+                        temp *= 10;
+                        break;
+
+                    case 5:
+                        temp *= 100;
+                        break;
+
+                    case 4:
+                        temp *= 1000;
+                        break;
+
+                    case 3:
+                        temp *= 10000;
+                        break;
+
+                    case 2:
+                        temp *= 100000;
+                        break;
+                    case 1:
+                        temp *= 1000000;
+                        break;
+                }
+
+                fraction = (int)temp;
             }
 
             var offsetChar = source.Length <= currentOffset ? default : source[currentOffset++];
-            if (offsetChar != 'Z' && offsetChar != '+' && offsetChar != '-')
+            if (offsetChar != (byte) 'Z' && offsetChar != (byte) '+' && offsetChar != (byte) '-')
             {
                 value = new Date(year, month, day, hour, minute, second, fraction, DateTimeKind.Local, TimeSpan.Zero);
                 charsConsumed = currentOffset;
                 return true;
             }
 
-            if (offsetChar == 'Z')
+            if (offsetChar == (byte) 'Z')
             {
                 value = new Date(year, month, day, hour, minute, second, fraction, DateTimeKind.Utc, TimeSpan.Zero);
                 charsConsumed = currentOffset;
                 return true;
             }
 
-            Debug.Assert(offsetChar == '+' || offsetChar == '-');
+            Debug.Assert(offsetChar == (byte) '+' || offsetChar == (byte) '-');
             int offsetHours;
             {
                 var digit1 = source[currentOffset++] - 48U;
@@ -278,7 +313,7 @@ namespace SpanJson.Helpers
                 offsetHours = (int) (digit1 * 10 + digit2);
             }
 
-            if (source[currentOffset++] != ':')
+            if (source[currentOffset++] != (byte) ':')
             {
                 value = default;
                 charsConsumed = 0;
@@ -299,7 +334,7 @@ namespace SpanJson.Helpers
 
                 offsetMinutes = (int) (digit1 * 10 + digit2);
             }
-            offsetHours = offsetChar == '-' ? -offsetHours : offsetHours;
+            offsetHours = offsetChar == (byte) '-' ? -offsetHours : offsetHours;
             var timeSpan = new TimeSpan(offsetHours, offsetMinutes, 0);
             value = timeSpan == TimeSpan.Zero
                 ? new Date(year, month, day, hour, minute, second, fraction, DateTimeKind.Utc, timeSpan)
