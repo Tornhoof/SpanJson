@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Order;
 
 namespace SpanJson.Benchmarks
 {
@@ -8,8 +9,9 @@ namespace SpanJson.Benchmarks
     {
         public MyConfig()
         {
-            Add(Job.ShortRun);
+            Add(Job.Default);
             Add(MemoryDiagnoser.Default);
+            Set(new DefaultOrderProvider(SummaryOrderPolicy.Default, MethodOrderPolicy.Alphabetical));
         }
     }
 }
