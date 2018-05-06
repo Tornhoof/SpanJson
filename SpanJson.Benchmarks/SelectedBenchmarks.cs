@@ -461,21 +461,21 @@ namespace SpanJson.Benchmarks
         //    return SpanJsonUtf8Serializer.Deserialize<System.DateTime>(DateTimeOutputOfSpanJsonUtf8Serializer);
         //}
 
-        private static readonly string text = "\"Hello World and Universe\"";
+        private static readonly string text = "\"Hello World\\tand\\nUniverse\"";
         private static readonly byte[] encodedText = Encoding.UTF8.GetBytes(text);
 
         [Benchmark]
-        public ReadOnlySpan<byte> ReadStringUtf8()
+        public string ReadStringUtf8()
         {
             var reader = new JsonReader<byte>(encodedText);
-            return reader.ReadUtf8StringSpan();
+            return reader.ReadUtf8String();
         }
 
         [Benchmark]
-        public ReadOnlySpan<char> ReadStringUtf16()
+        public string ReadStringUtf16()
         {
             var reader = new JsonReader<char>(text);
-            return reader.ReadUtf16StringSpan();
+            return reader.ReadUtf16String();
         }
     }
 }

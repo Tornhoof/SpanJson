@@ -543,7 +543,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             while (pos < _length)
             {
-                var c = _chars[pos];
+                ref readonly var c = ref _chars[pos];
                 switch (c)
                 {
                     case ' ':
@@ -802,10 +802,9 @@ namespace SpanJson
         private bool TryFindEndOfUtf16Number(int pos, out int charsConsumed)
         {
             var i = pos;
-            var length = _chars.Length;
-            for (; i < length; i++)
+            for (; i < _length; i++)
             {
-                var c = _chars[i];
+                ref readonly var c = ref _chars[i];
                 if (!IsNumericUtf16Symbol(c))
                 {
                     break;
@@ -826,14 +825,14 @@ namespace SpanJson
         private bool TryFindEndOfUtf16String(int pos, out int charsConsumed, out int escapedCharsSize)
         {
             escapedCharsSize = 0;
-            for (var i = pos; i < _chars.Length; i++)
+            for (var i = pos; i < _length; i++)
             {
-                var c = _chars[i];
+                ref readonly var c = ref _chars[i];
                 if (c == JsonUtf16Constant.ReverseSolidus)
                 {
                     escapedCharsSize++;
                     i++;
-                    var nextChar = _chars[i]; // check what type of escaped char it is
+                    ref readonly var nextChar = ref _chars[i]; // check what type of escaped char it is
                     if (nextChar == 'u' || nextChar == 'U')
                     {
                         escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
@@ -926,12 +925,12 @@ namespace SpanJson
         {
             SkipWhitespaceUtf16();
             ref var pos = ref _pos;
-            if (pos >= _chars.Length)
+            if (pos >= _length)
             {
                 return JsonToken.None;
             }
 
-            var c = _chars[pos];
+            ref readonly var c = ref _chars[pos];
             switch (c)
             {
                 case JsonUtf16Constant.BeginObject:
