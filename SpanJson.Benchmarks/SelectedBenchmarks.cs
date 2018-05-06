@@ -9,7 +9,7 @@ using SpanJson.Benchmarks.Serializers;
 namespace SpanJson.Benchmarks
 {
     [MemoryDiagnoser]
-    //[ShortRunJob]
+    [ShortRunJob]
     //[DisassemblyDiagnoser(printIL: true, recursiveDepth: 2)]
     public class SelectedBenchmarks
     {
@@ -47,29 +47,29 @@ namespace SpanJson.Benchmarks
         private static readonly string MobileBadgeAwardSerializedString = JsonSerializer.Generic.Utf16.Serialize(MobileBadgeAwardInput);
         private static readonly byte[] MobileBadgeAwardSerializedByteArray = JsonSerializer.Generic.Utf8.Serialize(MobileBadgeAwardInput);
 
-        [Benchmark]
-        public string SerializeMobileBadgeAwardWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(MobileBadgeAwardInput);
-        }
+        //[Benchmark]
+        //public string SerializeMobileBadgeAwardWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(MobileBadgeAwardInput);
+        //}
 
-        [Benchmark]
-        public byte[] SerializeMobileBadgeAwardWithSpanJsonSerializerUtf8()
-        {
-            return JsonSerializer.Generic.Utf8.Serialize(MobileBadgeAwardInput);
-        }
+        //[Benchmark]
+        //public byte[] SerializeMobileBadgeAwardWithSpanJsonSerializerUtf8()
+        //{
+        //    return JsonSerializer.Generic.Utf8.Serialize(MobileBadgeAwardInput);
+        //}
 
-        [Benchmark]
-        public MobileBadgeAward DeserializeMobileBadgeAwardWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<MobileBadgeAward>(MobileBadgeAwardSerializedString);
-        }
+        //[Benchmark]
+        //public MobileBadgeAward DeserializeMobileBadgeAwardWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Deserialize<MobileBadgeAward>(MobileBadgeAwardSerializedString);
+        //}
 
-        [Benchmark]
-        public MobileBadgeAward DeserializeMobileBadgeAwardWithSpanJsonSerializerUtf8()
-        {
-            return JsonSerializer.Generic.Utf8.Deserialize<MobileBadgeAward>(MobileBadgeAwardSerializedByteArray);
-        }
+        //[Benchmark]
+        //public MobileBadgeAward DeserializeMobileBadgeAwardWithSpanJsonSerializerUtf8()
+        //{
+        //    return JsonSerializer.Generic.Utf8.Deserialize<MobileBadgeAward>(MobileBadgeAwardSerializedByteArray);
+        //}
 
         //[Benchmark]
         //public string SerializeAnswerWithSpanJsonSerializer()
@@ -407,11 +407,11 @@ namespace SpanJson.Benchmarks
 
         private static readonly System.DateTimeOffset DateTimeOffsetInput = ExpressionTreeFixture.Create<System.DateTimeOffset>();
 
-        //[Benchmark]
-        //public System.String SerializeDateTimeWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Serialize(DateTimeInput);
-        //}
+        [Benchmark]
+        public System.String SerializeDateTimeWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Serialize(DateTimeInput);
+        }
 
 
         //[Benchmark]
@@ -420,11 +420,11 @@ namespace SpanJson.Benchmarks
         //    return SpanJsonUtf8Serializer.Serialize(DateTimeInput);
         //}
 
-        //[Benchmark]
-        //public System.String SerializeDateTimeOffsetWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Serialize(DateTimeOffsetInput);
-        //}
+        [Benchmark]
+        public System.String SerializeDateTimeOffsetWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Serialize(DateTimeOffsetInput);
+        }
 
 
         //[Benchmark]

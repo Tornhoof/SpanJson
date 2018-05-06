@@ -100,5 +100,42 @@ namespace SpanJson.Tests
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<DateTimeOffset>(serialized);
             Assert.Equal(dt, deserialized);
         }
+
+        [Theory]
+        [InlineData("2017-06-12T05:30:45.7680000-07:30", 33, 2017, 6, 12, 5, 30, 45, 7680000, true, 7, 30,
+           DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.7680000", 28, 2017, 6, 12, 5, 30, 45, 7680000, false, 0, 0, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.7680000", 27, 2017, 6, 12, 5, 30, 45, 7680000, false, 0, 0,
+           DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.7680000+08:00", 29, 2017, 6, 12, 5, 30, 45, 7680000, false, 8, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.7680000", 24, 2017, 6, 12, 5, 30, 45, 7680000, false, 0, 0, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.7680000", 23, 2017, 6, 12, 5, 30, 45, 7680000, false, 0, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45+01:00", 25, 2017, 6, 12, 5, 30, 45, 0, false, 1, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45Z", 20, 2017, 6, 12, 5, 30, 45, 0, false, 0, 0, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45", 19, 2017, 6, 12, 5, 30, 45, 0, false, 0, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.10000+01:00", 30, 2017, 6, 12, 5, 30, 45, 10000, false, 1, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.10000", 25, 2017, 6, 12, 5, 30, 45, 10000, false, 0, 0, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.10000", 24, 2017, 6, 12, 5, 30, 45, 10000, false, 0, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.7607389+01:00", 35, 2017, 6, 12, 5, 30, 45, 7607389, false, 1, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.7607389Z", 30, 2017, 6, 12, 5, 30, 45, 7607389, false, 0, 0, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.7607389", 29, 2017, 6, 12, 5, 30, 45, 7607389, false, 0, 0, DateTimeKind.Unspecified)]
+        public void FormatDateTime(string comparison, int length, int year, int month, int day, int hour, int minute,
+           int second, int fraction, bool negative, int offsethours, int offsetminutes, DateTimeKind kind)
+        {
+            var offset = new TimeSpan(0, offsethours, offsetminutes, 0) * (negative ? -1 : 1);
+            DateTime dt = new DateTime(year, month, day, hour, minute, second, kind).AddTicks(fraction);
+            var dto = new DateTimeOffset(dt, offset);
+
+            Span<char> charSpan = stackalloc char[35];
+            Assert.True(DateTimeFormatter.TryFormat(dto, charSpan, out var symbolsWritten));
+            //Assert.Equal(length, symbolsWritten);
+            Assert.Equal(comparison, charSpan.Slice(0, symbolsWritten).ToString());
+
+            //Span<byte> byteSpan = stackalloc byte[35];
+            //Assert.True(DateTimeFormatter.TryFormat(dto, charSpan, out symbolsWritten));
+            //Assert.Equal(comparison, charSpan.Slice(0, symbolsWritten).ToString());
+            ////Assert.Equal(length, symbolsWritten);
+
+        }
     }
 }
