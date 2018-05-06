@@ -10,66 +10,66 @@ namespace SpanJson.Benchmarks
 {
     [MemoryDiagnoser]
     //[ShortRunJob]
-    //[DisassemblyDiagnoser(printIL: true, recursiveDepth: 2)]
+    [DisassemblyDiagnoser(printIL: true, recursiveDepth: 2)]
     public class SelectedBenchmarks
     {
-        private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
-        private static readonly AccessToken AccessToken = ExpressionTreeFixture.Create<AccessToken>();
+        //private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
+        //private static readonly AccessToken AccessToken = ExpressionTreeFixture.Create<AccessToken>();
 
-        private static readonly SpanJsonSerializer SpanJsonSerializer = new SpanJsonSerializer();
-        private static readonly SpanJsonUtf8Serializer SpanJsonUtf8Serializer = new SpanJsonUtf8Serializer();
+        //private static readonly SpanJsonSerializer SpanJsonSerializer = new SpanJsonSerializer();
+        //private static readonly SpanJsonUtf8Serializer SpanJsonUtf8Serializer = new SpanJsonUtf8Serializer();
 
-        private static readonly string AccessTokenSerializedString =
-            SpanJsonSerializer.Serialize(AccessToken);
+        //private static readonly string AccessTokenSerializedString =
+        //    SpanJsonSerializer.Serialize(AccessToken);
 
-        private static readonly byte[] AccessTokenSerializedByteArray =
-            Encoding.UTF8.GetBytes(AccessTokenSerializedString);
-
-
-        private static readonly Answer Answer = ExpressionTreeFixture.Create<Answer>();
-
-        private static readonly string AnswerSerializedString =
-            SpanJsonSerializer.Serialize(Answer);
-
-        private static readonly byte[] AnswerSerializedByteArray =
-            Encoding.UTF8.GetBytes(AnswerSerializedString);
+        //private static readonly byte[] AccessTokenSerializedByteArray =
+        //    Encoding.UTF8.GetBytes(AccessTokenSerializedString);
 
 
-        private static readonly JilSerializer JilSerializer = new JilSerializer();
+        //private static readonly Answer Answer = ExpressionTreeFixture.Create<Answer>();
 
-        private static readonly StringBuilder StringBuilder = new StringBuilder();
+        //private static readonly string AnswerSerializedString =
+        //    SpanJsonSerializer.Serialize(Answer);
+
+        //private static readonly byte[] AnswerSerializedByteArray =
+        //    Encoding.UTF8.GetBytes(AnswerSerializedString);
 
 
-        private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
+        //private static readonly JilSerializer JilSerializer = new JilSerializer();
 
-        private static readonly MobileBadgeAward MobileBadgeAwardInput = ExpressionTreeFixture.Create<MobileBadgeAward>();
+        //private static readonly StringBuilder StringBuilder = new StringBuilder();
 
-        private static readonly string MobileBadgeAwardSerializedString = JsonSerializer.Generic.Utf16.Serialize(MobileBadgeAwardInput);
-        private static readonly byte[] MobileBadgeAwardSerializedByteArray = JsonSerializer.Generic.Utf8.Serialize(MobileBadgeAwardInput);
 
-        [Benchmark]
-        public string SerializeMobileBadgeAwardWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(MobileBadgeAwardInput);
-        }
+        //private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
 
-        [Benchmark]
-        public byte[] SerializeMobileBadgeAwardWithSpanJsonSerializerUtf8()
-        {
-            return JsonSerializer.Generic.Utf8.Serialize(MobileBadgeAwardInput);
-        }
+        //private static readonly MobileBadgeAward MobileBadgeAwardInput = ExpressionTreeFixture.Create<MobileBadgeAward>();
 
-        [Benchmark]
-        public MobileBadgeAward DeserializeMobileBadgeAwardWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<MobileBadgeAward>(MobileBadgeAwardSerializedString);
-        }
+        //private static readonly string MobileBadgeAwardSerializedString = JsonSerializer.Generic.Utf16.Serialize(MobileBadgeAwardInput);
+        //private static readonly byte[] MobileBadgeAwardSerializedByteArray = JsonSerializer.Generic.Utf8.Serialize(MobileBadgeAwardInput);
 
-        [Benchmark]
-        public MobileBadgeAward DeserializeMobileBadgeAwardWithSpanJsonSerializerUtf8()
-        {
-            return JsonSerializer.Generic.Utf8.Deserialize<MobileBadgeAward>(MobileBadgeAwardSerializedByteArray);
-        }
+        //[Benchmark]
+        //public string SerializeMobileBadgeAwardWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(MobileBadgeAwardInput);
+        //}
+
+        //[Benchmark]
+        //public byte[] SerializeMobileBadgeAwardWithSpanJsonSerializerUtf8()
+        //{
+        //    return JsonSerializer.Generic.Utf8.Serialize(MobileBadgeAwardInput);
+        //}
+
+        //[Benchmark]
+        //public MobileBadgeAward DeserializeMobileBadgeAwardWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Deserialize<MobileBadgeAward>(MobileBadgeAwardSerializedString);
+        //}
+
+        //[Benchmark]
+        //public MobileBadgeAward DeserializeMobileBadgeAwardWithSpanJsonSerializerUtf8()
+        //{
+        //    return JsonSerializer.Generic.Utf8.Deserialize<MobileBadgeAward>(MobileBadgeAwardSerializedByteArray);
+        //}
 
         //[Benchmark]
         //public string SerializeAnswerWithSpanJsonSerializer()
@@ -403,9 +403,9 @@ namespace SpanJson.Benchmarks
         //    return SpanJsonUtf8Serializer.Serialize(SingleInput);
         //}
 
-        private static readonly System.DateTime DateTimeInput = ExpressionTreeFixture.Create<System.DateTime>();
+        //private static readonly System.DateTime DateTimeInput = ExpressionTreeFixture.Create<System.DateTime>();
 
-        private static readonly System.DateTimeOffset DateTimeOffsetInput = ExpressionTreeFixture.Create<System.DateTimeOffset>();
+        //private static readonly System.DateTimeOffset DateTimeOffsetInput = ExpressionTreeFixture.Create<System.DateTimeOffset>();
 
         //[Benchmark]
         //public System.String SerializeDateTimeWithSpanJsonSerializer()
@@ -460,5 +460,22 @@ namespace SpanJson.Benchmarks
         //{
         //    return SpanJsonUtf8Serializer.Deserialize<System.DateTime>(DateTimeOutputOfSpanJsonUtf8Serializer);
         //}
+
+        private static readonly string text = "\"Hello World and Universe\"";
+        private static readonly byte[] encodedText = Encoding.UTF8.GetBytes(text);
+
+        [Benchmark]
+        public ReadOnlySpan<byte> ReadStringUtf8()
+        {
+            var reader = new JsonReader<byte>(encodedText);
+            return reader.ReadUtf8StringSpan();
+        }
+
+        [Benchmark]
+        public ReadOnlySpan<char> ReadStringUtf16()
+        {
+            var reader = new JsonReader<char>(text);
+            return reader.ReadUtf16StringSpan();
+        }
     }
 }
