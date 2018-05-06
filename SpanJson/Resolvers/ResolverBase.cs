@@ -204,7 +204,7 @@ namespace SpanJson.Resolvers
         private static IJsonFormatter GetIntegrated(Type type)
         {
             var allTypes = typeof(TResolver).Assembly.GetTypes();
-            foreach (var candidate in allTypes)
+            foreach (var candidate in allTypes.Where(a => a.IsPublic))
             {
                 if (candidate.IsGenericTypeDefinition && candidate.ContainsGenericParameters && candidate.IsGenericType && candidate.IsClass &&
                     !candidate.IsAbstract)
