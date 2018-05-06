@@ -40,7 +40,7 @@ namespace SpanJson.Formatters
 
 
         /// <summary>
-        /// Faster than SequenceEqual
+        /// Faster than SequenceEqual for some unknown reason, this needs to be a byte array and not a string otherwise we might run into problems with non ascii property names
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected static bool StringEquals(ReadOnlySpan<char> span, int offset, string comparison)
@@ -51,7 +51,7 @@ namespace SpanJson.Formatters
             }
             for (var i = 0; i < comparison.Length; i++)
             {
-                var left = span[offset + i];
+                ref readonly var left = ref span[offset + i];
                 if (comparison[i] != left)
                 {
                     return false;
@@ -69,7 +69,7 @@ namespace SpanJson.Formatters
         }
 
         /// <summary>
-        /// Faster than SequenceEqual, this needs to be a byte array and not a string otherwise we might run into problems with non ascii property names
+        /// Faster than SequenceEqual for some unknown reason, this needs to be a byte array and not a string otherwise we might run into problems with non ascii property names
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected static bool ByteEquals(ReadOnlySpan<byte> span, int offset, byte[] comparison)
@@ -80,7 +80,7 @@ namespace SpanJson.Formatters
             }
             for (var i = 0; i < comparison.Length; i++)
             {
-                var left = span[offset + i];
+                ref readonly var left = ref span[offset + i];
                 if (comparison[i] != left)
                 {
                     return false;
