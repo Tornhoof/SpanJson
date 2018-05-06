@@ -111,6 +111,8 @@ namespace SpanJson.Tests.Generated
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(input, (T[]) deserialized);
+            var deserializedText = deserialized.ToString();
+            Assert.NotNull(deserializedText);
         }
 
         [Fact]
@@ -122,6 +124,8 @@ namespace SpanJson.Tests.Generated
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(input, (T[]) deserialized);
+            var deserializedText = deserialized.ToString();
+            Assert.NotNull(deserializedText);
         }
 
         [Fact]
@@ -188,6 +192,8 @@ namespace SpanJson.Tests.Generated
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(input, (T) deserialized);
+            var deserializedText = deserialized.ToString();
+            Assert.NotNull(deserializedText);
         }
 
         [Fact]
@@ -199,6 +205,8 @@ namespace SpanJson.Tests.Generated
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(input, (T) deserialized);
+            var deserializedText = deserialized.ToString();
+            Assert.NotNull(deserializedText);
         }
 
         [Fact]
@@ -232,6 +240,8 @@ namespace SpanJson.Tests.Generated
             Assert.NotNull(deserialized);
             Assert.Equal(input, (T) deserialized);
             Assert.Equal(input, (T?) deserialized);
+            var deserializedText = deserialized.ToString();
+            Assert.NotNull(deserializedText);
         }
 
         [Fact]
@@ -244,6 +254,9 @@ namespace SpanJson.Tests.Generated
             Assert.NotNull(deserialized);
             Assert.Equal(input, (T) deserialized);
             Assert.Equal(input, (T?) deserialized);
+            var deserializedText = deserialized.ToString();
+            Assert.NotNull(deserializedText);
+
         }
 
         [Fact]
