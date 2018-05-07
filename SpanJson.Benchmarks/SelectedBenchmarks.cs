@@ -496,19 +496,5 @@ namespace SpanJson.Benchmarks
         //    return reader.ReadUtf16UInt64();
         //}
 
-        private static readonly byte[] inputBytes = new byte[] {1, 2, 3, 4};
-        private static string inputString = "Hell";
-
-        [Benchmark]
-        public Span<byte> CodeQualityBytes()
-        {
-            return inputBytes.AsSpan();
-        }
-
-        [Benchmark]
-        public ReadOnlySpan<char> CodeQualityString()
-        {
-            return inputString.AsSpan();
-        }
     }
 }

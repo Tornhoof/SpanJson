@@ -771,7 +771,7 @@ namespace SpanJson
             }
         }
 
-        private void SkipNextUtf8Value(JsonToken token)
+        public void SkipNextUtf8Value(JsonToken token)
         {
             ref var pos = ref _pos;
             switch (token)
@@ -941,7 +941,7 @@ namespace SpanJson
             }
         }
 
-        private JsonToken ReadUtf8NextToken()
+        public JsonToken ReadUtf8NextToken()
         {
             SkipWhitespaceUtf8();
             ref var pos = ref _pos;
@@ -973,7 +973,6 @@ namespace SpanJson
                     return JsonToken.ValueSeparator;
                 case JsonUtf8Constant.NameSeparator:
                     return JsonToken.NameSeparator;
-                case (byte) '+':
                 case (byte) '-':
                 case (byte) '1':
                 case (byte) '2':
