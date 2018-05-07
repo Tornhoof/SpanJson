@@ -85,3 +85,7 @@ namespace Test
     }
 }
 ```
+
+## TODO ##
+- Optimize UTF8 Performance, especially Deserialization (string-heavy JSONs are ~20% slower with UTF8 than UTF16)
+- Support constructors for deserialization via annotation attribute, this is necessary for e.g. readonly structs.
