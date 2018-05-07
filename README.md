@@ -1,8 +1,10 @@
 # SpanJson
 [![Build status](https://ci.appveyor.com/api/projects/status/h49loskhn09g03in/branch/master?svg=true)](https://ci.appveyor.com/project/Tornhoof/spanjson/branch/master)
 
+See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
+
 ## What is supported ##
-- Serialization and Deserialization into/from Byte-Arrays and strings
+- Serialization and Deserialization into/from byte arrays, strings, TextWriter/TextReader and streams
 - Serialization and Deserialization of Arrays, Lists, Complex types of the following Base Class Library types:
   - ``sbyte``
   - ``Int16``
@@ -82,6 +84,3 @@ namespace Test
     }
 }
 ```
-```
-
-See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
