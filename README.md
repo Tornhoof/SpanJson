@@ -1,430 +1,87 @@
 # SpanJson
 [![Build status](https://ci.appveyor.com/api/projects/status/h49loskhn09g03in/branch/master?svg=true)](https://ci.appveyor.com/project/Tornhoof/spanjson/branch/master)
 
-Sandbox for playing around with Span and JSON Serialization.
-This is basically the ValueStringBuilder from CoreFx with the TryFormat API for formatting values with Span<char>.
-The actual serializers are a T4 Template (BclFormatter.tt).
+See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 
-Performance Issues:
-* Double Formatting: The UTF8 version uses the coreclr version + stackalloc, as UTF8Formatter uses ToString()
-* Integer Formatting: derived from UTF8Json as the CoreCLR version is two times slower.
-* Integer Parsing: derived from UTF8Json
-* DateTime/DateTimeOffset Parser: derived from UTf8Parser with modifications to support less than 7 digit fractions
+## What is supported ##
+- Serialization and Deserialization into/from byte arrays, strings, TextWriter/TextReader and streams
+- Serialization and Deserialization of Arrays, Lists, Complex types of the following Base Class Library types:
 
-Todo:
+``sbyte``, ``Int16``, ``Int32``, ``Int64``, ``byte``,
+``UInt16``, ``UInt32``, ``UInt64``, ``Single``, ``Double``,
+``decimal``, ``bool``, ``char``, ``DateTime``, ``DateTimeOffset``,
+``TimeSpan``, ``Guid``, ``string``, ``Version``, ``Uri``
 
-* Performance
+- Public Properties and Fields are considered for serialization/deserialization
+- DateTime{Offset} is in ISO8601 mode  
+- Dynamics
+- Enums
+- Anonymous types
+- Dictionary<,> with string as key
+- Serialization of Enumerables
+- Support for ``[DataMember(Name="MemberName")]`` to set field name
+- Support for ``[IgnoreDataMember]`` to ignore a specific member
+- Support for ``ShouldSerializeXXX`` pattern to decide at runtime if a member should be serialized
 
-``` ini
+- Different 'Resolvers' to control general behaviour:
+  - Exclude Nulls with Camel Case: ``ExcludeNullCamelCaseResolver``
+  - Exclude Nulls with Original Case (default): ``IncludeNullCamelCaseResolver``
+  - Include Nulls with Camel Case: ``IncludeNullCamelCaseResolver``
+  - Include Nulls with Original Case: ``IncludeNullOriginalCaseResolver``
+ 
+ 
+## How to use it ##
+```csharp
+Synchronous API:
+var result = JsonSerializer.Generic.Utf16.Serialize(input);
+var result = JsonSerializer.NonGeneric.Utf16.Serialize(input);
+var result = JsonSerializer.Generic.Utf16.Deserialize<Input>(input);
+var result = JsonSerializer.NonGeneric.Utf16.Deserialize(input, typeof(Input));
+var result = JsonSerializer.Generic.Utf8.Serialize(input);
+var result = JsonSerializer.NonGeneric.Utf8.Serialize(input);
+var result = JsonSerializer.Generic.Utf8.Deserialize<Input>(input);
+var result = JsonSerializer.NonGeneric.Utf8.Deserialize(input, typeof(Input));
 
-BenchmarkDotNet=v0.10.14, OS=Windows 10.0.17134
-Intel Core i7-4790K CPU 4.00GHz (Haswell), 1 CPU, 8 logical and 4 physical cores
-Frequency=3906246 Hz, Resolution=256.0003 ns, Timer=TSC
-.NET Core SDK=2.1.300-rtm-008701
-  [Host]     : .NET Core 2.1.0-rtm-26502-02 (CoreCLR 4.6.26502.03, CoreFX 4.6.26502.02), 64bit RyuJIT
-  DefaultJob : .NET Core 2.1.0-rtm-26502-02 (CoreCLR 4.6.26502.03, CoreFX 4.6.26502.02), 64bit RyuJIT
+Asynchronous API:
 
+ValueTask result = JsonSerializer.Generic.Utf16.SerializeAsync(input, textWriter, cancellationToken);
+ValueTask result = JsonSerializer.NonGeneric.Utf16.SerializeAsync(input, textWriter, cancellationToken);
+ValueTask<Input> result = JsonSerializer.Generic.Utf16.DeserializeAsync<Input>(textReader,cancellationToken);
+ValueTask<object> result = JsonSerializer.NonGeneric.Utf16.DeserializeAsync(textReader,typeof(Input),cancellationToken);
+ValueTask result = JsonSerializer.Generic.Utf8.SerializeAsync(input, stream, cancellationToken);
+ValueTask result = JsonSerializer.NonGeneric.Utf8.SerializeAsync(input, stream, cancellationToken);
+ValueTask<Input> result = JsonSerializer.Generic.Utf8.DeserializeAsync<Input>(input, stream, cancellationToken);
+ValueTask<object> result = JsonSerializer.NonGeneric.Utf8.DeserializeAsync(input, stream, typeof(Input) cancellationToken);
+
+To use other resolvers use the appropriate overloads,e.g.:
+
+var serialized = JsonSerializer.NonGeneric.Utf16.Serialize<Input, IncludeNullsOriginalCaseResolver<char>>(includeNull);
 
 ```
-|                                                       Method |        Mean |       Error |      StdDev |      Median |  Gen 0 | Allocated |
-|------------------------------------------------------------- |------------:|------------:|------------:|------------:|-------:|----------:|
-|                      DeserializeAccessTokenWithJilSerializer |    531.9 ns |   0.5881 ns |   0.5501 ns |    531.9 ns | 0.0811 |     344 B |
-|                 DeserializeAccessTokenWithSpanJsonSerializer |    407.4 ns |   4.6588 ns |   4.1299 ns |    405.6 ns | 0.0587 |     248 B |
-|             DeserializeAccessTokenWithSpanJsonUtf8Serializer |    480.2 ns |   0.1434 ns |   0.1197 ns |    480.2 ns | 0.0582 |     248 B |
-|                 DeserializeAccessTokenWithUtf8JsonSerializer |    647.4 ns |   0.4430 ns |   0.4144 ns |    647.3 ns | 0.0582 |     248 B |
-|                     DeserializeAccountMergeWithJilSerializer |    432.8 ns |   2.6616 ns |   2.4897 ns |    431.4 ns | 0.0343 |     144 B |
-|                DeserializeAccountMergeWithSpanJsonSerializer |    322.1 ns |   0.5108 ns |   0.3988 ns |    322.0 ns | 0.0110 |      48 B |
-|            DeserializeAccountMergeWithSpanJsonUtf8Serializer |    363.0 ns |   2.9071 ns |   2.7193 ns |    363.9 ns | 0.0110 |      48 B |
-|                DeserializeAccountMergeWithUtf8JsonSerializer |    395.1 ns |   0.5213 ns |   0.4353 ns |    394.9 ns | 0.0110 |      48 B |
-|                           DeserializeAnswerWithJilSerializer |  8,847.2 ns |  19.0546 ns |  17.8237 ns |  8,847.4 ns | 0.5951 |    2528 B |
-|                      DeserializeAnswerWithSpanJsonSerializer |  5,861.8 ns |  11.7987 ns |  11.0365 ns |  5,863.0 ns | 0.4807 |    2048 B |
-|                  DeserializeAnswerWithSpanJsonUtf8Serializer |  6,711.1 ns |  10.0427 ns |   9.3940 ns |  6,709.6 ns | 0.4807 |    2048 B |
-|                      DeserializeAnswerWithUtf8JsonSerializer |  7,877.3 ns |  36.0826 ns |  31.9863 ns |  7,873.5 ns | 0.4730 |    2048 B |
-|                       DeserializeBadgeCountWithJilSerializer |    270.4 ns |   0.0805 ns |   0.0673 ns |    270.4 ns | 0.0319 |     136 B |
-|                  DeserializeBadgeCountWithSpanJsonSerializer |    178.4 ns |   0.3467 ns |   0.3243 ns |    178.2 ns | 0.0093 |      40 B |
-|              DeserializeBadgeCountWithSpanJsonUtf8Serializer |    188.6 ns |   0.1182 ns |   0.1047 ns |    188.6 ns | 0.0093 |      40 B |
-|                  DeserializeBadgeCountWithUtf8JsonSerializer |    255.1 ns |   0.4921 ns |   0.4362 ns |    254.9 ns | 0.0091 |      40 B |
-|                            DeserializeBadgeWithJilSerializer |  1,761.6 ns |   1.3553 ns |   1.2015 ns |  1,761.3 ns | 0.1392 |     584 B |
-|                       DeserializeBadgeWithSpanJsonSerializer |  1,113.7 ns |   2.9194 ns |   2.5880 ns |  1,113.0 ns | 0.1144 |     488 B |
-|                   DeserializeBadgeWithSpanJsonUtf8Serializer |  1,339.7 ns |   3.7779 ns |   3.5338 ns |  1,337.7 ns | 0.1144 |     488 B |
-|                       DeserializeBadgeWithUtf8JsonSerializer |  1,832.4 ns |   1.7291 ns |   1.4438 ns |  1,831.9 ns | 0.1144 |     488 B |
-|                    DeserializeClosedDetailsWithJilSerializer |  2,232.0 ns |   3.0241 ns |   2.8288 ns |  2,230.9 ns | 0.1869 |     800 B |
-|               DeserializeClosedDetailsWithSpanJsonSerializer |  1,358.0 ns |   3.2664 ns |   2.5502 ns |  1,357.6 ns | 0.1659 |     704 B |
-|           DeserializeClosedDetailsWithSpanJsonUtf8Serializer |  1,509.0 ns |   2.4259 ns |   2.1505 ns |  1,508.5 ns | 0.1659 |     704 B |
-|               DeserializeClosedDetailsWithUtf8JsonSerializer |  1,987.3 ns |   5.8129 ns |   5.4374 ns |  1,986.2 ns | 0.1640 |     704 B |
-|                          DeserializeCommentWithJilSerializer |  3,197.4 ns |  26.6643 ns |  24.9418 ns |  3,194.3 ns | 0.2556 |    1080 B |
-|                     DeserializeCommentWithSpanJsonSerializer |  2,061.6 ns |   3.9720 ns |   3.3168 ns |  2,061.3 ns | 0.1869 |     792 B |
-|                 DeserializeCommentWithSpanJsonUtf8Serializer |  2,448.8 ns |   2.6497 ns |   2.0687 ns |  2,448.4 ns | 0.1869 |     792 B |
-|                     DeserializeCommentWithUtf8JsonSerializer |  3,130.8 ns |   2.5489 ns |   2.1285 ns |  3,130.9 ns | 0.1869 |     792 B |
-|                            DeserializeErrorWithJilSerializer |    318.9 ns |   0.3890 ns |   0.3448 ns |    319.0 ns | 0.0548 |     232 B |
-|                       DeserializeErrorWithSpanJsonSerializer |    219.8 ns |   0.0186 ns |   0.0145 ns |    219.8 ns | 0.0322 |     136 B |
-|                   DeserializeErrorWithSpanJsonUtf8Serializer |    273.2 ns |   0.5499 ns |   0.4293 ns |    273.1 ns | 0.0319 |     136 B |
-|                       DeserializeErrorWithUtf8JsonSerializer |    341.2 ns |   0.0722 ns |   0.0564 ns |    341.1 ns | 0.0319 |     136 B |
-|                            DeserializeEventWithJilSerializer |    590.3 ns |   0.5855 ns |   0.5477 ns |    590.3 ns | 0.0601 |     256 B |
-|                       DeserializeEventWithSpanJsonSerializer |    502.5 ns |   2.5851 ns |   2.4181 ns |    503.8 ns | 0.0372 |     160 B |
-|                   DeserializeEventWithSpanJsonUtf8Serializer |    498.4 ns |   0.3007 ns |   0.2812 ns |    498.3 ns | 0.0372 |     160 B |
-|                       DeserializeEventWithUtf8JsonSerializer |    630.7 ns |   0.1173 ns |   0.1040 ns |    630.7 ns | 0.0372 |     160 B |
-|                       DeserializeFlagOptionWithJilSerializer |  1,624.6 ns |   2.0910 ns |   1.9560 ns |  1,624.6 ns | 0.1545 |     656 B |
-|                  DeserializeFlagOptionWithSpanJsonSerializer |    958.4 ns |   0.4224 ns |   0.3298 ns |    958.3 ns | 0.1087 |     464 B |
-|              DeserializeFlagOptionWithSpanJsonUtf8Serializer |  1,177.1 ns |   0.4281 ns |   0.3795 ns |  1,177.1 ns | 0.1087 |     464 B |
-|                  DeserializeFlagOptionWithUtf8JsonSerializer |  1,559.2 ns |   1.8289 ns |   1.7107 ns |  1,559.8 ns | 0.1087 |     464 B |
-|                        DeserializeInboxItemWithJilSerializer |  4,578.5 ns |  43.1514 ns |  38.2526 ns |  4,559.5 ns | 0.4196 |    1768 B |
-|                   DeserializeInboxItemWithSpanJsonSerializer |  3,516.2 ns |  79.7899 ns | 235.2623 ns |  3,381.6 ns | 0.3967 |    1672 B |
-|               DeserializeInboxItemWithSpanJsonUtf8Serializer |  3,714.7 ns |  37.1194 ns |  34.7215 ns |  3,691.7 ns | 0.3967 |    1672 B |
-|                   DeserializeInboxItemWithUtf8JsonSerializer |  4,332.0 ns |  13.6835 ns |  12.7996 ns |  4,334.8 ns | 0.3967 |    1672 B |
-|                             DeserializeInfoWithJilSerializer |  5,597.7 ns |  14.3958 ns |  13.4658 ns |  5,592.4 ns | 0.4120 |    1744 B |
-|                        DeserializeInfoWithSpanJsonSerializer |  4,144.4 ns |  32.1633 ns |  30.0855 ns |  4,145.5 ns | 0.3891 |    1648 B |
-|                    DeserializeInfoWithSpanJsonUtf8Serializer |  4,873.2 ns |   5.4340 ns |   5.0829 ns |  4,872.6 ns | 0.3891 |    1648 B |
-|                        DeserializeInfoWithUtf8JsonSerializer |  5,357.4 ns |  10.5690 ns |   9.8862 ns |  5,353.6 ns | 0.4272 |    1808 B |
-|                    DeserializeMigrationInfoWithJilSerializer |  3,808.4 ns |  27.8900 ns |  26.0883 ns |  3,803.0 ns | 0.3700 |    1568 B |
-|               DeserializeMigrationInfoWithSpanJsonSerializer |  2,624.1 ns |  10.1949 ns |   9.5363 ns |  2,622.4 ns | 0.3471 |    1472 B |
-|           DeserializeMigrationInfoWithSpanJsonUtf8Serializer |  3,146.3 ns |   2.5154 ns |   2.1005 ns |  3,146.2 ns | 0.3471 |    1472 B |
-|               DeserializeMigrationInfoWithUtf8JsonSerializer |  3,667.2 ns |   2.7465 ns |   2.2934 ns |  3,667.0 ns | 0.3471 |    1472 B |
-|           DeserializeMobileAssociationBonusWithJilSerializer |    430.5 ns |   0.1026 ns |   0.0910 ns |    430.5 ns | 0.0472 |     200 B |
-|      DeserializeMobileAssociationBonusWithSpanJsonSerializer |    254.5 ns |   0.0448 ns |   0.0398 ns |    254.5 ns | 0.0243 |     104 B |
-|  DeserializeMobileAssociationBonusWithSpanJsonUtf8Serializer |    300.0 ns |   0.0365 ns |   0.0324 ns |    300.0 ns | 0.0243 |     104 B |
-|      DeserializeMobileAssociationBonusWithUtf8JsonSerializer |    375.7 ns |   0.0355 ns |   0.0257 ns |    375.8 ns | 0.0243 |     104 B |
-|                 DeserializeMobileBadgeAwardWithJilSerializer |    897.1 ns |   6.7957 ns |   6.3567 ns |    892.6 ns | 0.0925 |     392 B |
-|            DeserializeMobileBadgeAwardWithSpanJsonSerializer |    609.4 ns |   0.2684 ns |   0.2095 ns |    609.4 ns | 0.0696 |     296 B |
-|        DeserializeMobileBadgeAwardWithSpanJsonUtf8Serializer |    769.7 ns |   0.1587 ns |   0.1239 ns |    769.7 ns | 0.0696 |     296 B |
-|            DeserializeMobileBadgeAwardWithUtf8JsonSerializer |  1,000.8 ns |   0.2119 ns |   0.1655 ns |  1,000.8 ns | 0.0687 |     296 B |
-|              DeserializeMobileBannerAdImageWithJilSerializer |    294.2 ns |   0.1373 ns |   0.1147 ns |    294.2 ns | 0.0434 |     184 B |
-|         DeserializeMobileBannerAdImageWithSpanJsonSerializer |    192.7 ns |   0.0141 ns |   0.0118 ns |    192.7 ns | 0.0207 |      88 B |
-|     DeserializeMobileBannerAdImageWithSpanJsonUtf8Serializer |    227.5 ns |   1.8154 ns |   1.6093 ns |    226.4 ns | 0.0207 |      88 B |
-|         DeserializeMobileBannerAdImageWithUtf8JsonSerializer |    292.5 ns |   0.0634 ns |   0.0529 ns |    292.5 ns | 0.0205 |      88 B |
-|                   DeserializeMobileBannerAdWithJilSerializer |    757.1 ns |   0.3075 ns |   0.2877 ns |    757.1 ns | 0.0906 |     384 B |
-|              DeserializeMobileBannerAdWithSpanJsonSerializer |    453.8 ns |   0.2809 ns |   0.2346 ns |    453.8 ns | 0.0682 |     288 B |
-|          DeserializeMobileBannerAdWithSpanJsonUtf8Serializer |    527.2 ns |   0.0668 ns |   0.0625 ns |    527.2 ns | 0.0677 |     288 B |
-|              DeserializeMobileBannerAdWithUtf8JsonSerializer |    681.2 ns |   0.2228 ns |   0.2084 ns |    681.2 ns | 0.0677 |     288 B |
-|               DeserializeMobileCareersJobAdWithJilSerializer |    702.0 ns |   0.5163 ns |   0.4031 ns |    702.0 ns | 0.0868 |     368 B |
-|          DeserializeMobileCareersJobAdWithSpanJsonSerializer |    432.2 ns |   0.0906 ns |   0.0757 ns |    432.1 ns | 0.0644 |     272 B |
-|      DeserializeMobileCareersJobAdWithSpanJsonUtf8Serializer |    541.4 ns |   0.4756 ns |   0.3713 ns |    541.3 ns | 0.0639 |     272 B |
-|          DeserializeMobileCareersJobAdWithUtf8JsonSerializer |    664.4 ns |   0.1743 ns |   0.1631 ns |    664.4 ns | 0.0639 |     272 B |
-|          DeserializeMobileCommunityBulletinWithJilSerializer |  1,501.7 ns |   0.7534 ns |   0.6291 ns |  1,501.8 ns | 0.1392 |     584 B |
-|     DeserializeMobileCommunityBulletinWithSpanJsonSerializer |  1,067.3 ns |   0.4223 ns |   0.3297 ns |  1,067.3 ns | 0.1144 |     488 B |
-| DeserializeMobileCommunityBulletinWithSpanJsonUtf8Serializer |  1,289.2 ns |   0.3948 ns |   0.3500 ns |  1,289.1 ns | 0.1144 |     488 B |
-|     DeserializeMobileCommunityBulletinWithUtf8JsonSerializer |  1,462.9 ns |  27.2645 ns |  25.5032 ns |  1,468.4 ns | 0.1144 |     488 B |
-|                       DeserializeMobileFeedWithJilSerializer | 24,119.9 ns | 290.3284 ns | 271.5733 ns | 23,968.6 ns | 1.3428 |    5712 B |
-|                  DeserializeMobileFeedWithSpanJsonSerializer |  9,542.7 ns |  25.3606 ns |  23.7224 ns |  9,538.1 ns | 1.2207 |    5136 B |
-|              DeserializeMobileFeedWithSpanJsonUtf8Serializer | 11,298.4 ns |  24.4305 ns |  21.6570 ns | 11,291.6 ns | 1.2207 |    5136 B |
-|                  DeserializeMobileFeedWithUtf8JsonSerializer | 13,908.2 ns | 103.3424 ns |  96.6665 ns | 13,871.5 ns | 1.2207 |    5136 B |
-|                  DeserializeMobileInboxItemWithJilSerializer |  1,065.4 ns |   4.5931 ns |   4.2964 ns |  1,066.7 ns | 0.1087 |     456 B |
-|             DeserializeMobileInboxItemWithSpanJsonSerializer |    731.7 ns |   5.3612 ns |   5.0148 ns |    729.5 ns | 0.0849 |     360 B |
-|         DeserializeMobileInboxItemWithSpanJsonUtf8Serializer |    871.2 ns |   0.8430 ns |   0.7473 ns |    870.9 ns | 0.0849 |     360 B |
-|             DeserializeMobileInboxItemWithUtf8JsonSerializer |  1,033.3 ns |   0.5567 ns |   0.5208 ns |  1,033.2 ns | 0.0839 |     360 B |
-|                  DeserializeMobilePrivilegeWithJilSerializer |    871.4 ns |   0.2228 ns |   0.1740 ns |    871.4 ns | 0.0887 |     376 B |
-|             DeserializeMobilePrivilegeWithSpanJsonSerializer |    618.4 ns |   5.8543 ns |   5.4761 ns |    618.6 ns | 0.0658 |     280 B |
-|         DeserializeMobilePrivilegeWithSpanJsonUtf8Serializer |    706.0 ns |   0.0898 ns |   0.0796 ns |    706.0 ns | 0.0658 |     280 B |
-|             DeserializeMobilePrivilegeWithUtf8JsonSerializer |    816.1 ns |   0.3494 ns |   0.3097 ns |    816.0 ns | 0.0658 |     280 B |
-|                   DeserializeMobileQuestionWithJilSerializer |  1,332.2 ns |   2.9571 ns |   2.6214 ns |  1,332.2 ns | 0.1087 |     464 B |
-|              DeserializeMobileQuestionWithSpanJsonSerializer |    773.0 ns |   0.2567 ns |   0.2401 ns |    773.0 ns | 0.0868 |     368 B |
-|          DeserializeMobileQuestionWithSpanJsonUtf8Serializer |    894.9 ns |   1.7431 ns |   1.3609 ns |    894.4 ns | 0.0868 |     368 B |
-|              DeserializeMobileQuestionWithUtf8JsonSerializer |  1,117.3 ns |   0.7530 ns |   0.7043 ns |  1,117.1 ns | 0.0858 |     368 B |
-|                  DeserializeMobileRepChangeWithJilSerializer |    582.8 ns |   0.8364 ns |   0.7824 ns |    582.9 ns | 0.0734 |     312 B |
-|             DeserializeMobileRepChangeWithSpanJsonSerializer |    362.1 ns |   2.1383 ns |   2.0001 ns |    360.9 ns | 0.0515 |     216 B |
-|         DeserializeMobileRepChangeWithSpanJsonUtf8Serializer |    459.4 ns |   0.0566 ns |   0.0502 ns |    459.4 ns | 0.0515 |     216 B |
-|             DeserializeMobileRepChangeWithUtf8JsonSerializer |    558.7 ns |   0.2519 ns |   0.2233 ns |    558.7 ns | 0.0515 |     216 B |
-|               DeserializeMobileUpdateNoticeWithJilSerializer |    305.1 ns |   0.0981 ns |   0.0869 ns |    305.1 ns | 0.0548 |     232 B |
-|          DeserializeMobileUpdateNoticeWithSpanJsonSerializer |    233.9 ns |   0.7795 ns |   0.7292 ns |    233.8 ns | 0.0322 |     136 B |
-|      DeserializeMobileUpdateNoticeWithSpanJsonUtf8Serializer |    292.6 ns |   0.2234 ns |   0.2090 ns |    292.7 ns | 0.0319 |     136 B |
-|          DeserializeMobileUpdateNoticeWithUtf8JsonSerializer |    359.5 ns |   0.0708 ns |   0.0553 ns |    359.5 ns | 0.0319 |     136 B |
-|                      DeserializeNetworkUserWithJilSerializer |  1,582.4 ns |   1.6636 ns |   1.5562 ns |  1,582.1 ns | 0.0820 |     352 B |
-|                 DeserializeNetworkUserWithSpanJsonSerializer |  1,048.7 ns |   2.9781 ns |   2.7857 ns |  1,049.9 ns | 0.0591 |     256 B |
-|             DeserializeNetworkUserWithSpanJsonUtf8Serializer |  1,137.7 ns |   0.3920 ns |   0.3667 ns |  1,137.7 ns | 0.0591 |     256 B |
-|                 DeserializeNetworkUserWithUtf8JsonSerializer |  1,486.5 ns |   0.7050 ns |   0.6595 ns |  1,486.3 ns | 0.0591 |     256 B |
-|                           DeserializeNoticeWithJilSerializer |    403.3 ns |   0.1447 ns |   0.1130 ns |    403.3 ns | 0.0453 |     192 B |
-|                      DeserializeNoticeWithSpanJsonSerializer |    298.3 ns |   0.1490 ns |   0.1321 ns |    298.2 ns | 0.0224 |      96 B |
-|                  DeserializeNoticeWithSpanJsonUtf8Serializer |    335.2 ns |   0.0352 ns |   0.0312 ns |    335.2 ns | 0.0224 |      96 B |
-|                      DeserializeNoticeWithUtf8JsonSerializer |    419.0 ns |   0.1166 ns |   0.1033 ns |    418.9 ns | 0.0224 |      96 B |
-|                     DeserializeNotificationWithJilSerializer |  4,213.7 ns |  15.0012 ns |  12.5267 ns |  4,212.6 ns | 0.3891 |    1640 B |
-|                DeserializeNotificationWithSpanJsonSerializer |  2,945.0 ns |  10.8694 ns |  10.1672 ns |  2,944.6 ns | 0.3662 |    1544 B |
-|            DeserializeNotificationWithSpanJsonUtf8Serializer |  3,416.3 ns |  19.0201 ns |  15.8827 ns |  3,411.0 ns | 0.3662 |    1544 B |
-|                DeserializeNotificationWithUtf8JsonSerializer |  3,998.1 ns |  15.3320 ns |  14.3416 ns |  3,999.3 ns | 0.3662 |    1544 B |
-|                 DeserializeOriginalQuestionWithJilSerializer |    411.4 ns |   0.0916 ns |   0.0857 ns |    411.4 ns | 0.0453 |     192 B |
-|            DeserializeOriginalQuestionWithSpanJsonSerializer |    266.0 ns |   2.7816 ns |   2.6019 ns |    265.8 ns | 0.0224 |      96 B |
-|        DeserializeOriginalQuestionWithSpanJsonUtf8Serializer |    323.1 ns |   0.0479 ns |   0.0424 ns |    323.1 ns | 0.0224 |      96 B |
-|            DeserializeOriginalQuestionWithUtf8JsonSerializer |    389.2 ns |   0.0942 ns |   0.0835 ns |    389.2 ns | 0.0224 |      96 B |
-|                             DeserializePostWithJilSerializer |  7,741.3 ns |  67.1119 ns |  62.7765 ns |  7,721.4 ns | 0.5341 |    2272 B |
-|                        DeserializePostWithSpanJsonSerializer |  4,802.7 ns |   6.7298 ns |   5.6197 ns |  4,804.1 ns | 0.4196 |    1792 B |
-|                    DeserializePostWithSpanJsonUtf8Serializer |  5,866.4 ns |  13.9958 ns |  13.0917 ns |  5,871.4 ns | 0.4196 |    1792 B |
-|                        DeserializePostWithUtf8JsonSerializer |  7,147.1 ns |  66.8472 ns |  59.2583 ns |  7,114.2 ns | 0.4196 |    1792 B |
-|                        DeserializePrivilegeWithJilSerializer |    333.0 ns |   0.0501 ns |   0.0444 ns |    333.0 ns | 0.0548 |     232 B |
-|                   DeserializePrivilegeWithSpanJsonSerializer |    228.2 ns |   0.2021 ns |   0.1791 ns |    228.2 ns | 0.0322 |     136 B |
-|               DeserializePrivilegeWithSpanJsonUtf8Serializer |    286.1 ns |   0.0516 ns |   0.0458 ns |    286.1 ns | 0.0319 |     136 B |
-|                   DeserializePrivilegeWithUtf8JsonSerializer |    349.1 ns |   0.1109 ns |   0.1038 ns |    349.1 ns | 0.0319 |     136 B |
-|                 DeserializeQuestionTimelineWithJilSerializer |  3,108.1 ns |  26.1611 ns |  24.4711 ns |  3,103.2 ns | 0.2289 |     968 B |
-|            DeserializeQuestionTimelineWithSpanJsonSerializer |  1,975.7 ns |   3.0154 ns |   2.8206 ns |  1,974.8 ns | 0.1602 |     680 B |
-|        DeserializeQuestionTimelineWithSpanJsonUtf8Serializer |  2,419.1 ns |   1.6720 ns |   1.5640 ns |  2,418.5 ns | 0.1602 |     680 B |
-|            DeserializeQuestionTimelineWithUtf8JsonSerializer |  2,970.2 ns |  11.2734 ns |   9.9935 ns |  2,970.6 ns | 0.1602 |     680 B |
-|                         DeserializeQuestionWithJilSerializer | 41,784.8 ns |  29.6148 ns |  26.2527 ns | 41,786.3 ns | 2.2583 |    9480 B |
-|                    DeserializeQuestionWithSpanJsonSerializer | 21,785.0 ns | 103.4336 ns |  96.7519 ns | 21,801.3 ns | 1.9226 |    8136 B |
-|                DeserializeQuestionWithSpanJsonUtf8Serializer | 25,472.9 ns |  27.7975 ns |  26.0018 ns | 25,470.0 ns | 1.9226 |    8136 B |
-|                    DeserializeQuestionWithUtf8JsonSerializer | 28,059.2 ns |  43.2998 ns |  40.5027 ns | 28,049.7 ns | 1.9226 |    8136 B |
-|                      DeserializeRelatedSiteWithJilSerializer |    371.2 ns |   0.5167 ns |   0.4833 ns |    371.2 ns | 0.0682 |     288 B |
-|                 DeserializeRelatedSiteWithSpanJsonSerializer |    287.2 ns |   0.0964 ns |   0.0752 ns |    287.2 ns | 0.0453 |     192 B |
-|             DeserializeRelatedSiteWithSpanJsonUtf8Serializer |    361.4 ns |   0.0524 ns |   0.0490 ns |    361.4 ns | 0.0453 |     192 B |
-|                 DeserializeRelatedSiteWithUtf8JsonSerializer |    467.8 ns |   0.3996 ns |   0.3543 ns |    467.8 ns | 0.0453 |     192 B |
-|                DeserializeReputationHistoryWithJilSerializer |    626.8 ns |   5.1343 ns |   4.8026 ns |    627.9 ns | 0.0372 |     160 B |
-|           DeserializeReputationHistoryWithSpanJsonSerializer |    444.7 ns |   0.1593 ns |   0.1490 ns |    444.7 ns | 0.0148 |      64 B |
-|       DeserializeReputationHistoryWithSpanJsonUtf8Serializer |    550.0 ns |   0.0744 ns |   0.0622 ns |    550.0 ns | 0.0143 |      64 B |
-|           DeserializeReputationHistoryWithUtf8JsonSerializer |    669.3 ns |   8.3420 ns |   7.8031 ns |    668.5 ns | 0.0143 |      64 B |
-|                       DeserializeReputationWithJilSerializer |    811.7 ns |   0.6912 ns |   0.6465 ns |    811.5 ns | 0.0658 |     280 B |
-|                  DeserializeReputationWithSpanJsonSerializer |    614.6 ns |   6.8032 ns |   6.3637 ns |    614.8 ns | 0.0429 |     184 B |
-|              DeserializeReputationWithSpanJsonUtf8Serializer |    712.2 ns |   5.5475 ns |   5.1891 ns |    711.5 ns | 0.0429 |     184 B |
-|                  DeserializeReputationWithUtf8JsonSerializer |    977.9 ns |   0.2741 ns |   0.2564 ns |    977.7 ns | 0.0420 |     184 B |
-|                         DeserializeRevisionWithJilSerializer |  2,922.4 ns |   9.9303 ns |   9.2888 ns |  2,921.0 ns | 0.2556 |    1088 B |
-|                    DeserializeRevisionWithSpanJsonSerializer |  2,084.1 ns |  18.2218 ns |  17.0447 ns |  2,084.0 ns | 0.2327 |     992 B |
-|                DeserializeRevisionWithSpanJsonUtf8Serializer |  2,445.0 ns |   3.7176 ns |   3.4774 ns |  2,445.9 ns | 0.2327 |     992 B |
-|                    DeserializeRevisionWithUtf8JsonSerializer |  2,983.2 ns |   4.8884 ns |   4.3334 ns |  2,984.6 ns | 0.2327 |     992 B |
-|                    DeserializeSearchExcerptWithJilSerializer |  4,317.1 ns |  57.5517 ns |  53.8339 ns |  4,328.6 ns | 0.3052 |    1304 B |
-|               DeserializeSearchExcerptWithSpanJsonSerializer |  3,064.0 ns |   5.3679 ns |   4.1909 ns |  3,065.2 ns | 0.2403 |    1016 B |
-|           DeserializeSearchExcerptWithSpanJsonUtf8Serializer |  3,647.5 ns |   6.6454 ns |   6.2161 ns |  3,647.3 ns | 0.2403 |    1016 B |
-|               DeserializeSearchExcerptWithUtf8JsonSerializer |  4,312.6 ns |  23.5722 ns |  20.8961 ns |  4,315.0 ns | 0.2365 |    1016 B |
-|                      DeserializeShallowUserWithJilSerializer |  1,034.9 ns |   0.1482 ns |   0.1386 ns |  1,034.9 ns | 0.0839 |     360 B |
-|                 DeserializeShallowUserWithSpanJsonSerializer |    658.5 ns |   0.4375 ns |   0.4092 ns |    658.3 ns | 0.0620 |     264 B |
-|             DeserializeShallowUserWithSpanJsonUtf8Serializer |    799.1 ns |   7.4429 ns |   6.9621 ns |    794.8 ns | 0.0620 |     264 B |
-|                 DeserializeShallowUserWithUtf8JsonSerializer |  1,011.9 ns |   0.4895 ns |   0.4579 ns |  1,012.0 ns | 0.0610 |     264 B |
-|                             DeserializeSiteWithJilSerializer |  3,208.8 ns |  12.3474 ns |  11.5498 ns |  3,209.4 ns | 0.3586 |    1520 B |
-|                        DeserializeSiteWithSpanJsonSerializer |  2,410.1 ns |  19.6169 ns |  18.3496 ns |  2,398.5 ns | 0.3357 |    1424 B |
-|                    DeserializeSiteWithSpanJsonUtf8Serializer |  2,909.9 ns |   6.2760 ns |   5.8705 ns |  2,910.0 ns | 0.3357 |    1424 B |
-|                        DeserializeSiteWithUtf8JsonSerializer |  3,299.2 ns |   2.5719 ns |   1.8597 ns |  3,299.4 ns | 0.3357 |    1424 B |
-|                          DeserializeStylingWithJilSerializer |    352.3 ns |   3.4219 ns |   3.2009 ns |    351.4 ns | 0.0663 |     280 B |
-|                     DeserializeStylingWithSpanJsonSerializer |    250.7 ns |   0.0683 ns |   0.0639 ns |    250.7 ns | 0.0434 |     184 B |
-|                 DeserializeStylingWithSpanJsonUtf8Serializer |    332.6 ns |   0.2032 ns |   0.1901 ns |    332.6 ns | 0.0434 |     184 B |
-|                     DeserializeStylingWithUtf8JsonSerializer |    393.2 ns |   3.8367 ns |   3.5889 ns |    391.4 ns | 0.0434 |     184 B |
-|                    DeserializeSuggestedEditWithJilSerializer |  2,551.4 ns |   2.4554 ns |   2.2968 ns |  2,551.5 ns | 0.1831 |     776 B |
-|               DeserializeSuggestedEditWithSpanJsonSerializer |  1,625.7 ns |   3.8726 ns |   3.4329 ns |  1,625.9 ns | 0.1602 |     680 B |
-|           DeserializeSuggestedEditWithSpanJsonUtf8Serializer |  1,975.6 ns |  18.2761 ns |  17.0954 ns |  1,974.6 ns | 0.1602 |     680 B |
-|               DeserializeSuggestedEditWithUtf8JsonSerializer |  2,441.0 ns |   3.5557 ns |   3.3260 ns |  2,440.0 ns | 0.1602 |     680 B |
-|                         DeserializeTagScoreWithJilSerializer |  1,304.5 ns |   0.2097 ns |   0.1751 ns |  1,304.5 ns | 0.0935 |     400 B |
-|                    DeserializeTagScoreWithSpanJsonSerializer |    802.1 ns |   6.9759 ns |   6.5252 ns |    797.6 ns | 0.0725 |     304 B |
-|                DeserializeTagScoreWithSpanJsonUtf8Serializer |    952.5 ns |   0.4407 ns |   0.4122 ns |    952.5 ns | 0.0725 |     304 B |
-|                    DeserializeTagScoreWithUtf8JsonSerializer |  1,196.6 ns |   0.4207 ns |   0.3935 ns |  1,196.6 ns | 0.0725 |     304 B |
-|                       DeserializeTagSynonymWithJilSerializer |    706.4 ns |   0.3591 ns |   0.3183 ns |    706.4 ns | 0.0620 |     264 B |
-|                  DeserializeTagSynonymWithSpanJsonSerializer |    507.8 ns |   0.2658 ns |   0.2075 ns |    507.7 ns | 0.0401 |     168 B |
-|              DeserializeTagSynonymWithSpanJsonUtf8Serializer |    588.1 ns |   0.1702 ns |   0.1421 ns |    588.1 ns | 0.0401 |     168 B |
-|                  DeserializeTagSynonymWithUtf8JsonSerializer |    726.3 ns |   0.1168 ns |   0.1093 ns |    726.3 ns | 0.0401 |     168 B |
-|                          DeserializeTagWikiWithJilSerializer |  2,985.0 ns |   6.8869 ns |   6.1051 ns |  2,986.1 ns | 0.2480 |    1048 B |
-|                     DeserializeTagWikiWithSpanJsonSerializer |  1,881.4 ns |   1.6169 ns |   1.4334 ns |  1,881.0 ns | 0.1793 |     760 B |
-|                 DeserializeTagWikiWithSpanJsonUtf8Serializer |  2,249.7 ns |  22.2832 ns |  20.8437 ns |  2,250.8 ns | 0.1793 |     760 B |
-|                     DeserializeTagWikiWithUtf8JsonSerializer |  2,907.6 ns |   3.8926 ns |   3.4507 ns |  2,906.4 ns | 0.1793 |     760 B |
-|                              DeserializeTagWithJilSerializer |    920.9 ns |   0.3449 ns |   0.2693 ns |    920.9 ns | 0.0887 |     376 B |
-|                         DeserializeTagWithSpanJsonSerializer |    625.4 ns |   4.4394 ns |   4.1526 ns |    625.9 ns | 0.0658 |     280 B |
-|                     DeserializeTagWithSpanJsonUtf8Serializer |    699.8 ns |   0.1958 ns |   0.1635 ns |    699.8 ns | 0.0658 |     280 B |
-|                         DeserializeTagWithUtf8JsonSerializer |    871.1 ns |   0.1986 ns |   0.1659 ns |    871.1 ns | 0.0658 |     280 B |
-|                           DeserializeTopTagWithJilSerializer |    593.4 ns |   0.3761 ns |   0.3334 ns |    593.4 ns | 0.0486 |     208 B |
-|                      DeserializeTopTagWithSpanJsonSerializer |    361.3 ns |   0.0666 ns |   0.0590 ns |    361.3 ns | 0.0262 |     112 B |
-|                  DeserializeTopTagWithSpanJsonUtf8Serializer |    416.0 ns |   0.1344 ns |   0.1191 ns |    416.0 ns | 0.0262 |     112 B |
-|                      DeserializeTopTagWithUtf8JsonSerializer |    524.5 ns |   0.1532 ns |   0.1433 ns |    524.5 ns | 0.0257 |     112 B |
-|                     DeserializeUserTimelineWithJilSerializer |  1,178.2 ns |   1.8166 ns |   1.6993 ns |  1,177.8 ns | 0.0820 |     352 B |
-|                DeserializeUserTimelineWithSpanJsonSerializer |    770.1 ns |   3.4285 ns |   3.2071 ns |    769.5 ns | 0.0601 |     256 B |
-|            DeserializeUserTimelineWithSpanJsonUtf8Serializer |    966.0 ns |   0.2158 ns |   0.2018 ns |    966.0 ns | 0.0591 |     256 B |
-|                DeserializeUserTimelineWithUtf8JsonSerializer |  1,169.2 ns |   0.4432 ns |   0.3205 ns |  1,169.2 ns | 0.0591 |     256 B |
-|                             DeserializeUserWithJilSerializer |  3,904.0 ns |   6.0538 ns |   5.0552 ns |  3,903.3 ns | 0.1602 |     696 B |
-|                        DeserializeUserWithSpanJsonSerializer |  2,747.2 ns |  18.0390 ns |  16.8737 ns |  2,743.1 ns | 0.1411 |     600 B |
-|                    DeserializeUserWithSpanJsonUtf8Serializer |  3,122.3 ns |   9.6738 ns |   9.0489 ns |  3,121.8 ns | 0.1411 |     600 B |
-|                        DeserializeUserWithUtf8JsonSerializer |  3,248.9 ns |   0.9086 ns |   0.7094 ns |  3,249.0 ns | 0.1411 |     600 B |
-|                  DeserializeWritePermissionWithJilSerializer |    657.1 ns |   0.1401 ns |   0.1170 ns |    657.1 ns | 0.0515 |     216 B |
-|             DeserializeWritePermissionWithSpanJsonSerializer |    413.1 ns |   0.0918 ns |   0.0717 ns |    413.1 ns | 0.0281 |     120 B |
-|         DeserializeWritePermissionWithSpanJsonUtf8Serializer |    496.7 ns |   0.0929 ns |   0.0869 ns |    496.7 ns | 0.0277 |     120 B |
-|             DeserializeWritePermissionWithUtf8JsonSerializer |    600.2 ns |   0.1085 ns |   0.1015 ns |    600.2 ns | 0.0277 |     120 B |
-|                        SerializeAccessTokenWithJilSerializer |    497.2 ns |   0.0537 ns |   0.0419 ns |    497.2 ns | 0.2127 |     896 B |
-|                   SerializeAccessTokenWithSpanJsonSerializer |    347.0 ns |   0.0538 ns |   0.0477 ns |    347.0 ns | 0.0625 |     264 B |
-|               SerializeAccessTokenWithSpanJsonUtf8Serializer |    364.0 ns |   2.4663 ns |   2.1863 ns |    362.9 ns | 0.0358 |     152 B |
-|                   SerializeAccessTokenWithUtf8JsonSerializer |    448.3 ns |   0.0180 ns |   0.0160 ns |    448.3 ns | 0.0358 |     152 B |
-|                       SerializeAccountMergeWithJilSerializer |    355.6 ns |   0.1785 ns |   0.1583 ns |    355.5 ns | 0.2036 |     856 B |
-|                  SerializeAccountMergeWithSpanJsonSerializer |    295.0 ns |   0.2434 ns |   0.2158 ns |    294.9 ns | 0.0548 |     232 B |
-|              SerializeAccountMergeWithSpanJsonUtf8Serializer |    301.4 ns |   0.0395 ns |   0.0309 ns |    301.4 ns | 0.0300 |     128 B |
-|                  SerializeAccountMergeWithUtf8JsonSerializer |    355.9 ns |   0.5120 ns |   0.4790 ns |    356.0 ns | 0.0281 |     120 B |
-|                             SerializeAnswerWithJilSerializer |  4,176.5 ns |   1.7901 ns |   1.6745 ns |  4,176.5 ns | 2.0981 |    8824 B |
-|                        SerializeAnswerWithSpanJsonSerializer |  3,823.0 ns |  10.6527 ns |   9.4434 ns |  3,825.6 ns | 0.8850 |    3728 B |
-|                    SerializeAnswerWithSpanJsonUtf8Serializer |  3,743.0 ns |  24.1281 ns |  22.5694 ns |  3,732.5 ns | 0.4463 |    1888 B |
-|                        SerializeAnswerWithUtf8JsonSerializer |  5,024.6 ns |  17.9566 ns |  16.7966 ns |  5,022.8 ns | 0.4425 |    1864 B |
-|                         SerializeBadgeCountWithJilSerializer |    241.4 ns |   0.1309 ns |   0.1093 ns |    241.4 ns | 0.1407 |     592 B |
-|                    SerializeBadgeCountWithSpanJsonSerializer |    219.2 ns |   0.0478 ns |   0.0423 ns |    219.2 ns | 0.0341 |     144 B |
-|                SerializeBadgeCountWithSpanJsonUtf8Serializer |    229.8 ns |   0.0275 ns |   0.0257 ns |    229.8 ns | 0.0207 |      88 B |
-|                    SerializeBadgeCountWithUtf8JsonSerializer |    217.4 ns |   0.0650 ns |   0.0543 ns |    217.4 ns | 0.0207 |      88 B |
-|                              SerializeBadgeWithJilSerializer |    947.5 ns |   9.3605 ns |   8.7558 ns |    941.9 ns | 0.5655 |    2376 B |
-|                         SerializeBadgeWithSpanJsonSerializer |    829.6 ns |  16.4903 ns |  20.2516 ns |    820.6 ns | 0.1974 |     832 B |
-|                     SerializeBadgeWithSpanJsonUtf8Serializer |    866.0 ns |   7.3176 ns |   6.4868 ns |    862.3 ns | 0.1020 |     432 B |
-|                         SerializeBadgeWithUtf8JsonSerializer |    986.5 ns |   0.3510 ns |   0.2931 ns |    986.7 ns | 0.0992 |     424 B |
-|                      SerializeClosedDetailsWithJilSerializer |  1,103.3 ns |   0.2992 ns |   0.2799 ns |  1,103.3 ns | 0.5894 |    2480 B |
-|                 SerializeClosedDetailsWithSpanJsonSerializer |    933.6 ns |   9.7978 ns |   8.6855 ns |    928.8 ns | 0.2165 |     912 B |
-|             SerializeClosedDetailsWithSpanJsonUtf8Serializer |  1,068.1 ns |   1.1644 ns |   1.0892 ns |  1,068.4 ns | 0.1106 |     472 B |
-|                 SerializeClosedDetailsWithUtf8JsonSerializer |  1,072.6 ns |   0.4580 ns |   0.4284 ns |  1,072.5 ns | 0.1106 |     472 B |
-|                            SerializeCommentWithJilSerializer |  1,686.3 ns |  16.7741 ns |  14.8698 ns |  1,678.4 ns | 1.0300 |    4328 B |
-|                       SerializeCommentWithSpanJsonSerializer |  1,428.7 ns |  22.6185 ns |  21.1574 ns |  1,428.2 ns | 0.3567 |    1504 B |
-|                   SerializeCommentWithSpanJsonUtf8Serializer |  1,500.7 ns |   0.4835 ns |   0.4522 ns |  1,500.7 ns | 0.1812 |     768 B |
-|                       SerializeCommentWithUtf8JsonSerializer |  1,870.5 ns |  17.2924 ns |  16.1753 ns |  1,860.3 ns | 0.1793 |     760 B |
-|                              SerializeErrorWithJilSerializer |    340.6 ns |   1.8836 ns |   1.6698 ns |    340.3 ns | 0.1941 |     816 B |
-|                         SerializeErrorWithSpanJsonSerializer |    207.6 ns |   0.0513 ns |   0.0428 ns |    207.6 ns | 0.0398 |     168 B |
-|                     SerializeErrorWithSpanJsonUtf8Serializer |    222.6 ns |   0.0617 ns |   0.0515 ns |    222.6 ns | 0.0226 |      96 B |
-|                         SerializeErrorWithUtf8JsonSerializer |    193.5 ns |   0.0316 ns |   0.0281 ns |    193.5 ns | 0.0226 |      96 B |
-|                              SerializeEventWithJilSerializer |    528.7 ns |   6.0568 ns |   5.6655 ns |    529.7 ns | 0.2985 |    1256 B |
-|                         SerializeEventWithSpanJsonSerializer |    354.8 ns |   0.1327 ns |   0.1242 ns |    354.7 ns | 0.0720 |     304 B |
-|                     SerializeEventWithSpanJsonUtf8Serializer |    368.9 ns |   0.0896 ns |   0.0748 ns |    368.9 ns | 0.0396 |     168 B |
-|                         SerializeEventWithUtf8JsonSerializer |    475.3 ns |   0.1550 ns |   0.1210 ns |    475.3 ns | 0.0372 |     160 B |
-|                         SerializeFlagOptionWithJilSerializer |    855.5 ns |   0.7790 ns |   0.7287 ns |    855.4 ns | 0.5903 |    2480 B |
-|                    SerializeFlagOptionWithSpanJsonSerializer |    642.8 ns |   0.0569 ns |   0.0505 ns |    642.8 ns | 0.1860 |     784 B |
-|                SerializeFlagOptionWithSpanJsonUtf8Serializer |    690.6 ns |   7.3953 ns |   6.5557 ns |    686.8 ns | 0.0963 |     408 B |
-|                    SerializeFlagOptionWithUtf8JsonSerializer |    754.9 ns |   0.3121 ns |   0.2919 ns |    754.9 ns | 0.1001 |     424 B |
-|                          SerializeInboxItemWithJilSerializer |  2,465.3 ns |   1.7839 ns |   1.5814 ns |  2,465.5 ns | 1.0605 |    4464 B |
-|                     SerializeInboxItemWithSpanJsonSerializer |  1,704.8 ns |  15.1086 ns |  14.1326 ns |  1,697.6 ns | 0.4425 |    1864 B |
-|                 SerializeInboxItemWithSpanJsonUtf8Serializer |  1,831.3 ns |   1.0492 ns |   0.9814 ns |  1,831.0 ns | 0.2251 |     952 B |
-|                     SerializeInboxItemWithUtf8JsonSerializer |  2,363.5 ns |   2.7956 ns |   2.6150 ns |  2,363.4 ns | 0.2213 |     936 B |
-|                               SerializeInfoWithJilSerializer |  2,891.1 ns |   3.7808 ns |   3.1571 ns |  2,891.1 ns | 1.6823 |    7064 B |
-|                          SerializeInfoWithSpanJsonSerializer |  2,255.5 ns |   6.7874 ns |   6.3490 ns |  2,252.3 ns | 0.5226 |    2200 B |
-|                      SerializeInfoWithSpanJsonUtf8Serializer |  2,381.3 ns |   6.3025 ns |   5.8954 ns |  2,380.9 ns | 0.2632 |    1112 B |
-|                          SerializeInfoWithUtf8JsonSerializer |  3,012.1 ns |   9.6324 ns |   8.0435 ns |  3,011.6 ns | 0.3281 |    1392 B |
-|                      SerializeMigrationInfoWithJilSerializer |  2,193.5 ns |   1.8904 ns |   1.6758 ns |  2,193.2 ns | 0.9918 |    4176 B |
-|                 SerializeMigrationInfoWithSpanJsonSerializer |  1,447.8 ns |   0.7387 ns |   0.6168 ns |  1,447.7 ns | 0.3719 |    1568 B |
-|             SerializeMigrationInfoWithSpanJsonUtf8Serializer |  1,549.0 ns |   0.5928 ns |   0.4628 ns |  1,548.7 ns | 0.1888 |     800 B |
-|                 SerializeMigrationInfoWithUtf8JsonSerializer |  2,066.8 ns |   1.7898 ns |   1.5866 ns |  2,066.6 ns | 0.1869 |     792 B |
-|             SerializeMobileAssociationBonusWithJilSerializer |    343.5 ns |   0.0965 ns |   0.0902 ns |    343.5 ns | 0.2036 |     856 B |
-|        SerializeMobileAssociationBonusWithSpanJsonSerializer |    271.8 ns |   1.5312 ns |   1.3574 ns |    271.2 ns | 0.0510 |     216 B |
-|    SerializeMobileAssociationBonusWithSpanJsonUtf8Serializer |    285.4 ns |   0.0450 ns |   0.0421 ns |    285.4 ns | 0.0281 |     120 B |
-|        SerializeMobileAssociationBonusWithUtf8JsonSerializer |    289.5 ns |   0.0908 ns |   0.0805 ns |    289.5 ns | 0.0281 |     120 B |
-|                   SerializeMobileBadgeAwardWithJilSerializer |    628.7 ns |   5.0294 ns |   4.7045 ns |    625.7 ns | 0.3481 |    1464 B |
-|              SerializeMobileBadgeAwardWithSpanJsonSerializer |    490.4 ns |   0.0911 ns |   0.0807 ns |    490.3 ns | 0.1154 |     488 B |
-|          SerializeMobileBadgeAwardWithSpanJsonUtf8Serializer |    512.1 ns |   0.0978 ns |   0.0915 ns |    512.1 ns | 0.0601 |     256 B |
-|              SerializeMobileBadgeAwardWithUtf8JsonSerializer |    597.4 ns |   0.0674 ns |   0.0597 ns |    597.3 ns | 0.0620 |     264 B |
-|                SerializeMobileBannerAdImageWithJilSerializer |    267.7 ns |   0.0381 ns |   0.0318 ns |    267.7 ns | 0.1426 |     600 B |
-|           SerializeMobileBannerAdImageWithSpanJsonSerializer |    218.7 ns |   0.0930 ns |   0.0870 ns |    218.7 ns | 0.0379 |     160 B |
-|       SerializeMobileBannerAdImageWithSpanJsonUtf8Serializer |    220.6 ns |   0.0462 ns |   0.0361 ns |    220.6 ns | 0.0207 |      88 B |
-|           SerializeMobileBannerAdImageWithUtf8JsonSerializer |    208.1 ns |   0.0358 ns |   0.0317 ns |    208.0 ns | 0.0226 |      96 B |
-|                     SerializeMobileBannerAdWithJilSerializer |    524.6 ns |   0.0343 ns |   0.0304 ns |    524.6 ns | 0.3080 |    1296 B |
-|                SerializeMobileBannerAdWithSpanJsonSerializer |    431.5 ns |   3.4840 ns |   3.2589 ns |    429.1 ns | 0.0796 |     336 B |
-|            SerializeMobileBannerAdWithSpanJsonUtf8Serializer |    431.4 ns |   2.6742 ns |   2.5015 ns |    430.0 ns | 0.0415 |     176 B |
-|                SerializeMobileBannerAdWithUtf8JsonSerializer |    431.6 ns |   0.1090 ns |   0.0966 ns |    431.6 ns | 0.0415 |     176 B |
-|                 SerializeMobileCareersJobAdWithJilSerializer |    549.6 ns |   0.0578 ns |   0.0513 ns |    549.6 ns | 0.3138 |    1320 B |
-|            SerializeMobileCareersJobAdWithSpanJsonSerializer |    357.0 ns |   0.0357 ns |   0.0298 ns |    357.0 ns | 0.0815 |     344 B |
-|        SerializeMobileCareersJobAdWithSpanJsonUtf8Serializer |    390.2 ns |   0.6393 ns |   0.5980 ns |    390.7 ns | 0.0453 |     192 B |
-|            SerializeMobileCareersJobAdWithUtf8JsonSerializer |    384.9 ns |   0.0763 ns |   0.0677 ns |    384.9 ns | 0.0453 |     192 B |
-|            SerializeMobileCommunityBulletinWithJilSerializer |    880.0 ns |   0.2450 ns |   0.2172 ns |    879.9 ns | 0.5445 |    2288 B |
-|       SerializeMobileCommunityBulletinWithSpanJsonSerializer |    685.9 ns |   4.0446 ns |   3.5855 ns |    684.1 ns | 0.1745 |     736 B |
-|   SerializeMobileCommunityBulletinWithSpanJsonUtf8Serializer |    697.7 ns |   0.1191 ns |   0.0994 ns |    697.7 ns | 0.0887 |     376 B |
-|       SerializeMobileCommunityBulletinWithUtf8JsonSerializer |    807.0 ns |   0.2291 ns |   0.1788 ns |    807.0 ns | 0.0925 |     392 B |
-|                         SerializeMobileFeedWithJilSerializer |  7,361.4 ns |  18.2733 ns |  14.2666 ns |  7,359.9 ns | 3.7689 |   15848 B |
-|                    SerializeMobileFeedWithSpanJsonSerializer |  6,282.7 ns |   5.2290 ns |   4.3665 ns |  6,283.0 ns | 1.5335 |    6448 B |
-|                SerializeMobileFeedWithSpanJsonUtf8Serializer |  6,591.7 ns |  13.2381 ns |  12.3829 ns |  6,589.2 ns | 0.7629 |    3216 B |
-|                    SerializeMobileFeedWithUtf8JsonSerializer |  7,641.4 ns |   8.7019 ns |   8.1398 ns |  7,642.8 ns | 0.7629 |    3232 B |
-|                    SerializeMobileInboxItemWithJilSerializer |    765.0 ns |   0.1138 ns |   0.1065 ns |    765.0 ns | 0.5007 |    2104 B |
-|               SerializeMobileInboxItemWithSpanJsonSerializer |    544.2 ns |   0.2019 ns |   0.1889 ns |    544.3 ns | 0.1307 |     552 B |
-|           SerializeMobileInboxItemWithSpanJsonUtf8Serializer |    575.0 ns |   4.8166 ns |   4.5054 ns |    575.7 ns | 0.0677 |     288 B |
-|               SerializeMobileInboxItemWithUtf8JsonSerializer |    609.9 ns |   0.1298 ns |   0.1151 ns |    609.9 ns | 0.0677 |     288 B |
-|                    SerializeMobilePrivilegeWithJilSerializer |    605.1 ns |   0.1071 ns |   0.0949 ns |    605.1 ns | 0.3481 |    1464 B |
-|               SerializeMobilePrivilegeWithSpanJsonSerializer |    424.2 ns |   4.1900 ns |   3.9193 ns |    421.4 ns | 0.1178 |     496 B |
-|           SerializeMobilePrivilegeWithSpanJsonUtf8Serializer |    448.7 ns |   0.0705 ns |   0.0588 ns |    448.7 ns | 0.0625 |     264 B |
-|               SerializeMobilePrivilegeWithUtf8JsonSerializer |    444.5 ns |   4.1946 ns |   3.9237 ns |    441.9 ns | 0.0606 |     256 B |
-|                     SerializeMobileQuestionWithJilSerializer |    739.6 ns |   0.0459 ns |   0.0383 ns |    739.6 ns | 0.5178 |    2176 B |
-|                SerializeMobileQuestionWithSpanJsonSerializer |    584.2 ns |   0.1387 ns |   0.1297 ns |    584.2 ns | 0.1478 |     624 B |
-|            SerializeMobileQuestionWithSpanJsonUtf8Serializer |    595.9 ns |   0.1218 ns |   0.1017 ns |    595.8 ns | 0.0753 |     320 B |
-|                SerializeMobileQuestionWithUtf8JsonSerializer |    686.4 ns |   0.0308 ns |   0.0240 ns |    686.4 ns | 0.0772 |     328 B |
-|                    SerializeMobileRepChangeWithJilSerializer |    487.7 ns |   0.0316 ns |   0.0209 ns |    487.7 ns | 0.3004 |    1264 B |
-|               SerializeMobileRepChangeWithSpanJsonSerializer |    324.7 ns |   0.0495 ns |   0.0463 ns |    324.7 ns | 0.0701 |     296 B |
-|           SerializeMobileRepChangeWithSpanJsonUtf8Serializer |    362.4 ns |   0.5969 ns |   0.5583 ns |    362.2 ns | 0.0377 |     160 B |
-|               SerializeMobileRepChangeWithUtf8JsonSerializer |    371.6 ns |   0.0663 ns |   0.0588 ns |    371.6 ns | 0.0396 |     168 B |
-|                 SerializeMobileUpdateNoticeWithJilSerializer |    311.3 ns |   0.0397 ns |   0.0371 ns |    311.3 ns | 0.1750 |     736 B |
-|            SerializeMobileUpdateNoticeWithSpanJsonSerializer |    185.4 ns |   0.1086 ns |   0.0907 ns |    185.3 ns | 0.0455 |     192 B |
-|        SerializeMobileUpdateNoticeWithSpanJsonUtf8Serializer |    195.5 ns |   0.0169 ns |   0.0142 ns |    195.5 ns | 0.0265 |     112 B |
-|            SerializeMobileUpdateNoticeWithUtf8JsonSerializer |    158.6 ns |   1.3394 ns |   1.2529 ns |    158.5 ns | 0.0265 |     112 B |
-|                        SerializeNetworkUserWithJilSerializer |    898.7 ns |   0.0708 ns |   0.0628 ns |    898.7 ns | 0.5465 |    2296 B |
-|                   SerializeNetworkUserWithSpanJsonSerializer |    786.8 ns |   0.1409 ns |   0.1318 ns |    786.8 ns | 0.1802 |     760 B |
-|               SerializeNetworkUserWithSpanJsonUtf8Serializer |    817.8 ns |   0.2329 ns |   0.2065 ns |    817.8 ns | 0.0944 |     400 B |
-|                   SerializeNetworkUserWithUtf8JsonSerializer |  1,140.1 ns |   0.3184 ns |   0.2822 ns |  1,140.1 ns | 0.0916 |     392 B |
-|                             SerializeNoticeWithJilSerializer |    386.4 ns |   0.0797 ns |   0.0665 ns |    386.4 ns | 0.1998 |     840 B |
-|                        SerializeNoticeWithSpanJsonSerializer |    287.5 ns |   0.0509 ns |   0.0452 ns |    287.5 ns | 0.0510 |     216 B |
-|                    SerializeNoticeWithSpanJsonUtf8Serializer |    294.9 ns |   0.0386 ns |   0.0322 ns |    294.9 ns | 0.0281 |     120 B |
-|                        SerializeNoticeWithUtf8JsonSerializer |    346.1 ns |   0.0439 ns |   0.0411 ns |    346.1 ns | 0.0262 |     112 B |
-|                       SerializeNotificationWithJilSerializer |  2,280.9 ns |   0.6254 ns |   0.5544 ns |  2,280.9 ns | 1.0223 |    4304 B |
-|                  SerializeNotificationWithSpanJsonSerializer |  1,538.7 ns |  23.0993 ns |  21.6071 ns |  1,532.9 ns | 0.4063 |    1712 B |
-|              SerializeNotificationWithSpanJsonUtf8Serializer |  1,680.2 ns |   8.5798 ns |   7.1645 ns |  1,677.2 ns | 0.2060 |     872 B |
-|                  SerializeNotificationWithUtf8JsonSerializer |  2,170.6 ns |   1.5032 ns |   1.3326 ns |  2,170.7 ns | 0.2022 |     856 B |
-|                   SerializeOriginalQuestionWithJilSerializer |    322.4 ns |   0.1278 ns |   0.1195 ns |    322.3 ns | 0.2074 |     872 B |
-|              SerializeOriginalQuestionWithSpanJsonSerializer |    259.9 ns |   0.0322 ns |   0.0301 ns |    259.9 ns | 0.0548 |     232 B |
-|          SerializeOriginalQuestionWithSpanJsonUtf8Serializer |    271.0 ns |   0.2319 ns |   0.2169 ns |    270.9 ns | 0.0300 |     128 B |
-|              SerializeOriginalQuestionWithUtf8JsonSerializer |    273.1 ns |   0.0988 ns |   0.0925 ns |    273.1 ns | 0.0300 |     128 B |
-|                               SerializePostWithJilSerializer |  3,786.6 ns |   1.8324 ns |   1.7140 ns |  3,786.7 ns | 2.0180 |    8480 B |
-|                          SerializePostWithSpanJsonSerializer |  3,387.7 ns |   7.8427 ns |   7.3361 ns |  3,385.5 ns | 0.8011 |    3376 B |
-|                      SerializePostWithSpanJsonUtf8Serializer |  3,367.6 ns |  30.6178 ns |  28.6399 ns |  3,381.5 ns | 0.4044 |    1704 B |
-|                          SerializePostWithUtf8JsonSerializer |  4,377.9 ns |  26.5449 ns |  23.5314 ns |  4,367.6 ns | 0.3967 |    1688 B |
-|                          SerializePrivilegeWithJilSerializer |    326.6 ns |   0.0750 ns |   0.0702 ns |    326.6 ns | 0.1979 |     832 B |
-|                     SerializePrivilegeWithSpanJsonSerializer |    209.9 ns |   0.0363 ns |   0.0340 ns |    209.8 ns | 0.0455 |     192 B |
-|                 SerializePrivilegeWithSpanJsonUtf8Serializer |    218.2 ns |   1.8807 ns |   1.7593 ns |    216.9 ns | 0.0265 |     112 B |
-|                     SerializePrivilegeWithUtf8JsonSerializer |    180.6 ns |   0.2385 ns |   0.2231 ns |    180.5 ns | 0.0246 |     104 B |
-|                   SerializeQuestionTimelineWithJilSerializer |  1,603.7 ns |   0.9979 ns |   0.8846 ns |  1,603.6 ns | 1.0262 |    4312 B |
-|              SerializeQuestionTimelineWithSpanJsonSerializer |  1,424.4 ns |   4.1768 ns |   3.7026 ns |  1,426.2 ns | 0.3510 |    1480 B |
-|          SerializeQuestionTimelineWithSpanJsonUtf8Serializer |  1,501.7 ns |   6.0892 ns |   5.6959 ns |  1,501.9 ns | 0.1774 |     752 B |
-|              SerializeQuestionTimelineWithUtf8JsonSerializer |  1,886.9 ns |  13.1531 ns |  12.3034 ns |  1,878.0 ns | 0.1793 |     760 B |
-|                           SerializeQuestionWithJilSerializer | 14,339.9 ns |   9.7860 ns |   9.1539 ns | 14,340.1 ns | 7.2937 |   30624 B |
-|                      SerializeQuestionWithSpanJsonSerializer | 12,467.2 ns |  26.3156 ns |  24.6156 ns | 12,471.3 ns | 2.9907 |   12536 B |
-|                  SerializeQuestionWithSpanJsonUtf8Serializer | 13,030.0 ns |  12.3735 ns |  11.5742 ns | 13,029.3 ns | 1.4801 |    6272 B |
-|                      SerializeQuestionWithUtf8JsonSerializer | 17,243.5 ns |  20.4000 ns |  19.0822 ns | 17,246.6 ns | 1.4648 |    6184 B |
-|                        SerializeRelatedSiteWithJilSerializer |    370.6 ns |   2.6639 ns |   2.4918 ns |    369.1 ns | 0.2017 |     848 B |
-|                   SerializeRelatedSiteWithSpanJsonSerializer |    217.8 ns |   0.0360 ns |   0.0337 ns |    217.8 ns | 0.0494 |     208 B |
-|               SerializeRelatedSiteWithSpanJsonUtf8Serializer |    237.1 ns |   0.0549 ns |   0.0487 ns |    237.1 ns | 0.0281 |     120 B |
-|                   SerializeRelatedSiteWithUtf8JsonSerializer |    226.4 ns |   1.0724 ns |   0.9507 ns |    225.7 ns | 0.0284 |     120 B |
-|                  SerializeReputationHistoryWithJilSerializer |    430.4 ns |   0.1578 ns |   0.1399 ns |    430.4 ns | 0.3123 |    1312 B |
-|             SerializeReputationHistoryWithSpanJsonSerializer |    382.6 ns |   3.4125 ns |   3.1921 ns |    380.5 ns | 0.0854 |     360 B |
-|         SerializeReputationHistoryWithSpanJsonUtf8Serializer |    409.4 ns |   0.0445 ns |   0.0394 ns |    409.4 ns | 0.0453 |     192 B |
-|             SerializeReputationHistoryWithUtf8JsonSerializer |    500.3 ns |   0.0655 ns |   0.0580 ns |    500.3 ns | 0.0429 |     184 B |
-|                         SerializeReputationWithJilSerializer |    572.2 ns |   0.1579 ns |   0.1233 ns |    572.1 ns | 0.3271 |    1376 B |
-|                    SerializeReputationWithSpanJsonSerializer |    475.5 ns |   0.0876 ns |   0.0777 ns |    475.5 ns | 0.1020 |     432 B |
-|                SerializeReputationWithSpanJsonUtf8Serializer |    506.2 ns |   0.1715 ns |   0.1520 ns |    506.2 ns | 0.0544 |     232 B |
-|                    SerializeReputationWithUtf8JsonSerializer |    684.7 ns |   0.6825 ns |   0.6050 ns |    684.7 ns | 0.0544 |     232 B |
-|                           SerializeRevisionWithJilSerializer |  1,552.4 ns |   0.6134 ns |   0.5738 ns |  1,552.6 ns | 0.9289 |    3904 B |
-|                      SerializeRevisionWithSpanJsonSerializer |  1,241.5 ns |   5.0444 ns |   4.4717 ns |  1,242.8 ns | 0.3033 |    1280 B |
-|                  SerializeRevisionWithSpanJsonUtf8Serializer |  1,284.8 ns |   0.4187 ns |   0.3712 ns |  1,284.8 ns | 0.1545 |     656 B |
-|                      SerializeRevisionWithUtf8JsonSerializer |  1,632.9 ns |   9.2235 ns |   8.6277 ns |  1,632.9 ns | 0.1526 |     648 B |
-|                      SerializeSearchExcerptWithJilSerializer |  2,316.8 ns |   3.2010 ns |   2.9942 ns |  2,318.3 ns | 1.1406 |    4792 B |
-|                 SerializeSearchExcerptWithSpanJsonSerializer |  2,091.2 ns |   0.7345 ns |   0.6870 ns |  2,091.2 ns | 0.4730 |    2000 B |
-|             SerializeSearchExcerptWithSpanJsonUtf8Serializer |  2,049.3 ns |   2.1072 ns |   1.9711 ns |  2,049.2 ns | 0.2403 |    1024 B |
-|                 SerializeSearchExcerptWithUtf8JsonSerializer |  2,862.3 ns |   1.5258 ns |   1.1912 ns |  2,862.6 ns | 0.2365 |    1000 B |
-|                        SerializeShallowUserWithJilSerializer |    612.7 ns |   0.1161 ns |   0.0970 ns |    612.7 ns | 0.3538 |    1488 B |
-|                   SerializeShallowUserWithSpanJsonSerializer |    508.8 ns |   4.6763 ns |   4.1454 ns |    506.5 ns | 0.1230 |     520 B |
-|               SerializeShallowUserWithSpanJsonUtf8Serializer |    545.3 ns |   0.2842 ns |   0.2658 ns |    545.3 ns | 0.0639 |     272 B |
-|                   SerializeShallowUserWithUtf8JsonSerializer |    593.5 ns |   0.1393 ns |   0.1235 ns |    593.5 ns | 0.0620 |     264 B |
-|                               SerializeSiteWithJilSerializer |  2,008.1 ns |  19.0328 ns |  17.8033 ns |  1,995.9 ns | 0.9537 |    4016 B |
-|                          SerializeSiteWithSpanJsonSerializer |  1,226.4 ns |   1.3007 ns |   1.1530 ns |  1,226.1 ns | 0.3376 |    1424 B |
-|                      SerializeSiteWithSpanJsonUtf8Serializer |  1,329.9 ns |   0.1957 ns |   0.1735 ns |  1,329.9 ns | 0.1698 |     720 B |
-|                          SerializeSiteWithUtf8JsonSerializer |  1,690.0 ns |  17.3610 ns |  15.3901 ns |  1,681.6 ns | 0.1659 |     704 B |
-|                            SerializeStylingWithJilSerializer |    357.2 ns |   0.0588 ns |   0.0550 ns |    357.1 ns | 0.1807 |     760 B |
-|                       SerializeStylingWithSpanJsonSerializer |    183.2 ns |   0.0513 ns |   0.0455 ns |    183.1 ns | 0.0513 |     216 B |
-|                   SerializeStylingWithSpanJsonUtf8Serializer |    210.9 ns |   0.0409 ns |   0.0382 ns |    210.9 ns | 0.0284 |     120 B |
-|                       SerializeStylingWithUtf8JsonSerializer |    159.2 ns |   0.0098 ns |   0.0082 ns |    159.2 ns | 0.0284 |     120 B |
-|                      SerializeSuggestedEditWithJilSerializer |  1,467.5 ns |  11.3909 ns |  10.6550 ns |  1,461.9 ns | 0.8888 |    3736 B |
-|                 SerializeSuggestedEditWithSpanJsonSerializer |  1,195.4 ns |   2.7376 ns |   2.2860 ns |  1,195.5 ns | 0.2708 |    1144 B |
-|             SerializeSuggestedEditWithSpanJsonUtf8Serializer |  1,220.0 ns |   0.1215 ns |   0.1015 ns |  1,220.0 ns | 0.1373 |     584 B |
-|                 SerializeSuggestedEditWithUtf8JsonSerializer |  1,704.3 ns |  13.5911 ns |  12.7131 ns |  1,700.1 ns | 0.1335 |     568 B |
-|                           SerializeTagScoreWithJilSerializer |    738.5 ns |   0.1738 ns |   0.1626 ns |    738.5 ns | 0.5178 |    2176 B |
-|                      SerializeTagScoreWithSpanJsonSerializer |    629.0 ns |   0.1844 ns |   0.1635 ns |    629.0 ns | 0.1459 |     616 B |
-|                  SerializeTagScoreWithSpanJsonUtf8Serializer |    670.2 ns |   3.8433 ns |   3.5950 ns |    667.7 ns | 0.0772 |     328 B |
-|                      SerializeTagScoreWithUtf8JsonSerializer |    815.0 ns |   2.5847 ns |   2.2913 ns |    814.5 ns | 0.0772 |     328 B |
-|                         SerializeTagSynonymWithJilSerializer |    602.8 ns |   0.2387 ns |   0.2233 ns |    602.8 ns | 0.3099 |    1304 B |
-|                    SerializeTagSynonymWithSpanJsonSerializer |    428.8 ns |   0.5154 ns |   0.4569 ns |    428.5 ns | 0.0873 |     368 B |
-|                SerializeTagSynonymWithSpanJsonUtf8Serializer |    427.5 ns |   0.0414 ns |   0.0367 ns |    427.5 ns | 0.0453 |     192 B |
-|                    SerializeTagSynonymWithUtf8JsonSerializer |    598.8 ns |   0.0587 ns |   0.0458 ns |    598.8 ns | 0.0429 |     184 B |
-|                            SerializeTagWikiWithJilSerializer |  1,682.4 ns |   0.7496 ns |   0.6645 ns |  1,682.5 ns | 1.0109 |    4248 B |
-|                       SerializeTagWikiWithSpanJsonSerializer |  1,302.1 ns |   0.3313 ns |   0.2766 ns |  1,302.1 ns | 0.3395 |    1432 B |
-|                   SerializeTagWikiWithSpanJsonUtf8Serializer |  1,382.9 ns |   1.3466 ns |   1.0514 ns |  1,382.7 ns | 0.1717 |     728 B |
-|                       SerializeTagWikiWithUtf8JsonSerializer |  1,763.3 ns |   0.5119 ns |   0.4538 ns |  1,763.1 ns | 0.1698 |     720 B |
-|                                SerializeTagWithJilSerializer |    829.7 ns |   4.4069 ns |   4.1222 ns |    831.2 ns | 0.3290 |    1384 B |
-|                           SerializeTagWithSpanJsonSerializer |    470.0 ns |   0.0963 ns |   0.0854 ns |    470.0 ns | 0.1025 |     432 B |
-|                       SerializeTagWithSpanJsonUtf8Serializer |    456.4 ns |   0.0569 ns |   0.0532 ns |    456.3 ns | 0.0529 |     224 B |
-|                           SerializeTagWithUtf8JsonSerializer |    583.1 ns |   4.5760 ns |   4.0565 ns |    582.3 ns | 0.0525 |     224 B |
-|                             SerializeTopTagWithJilSerializer |    409.7 ns |   0.1042 ns |   0.0924 ns |    409.7 ns | 0.3104 |    1304 B |
-|                        SerializeTopTagWithSpanJsonSerializer |    356.7 ns |   0.0570 ns |   0.0506 ns |    356.7 ns | 0.0796 |     336 B |
-|                    SerializeTopTagWithSpanJsonUtf8Serializer |    356.6 ns |   0.1235 ns |   0.1095 ns |    356.5 ns | 0.0434 |     184 B |
-|                        SerializeTopTagWithUtf8JsonSerializer |    371.9 ns |   0.0134 ns |   0.0112 ns |    371.9 ns | 0.0415 |     176 B |
-|                       SerializeUserTimelineWithJilSerializer |    736.9 ns |   0.1006 ns |   0.0840 ns |    736.9 ns | 0.5045 |    2120 B |
-|                  SerializeUserTimelineWithSpanJsonSerializer |    610.4 ns |   0.7998 ns |   0.6678 ns |    610.2 ns | 0.1364 |     576 B |
-|              SerializeUserTimelineWithSpanJsonUtf8Serializer |    653.9 ns |   9.1421 ns |   8.5515 ns |    651.7 ns | 0.0715 |     304 B |
-|                  SerializeUserTimelineWithUtf8JsonSerializer |    831.7 ns |   0.1774 ns |   0.1660 ns |    831.7 ns | 0.0715 |     304 B |
-|                               SerializeUserWithJilSerializer |  1,881.2 ns |   1.5591 ns |   1.3020 ns |  1,881.5 ns | 1.0452 |    4400 B |
-|                          SerializeUserWithSpanJsonSerializer |  1,831.7 ns |   6.0816 ns |   5.6887 ns |  1,834.4 ns | 0.4311 |    1816 B |
-|                      SerializeUserWithSpanJsonUtf8Serializer |  1,706.5 ns |  13.7727 ns |  12.8830 ns |  1,699.4 ns | 0.2174 |     920 B |
-|                          SerializeUserWithUtf8JsonSerializer |  2,332.1 ns |   1.6875 ns |   1.4960 ns |  2,332.2 ns | 0.2136 |     904 B |
-|                    SerializeWritePermissionWithJilSerializer |    401.6 ns |   0.0798 ns |   0.0708 ns |    401.6 ns | 0.3161 |    1328 B |
-|               SerializeWritePermissionWithSpanJsonSerializer |    340.6 ns |   0.0620 ns |   0.0484 ns |    340.6 ns | 0.0873 |     368 B |
-|           SerializeWritePermissionWithSpanJsonUtf8Serializer |    350.8 ns |   0.0472 ns |   0.0395 ns |    350.8 ns | 0.0472 |     200 B |
-|               SerializeWritePermissionWithUtf8JsonSerializer |    364.9 ns |   0.0283 ns |   0.0237 ns |    364.9 ns | 0.0472 |     200 B |
+
+Full example:
+```csharp
+using System;
+using SpanJson;
+
+namespace Test
+{
+    public class Program
+    {
+        private static void Main(string[] args)
+        {
+
+            var input = new Input { Text = "Hello World" };
+
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
+
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Input>(serialized);
+        }
+    }
+
+    public class Input
+    {
+        public string Text { get; set; }
+    }
+}
+```
