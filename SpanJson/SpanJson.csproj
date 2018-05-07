@@ -4,11 +4,31 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.0.0-alpha-00068</Version>
+    <Version>0.1.0.0-rc1-1</Version>
+    <Authors>SpanJson Contributors</Authors>
+    <Company />
+    <Description>SpanJson is a JSON serializer for .NET Core 2.1+</Description>
+    <Copyright>SpanJson Contributors</Copyright>
+    <PackageLicenseUrl>https://github.com/Tornhoof/SpanJson/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Tornhoof/SpanJson</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Tornhoof/SpanJson/blob/master/LICENSE</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageTags>JSON .NET Core 2.1</PackageTags>
+    <PackageReleaseNotes>Initial prerelease</PackageReleaseNotes>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1701;1702;1591</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netcoreapp2.1\SpanJson.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netcoreapp2.1\SpanJson.xml</DocumentationFile>
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.0-rtm-26502-02" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.0-rc1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -9,43 +9,98 @@ using SpanJson.Resolvers;
 
 namespace SpanJson
 {
+    /// <summary>
+    /// Main Type for SpanJson Serializer
+    /// </summary>
     public static partial class JsonSerializer
     {
+        /// <summary>
+        /// Non-Generic part
+        /// </summary>
         public static class NonGeneric
         {
+            /// <summary>
+            /// Serialize/Deserialize to/from string et al.
+            /// </summary>
             public static class Utf16
             {
+                /// <summary>
+                /// Serialize to string.
+                /// </summary>
+                /// <param name="input">Input</param>
+                /// <returns>String</returns>
                 public static string Serialize(object input)
                 {
                     return Serialize<ExcludeNullsOriginalCaseResolver<char>>(input);
                 }
 
+                /// <summary>
+                /// Serialize to TextWriter.
+                /// </summary>
+                /// <param name="input">Input</param>
+                /// <param name="writer">TextWriter</param>
+                /// <param name="cancellationToken">CancellationToken</param>
+                /// <returns>Task</returns>
                 public static ValueTask SerializeAsync(object input, TextWriter writer, CancellationToken cancellationToken = default)
                 {
                     return SerializeAsync<ExcludeNullsOriginalCaseResolver<char>>(input, writer, cancellationToken);
                 }
 
+                /// <summary>
+                /// Deserialize from string with specific resolver.
+                /// </summary>
+                /// <typeparam name="TResolver">Resolver</typeparam>
+                /// <param name="input">Input</param>
+                /// <param name="type">Object Type</param>
+                /// <returns>Deserialized object</returns>
                 public static object Deserialize<TResolver>(ReadOnlySpan<char> input, Type type)
                     where TResolver : IJsonFormatterResolver<char, TResolver>, new()
                 {
                     return Inner<char, TResolver>.InnerDeserialize(input, type);
                 }
 
+                /// <summary>
+                /// Deserialize from string.
+                /// </summary>
+                /// <param name="input">Input</param>
+                /// <param name="type">Object Type</param>
+                /// <returns>Deserialized object</returns>
                 public static object Deserialize(ReadOnlySpan<char> input, Type type)
                 {
                     return Deserialize<ExcludeNullsOriginalCaseResolver<char>>(input, type);
                 }
 
+                /// <summary>
+                /// Deserialize from TextReader.
+                /// </summary>
+                /// <param name="reader">TextReader</param>
+                /// <param name="type">Object Type</param>
+                /// <param name="cancellationToken">CancellationToken</param>
+                /// <returns>Task</returns>
                 public static ValueTask<object> DeserializeAsync(TextReader reader, Type type, CancellationToken cancellationToken = default)
                 {
                     return DeserializeAsync<ExcludeNullsOriginalCaseResolver<char>>(reader, type, cancellationToken);
                 }
 
+                /// <summary>
+                /// Serialize to string with specific resolver.
+                /// </summary>
+                /// <typeparam name="TResolver">Resolver</typeparam>
+                /// <param name="input">Input</param>
+                /// <returns>String</returns>
                 public static string Serialize<TResolver>(object input) where TResolver : IJsonFormatterResolver<char, TResolver>, new()
                 {
                     return Inner<char, TResolver>.InnerSerializeToString(input);
                 }
 
+                /// <summary>
+                /// Deserialize from TextReader with specific resolver.
+                /// </summary>
+                /// <typeparam name="TResolver">Resolver</typeparam>
+                /// <param name="reader">TextReader</param>
+                /// <param name="type">Object Type</param>
+                /// <param name="cancellationToken">CancellationToken</param>
+                /// <returns>Task</returns>
                 public static ValueTask<object> DeserializeAsync<TResolver>(TextReader reader, Type type,
                     CancellationToken cancellationToken = default)
                     where TResolver : IJsonFormatterResolver<char, TResolver>, new()
@@ -53,6 +108,14 @@ namespace SpanJson
                     return Inner<char, TResolver>.InnerDeserializeAsync(reader, type, cancellationToken);
                 }
 
+                /// <summary>
+                /// Serialize to TextWriter with specific resolver.
+                /// </summary>
+                /// <typeparam name="TResolver">Resolver</typeparam>
+                /// <param name="input">Input</param>
+                /// <param name="writer">TextWriter</param>
+                /// <param name="cancellationToken">CancellationToken</param>
+                /// <returns>Task</returns>
                 public static ValueTask SerializeAsync<TResolver>(object input, TextWriter writer, CancellationToken cancellationToken = default)
                     where TResolver : IJsonFormatterResolver<char, TResolver>, new()
                 {
@@ -71,34 +134,77 @@ namespace SpanJson
 
             }
 
+            /// <summary>
+            /// Serialize/Deserialize to/from byte array et al.
+            /// </summary>
             public static class Utf8
             {
+                /// <summary>
+                /// Serialize to byte array.
+                /// </summary>
+                /// <param name="input">Input</param>
+                /// <returns>Byte array</returns>
                 public static byte[] Serialize(object input)
                 {
                     return Serialize<ExcludeNullsOriginalCaseResolver<byte>>(input);
                 }
 
+                /// <summary>
+                /// Deserialize from Byte array with specific resolver.
+                /// </summary>
+                /// <typeparam name="TResolver">Resolver</typeparam>
+                /// <param name="input">Input</param>
+                /// <param name="type">Object Type</param>
+                /// <returns>Deserialized object</returns>
                 public static object Deserialize<TResolver>(ReadOnlySpan<byte> input, Type type)
                     where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
                 {
                     return Inner<byte, TResolver>.InnerDeserialize(input, type);
                 }
 
+                /// <summary>
+                /// Deserialize from Byte array.
+                /// </summary>
+                /// <param name="input">Input</param>
+                /// <param name="type">Object Type</param>
+                /// <returns>Deserialized object</returns>
                 public static object Deserialize(ReadOnlySpan<byte> input, Type type)
                 {
                     return Deserialize<ExcludeNullsOriginalCaseResolver<byte>>(input, type);
                 }
 
+                /// <summary>
+                /// Serialize to stream.
+                /// </summary>
+                /// <param name="input">Input</param>
+                /// <param name="stream">Stream</param>
+                /// <param name="cancellationToken">CancellationToken</param>
+                /// <returns>Task</returns>
                 public static ValueTask SerializeAsync(object input, Stream stream, CancellationToken cancellationToken = default)
                 {
                     return SerializeAsync<ExcludeNullsOriginalCaseResolver<byte>>(input, stream, cancellationToken);
                 }
 
+                /// <summary>
+                /// Deserialize from stream.
+                /// </summary>
+                /// <param name="stream">Stream</param>
+                /// <param name="type">Object Type</param>
+                /// <param name="cancellationToken">CancellationToken</param>
+                /// <returns>Task</returns>
                 public static ValueTask<object> DeserializeAsync(Stream stream, Type type, CancellationToken cancellationToken = default)
                 {
                     return DeserializeAsync<ExcludeNullsOriginalCaseResolver<byte>>(stream, type, cancellationToken);
                 }
 
+                /// <summary>
+                /// Deserialize from stream with specific resolver.
+                /// </summary>
+                /// <typeparam name="TResolver">Resolver</typeparam>
+                /// <param name="stream">Stream</param>
+                /// <param name="type">Object Type</param>
+                /// <param name="cancellationToken">CancellationToken</param>
+                /// <returns>Task</returns>
                 public static ValueTask<object> DeserializeAsync<TResolver>(Stream stream, Type type,
                     CancellationToken cancellationToken = default)
                     where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
@@ -106,12 +212,26 @@ namespace SpanJson
                     return Inner<byte, TResolver>.InnerDeserializeAsync(stream, type, cancellationToken);
                 }
 
+                /// <summary>
+                /// Serialize to stream with specific resolver.
+                /// </summary>
+                /// <typeparam name="TResolver">Resolver</typeparam>
+                /// <param name="input">Input</param>
+                /// <param name="stream">Stream</param>
+                /// <param name="cancellationToken">CancellationToken</param>
+                /// <returns>Task</returns>
                 public static ValueTask SerializeAsync<TResolver>(object input, Stream stream, CancellationToken cancellationToken = default)
                     where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
                 {
                     return Inner<byte, TResolver>.InnerSerializeAsync(input, stream, cancellationToken);
                 }
 
+                /// <summary>
+                /// Serialize to byte array with specific resolver.
+                /// </summary>
+                /// <typeparam name="TResolver">Resolver</typeparam>
+                /// <param name="input">Input</param>
+                /// <returns>Byte array</returns>
                 public static byte[] Serialize<TResolver>(object input) where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
                 {
                     return Inner<byte, TResolver>.InnerSerializeToByteArray(input);
@@ -318,7 +438,7 @@ namespace SpanJson
                     var inputParam = Expression.Parameter(typeof(TextReader), "tr");
                     var cancellationTokenParam = Expression.Parameter(typeof(CancellationToken), "cancellationToken");
                     Expression genericCall = Expression.Call(typeof(Utf16), nameof(Utf16.GenericTextReaderObjectWrapper),
-                        new[] { type, typeof(TResolver)}, inputParam, cancellationTokenParam);
+                        new[] {type, typeof(TResolver)}, inputParam, cancellationTokenParam);
                     var lambdaExpression = Expression.Lambda<DeserializeFromTextReaderDelegateAsync>(genericCall, inputParam, cancellationTokenParam);
                     return lambdaExpression.Compile();
                 }
