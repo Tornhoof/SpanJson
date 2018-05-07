@@ -55,7 +55,7 @@ ValueTask<object> result = JsonSerializer.NonGeneric.Utf8.DeserializeAsync(input
 
 To use other resolvers use the appropriate overloads,e.g.:
 
-var serialized = JsonSerializer.NonGeneric.Utf16.Serialize<IncludeNullsOriginalCaseResolver<char>>(includeNull);
+var serialized = JsonSerializer.NonGeneric.Utf16.Serialize<Input, IncludeNullsOriginalCaseResolver<char>>(includeNull);
 
 ```
 
