@@ -6,30 +6,18 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 ## What is supported ##
 - Serialization and Deserialization into/from byte arrays, strings, TextWriter/TextReader and streams
 - Serialization and Deserialization of Arrays, Lists, Complex types of the following Base Class Library types:
-  - ``sbyte``
-  - ``Int16``
-  - ``Int32``
-  - ``Int64``
-  - ``byte`` 
-  - ``UInt16``
-  - ``UInt32``
-  - ``UInt64``
-  - ``Single``
-  - ``Double``
-  - ``decimal``
-  - ``bool`` 
-  - ``char``
-  - ``DateTime``
-  - ``DateTimeOffset`` 
-  - ``TimeSpan``
-  - ``Guid``
-  - ``string``
-  - ``Version``
-  - ``Uri``
+
+``sbyte``, ``Int16``, ``Int32``, ``Int64``, ``byte``,
+``UInt16``, ``UInt32``, ``UInt64``, ``Single``, ``Double``,
+``decimal``, ``bool``, ``char``, ``DateTime``, ``DateTimeOffset``,
+``TimeSpan``, ``Guid``, ``string``, ``Version``, ``Uri``
+
 - Public Properties and Fields are considered for serialization/deserialization
 - DateTime{Offset} is in ISO8601 mode  
 - Dynamics
+- Enums
 - Anonymous types
+- Dictionar<,> with string as key
 - Serialization of Enumerables
 - Support for ``[DataMember(Name="MemberName")]`` to set field name
 - Support for ``[IgnoreDataMember]`` to ignore a specific member
