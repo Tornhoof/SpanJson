@@ -17,7 +17,7 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 - Dynamics
 - Enums
 - Anonymous types
-- Dictionar<,> with string as key
+- Dictionary<,> with string as key
 - Serialization of Enumerables
 - Support for ``[DataMember(Name="MemberName")]`` to set field name
 - Support for ``[IgnoreDataMember]`` to ignore a specific member
