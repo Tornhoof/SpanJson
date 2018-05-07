@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Text;
 using SpanJson.Benchmarks.Fixture;
 using SpanJson.Helpers;
 using Xunit;
@@ -102,40 +103,78 @@ namespace SpanJson.Tests
         }
 
         [Theory]
-        [InlineData("2017-06-12T05:30:45.7680000-07:30", 33, 2017, 6, 12, 5, 30, 45, 7680000, true, 7, 30,
-           DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T05:30:45.7680000", 28, 2017, 6, 12, 5, 30, 45, 7680000, false, 0, 0, DateTimeKind.Utc)]
-        [InlineData("2017-06-12T05:30:45.7680000", 27, 2017, 6, 12, 5, 30, 45, 7680000, false, 0, 0,
-           DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T05:30:45.7680000+08:00", 29, 2017, 6, 12, 5, 30, 45, 7680000, false, 8, 0, DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T05:30:45.7680000", 24, 2017, 6, 12, 5, 30, 45, 7680000, false, 0, 0, DateTimeKind.Utc)]
-        [InlineData("2017-06-12T05:30:45.7680000", 23, 2017, 6, 12, 5, 30, 45, 7680000, false, 0, 0, DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T05:30:45+01:00", 25, 2017, 6, 12, 5, 30, 45, 0, false, 1, 0, DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T05:30:45Z", 20, 2017, 6, 12, 5, 30, 45, 0, false, 0, 0, DateTimeKind.Utc)]
-        [InlineData("2017-06-12T05:30:45", 19, 2017, 6, 12, 5, 30, 45, 0, false, 0, 0, DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T05:30:45.10000+01:00", 30, 2017, 6, 12, 5, 30, 45, 10000, false, 1, 0, DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T05:30:45.10000", 25, 2017, 6, 12, 5, 30, 45, 10000, false, 0, 0, DateTimeKind.Utc)]
-        [InlineData("2017-06-12T05:30:45.10000", 24, 2017, 6, 12, 5, 30, 45, 10000, false, 0, 0, DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T05:30:45.7607389+01:00", 35, 2017, 6, 12, 5, 30, 45, 7607389, false, 1, 0, DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T05:30:45.7607389Z", 30, 2017, 6, 12, 5, 30, 45, 7607389, false, 0, 0, DateTimeKind.Utc)]
-        [InlineData("2017-06-12T05:30:45.7607389", 29, 2017, 6, 12, 5, 30, 45, 7607389, false, 0, 0, DateTimeKind.Unspecified)]
-        public void FormatDateTime(string comparison, int length, int year, int month, int day, int hour, int minute,
-           int second, int fraction, bool negative, int offsethours, int offsetminutes, DateTimeKind kind)
+        [InlineData("2017-06-12T05:30:45.7680000", 2017, 6, 12, 5, 30, 45, 7680000,
+            DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.7680000Z", 2017, 6, 12, 5, 30, 45, 7680000, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45", 2017, 6, 12, 5, 30, 45, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45Z", 2017, 6, 12, 5, 30, 45, 0, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.10000", 2017, 6, 12, 5, 30, 45, 10000, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.10000Z", 2017, 6, 12, 5, 30, 45, 10000, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.7607389", 2017, 6, 12, 5, 30, 45, 7607389, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.7607389Z", 2017, 6, 12, 5, 30, 45, 7607389, DateTimeKind.Utc)]
+        public void FormatDateTime(string comparison, int year, int month, int day, int hour, int minute,
+            int second, int fraction, DateTimeKind kind)
         {
-            var offset = new TimeSpan(0, offsethours, offsetminutes, 0) * (negative ? -1 : 1);
-            DateTime dt = new DateTime(year, month, day, hour, minute, second, kind).AddTicks(fraction);
-            var dto = new DateTimeOffset(dt, offset);
+            var value = new DateTime(year, month, day, hour, minute, second, kind).AddTicks(fraction);
 
             Span<char> charSpan = stackalloc char[35];
-            Assert.True(DateTimeFormatter.TryFormat(dto, charSpan, out var symbolsWritten));
-            //Assert.Equal(length, symbolsWritten);
+            Assert.True(DateTimeFormatter.TryFormat(value, charSpan, out var symbolsWritten));
             Assert.Equal(comparison, charSpan.Slice(0, symbolsWritten).ToString());
 
-            //Span<byte> byteSpan = stackalloc byte[35];
-            //Assert.True(DateTimeFormatter.TryFormat(dto, charSpan, out symbolsWritten));
-            //Assert.Equal(comparison, charSpan.Slice(0, symbolsWritten).ToString());
-            ////Assert.Equal(length, symbolsWritten);
 
+            Span<byte> byteSpan = stackalloc byte[35];
+            Assert.True(DateTimeFormatter.TryFormat(value, byteSpan, out symbolsWritten));
+            Assert.Equal(comparison, Encoding.UTF8.GetString(byteSpan.Slice(0, symbolsWritten)));
+        }
+
+        [Theory]
+        [InlineData("2017-06-12T05:30:45.7680000-07:30", 2017, 6, 12, 5, 30, 45, 7680000, true, 7, 30,
+            DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.7680000Z", 2017, 6, 12, 5, 30, 45, 7680000, false, 0, 0, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.7680000Z", 2017, 6, 12, 5, 30, 45, 7680000, false, 0, 0,
+            DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.7680000+08:00", 2017, 6, 12, 5, 30, 45, 7680000, false, 8, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45+01:00", 2017, 6, 12, 5, 30, 45, 0, false, 1, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45Z", 2017, 6, 12, 5, 30, 45, 0, false, 0, 0, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45Z", 2017, 6, 12, 5, 30, 45, 0, false, 0, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.10000+01:00", 2017, 6, 12, 5, 30, 45, 10000, false, 1, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.10000Z", 2017, 6, 12, 5, 30, 45, 10000, false, 0, 0, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.10000Z", 2017, 6, 12, 5, 30, 45, 10000, false, 0, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.7607389+01:00", 2017, 6, 12, 5, 30, 45, 7607389, false, 1, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.7607389Z", 2017, 6, 12, 5, 30, 45, 7607389, false, 0, 0, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.7607389Z", 2017, 6, 12, 5, 30, 45, 7607389, false, 0, 0, DateTimeKind.Unspecified)]
+        public void FormatDateTimeOffset(string comparison, int year, int month, int day, int hour, int minute,
+            int second, int fraction, bool negative, int offsethours, int offsetminutes, DateTimeKind kind)
+        {
+            var offset = new TimeSpan(0, offsethours, offsetminutes, 0) * (negative ? -1 : 1);
+            var dt = new DateTime(year, month, day, hour, minute, second, kind).AddTicks(fraction);
+            var value = new DateTimeOffset(dt, offset);
+
+            Span<char> charSpan = stackalloc char[35];
+            Assert.True(DateTimeFormatter.TryFormat(value, charSpan, out var symbolsWritten));
+            Assert.Equal(comparison, charSpan.Slice(0, symbolsWritten).ToString());
+
+            Span<byte> byteSpan = stackalloc byte[35];
+            Assert.True(DateTimeFormatter.TryFormat(value, byteSpan, out symbolsWritten));
+            Assert.Equal(comparison, Encoding.UTF8.GetString(byteSpan.Slice(0, symbolsWritten)));
+        }
+
+        [Fact]
+        public void LocalTime()
+        {
+            var value = DateTime.Now;
+            value = value.AddTicks(-(value.Ticks % TimeSpan.TicksPerSecond));
+            var offset = TimeZoneInfo.Local.GetUtcOffset(value);
+            var output = value.ToString("yyyy-MM-ddTHH:mm:ss");
+            var sign = offset.Hours < 0 ? '-' : '+';
+            output = output + sign + $"{offset.Hours:D2}:{offset.Minutes:D2}";
+            Span<char> charSpan = stackalloc char[35];
+            Assert.True(DateTimeFormatter.TryFormat(value, charSpan, out var symbolsWritten));
+            Assert.Equal(output, charSpan.Slice(0, symbolsWritten).ToString());
+
+            Span<byte> byteSpan = stackalloc byte[35];
+            Assert.True(DateTimeFormatter.TryFormat(value, byteSpan, out symbolsWritten));
+            Assert.Equal(output, Encoding.UTF8.GetString(byteSpan.Slice(0, symbolsWritten)));
         }
     }
 }

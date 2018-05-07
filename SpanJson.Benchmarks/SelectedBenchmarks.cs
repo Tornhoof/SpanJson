@@ -9,8 +9,8 @@ using SpanJson.Benchmarks.Serializers;
 namespace SpanJson.Benchmarks
 {
     [MemoryDiagnoser]
-    [ShortRunJob]
-    //[DisassemblyDiagnoser(printIL: true, recursiveDepth: 2)]
+    //[ShortRunJob]
+    [DisassemblyDiagnoser(printIL: true, recursiveDepth: 2)]
     public class SelectedBenchmarks
     {
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
@@ -414,11 +414,11 @@ namespace SpanJson.Benchmarks
         }
 
 
-        //[Benchmark]
-        //public System.Byte[] SerializeDateTimeWithSpanJsonUtf8Serializer()
-        //{
-        //    return SpanJsonUtf8Serializer.Serialize(DateTimeInput);
-        //}
+        [Benchmark]
+        public System.Byte[] SerializeDateTimeWithSpanJsonUtf8Serializer()
+        {
+            return SpanJsonUtf8Serializer.Serialize(DateTimeInput);
+        }
 
         [Benchmark]
         public System.String SerializeDateTimeOffsetWithSpanJsonSerializer()
@@ -427,11 +427,11 @@ namespace SpanJson.Benchmarks
         }
 
 
-        //[Benchmark]
-        //public System.Byte[] SerializeDateTimeOffsetWithSpanJsonUtf8Serializer()
-        //{
-        //    return SpanJsonUtf8Serializer.Serialize(DateTimeOffsetInput);
-        //}
+        [Benchmark]
+        public System.Byte[] SerializeDateTimeOffsetWithSpanJsonUtf8Serializer()
+        {
+            return SpanJsonUtf8Serializer.Serialize(DateTimeOffsetInput);
+        }
 
         //private static readonly Byte[] DateTimeOffsetOutputOfSpanJsonUtf8Serializer = SpanJsonUtf8Serializer.Serialize(DateTimeOffsetInput);
         //[Benchmark]

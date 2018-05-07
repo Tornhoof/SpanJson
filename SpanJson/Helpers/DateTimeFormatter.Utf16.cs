@@ -9,17 +9,30 @@ namespace SpanJson.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryFormat(DateTimeOffset value, Span<char> output, out int charsWritten)
         {
-            return TryFormat(value.DateTime, value.Offset, value.Offset == default ? DateTimeKind.Utc : DateTimeKind.Local, output, out charsWritten);
+            if (output.Length < 33)
+            {
+                charsWritten = default;
+                return false;
+            }
+
+            ref var c = ref MemoryMarshal.GetReference(output);
+            WriteDateAndTime(value.DateTime, ref c, out charsWritten);
+
+            if (value.Offset == TimeSpan.Zero)
+            {
+                Unsafe.Add(ref c, charsWritten++) = 'Z';
+              
+            }
+            else
+            {
+                WriteTimeZone(value.Offset, ref c, ref charsWritten);
+            }
+
+            return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryFormat(DateTime value, Span<char> output, out int charsWritten)
-        {
-            var offset = value.Kind == DateTimeKind.Local ? TimeZoneInfo.Local.GetUtcOffset(value) : TimeSpan.Zero;
-            return TryFormat(value, offset, value.Kind, output, out charsWritten);
-        }
-
-        private static bool TryFormat(DateTime value, TimeSpan offset, DateTimeKind kind, Span<char> output, out int charsWritten)
         {
             if (output.Length < 33)
             {
@@ -27,12 +40,25 @@ namespace SpanJson.Helpers
                 return false;
             }
 
+            ref var c = ref MemoryMarshal.GetReference(output);
+            WriteDateAndTime(value, ref c, out charsWritten);
+
+            if (value.Kind == DateTimeKind.Local)
             {
-                var unused = output[32];
+                WriteTimeZone(TimeZoneInfo.Local.GetUtcOffset(value), ref c, ref charsWritten);
+            }
+            else if (value.Kind == DateTimeKind.Utc)
+            {
+                Unsafe.Add(ref c, charsWritten++) = 'Z';
             }
 
-            ref var c = ref MemoryMarshal.GetReference(output);
-            WriteFourDigits(value.Year, ref c, 0);
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void WriteDateAndTime(DateTime value, ref char c, out int charsWritten)
+        {
+            WriteFourDigits((uint) value.Year, ref c, 0);
             Unsafe.Add(ref c, 4) = '-';
             WriteTwoDigits(value.Month, ref c, 5);
             Unsafe.Add(ref c, 7) = '-';
@@ -44,7 +70,7 @@ namespace SpanJson.Helpers
             Unsafe.Add(ref c, 16) = ':';
             WriteTwoDigits(value.Second, ref c, 17);
             charsWritten = 19;
-            var fraction = (uint)((ulong)value.Ticks % TimeSpan.TicksPerSecond);
+            var fraction = (uint) ((ulong) value.Ticks % TimeSpan.TicksPerSecond);
             if (fraction > 0)
             {
                 Unsafe.Add(ref c, 19) = '.';
@@ -52,25 +78,30 @@ namespace SpanJson.Helpers
                 WriteDigits(fraction, ref c, ref pos);
                 charsWritten = pos;
             }
-
-            if (kind == DateTimeKind.Local)
-            {
-                Unsafe.Add(ref c, charsWritten) = offset < default(TimeSpan) ? '-' : '+';
-                WriteTwoDigits(offset.Hours, ref c, charsWritten + 1);
-                Unsafe.Add(ref c, charsWritten + 3) = ':';
-                WriteTwoDigits(offset.Minutes, ref c, charsWritten + 4);
-                charsWritten += 6;
-            }
-            else if (kind == DateTimeKind.Utc)
-            {
-                Unsafe.Add(ref c, charsWritten++) = 'Z';
-            }
-
-            return true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void WriteFourDigits(int value, ref char c, int startIndex)
+        private static void WriteTimeZone(TimeSpan offset, ref char c, ref int charsWritten)
+        {
+            char sign;
+            if (offset < default(TimeSpan))
+            {
+                sign = '-';
+                offset = TimeSpan.FromTicks(-offset.Ticks);
+            }
+            else
+            {
+                sign = '+';
+            }
+            Unsafe.Add(ref c, charsWritten) = sign;
+            WriteTwoDigits(offset.Hours, ref c, charsWritten + 1);
+            Unsafe.Add(ref c, charsWritten + 3) = ':';
+            WriteTwoDigits(offset.Minutes, ref c, charsWritten + 4);
+            charsWritten += 6;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void WriteFourDigits(uint value, ref char c, int startIndex)
         {
             var temp = '0' + value;
             value /= 10;
