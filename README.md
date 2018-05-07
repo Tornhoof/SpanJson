@@ -25,7 +25,7 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 
 - Different 'Resolvers' to control general behaviour:
   - Exclude Nulls with Camel Case: ``ExcludeNullCamelCaseResolver``
-  - Exclude Nulls with Original Case (default): ``IncludeNullCamelCaseResolver``
+  - Exclude Nulls with Original Case (default): ``ExcludeNullOriginalCaseResolver``
   - Include Nulls with Camel Case: ``IncludeNullCamelCaseResolver``
   - Include Nulls with Original Case: ``IncludeNullOriginalCaseResolver``
  
