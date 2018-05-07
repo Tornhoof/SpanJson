@@ -407,31 +407,31 @@ namespace SpanJson.Benchmarks
 
         //private static readonly System.DateTimeOffset DateTimeOffsetInput = ExpressionTreeFixture.Create<System.DateTimeOffset>();
 
-        //[Benchmark]
-        //public System.String SerializeDateTimeWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Serialize(DateTimeInput);
-        //}
+        [Benchmark]
+        public System.String SerializeDateTimeWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Serialize(DateTimeInput);
+        }
 
 
-        //[Benchmark]
-        //public System.Byte[] SerializeDateTimeWithSpanJsonUtf8Serializer()
-        //{
-        //    return SpanJsonUtf8Serializer.Serialize(DateTimeInput);
-        //}
+        [Benchmark]
+        public System.Byte[] SerializeDateTimeWithSpanJsonUtf8Serializer()
+        {
+            return SpanJsonUtf8Serializer.Serialize(DateTimeInput);
+        }
 
-        //[Benchmark]
-        //public System.String SerializeDateTimeOffsetWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Serialize(DateTimeOffsetInput);
-        //}
+        [Benchmark]
+        public System.String SerializeDateTimeOffsetWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Serialize(DateTimeOffsetInput);
+        }
 
 
-        //[Benchmark]
-        //public System.Byte[] SerializeDateTimeOffsetWithSpanJsonUtf8Serializer()
-        //{
-        //    return SpanJsonUtf8Serializer.Serialize(DateTimeOffsetInput);
-        //}
+        [Benchmark]
+        public System.Byte[] SerializeDateTimeOffsetWithSpanJsonUtf8Serializer()
+        {
+            return SpanJsonUtf8Serializer.Serialize(DateTimeOffsetInput);
+        }
 
         //private static readonly Byte[] DateTimeOffsetOutputOfSpanJsonUtf8Serializer = SpanJsonUtf8Serializer.Serialize(DateTimeOffsetInput);
         //[Benchmark]

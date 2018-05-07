@@ -334,7 +334,7 @@ namespace SpanJson
             }
 
             WriteUtf16DoubleQuote();
-            value.TryFormat(_chars.Slice(pos), out var written, "O", CultureInfo.InvariantCulture);
+            DateTimeFormatter.TryFormat(value, _chars.Slice(pos), out var written);
             pos += written;
             WriteUtf16DoubleQuote();
         }
@@ -349,7 +349,7 @@ namespace SpanJson
             }
 
             WriteUtf16DoubleQuote();
-            value.TryFormat(_chars.Slice(pos), out var written, "O", CultureInfo.InvariantCulture);
+            DateTimeFormatter.TryFormat(value, _chars.Slice(pos), out var written);
             pos += written;
             WriteUtf16DoubleQuote();
         }

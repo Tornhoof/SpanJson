@@ -219,7 +219,7 @@ namespace SpanJson
             }
 
             WriteUtf8DoubleQuote();
-            Utf8Formatter.TryFormat(value, _bytes.Slice(pos), out var bytesWritten, 'O');
+            DateTimeFormatter.TryFormat(value, _bytes.Slice(pos), out var bytesWritten);
             pos += bytesWritten;
             WriteUtf8DoubleQuote();
         }
@@ -234,7 +234,7 @@ namespace SpanJson
             }
 
             WriteUtf8DoubleQuote();
-            Utf8Formatter.TryFormat(value, _bytes.Slice(pos), out var bytesWritten, 'O');
+            DateTimeFormatter.TryFormat(value, _bytes.Slice(pos), out var bytesWritten);
             pos += bytesWritten;
             WriteUtf8DoubleQuote();
         }
