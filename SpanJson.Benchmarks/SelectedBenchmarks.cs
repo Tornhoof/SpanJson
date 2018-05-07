@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Text;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Jobs;
@@ -35,7 +36,7 @@ namespace SpanJson.Benchmarks
         //    Encoding.UTF8.GetBytes(AnswerSerializedString);
 
 
-        //private static readonly JilSerializer JilSerializer = new JilSerializer();
+//        private static readonly JilSerializer JilSerializer = new JilSerializer();
 
         //private static readonly StringBuilder StringBuilder = new StringBuilder();
 
@@ -403,35 +404,35 @@ namespace SpanJson.Benchmarks
         //    return SpanJsonUtf8Serializer.Serialize(SingleInput);
         //}
 
-        private static readonly System.DateTime DateTimeInput = ExpressionTreeFixture.Create<System.DateTime>();
+        //private static readonly System.DateTime DateTimeInput = ExpressionTreeFixture.Create<System.DateTime>();
 
-        private static readonly System.DateTimeOffset DateTimeOffsetInput = ExpressionTreeFixture.Create<System.DateTimeOffset>();
+        //private static readonly System.DateTimeOffset DateTimeOffsetInput = ExpressionTreeFixture.Create<System.DateTimeOffset>();
 
-        [Benchmark]
-        public System.String SerializeDateTimeWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(DateTimeInput);
-        }
-
-
-        [Benchmark]
-        public System.Byte[] SerializeDateTimeWithSpanJsonUtf8Serializer()
-        {
-            return SpanJsonUtf8Serializer.Serialize(DateTimeInput);
-        }
-
-        [Benchmark]
-        public System.String SerializeDateTimeOffsetWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(DateTimeOffsetInput);
-        }
+        //[Benchmark]
+        //public System.String SerializeDateTimeWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(DateTimeInput);
+        //}
 
 
-        [Benchmark]
-        public System.Byte[] SerializeDateTimeOffsetWithSpanJsonUtf8Serializer()
-        {
-            return SpanJsonUtf8Serializer.Serialize(DateTimeOffsetInput);
-        }
+        //[Benchmark]
+        //public System.Byte[] SerializeDateTimeWithSpanJsonUtf8Serializer()
+        //{
+        //    return SpanJsonUtf8Serializer.Serialize(DateTimeInput);
+        //}
+
+        //[Benchmark]
+        //public System.String SerializeDateTimeOffsetWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(DateTimeOffsetInput);
+        //}
+
+
+        //[Benchmark]
+        //public System.Byte[] SerializeDateTimeOffsetWithSpanJsonUtf8Serializer()
+        //{
+        //    return SpanJsonUtf8Serializer.Serialize(DateTimeOffsetInput);
+        //}
 
         //private static readonly Byte[] DateTimeOffsetOutputOfSpanJsonUtf8Serializer = SpanJsonUtf8Serializer.Serialize(DateTimeOffsetInput);
         //[Benchmark]
@@ -440,25 +441,74 @@ namespace SpanJson.Benchmarks
         //    return SpanJsonUtf8Serializer.Deserialize<System.DateTimeOffset>(DateTimeOffsetOutputOfSpanJsonUtf8Serializer);
         //}
 
-        //private static readonly Byte[] DateTimeOffsetOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(DateTimeOffsetInput);
+        //private static readonly string DateTimeOffsetOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(DateTimeOffsetInput);
         //[Benchmark]
-        //public System.DateTimeOffset DeserializeDateTimeOffsetWithUtf8JsonSerializer()
+        //public System.DateTimeOffset DeserializeDateTimeOffsetWithSpanJsonSerializer()
         //{
-        //    return Utf8JsonSerializer.Deserialize<System.DateTimeOffset>(DateTimeOffsetOutputOfUtf8JsonSerializer);
+        //    return SpanJsonSerializer.Deserialize<System.DateTimeOffset>(DateTimeOffsetOutputOfSpanJsonSerializer);
         //}
 
-        //private static readonly String DateTimeOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(DateTimeInput);
+        //private static readonly byte[] DateTimeOutputOfSpanJsonUtf8Serializer = SpanJsonUtf8Serializer.Serialize(DateTimeInput);
+        //[Benchmark]
+        //public System.DateTimeOffset DeserializeDateTimetWithSpanUtf8JsonSerializer()
+        //{
+        //    return SpanJsonUtf8Serializer.Deserialize<System.DateTime>(DateTimeOutputOfSpanJsonUtf8Serializer);
+        //}
+
+        //private static readonly string DateTimeOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(DateTimeInput);
         //[Benchmark]
         //public System.DateTime DeserializeDateTimeWithSpanJsonSerializer()
         //{
         //    return SpanJsonSerializer.Deserialize<System.DateTime>(DateTimeOutputOfSpanJsonSerializer);
         //}
 
-        //private static readonly Byte[] DateTimeOutputOfSpanJsonUtf8Serializer = SpanJsonUtf8Serializer.Serialize(DateTimeInput);
+        //private static readonly string Int64Value = ExpressionTreeFixture.Create<long>().ToString();
+        //private static readonly byte[] Int64ValueBytes = Encoding.UTF8.GetBytes(Int64Value);
+
         //[Benchmark]
-        //public System.DateTime DeserializeDateTimeWithSpanJsonUtf8Serializer()
+        //public long DeserializeInt64Utf8()
         //{
-        //    return SpanJsonUtf8Serializer.Deserialize<System.DateTime>(DateTimeOutputOfSpanJsonUtf8Serializer);
+        //    var reader = new JsonReader<byte>(Int64ValueBytes);
+        //    return reader.ReadUtf8Int64();
         //}
+
+        //[Benchmark]
+        //public long DeserializeInt64Utf16()
+        //{
+        //    var reader = new JsonReader<char>(Int64Value);
+        //    return reader.ReadUtf16Int64();
+        //}
+
+        //private static readonly string UInt64Value = ExpressionTreeFixture.Create<ulong>().ToString();
+        //private static readonly byte[] UInt64ValueBytes = Encoding.UTF8.GetBytes(UInt64Value);
+
+        //[Benchmark]
+        //public ulong DeserializeUInt64Utf8()
+        //{
+        //    var reader = new JsonReader<byte>(UInt64ValueBytes);
+        //    return reader.ReadUtf8UInt64();
+        //}
+
+        //[Benchmark]
+        //public ulong DeserializeUInt64Utf16()
+        //{
+        //    var reader = new JsonReader<char>(UInt64Value);
+        //    return reader.ReadUtf16UInt64();
+        //}
+
+        private static readonly byte[] inputBytes = new byte[] {1, 2, 3, 4};
+        private static string inputString = "Hell";
+
+        [Benchmark]
+        public Span<byte> CodeQualityBytes()
+        {
+            return inputBytes.AsSpan();
+        }
+
+        [Benchmark]
+        public ReadOnlySpan<char> CodeQualityString()
+        {
+            return inputString.AsSpan();
+        }
     }
 }

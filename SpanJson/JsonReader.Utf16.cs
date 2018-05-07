@@ -81,71 +81,64 @@ namespace SpanJson
         private long ReadUtf16NumberInt64()
         {
             SkipWhitespaceUtf16();
-            ref var pos = ref _pos;
-            if (pos >= _length)
+            if (_pos >= _length)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
                 return default;
             }
 
-            var firstChar = _chars[pos];
+            ref var c = ref MemoryMarshal.GetReference(_chars);
             var neg = false;
-            if (firstChar == '-')
+            if (Unsafe.Add(ref c, _pos) == '-')
             {
-                pos++;
+                _pos++;
                 neg = true;
+
+                if (_pos >= _length) // we still need one digit
+                {
+                    ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
+                    return default;
+                }
             }
 
-            if (pos >= _length)
-            {
-                ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
-                return default;
-            }
-
-            var result = _chars[pos++] - 48L;
-            uint value;
-            while (pos < _length && (value = _chars[pos] - 48U) <= 9)
-            {
-                result = unchecked(result * 10 + value);
-                pos++;
-            }
-
+            var result = (long) ReadUtf16NumberDigits(ref c, ref _pos);
             return neg ? unchecked(-result) : result;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ulong ReadUtf16NumberUInt64()
+        private ulong ReadUtf16NumberDigits(ref char c, ref int pos)
         {
-            SkipWhitespaceUtf16();
-            ref var pos = ref _pos;
-            if (pos >= _length)
-            {
-                ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
-                return default;
-            }
-
-            var firstChar = _chars[pos];
-            if (firstChar == '-')
-            {
-                ThrowJsonParserException(JsonParserException.ParserError.InvalidNumberFormat);
-                return default;
-            }
-
-            var result = _chars[pos++] - 48UL;
-            if (result > 9)
-            {
-                ThrowJsonParserException(JsonParserException.ParserError.InvalidNumberFormat);
-                return default;
-            }
-
             uint value;
-            while (pos < _length && (value = _chars[pos] - 48U) <= 9)
+            var result = Unsafe.Add(ref c, pos) - 48UL;
+            if (result > 9) // this includes '-'
+            {
+                ThrowJsonParserException(JsonParserException.ParserError.InvalidNumberFormat);
+                return default;
+            }
+
+            pos++;
+            while (pos < _length && (value = Unsafe.Add(ref c, pos) - 48U) <= 9)
             {
                 result = checked(result * 10 + value);
                 pos++;
             }
 
             return result;
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ulong ReadUtf16NumberUInt64()
+        {
+            SkipWhitespaceUtf16();
+            if (_pos >= _length)
+            {
+                ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
+                return default;
+            }
+
+            ref var c = ref MemoryMarshal.GetReference(_chars);
+            return ReadUtf16NumberDigits(ref c, ref _pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -543,7 +536,7 @@ namespace SpanJson
             ref var pos = ref _pos;
             while (pos < _length)
             {
-                ref readonly var c = ref _chars[pos];
+                var c = _chars[pos];
                 switch (c)
                 {
                     case ' ':
@@ -802,9 +795,10 @@ namespace SpanJson
         private bool TryFindEndOfUtf16Number(int pos, out int charsConsumed)
         {
             var i = pos;
-            for (; i < _length; i++)
+            var length = _chars.Length;
+            for (; i < length; i++)
             {
-                ref readonly var c = ref _chars[i];
+                var c = _chars[i];
                 if (!IsNumericUtf16Symbol(c))
                 {
                     break;
@@ -825,14 +819,14 @@ namespace SpanJson
         private bool TryFindEndOfUtf16String(int pos, out int charsConsumed, out int escapedCharsSize)
         {
             escapedCharsSize = 0;
-            for (var i = pos; i < _length; i++)
+            for (var i = pos; i < _chars.Length; i++)
             {
-                ref readonly var c = ref _chars[i];
+                var c = _chars[i];
                 if (c == JsonUtf16Constant.ReverseSolidus)
                 {
                     escapedCharsSize++;
                     i++;
-                    ref readonly var nextChar = ref _chars[i]; // check what type of escaped char it is
+                    var nextChar = _chars[i]; // check what type of escaped char it is
                     if (nextChar == 'u' || nextChar == 'U')
                     {
                         escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
@@ -925,12 +919,12 @@ namespace SpanJson
         {
             SkipWhitespaceUtf16();
             ref var pos = ref _pos;
-            if (pos >= _length)
+            if (pos >= _chars.Length)
             {
                 return JsonToken.None;
             }
 
-            ref readonly var c = ref _chars[pos];
+            var c = _chars[pos];
             switch (c)
             {
                 case JsonUtf16Constant.BeginObject:

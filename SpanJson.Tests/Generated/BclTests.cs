@@ -12,7 +12,7 @@ namespace SpanJson.Tests.Generated
     {
     }
 
-    public class SByteTests : StructTestBase<SByte>
+    public partial class SByteTests : StructTestBase<SByte>
     {
     }
 

@@ -84,35 +84,27 @@ namespace SpanJson
         private long ReadUtf8NumberInt64()
         {
             SkipWhitespaceUtf8();
-            ref var pos = ref _pos;
-            if (pos >= _length)
+            if (_pos >= _length)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
                 return default;
             }
 
-            var firstChar = _bytes[pos];
+            ref var b = ref MemoryMarshal.GetReference(_bytes);
             var neg = false;
-            if (firstChar == (byte) '-')
+            if (Unsafe.Add(ref b, _pos) == (byte) '-')
             {
-                pos++;
+                _pos++;
                 neg = true;
+
+                if (_pos >= _length) // we still need one digit
+                {
+                    ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
+                    return default;
+                }
             }
 
-            if (pos >= _length)
-            {
-                ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
-                return default;
-            }
-
-            var result = _bytes[pos++] - 48L;
-            uint value;
-            while (pos < _length && (value = _bytes[pos] - 48U) <= 9)
-            {
-                result = unchecked(result * 10 + value);
-                pos++;
-            }
-
+            var result = (long) ReadUtf8NumberDigits(ref b, ref _pos);
             return neg ? unchecked(-result) : result;
         }
 
@@ -120,29 +112,28 @@ namespace SpanJson
         private ulong ReadUtf8NumberUInt64()
         {
             SkipWhitespaceUtf8();
-            ref var pos = ref _pos;
-            if (pos >= _length)
+            if (_pos >= _length)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
                 return default;
             }
+            ref var b = ref MemoryMarshal.GetReference(_bytes);
+            return ReadUtf8NumberDigits(ref b, ref _pos);
+        }
 
-            var firstChar = _bytes[pos];
-            if (firstChar == (byte) '-')
-            {
-                ThrowJsonParserException(JsonParserException.ParserError.InvalidNumberFormat);
-                return default;
-            }
-
-            var result = _bytes[pos++] - 48UL;
-            if (result > 9)
-            {
-                ThrowJsonParserException(JsonParserException.ParserError.InvalidNumberFormat);
-                return default;
-            }
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private ulong ReadUtf8NumberDigits(ref byte b, ref int pos)
+        {
             uint value;
-            while (pos < _length && (value = _bytes[pos] - 48U) <= 9)
+            var result = Unsafe.Add(ref b, pos) - 48UL;
+            if (result > 9) // this includes '-'
+            {
+                ThrowJsonParserException(JsonParserException.ParserError.InvalidNumberFormat);
+                return default;
+            }
+
+            pos++;
+            while (pos < _length && (value = Unsafe.Add(ref b, pos) - 48U) <= 9)
             {
                 result = checked(result * 10 + value);
                 pos++;
@@ -830,7 +821,8 @@ namespace SpanJson
         private bool TryFindEndOfUtf8Number(int pos, out int bytesConsumed)
         {
             var i = pos;
-            for (; i < _length; i++)
+            var length = _bytes.Length;
+            for (; i < length; i++)
             {
                 ref readonly var b = ref _bytes[i];
                 if (!IsNumericUtf8Symbol(b))
@@ -853,14 +845,14 @@ namespace SpanJson
         private bool TryFindEndOfUtf8String(int pos, out int bytesConsumed, out int escapedCharsSize)
         {
             escapedCharsSize = 0;
-            for (var i = pos; i < _length; i++)
+            for (var i = pos; i < _bytes.Length; i++)
             {
                 ref readonly var b = ref _bytes[i];
                 if (b == JsonUtf8Constant.ReverseSolidus)
                 {
                     escapedCharsSize++;
                     i++;
-                    ref readonly var nextByte = ref _bytes[i]; // check what type of escaped char it is
+                    var nextByte = _bytes[i]; // check what type of escaped char it is
                     if (nextByte == (byte) 'u' || nextByte == (byte) 'U')
                     {
                         escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
@@ -953,7 +945,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf8();
             ref var pos = ref _pos;
-            if (pos >= _length)
+            if (pos >= _bytes.Length)
             {
                 return JsonToken.None;
             }
