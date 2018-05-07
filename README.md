@@ -27,7 +27,7 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
   - ``Version``
   - ``Uri``
 - Public Properties and Fields are considered for serialization/deserialization
-- DateTime/Offset is in ISO8601 mode  
+- DateTime{Offset} is in ISO8601 mode  
 - Dynamics
 - Anonymous types
 - Serialization of Enumerables
@@ -43,26 +43,33 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
  
  
 ## How to use it ##
-``var result = JsonSerializer.Generic.Utf16.Serialize(input);``
-``var result = JsonSerializer.NonGeneric.Utf16.Serialize(input);``
-``var result = JsonSerializer.Generic.Utf16.Deserialize<Input>(input);``
-``var result = JsonSerializer.NonGeneric.Utf16.Deserialize(input, typeof(Input));``
-``var result = JsonSerializer.Generic.Utf8.Serialize(input);``
-``var result = JsonSerializer.NonGeneric.Utf8.Serialize(input);``
-``var result = JsonSerializer.Generic.Utf8.Deserialize<Input>(input);``
-``var result = JsonSerializer.NonGeneric.Utf8.Deserialize(input, typeof(Input));``
+```csharp
+Synchronous API:
+var result = JsonSerializer.Generic.Utf16.Serialize(input);
+var result = JsonSerializer.NonGeneric.Utf16.Serialize(input);
+var result = JsonSerializer.Generic.Utf16.Deserialize<Input>(input);
+var result = JsonSerializer.NonGeneric.Utf16.Deserialize(input, typeof(Input));
+var result = JsonSerializer.Generic.Utf8.Serialize(input);
+var result = JsonSerializer.NonGeneric.Utf8.Serialize(input);
+var result = JsonSerializer.Generic.Utf8.Deserialize<Input>(input);
+var result = JsonSerializer.NonGeneric.Utf8.Deserialize(input, typeof(Input));
 
-Async Examples:
+Asynchronous API:
 
-``ValueTask result = JsonSerializer.Generic.Utf16.SerializeAsync(input, textWriter, cancellationToken);``
-``ValueTask result = JsonSerializer.NonGeneric.Utf16.SerializeAsync(input, textWriter, cancellationToken);``
-``ValueTask<Input> result = JsonSerializer.Generic.Utf16.DeserializeAsync<Input>(textReader,cancellationToken);``
-``ValueTask<object> result = JsonSerializer.NonGeneric.Utf16.DeserializeAsync(textReader,typeof(Input),cancellationToken);``
-``ValueTask result = JsonSerializer.Generic.Utf8.SerializeAsync(input, stream, cancellationToken);``
-``ValueTask result = JsonSerializer.NonGeneric.Utf8.SerializeAsync(input, stream, cancellationToken);``
-``ValueTask<Input> result = JsonSerializer.Generic.Utf8.DeserializeAsync<Input>(input, stream, cancellationToken);``
-``ValueTask<object> result = JsonSerializer.NonGeneric.Utf8.DeserializeAsync(input, stream, typeof(Input) cancellationToken);``
+ValueTask result = JsonSerializer.Generic.Utf16.SerializeAsync(input, textWriter, cancellationToken);
+ValueTask result = JsonSerializer.NonGeneric.Utf16.SerializeAsync(input, textWriter, cancellationToken);
+ValueTask<Input> result = JsonSerializer.Generic.Utf16.DeserializeAsync<Input>(textReader,cancellationToken);
+ValueTask<object> result = JsonSerializer.NonGeneric.Utf16.DeserializeAsync(textReader,typeof(Input),cancellationToken);
+ValueTask result = JsonSerializer.Generic.Utf8.SerializeAsync(input, stream, cancellationToken);
+ValueTask result = JsonSerializer.NonGeneric.Utf8.SerializeAsync(input, stream, cancellationToken);
+ValueTask<Input> result = JsonSerializer.Generic.Utf8.DeserializeAsync<Input>(input, stream, cancellationToken);
+ValueTask<object> result = JsonSerializer.NonGeneric.Utf8.DeserializeAsync(input, stream, typeof(Input) cancellationToken);
 
+To use other resolvers use the appropriate overloads,e.g.:
+
+var serialized = JsonSerializer.NonGeneric.Utf16.Serialize<IncludeNullsOriginalCaseResolver<char>>(includeNull);
+
+```
 
 Full example:
 ```csharp
