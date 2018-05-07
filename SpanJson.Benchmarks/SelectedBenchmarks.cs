@@ -13,11 +13,11 @@ namespace SpanJson.Benchmarks
     [DisassemblyDiagnoser(printIL: true, recursiveDepth: 2)]
     public class SelectedBenchmarks
     {
-        //private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
+        private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
         //private static readonly AccessToken AccessToken = ExpressionTreeFixture.Create<AccessToken>();
 
-        //private static readonly SpanJsonSerializer SpanJsonSerializer = new SpanJsonSerializer();
-        //private static readonly SpanJsonUtf8Serializer SpanJsonUtf8Serializer = new SpanJsonUtf8Serializer();
+        private static readonly SpanJsonSerializer SpanJsonSerializer = new SpanJsonSerializer();
+        private static readonly SpanJsonUtf8Serializer SpanJsonUtf8Serializer = new SpanJsonUtf8Serializer();
 
         //private static readonly string AccessTokenSerializedString =
         //    SpanJsonSerializer.Serialize(AccessToken);
@@ -403,9 +403,9 @@ namespace SpanJson.Benchmarks
         //    return SpanJsonUtf8Serializer.Serialize(SingleInput);
         //}
 
-        //private static readonly System.DateTime DateTimeInput = ExpressionTreeFixture.Create<System.DateTime>();
+        private static readonly System.DateTime DateTimeInput = ExpressionTreeFixture.Create<System.DateTime>();
 
-        //private static readonly System.DateTimeOffset DateTimeOffsetInput = ExpressionTreeFixture.Create<System.DateTimeOffset>();
+        private static readonly System.DateTimeOffset DateTimeOffsetInput = ExpressionTreeFixture.Create<System.DateTimeOffset>();
 
         [Benchmark]
         public System.String SerializeDateTimeWithSpanJsonSerializer()
@@ -460,22 +460,5 @@ namespace SpanJson.Benchmarks
         //{
         //    return SpanJsonUtf8Serializer.Deserialize<System.DateTime>(DateTimeOutputOfSpanJsonUtf8Serializer);
         //}
-
-        private static readonly string text = "\"Hello World\\tand\\nUniverse\"";
-        private static readonly byte[] encodedText = Encoding.UTF8.GetBytes(text);
-
-        [Benchmark]
-        public string ReadStringUtf8()
-        {
-            var reader = new JsonReader<byte>(encodedText);
-            return reader.ReadUtf8String();
-        }
-
-        [Benchmark]
-        public string ReadStringUtf16()
-        {
-            var reader = new JsonReader<char>(text);
-            return reader.ReadUtf16String();
-        }
     }
 }
