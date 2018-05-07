@@ -14,7 +14,6 @@ Performance Issues:
 Todo:
 
 * Performance
-* Replace the DateFormatter with a version which only outputs the necessary data and not always e.g. 7 fraction digits
 
 ``` ini
 
