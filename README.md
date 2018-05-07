@@ -25,16 +25,22 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
   - ``Guid``
   - ``string``
   - ``Version``
-  - ``Uri`` 
+  - ``Uri``
+- Public Properties and Fields are considered for serialization/deserialization
 - DateTime/Offset is in ISO8601 mode  
 - Dynamics
 - Anonymous types
 - Serialization of Enumerables
-- Different behaviours:
-  - Exclude Nulls with Camel Case
-  - Exclude Nulls with Original Case (default)
-  - Include Nulls with Camel Case
-  - Include Nulls with Original Case
+- Support for ``[DataMember(Name="MemberName")]`` to set field name
+- Support for ``[IgnoreDataMember]`` to ignore a specific member
+- Support for ``ShouldSerializeXXX`` pattern to decide at runtime if a member should be serialized
+
+- Different 'Resolvers' to control general behaviour:
+  - Exclude Nulls with Camel Case: ``ExcludeNullCamelCaseResolver``
+  - Exclude Nulls with Original Case (default): ``IncludeNullCamelCaseResolver``
+  - Include Nulls with Camel Case: ``IncludeNullCamelCaseResolver``
+  - Include Nulls with Original Case: ``IncludeNullOriginalCaseResolver``
+ 
  
 ## How to use it ##
 ``var result = JsonSerializer.Generic.Utf16.Serialize(input);``
