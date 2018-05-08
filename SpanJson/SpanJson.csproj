@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.0.0-rc1-1</Version>
+    <Version>0.1.0.0-rc1-2</Version>
     <Authors>SpanJson Contributors</Authors>
     <Company />
     <Description>SpanJson is a JSON serializer for .NET Core 2.1+</Description>

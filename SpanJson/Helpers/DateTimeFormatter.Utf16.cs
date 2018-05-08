@@ -74,9 +74,8 @@ namespace SpanJson.Helpers
             if (fraction > 0)
             {
                 Unsafe.Add(ref c, 19) = '.';
-                var pos = 20;
-                WriteDigits(fraction, ref c, ref pos);
-                charsWritten = pos;
+                WriteDigits(fraction, ref c, 20);
+                charsWritten = 27;
             }
         }
 
@@ -128,18 +127,14 @@ namespace SpanJson.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void WriteDigits(uint value, ref char c, ref int pos)
+        private static void WriteDigits(uint value, ref char c, int pos)
         {
-            var digits = FormatterUtils.CountDigits(value);
-
-            for (var i = digits; i > 0; i--)
+            for (int i = 7; i > 0; i--)
             {
-                var temp = '0' + value;
+                ulong temp = '0' + value;
                 value /= 10;
-                Unsafe.Add(ref c, pos + i - 1) = (char) (temp - value * 10);
+                Unsafe.Add(ref c, pos + i - 1) = (char) (temp - (value * 10));
             }
-
-            pos += digits;
         }
     }
 }
