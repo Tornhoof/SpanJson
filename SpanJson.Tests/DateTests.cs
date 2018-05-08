@@ -108,10 +108,12 @@ namespace SpanJson.Tests
         [InlineData("2017-06-12T05:30:45.7680000Z", 2017, 6, 12, 5, 30, 45, 7680000, DateTimeKind.Utc)]
         [InlineData("2017-06-12T05:30:45", 2017, 6, 12, 5, 30, 45, 0, DateTimeKind.Unspecified)]
         [InlineData("2017-06-12T05:30:45Z", 2017, 6, 12, 5, 30, 45, 0, DateTimeKind.Utc)]
-        [InlineData("2017-06-12T05:30:45.10000", 2017, 6, 12, 5, 30, 45, 10000, DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T05:30:45.10000Z", 2017, 6, 12, 5, 30, 45, 10000, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.0010000", 2017, 6, 12, 5, 30, 45, 10000, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.0010000Z", 2017, 6, 12, 5, 30, 45, 10000, DateTimeKind.Utc)]
         [InlineData("2017-06-12T05:30:45.7607389", 2017, 6, 12, 5, 30, 45, 7607389, DateTimeKind.Unspecified)]
         [InlineData("2017-06-12T05:30:45.7607389Z", 2017, 6, 12, 5, 30, 45, 7607389, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.0000001Z", 2017, 6, 12, 5, 30, 45, 0000001,  DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.0000001", 2017, 6, 12, 5, 30, 45, 0000001,  DateTimeKind.Unspecified)]
         public void FormatDateTime(string comparison, int year, int month, int day, int hour, int minute,
             int second, int fraction, DateTimeKind kind)
         {
@@ -137,12 +139,14 @@ namespace SpanJson.Tests
         [InlineData("2017-06-12T05:30:45+01:00", 2017, 6, 12, 5, 30, 45, 0, false, 1, 0, DateTimeKind.Unspecified)]
         [InlineData("2017-06-12T05:30:45Z", 2017, 6, 12, 5, 30, 45, 0, false, 0, 0, DateTimeKind.Utc)]
         [InlineData("2017-06-12T05:30:45Z", 2017, 6, 12, 5, 30, 45, 0, false, 0, 0, DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T05:30:45.10000+01:00", 2017, 6, 12, 5, 30, 45, 10000, false, 1, 0, DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T05:30:45.10000Z", 2017, 6, 12, 5, 30, 45, 10000, false, 0, 0, DateTimeKind.Utc)]
-        [InlineData("2017-06-12T05:30:45.10000Z", 2017, 6, 12, 5, 30, 45, 10000, false, 0, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.0010000+01:00", 2017, 6, 12, 5, 30, 45, 10000, false, 1, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.0010000Z", 2017, 6, 12, 5, 30, 45, 10000, false, 0, 0, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.0010000Z", 2017, 6, 12, 5, 30, 45, 10000, false, 0, 0, DateTimeKind.Unspecified)]
         [InlineData("2017-06-12T05:30:45.7607389+01:00", 2017, 6, 12, 5, 30, 45, 7607389, false, 1, 0, DateTimeKind.Unspecified)]
         [InlineData("2017-06-12T05:30:45.7607389Z", 2017, 6, 12, 5, 30, 45, 7607389, false, 0, 0, DateTimeKind.Utc)]
         [InlineData("2017-06-12T05:30:45.7607389Z", 2017, 6, 12, 5, 30, 45, 7607389, false, 0, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.0000001Z", 2017, 6, 12, 5, 30, 45, 0000001, false, 0, 0, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.0000001Z", 2017, 6, 12, 5, 30, 45, 0000001, false, 0, 0, DateTimeKind.Unspecified)]
         public void FormatDateTimeOffset(string comparison, int year, int month, int day, int hour, int minute,
             int second, int fraction, bool negative, int offsethours, int offsetminutes, DateTimeKind kind)
         {
