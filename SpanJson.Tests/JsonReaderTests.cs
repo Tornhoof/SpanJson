@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Xunit;
 
@@ -64,6 +65,11 @@ namespace SpanJson.Tests
             for (var i = 0; i <= 0xFFFF; i++)
             {
                 var c = (char) i;
+                if (char.IsHighSurrogate(c) || char.IsLowSurrogate(c))
+                {
+                    continue;
+                }
+
                 switch (c)
                 {
                     case '"':
@@ -100,7 +106,7 @@ namespace SpanJson.Tests
         }
 
         [Fact]
-        public void ReadChars()
+        public void ReadCharsUtf16()
         {
             var chars = CreateChars();
             foreach (var keyValuePair in chars)
@@ -109,6 +115,48 @@ namespace SpanJson.Tests
                 var c = reader.ReadUtf16Char();
                 Assert.Equal(keyValuePair.Value, c);
             }
+        }
+
+
+        [Fact]
+        public void ReadCharsUtf8()
+        {
+            var chars = CreateChars();
+            foreach (var keyValuePair in chars)
+            {
+                var reader = new JsonReader<byte>(Encoding.UTF8.GetBytes(keyValuePair.Key));
+                var c = reader.ReadUtf8Char();
+                Assert.Equal(keyValuePair.Value, c);
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(CreateSurrogatePairs))]
+        public void ReadSurrogatePairUtf16(int codePoint, string input)
+        {
+            var reader = new JsonReader<char>(input);
+            var s = reader.ReadUtf16String();
+            var decoded = char.ConvertToUtf32(s, 0);
+            Assert.Equal(codePoint, decoded);
+        }
+
+        public static IEnumerable<object[]> CreateSurrogatePairs()
+        {
+            for (var i = 0x1F601; i < 0x1F64F; i++)
+            {
+                yield return new object[]
+                    {i, "\"" + string.Concat(Char.ConvertFromUtf32(i).ToCharArray().Select(a => string.Format(@"\u{0:x4}", (int) a))) + "\""};
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(CreateSurrogatePairs))]
+        public void ReadSurrogatePairUtf8(int codePoint, string input)
+        {
+            var reader = new JsonReader<byte>(Encoding.UTF8.GetBytes(input));
+            var s = reader.ReadUtf8String();
+            var decoded = char.ConvertToUtf32(s, 0);
+            Assert.Equal(codePoint, decoded);
         }
     }
 }

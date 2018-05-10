@@ -43,34 +43,34 @@ namespace SpanJson.Benchmarks
 
         //private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
 
-        //private static readonly MobileBadgeAward MobileBadgeAwardInput = ExpressionTreeFixture.Create<MobileBadgeAward>();
+        private static readonly MobileBadgeAward MobileBadgeAwardInput = ExpressionTreeFixture.Create<MobileBadgeAward>();
 
-        //private static readonly string MobileBadgeAwardSerializedString = JsonSerializer.Generic.Utf16.Serialize(MobileBadgeAwardInput);
-        //private static readonly byte[] MobileBadgeAwardSerializedByteArray = JsonSerializer.Generic.Utf8.Serialize(MobileBadgeAwardInput);
+        private static readonly string MobileBadgeAwardSerializedString = JsonSerializer.Generic.Utf16.Serialize(MobileBadgeAwardInput);
+        private static readonly byte[] MobileBadgeAwardSerializedByteArray = JsonSerializer.Generic.Utf8.Serialize(MobileBadgeAwardInput);
 
-        //[Benchmark]
-        //public string SerializeMobileBadgeAwardWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Serialize(MobileBadgeAwardInput);
-        //}
+        [Benchmark]
+        public string SerializeMobileBadgeAwardWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Serialize(MobileBadgeAwardInput);
+        }
 
-        //[Benchmark]
-        //public byte[] SerializeMobileBadgeAwardWithSpanJsonSerializerUtf8()
-        //{
-        //    return JsonSerializer.Generic.Utf8.Serialize(MobileBadgeAwardInput);
-        //}
+        [Benchmark]
+        public byte[] SerializeMobileBadgeAwardWithSpanJsonSerializerUtf8()
+        {
+            return JsonSerializer.Generic.Utf8.Serialize(MobileBadgeAwardInput);
+        }
 
-        //[Benchmark]
-        //public MobileBadgeAward DeserializeMobileBadgeAwardWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Deserialize<MobileBadgeAward>(MobileBadgeAwardSerializedString);
-        //}
+        [Benchmark]
+        public MobileBadgeAward DeserializeMobileBadgeAwardWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Deserialize<MobileBadgeAward>(MobileBadgeAwardSerializedString);
+        }
 
-        //[Benchmark]
-        //public MobileBadgeAward DeserializeMobileBadgeAwardWithSpanJsonSerializerUtf8()
-        //{
-        //    return JsonSerializer.Generic.Utf8.Deserialize<MobileBadgeAward>(MobileBadgeAwardSerializedByteArray);
-        //}
+        [Benchmark]
+        public MobileBadgeAward DeserializeMobileBadgeAwardWithSpanJsonSerializerUtf8()
+        {
+            return JsonSerializer.Generic.Utf8.Deserialize<MobileBadgeAward>(MobileBadgeAwardSerializedByteArray);
+        }
 
         //[Benchmark]
         //public string SerializeAnswerWithSpanJsonSerializer()
@@ -404,63 +404,63 @@ namespace SpanJson.Benchmarks
         //    return SpanJsonUtf8Serializer.Serialize(SingleInput);
         //}
 
-        private static readonly System.DateTime DateTimeInput = ExpressionTreeFixture.Create<System.DateTime>();
+        //private static readonly System.DateTime DateTimeInput = ExpressionTreeFixture.Create<System.DateTime>();
 
-        private static readonly System.DateTimeOffset DateTimeOffsetInput = ExpressionTreeFixture.Create<System.DateTimeOffset>();
+        //private static readonly System.DateTimeOffset DateTimeOffsetInput = ExpressionTreeFixture.Create<System.DateTimeOffset>();
 
-        [Benchmark]
-        public System.String SerializeDateTimeWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(DateTimeInput);
-        }
-
-
-        [Benchmark]
-        public System.Byte[] SerializeDateTimeWithSpanJsonUtf8Serializer()
-        {
-            return SpanJsonUtf8Serializer.Serialize(DateTimeInput);
-        }
-
-        [Benchmark]
-        public System.String SerializeDateTimeOffsetWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(DateTimeOffsetInput);
-        }
+        //[Benchmark]
+        //public System.String SerializeDateTimeWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(DateTimeInput);
+        //}
 
 
-        [Benchmark]
-        public System.Byte[] SerializeDateTimeOffsetWithSpanJsonUtf8Serializer()
-        {
-            return SpanJsonUtf8Serializer.Serialize(DateTimeOffsetInput);
-        }
+        //[Benchmark]
+        //public System.Byte[] SerializeDateTimeWithSpanJsonUtf8Serializer()
+        //{
+        //    return SpanJsonUtf8Serializer.Serialize(DateTimeInput);
+        //}
 
-        private static readonly Byte[] DateTimeOffsetOutputOfSpanJsonUtf8Serializer = SpanJsonUtf8Serializer.Serialize(DateTimeOffsetInput);
-        [Benchmark]
-        public System.DateTimeOffset DeserializeDateTimeOffsetWithSpanJsonUtf8Serializer()
-        {
-            return SpanJsonUtf8Serializer.Deserialize<System.DateTimeOffset>(DateTimeOffsetOutputOfSpanJsonUtf8Serializer);
-        }
+        //[Benchmark]
+        //public System.String SerializeDateTimeOffsetWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(DateTimeOffsetInput);
+        //}
 
-        private static readonly string DateTimeOffsetOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(DateTimeOffsetInput);
-        [Benchmark]
-        public System.DateTimeOffset DeserializeDateTimeOffsetWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<System.DateTimeOffset>(DateTimeOffsetOutputOfSpanJsonSerializer);
-        }
 
-        private static readonly byte[] DateTimeOutputOfSpanJsonUtf8Serializer = SpanJsonUtf8Serializer.Serialize(DateTimeInput);
-        [Benchmark]
-        public System.DateTimeOffset DeserializeDateTimetWithSpanUtf8JsonSerializer()
-        {
-            return SpanJsonUtf8Serializer.Deserialize<System.DateTime>(DateTimeOutputOfSpanJsonUtf8Serializer);
-        }
+        //[Benchmark]
+        //public System.Byte[] SerializeDateTimeOffsetWithSpanJsonUtf8Serializer()
+        //{
+        //    return SpanJsonUtf8Serializer.Serialize(DateTimeOffsetInput);
+        //}
 
-        private static readonly string DateTimeOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(DateTimeInput);
-        [Benchmark]
-        public System.DateTime DeserializeDateTimeWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<System.DateTime>(DateTimeOutputOfSpanJsonSerializer);
-        }
+        //private static readonly Byte[] DateTimeOffsetOutputOfSpanJsonUtf8Serializer = SpanJsonUtf8Serializer.Serialize(DateTimeOffsetInput);
+        //[Benchmark]
+        //public System.DateTimeOffset DeserializeDateTimeOffsetWithSpanJsonUtf8Serializer()
+        //{
+        //    return SpanJsonUtf8Serializer.Deserialize<System.DateTimeOffset>(DateTimeOffsetOutputOfSpanJsonUtf8Serializer);
+        //}
+
+        //private static readonly string DateTimeOffsetOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(DateTimeOffsetInput);
+        //[Benchmark]
+        //public System.DateTimeOffset DeserializeDateTimeOffsetWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Deserialize<System.DateTimeOffset>(DateTimeOffsetOutputOfSpanJsonSerializer);
+        //}
+
+        //private static readonly byte[] DateTimeOutputOfSpanJsonUtf8Serializer = SpanJsonUtf8Serializer.Serialize(DateTimeInput);
+        //[Benchmark]
+        //public System.DateTimeOffset DeserializeDateTimetWithSpanUtf8JsonSerializer()
+        //{
+        //    return SpanJsonUtf8Serializer.Deserialize<System.DateTime>(DateTimeOutputOfSpanJsonUtf8Serializer);
+        //}
+
+        //private static readonly string DateTimeOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(DateTimeInput);
+        //[Benchmark]
+        //public System.DateTime DeserializeDateTimeWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Deserialize<System.DateTime>(DateTimeOutputOfSpanJsonSerializer);
+        //}
 
         //private static readonly string Int64Value = ExpressionTreeFixture.Create<long>().ToString();
         //private static readonly byte[] Int64ValueBytes = Encoding.UTF8.GetBytes(Int64Value);
