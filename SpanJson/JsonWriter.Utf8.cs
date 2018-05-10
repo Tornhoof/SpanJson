@@ -41,23 +41,13 @@ namespace SpanJson
         private void WriteUtf8Int64Internal(long value)
         {
             ref var pos = ref _pos;
-            if (value == long.MinValue)
+            if (pos > _bytes.Length - 1)
             {
-                if (pos > _bytes.Length - 21)
-                {
-                    Grow(21);
-                }
-
-                JsonUtf8Constant.LongMinValue.AsSpan().TryCopyTo(_bytes.Slice(pos));
-                pos += JsonUtf8Constant.LongMinValue.Length;
+                Grow(1);
             }
-            else if (value < 0)
-            {
-                if (pos > _bytes.Length - 1)
-                {
-                    Grow(1);
-                }
 
+            if (value < 0)
+            {
                 _bytes[pos++] = (byte) '-';
                 value = unchecked(-value);
             }

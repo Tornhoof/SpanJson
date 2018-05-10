@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace SpanJson
 {
@@ -10,23 +12,22 @@ namespace SpanJson
 
     public static class JsonUtf8Constant
     {
-        public const byte BeginArray = (byte) '[';
-        public const byte BeginObject = (byte) '{';
-        public const byte DoubleQuote = (byte) '"';
-        public const byte EndArray = (byte) ']';
-        public const byte EndObject = (byte) '}';
-        public const byte False = (byte) 'f';
-        public const byte NameSeparator = (byte) ':';
-        public const byte Null = (byte) 'n';
-        public const byte ReverseSolidus = (byte) '\\';
-        public const byte Solidus = (byte) '/';
-        public const byte String = (byte) '"';
-        public const byte True = (byte) 't';
-        public const byte ValueSeparator = (byte) ',';
+        public const byte BeginArray = (byte)'[';
+        public const byte BeginObject = (byte)'{';
+        public const byte DoubleQuote = (byte)'"';
+        public const byte EndArray = (byte)']';
+        public const byte EndObject = (byte)'}';
+        public const byte False = (byte)'f';
+        public const byte NameSeparator = (byte)':';
+        public const byte Null = (byte)'n';
+        public const byte ReverseSolidus = (byte)'\\';
+        public const byte Solidus = (byte)'/';
+        public const byte String = (byte)'"';
+        public const byte True = (byte)'t';
+        public const byte ValueSeparator = (byte)',';
 
-        public static readonly byte[] NullTerminator = {0};
+        public static readonly byte[] NullTerminator = { 0 };
 
-        public static readonly byte[] LongMinValue = Encoding.UTF8.GetBytes(long.MinValue.ToString());
     }
 
     public static class JsonUtf16Constant
@@ -46,6 +47,5 @@ namespace SpanJson
         public const char ValueSeparator = ',';
 
         public static readonly char[] NullTerminator = { '\0' };
-        public static readonly char[] LongMinValue = long.MinValue.ToString().ToCharArray();
     }
 }

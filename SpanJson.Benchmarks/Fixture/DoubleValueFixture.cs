@@ -9,7 +9,7 @@ namespace SpanJson.Benchmarks.Fixture
 
         public object Generate()
         {
-            return _prng.Next() + 0.5d;
+            return _prng.Next(int.MinValue, int.MaxValue) + 0.5d;
         }
     }
 }

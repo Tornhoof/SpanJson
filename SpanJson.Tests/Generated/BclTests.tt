@@ -17,6 +17,7 @@
         typeof(UInt64),
         typeof(Single),
         typeof(Double),
+		typeof(decimal),
         typeof(bool), 
 		typeof(char),
 		typeof(DateTime),
@@ -24,10 +25,21 @@
 		typeof(TimeSpan),
 		typeof(Guid),
 		typeof(string),
-		typeof(decimal),
 		typeof(Version),
 		typeof(Uri)
     };
+	var minMaxValueTypes = new[]
+	{
+	    typeof(sbyte),
+        typeof(Int16),
+        typeof(Int32),
+        typeof(Int64),
+        typeof(byte), 
+        typeof(UInt16),
+        typeof(UInt32),
+        typeof(UInt64),
+		typeof(char),
+	};
 #>
 using System;
 using System.Collections.Generic;
@@ -49,6 +61,28 @@ namespace SpanJson.Tests.Generated
 	}
 	public partial class <#= t.Name #>Tests : StructTestBase<<#= t.Name #>>
 	{
+<#  if(minMaxValueTypes.Contains(t)) {#>
+		[Theory]
+        [InlineData(<#= t.Name #>.MinValue)]
+        [InlineData(<#= t.Name #>.MaxValue)]
+        public void SerializeDeserializeMinMaxUtf8(<#= t.Name #> input)
+        {
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(input);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<<#= t.Name #>>(serialized);
+            Assert.Equal(input, deserialized);
+        }
+
+
+        [Theory]
+        [InlineData(<#= t.Name #>.MinValue)]
+        [InlineData(<#= t.Name #>.MaxValue)]
+        public void SerializeDeserializeMinMaxUtf16(<#= t.Name #> input)
+        {
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<<#= t.Name #>>(serialized);
+            Assert.Equal(input, deserialized);
+        }
+<# } #>
 	}
 <# } #>
 <# if(!t.IsValueType) { #>

@@ -40,23 +40,13 @@ namespace SpanJson
         private void WriteUtf16Int64Internal(long value)
         {
             ref var pos = ref _pos;
-            if (value == long.MinValue)
+            if (pos > _chars.Length - 1)
             {
-                if (pos > _chars.Length - 21)
-                {
-                    Grow(21);
-                }
-
-                JsonUtf16Constant.LongMinValue.AsSpan().TryCopyTo(_chars.Slice(pos));
-                pos += JsonUtf16Constant.LongMinValue.Length;
+                Grow(1);
             }
-            else if (value < 0)
-            {
-                if (pos > _chars.Length - 1)
-                {
-                    Grow(1);
-                }
 
+            if (value < 0)
+            {
                 _chars[pos++] = '-';
                 value = unchecked(-value);
             }
