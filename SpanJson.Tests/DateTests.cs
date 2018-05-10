@@ -118,7 +118,6 @@ namespace SpanJson.Tests
             int second, int fraction, DateTimeKind kind)
         {
             var value = new DateTime(year, month, day, hour, minute, second, kind).AddTicks(fraction);
-
             Span<char> charSpan = stackalloc char[35];
             Assert.True(DateTimeFormatter.TryFormat(value, charSpan, out var symbolsWritten));
             Assert.Equal(comparison, charSpan.Slice(0, symbolsWritten).ToString());

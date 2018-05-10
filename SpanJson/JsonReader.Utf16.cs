@@ -489,7 +489,7 @@ namespace SpanJson
 
         public decimal ReadUtf16Decimal()
         {
-            return decimal.Parse(ReadUtf16NumberInternal(), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture);
+            return decimal.Parse(ReadUtf16NumberInternal(), NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
