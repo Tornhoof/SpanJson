@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers.Text;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -367,6 +368,7 @@ namespace SpanJson
             return escapedCharsSize == 0 ? ConvertToString(span) : UnescapeUtf8(span, escapedCharsSize);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string ConvertToString(ReadOnlySpan<byte> span)
         {
             return Encoding.UTF8.GetString(span);
@@ -374,18 +376,27 @@ namespace SpanJson
 
         private string UnescapeUtf8(ReadOnlySpan<byte> span, int escapedCharsSize)
         {
-            var unescapedLength = span.Length - escapedCharsSize;
+            var decoder = Encoding.UTF8.GetDecoder();
+            var unescapedLength = decoder.GetCharCount(span, true) - escapedCharsSize;
             var result = new string('\0', unescapedLength);
-            ref var c = ref MemoryMarshal.GetReference(result.AsSpan());
-            var unescapedIndex = 0;
+            var writeableSpan = MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(result.AsSpan()), unescapedLength);
             var index = 0;
+            var charOffset = 0;
             while (index < span.Length)
             {
                 var current = span[index++];
-                var unescaped = (char) current;
                 if (current == JsonUtf8Constant.ReverseSolidus)
                 {
+                    // First we copy everything from the beginning to current (excluding the escape char)
+                    decoder.Convert(span.Slice(0, index - 1), writeableSpan.Slice(charOffset), true, out var _, out var charsUsed, out var completed);
+                    if (!completed)
+                    {
+                        ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
+                    }
+
                     current = span[index++];
+                    charOffset += charsUsed;
+                    char unescaped = default;
                     switch (current)
                     {
                         case JsonUtf8Constant.DoubleQuote:
@@ -415,7 +426,7 @@ namespace SpanJson
                         case (byte) 'U':
                         case (byte) 'u':
                         {
-                            if (Utf8Parser.TryParse(span.Slice(index, 4), out int value, out var bytesConsumed, 'X'))
+                            if (Utf8Parser.TryParse(span.Slice(index, 4), out uint value, out var bytesConsumed, 'X'))
                             {
                                 index += bytesConsumed;
                                 unescaped = (char) value;
@@ -425,19 +436,22 @@ namespace SpanJson
                             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
                             break;
                         }
-
-                        default:
-                            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
-                            break;
                     }
-                }
 
-                Unsafe.Add(ref c, unescapedIndex++) = unescaped;
+                    writeableSpan[charOffset++] = unescaped;
+                    span = span.Slice(index);
+                    index = 0;
+                }
+            }
+
+            if (span.Length > 0) // still data to copy
+            {
+                decoder.Convert(span, writeableSpan.Slice(charOffset), true, out _, out _, out var completed);
+                Debug.Assert(completed);
             }
 
             return result;
         }
-
 
         /// <summary>
         ///     Not escaped

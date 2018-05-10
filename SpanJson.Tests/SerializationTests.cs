@@ -173,5 +173,33 @@ namespace SpanJson.Tests
             Assert.Contains("\"SonSpecific\":true", serialized);
             Assert.Contains("\"DaughterSpecific\":true", serialized);
         }
+
+        [Theory]
+        [InlineData("칱칳칶칹칼캠츧")]
+        [InlineData("칱칳칶칹칼캠츧\t칱칳칶칹칼캠츧")]
+        [InlineData("\t칱칳칶칹칼캠츧\t칱칳칶칹칼캠츧\n")]
+        [InlineData("😷Hello\t칱칳칶칹칼캠츧\t칱칳칶칹칼캠츧\nWorld😷")]
+        [InlineData("칱칳칶칹칼캠츧😁칱칳칶칹칼캠츧")]
+        [InlineData("Hello 😁 World")]
+        [InlineData("😷Hello 😁 World😷")]
+        public void SerializeDeserializeMultiCharStringUtf8(string input)
+        {
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(input);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<string>(serialized);
+            Assert.Equal(input, deserialized);
+        }
+
+        [Theory]
+        [InlineData("칱칳칶칹칼캠츧")]
+        [InlineData("칱칳칶칹칼캠츧\t칱칳칶칹칼캠츧")]
+        [InlineData("칱칳칶칹칼캠츧😁칱칳칶칹칼캠츧")]
+        [InlineData("Hello 😁 World")]
+        [InlineData("😷Hello 😁 World😷")]
+        public void SerializeDeserializeMultiCharStringUtf16(string input)
+        {
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<string>(serialized);
+            Assert.Equal(input, deserialized);
+        }
     }
 }
