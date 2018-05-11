@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.1.0.0-rc1-5</Version>
+    <Version>0.1.0.0-rc1-6</Version>
     <Authors>SpanJson Contributors</Authors>
     <Company />
     <Description>SpanJson is a JSON serializer for .NET Core 2.1+</Description>
@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/Tornhoof/SpanJson/blob/master/LICENSE</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>JSON .NET Core 2.1</PackageTags>
-    <PackageReleaseNotes>Initial prerelease</PackageReleaseNotes>
+    <PackageReleaseNotes>Bugfixes and support for Pretty Printing</PackageReleaseNotes>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1701;1702;1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

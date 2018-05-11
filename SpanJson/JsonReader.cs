@@ -45,6 +45,12 @@ namespace SpanJson
             throw new JsonParserException(error, _pos);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowJsonParserExceptionWithoutPos(JsonParserException.ParserError error)
+        {
+            throw new JsonParserException(error, 0);
+        }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReadBeginArrayOrThrow()

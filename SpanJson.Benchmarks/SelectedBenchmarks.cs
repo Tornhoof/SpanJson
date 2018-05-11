@@ -10,8 +10,8 @@ using SpanJson.Benchmarks.Serializers;
 namespace SpanJson.Benchmarks
 {
     [MemoryDiagnoser]
-    [ShortRunJob]
-    [DisassemblyDiagnoser(printIL: true, recursiveDepth: 2)]
+    //[ShortRunJob]
+    //[DisassemblyDiagnoser(printIL: true, recursiveDepth: 2)]
     public class SelectedBenchmarks
     {
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
@@ -327,8 +327,8 @@ namespace SpanJson.Benchmarks
         //    return JilSerializer.Serialize(StringInput);
         //}
 
-        //private static string StringInput = "Hello\nWorld 😁";
-        private static string StringInput = "Hello World";
+        private static string StringInput = "Hello\nWorld 😁";
+        //private static string StringInput = "Hello World";
 
         [Benchmark]
         public System.String SerializeStringWithSpanJsonSerializer()
