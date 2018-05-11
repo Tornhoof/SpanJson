@@ -238,5 +238,57 @@ namespace SpanJson
             ThrowNotSupportedException();
             return default;
         }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public JsonToken ReadNextToken()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return ReadUtf16NextToken();
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                return ReadUtf8NextToken();
+            }
+
+            ThrowNotSupportedException();
+            return default;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<TSymbol> ReadNumberSpan()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return MemoryMarshal.Cast<char, TSymbol>(ReadUtf16NumberInternal());
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                return MemoryMarshal.Cast<byte, TSymbol>(ReadUtf8NumberInternal());
+            }
+
+            ThrowNotSupportedException();
+            return default;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool ReadBoolean()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return ReadUtf16Boolean();
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                return ReadUtf8Boolean();
+            }
+
+            ThrowNotSupportedException();
+            return default;
+        }
     }
 }

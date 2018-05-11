@@ -28,6 +28,8 @@ namespace SpanJson
 
         public static readonly byte[] NullTerminator = { 0 };
 
+        public static readonly byte[] NewLine = Encoding.UTF8.GetBytes("\r\n");
+
     }
 
     public static class JsonUtf16Constant
@@ -47,5 +49,7 @@ namespace SpanJson
         public const char ValueSeparator = ',';
 
         public static readonly char[] NullTerminator = { '\0' };
+
+        public static readonly char[] NewLine = new[] {'\r', '\n'};
     }
 }

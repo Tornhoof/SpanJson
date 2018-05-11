@@ -189,7 +189,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteName(string name)
+        public void WriteName(ReadOnlySpan<char> name)
         {
             if (typeof(TSymbol) == typeof(char))
             {
@@ -205,8 +205,9 @@ namespace SpanJson
             }
         }
 
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteVerbatim(TSymbol[] values)
+        public void WriteVerbatim(ReadOnlySpan<TSymbol> values)
         {
             if (typeof(TSymbol) == typeof(char))
             {
@@ -215,6 +216,132 @@ namespace SpanJson
             else if (typeof(TSymbol) == typeof(byte))
             {
                 WriteUtf8Verbatim(MemoryMarshal.Cast<TSymbol, byte>(values));
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteNewLine()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                WriteUtf16Verbatim(JsonUtf16Constant.NewLine);
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                WriteUtf8Verbatim(JsonUtf8Constant.NewLine);
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteBoolean(bool value)
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                WriteUtf16Boolean(value);
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                WriteUtf8Boolean(value);
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteIndentation(int count)
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                if (_pos > _chars.Length - count)
+                {
+                    Grow(count);
+                }
+
+                for (int i = 0; i < count; i++)
+                {
+                    _chars[_pos++] = ' ';
+                }
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                if (_pos > _bytes.Length - count)
+                {
+                    Grow(count);
+                }
+
+                for (int i = 0; i < count; i++)
+                {
+                    _bytes[_pos++] = (byte) ' ';
+                }
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteDoubleQuote()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                if (_pos > _chars.Length - 1)
+                {
+                    Grow(1);
+                }
+                WriteUtf16DoubleQuote();
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                if (_pos > _bytes.Length - 1)
+                {
+                    Grow(1);
+                }
+                WriteUtf8DoubleQuote();
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteNameSpan(ReadOnlySpan<TSymbol> values)
+        {
+            var remaining = values.Length + 3;
+            if (typeof(TSymbol) == typeof(char))
+            {
+                if (_pos > _chars.Length - remaining)
+                {
+                    Grow(remaining);
+                }
+                WriteUtf16DoubleQuote();
+                WriteUtf16Verbatim(MemoryMarshal.Cast<TSymbol, char>(values));
+                WriteUtf16DoubleQuote();
+                _chars[_pos++] = JsonUtf16Constant.NameSeparator;
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                if (_pos > _bytes.Length - remaining)
+                {
+                    Grow(remaining);
+                }
+                WriteUtf8DoubleQuote();
+                WriteUtf8Verbatim(MemoryMarshal.Cast<TSymbol, byte>(values));
+                WriteUtf8DoubleQuote();
+                _bytes[_pos++] = JsonUtf8Constant.NameSeparator;
             }
             else
             {

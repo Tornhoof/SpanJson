@@ -430,7 +430,7 @@ namespace SpanJson
         ///     The value should already be properly escaped
         /// </summary>
         /// <param name="value"></param>
-        public void WriteUtf16Name(string value)
+        public void WriteUtf16Name(ReadOnlySpan<char> value)
         {
             ref var pos = ref _pos;
             var sLength = value.Length + 3;
@@ -440,7 +440,7 @@ namespace SpanJson
             }
 
             WriteUtf16DoubleQuote();
-            value.AsSpan().CopyTo(_chars.Slice(pos));
+            value.CopyTo(_chars.Slice(pos));
             pos += value.Length;
             WriteUtf16DoubleQuote();
             _chars[pos++] = JsonUtf16Constant.NameSeparator;
