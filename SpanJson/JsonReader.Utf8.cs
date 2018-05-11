@@ -14,17 +14,17 @@ namespace SpanJson
     {
         public sbyte ReadUtf8SByte()
         {
-            return (sbyte) ReadUtf8NumberInt64();
+            return (sbyte)ReadUtf8NumberInt64();
         }
 
         public short ReadUtf8Int16()
         {
-            return (short) ReadUtf8NumberInt64();
+            return (short)ReadUtf8NumberInt64();
         }
 
         public int ReadUtf8Int32()
         {
-            return (int) ReadUtf8NumberInt64();
+            return (int)ReadUtf8NumberInt64();
         }
 
         public long ReadUtf8Int64()
@@ -34,17 +34,17 @@ namespace SpanJson
 
         public byte ReadUtf8Byte()
         {
-            return (byte) ReadUtf8NumberUInt64();
+            return (byte)ReadUtf8NumberUInt64();
         }
 
         public ushort ReadUtf8UInt16()
         {
-            return (ushort) ReadUtf8NumberUInt64();
+            return (ushort)ReadUtf8NumberUInt64();
         }
 
         public uint ReadUtf8UInt32()
         {
-            return (uint) ReadUtf8NumberUInt64();
+            return (uint)ReadUtf8NumberUInt64();
         }
 
         public ulong ReadUtf8UInt64()
@@ -93,7 +93,7 @@ namespace SpanJson
 
             ref var b = ref MemoryMarshal.GetReference(_bytes);
             var neg = false;
-            if (Unsafe.Add(ref b, _pos) == (byte) '-')
+            if (Unsafe.Add(ref b, _pos) == (byte)'-')
             {
                 _pos++;
                 neg = true;
@@ -105,7 +105,7 @@ namespace SpanJson
                 }
             }
 
-            var result = (long) ReadUtf8NumberDigits(ref b, ref _pos);
+            var result = (long)ReadUtf8NumberDigits(ref b, ref _pos);
             return neg ? unchecked(-result) : result;
         }
 
@@ -148,21 +148,21 @@ namespace SpanJson
         {
             switch (c)
             {
-                case (byte) '0':
-                case (byte) '1':
-                case (byte) '2':
-                case (byte) '3':
-                case (byte) '4':
-                case (byte) '5':
-                case (byte) '6':
-                case (byte) '7':
-                case (byte) '8':
-                case (byte) '9':
-                case (byte) '+':
-                case (byte) '-':
-                case (byte) '.':
-                case (byte) 'E':
-                case (byte) 'e':
+                case (byte)'0':
+                case (byte)'1':
+                case (byte)'2':
+                case (byte)'3':
+                case (byte)'4':
+                case (byte)'5':
+                case (byte)'6':
+                case (byte)'7':
+                case (byte)'8':
+                case (byte)'9':
+                case (byte)'+':
+                case (byte)'-':
+                case (byte)'.':
+                case (byte)'E':
+                case (byte)'e':
                     return true;
             }
 
@@ -175,17 +175,17 @@ namespace SpanJson
             ref var pos = ref _pos;
             if (_bytes[pos] == JsonUtf8Constant.True) // just peek the byte
             {
-                if (_bytes[pos + 1] != (byte) 'r')
+                if (_bytes[pos + 1] != (byte)'r')
                 {
                     ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(bool));
                 }
 
-                if (_bytes[pos + 2] != (byte) 'u')
+                if (_bytes[pos + 2] != (byte)'u')
                 {
                     ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(bool));
                 }
 
-                if (_bytes[pos + 3] != (byte) 'e')
+                if (_bytes[pos + 3] != (byte)'e')
                 {
                     ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(bool));
                 }
@@ -196,22 +196,22 @@ namespace SpanJson
 
             if (_bytes[pos] == JsonUtf8Constant.False) // just peek the byte
             {
-                if (_bytes[pos + 1] != (byte) 'a')
+                if (_bytes[pos + 1] != (byte)'a')
                 {
                     ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(bool));
                 }
 
-                if (_bytes[pos + 2] != (byte) 'l')
+                if (_bytes[pos + 2] != (byte)'l')
                 {
                     ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(bool));
                 }
 
-                if (_bytes[pos + 3] != (byte) 's')
+                if (_bytes[pos + 3] != (byte)'s')
                 {
                     ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(bool));
                 }
 
-                if (_bytes[pos + 4] != (byte) 'e')
+                if (_bytes[pos + 4] != (byte)'e')
                 {
                     ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(bool));
                 }
@@ -236,7 +236,7 @@ namespace SpanJson
             int pos = 0;
             if (span.Length == 1)
             {
-                return (char) span[pos];
+                return (char)span[pos];
             }
 
             if (span[pos] == JsonUtf8Constant.ReverseSolidus)
@@ -250,23 +250,23 @@ namespace SpanJson
                         return JsonUtf16Constant.ReverseSolidus;
                     case JsonUtf8Constant.Solidus:
                         return JsonUtf16Constant.Solidus;
-                    case (byte) 'b':
+                    case (byte)'b':
                         return '\b';
-                    case (byte) 'f':
+                    case (byte)'f':
                         return '\f';
-                    case (byte) 'n':
+                    case (byte)'n':
                         return '\n';
-                    case (byte) 'r':
+                    case (byte)'r':
                         return '\r';
-                    case (byte) 't':
+                    case (byte)'t':
                         return '\t';
-                    case (byte) 'U':
-                    case (byte) 'u':
+                    case (byte)'U':
+                    case (byte)'u':
                         if (span.Length == 6)
                         {
                             if (Utf8Parser.TryParse(span.Slice(2, 4), out int value, out _, 'X'))
                             {
-                                return (char) value;
+                                return (char)value;
                             }
                         }
 
@@ -311,7 +311,7 @@ namespace SpanJson
         public TimeSpan ReadUtf8TimeSpan()
         {
             var span = ReadUtf8StringSpan();
-            if (Utf8Parser.TryParse(span, out TimeSpan result, out var bytesConsumed))
+            if (Utf8Parser.TryParse(span, out TimeSpan result, out _))
             {
                 return result;
             }
@@ -323,7 +323,7 @@ namespace SpanJson
         public Guid ReadUtf8Guid()
         {
             var span = ReadUtf8StringSpan();
-            if (Utf8Parser.TryParse(span, out Guid result, out var bytesConsumed))
+            if (Utf8Parser.TryParse(span, out Guid result, out _))
             {
                 return result;
             }
@@ -376,9 +376,9 @@ namespace SpanJson
 
         private string UnescapeUtf8(ReadOnlySpan<byte> span, int escapedCharsSize)
         {
-            var decoder = Encoding.UTF8.GetDecoder();
-            var unescapedLength = decoder.GetCharCount(span, true) - escapedCharsSize;
+            var unescapedLength = Encoding.UTF8.GetCharCount(span) - escapedCharsSize;
             var result = new string('\0', unescapedLength);
+            // We create a writeable span of the chars in the string (currently there is no string.create overload taking a span as state so this the solution for now).
             var writeableSpan = MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(result.AsSpan()), unescapedLength);
             var index = 0;
             var charOffset = 0;
@@ -387,15 +387,8 @@ namespace SpanJson
                 var current = span[index++];
                 if (current == JsonUtf8Constant.ReverseSolidus)
                 {
-                    // First we copy everything from the beginning to current (excluding the escape char)
-                    decoder.Convert(span.Slice(0, index - 1), writeableSpan.Slice(charOffset), true, out var _, out var charsUsed, out var completed);
-                    if (!completed)
-                    {
-                        ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
-                    }
-
+                    charOffset += Encoding.UTF8.GetChars(span.Slice(0, index - 1), writeableSpan.Slice(charOffset));
                     current = span[index++];
-                    charOffset += charsUsed;
                     char unescaped = default;
                     switch (current)
                     {
@@ -408,34 +401,34 @@ namespace SpanJson
                         case JsonUtf8Constant.Solidus:
                             unescaped = JsonUtf16Constant.Solidus;
                             break;
-                        case (byte) 'b':
+                        case (byte)'b':
                             unescaped = '\b';
                             break;
-                        case (byte) 'f':
+                        case (byte)'f':
                             unescaped = '\f';
                             break;
-                        case (byte) 'n':
+                        case (byte)'n':
                             unescaped = '\n';
                             break;
-                        case (byte) 'r':
+                        case (byte)'r':
                             unescaped = '\r';
                             break;
-                        case (byte) 't':
+                        case (byte)'t':
                             unescaped = '\t';
                             break;
-                        case (byte) 'U':
-                        case (byte) 'u':
-                        {
-                            if (Utf8Parser.TryParse(span.Slice(index, 4), out uint value, out var bytesConsumed, 'X'))
+                        case (byte)'U':
+                        case (byte)'u':
                             {
-                                index += bytesConsumed;
-                                unescaped = (char) value;
+                                if (Utf8Parser.TryParse(span.Slice(index, 4), out uint value, out var bytesConsumed, 'X'))
+                                {
+                                    index += bytesConsumed;
+                                    unescaped = (char)value;
+                                    break;
+                                }
+
+                                ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
                                 break;
                             }
-
-                            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
-                            break;
-                        }
                     }
 
                     writeableSpan[charOffset++] = unescaped;
@@ -446,8 +439,7 @@ namespace SpanJson
 
             if (span.Length > 0) // still data to copy
             {
-                decoder.Convert(span, writeableSpan.Slice(charOffset), true, out _, out _, out var completed);
-                Debug.Assert(completed);
+                Encoding.UTF8.GetChars(span, writeableSpan.Slice(charOffset));
             }
 
             return result;
@@ -530,17 +522,17 @@ namespace SpanJson
             ref var pos = ref _pos;
             if (pos < _length && _bytes[pos] == JsonUtf8Constant.Null) // just peek the byte
             {
-                if (_bytes[pos + 1] != (byte) 'u')
+                if (_bytes[pos + 1] != (byte)'u')
                 {
                     ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
                 }
 
-                if (_bytes[pos + 2] != (byte) 'l')
+                if (_bytes[pos + 2] != (byte)'l')
                 {
                     ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
                 }
 
-                if (_bytes[pos + 3] != (byte) 'l')
+                if (_bytes[pos + 3] != (byte)'l')
                 {
                     ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
                 }
@@ -570,14 +562,14 @@ namespace SpanJson
                 ref readonly var b = ref _bytes[pos];
                 switch (b)
                 {
-                    case (byte) ' ':
-                    case (byte) '\t':
-                    case (byte) '\r':
-                    case (byte) '\n':
-                    {
-                        pos++;
-                        continue;
-                    }
+                    case (byte)' ':
+                    case (byte)'\t':
+                    case (byte)'\r':
+                    case (byte)'\n':
+                        {
+                            pos++;
+                            continue;
+                        }
                     default:
                         return;
                 }
@@ -745,22 +737,22 @@ namespace SpanJson
                     break;
                 case JsonToken.BeginArray:
                 case JsonToken.BeginObject:
-                {
-                    pos++;
-                    SkipNextUtf8Segment(stack + 1);
-                    break;
-                }
+                    {
+                        pos++;
+                        SkipNextUtf8Segment(stack + 1);
+                        break;
+                    }
                 case JsonToken.EndObject:
                 case JsonToken.EndArray:
-                {
-                    pos++;
-                    if (stack - 1 > 0)
                     {
-                        SkipNextUtf8Segment(stack - 1);
-                    }
+                        pos++;
+                        if (stack - 1 > 0)
+                        {
+                            SkipNextUtf8Segment(stack - 1);
+                        }
 
-                    break;
-                }
+                        break;
+                    }
                 case JsonToken.Number:
                 case JsonToken.String:
                 case JsonToken.True:
@@ -768,20 +760,20 @@ namespace SpanJson
                 case JsonToken.Null:
                 case JsonToken.ValueSeparator:
                 case JsonToken.NameSeparator:
-                {
-                    do
                     {
-                        SkipNextUtf8Value(token);
-                        token = ReadUtf8NextToken();
-                    } while (stack > 0 && (byte) token > 4); // No None or the Begin/End-Array/Object tokens
+                        do
+                        {
+                            SkipNextUtf8Value(token);
+                            token = ReadUtf8NextToken();
+                        } while (stack > 0 && (byte)token > 4); // No None or the Begin/End-Array/Object tokens
 
-                    if (stack > 0)
-                    {
-                        SkipNextUtf8Segment(stack);
+                        if (stack > 0)
+                        {
+                            SkipNextUtf8Segment(stack);
+                        }
+
+                        break;
                     }
-
-                    break;
-                }
             }
         }
 
@@ -801,26 +793,26 @@ namespace SpanJson
                     pos++;
                     break;
                 case JsonToken.Number:
-                {
-                    if (TryFindEndOfUtf8Number(pos, out var bytesConsumed))
                     {
-                        pos += bytesConsumed;
-                    }
+                        if (TryFindEndOfUtf8Number(pos, out var bytesConsumed))
+                        {
+                            pos += bytesConsumed;
+                        }
 
-                    break;
-                }
+                        break;
+                    }
                 case JsonToken.String:
-                {
-                    pos++;
-                    if (TryFindEndOfUtf8String(pos, out var bytesConsumed, out _))
                     {
-                        pos += bytesConsumed + 1; // skip JsonUtf8Constant.DoubleQuote too
-                        return;
-                    }
+                        pos++;
+                        if (TryFindEndOfUtf8String(pos, out var bytesConsumed, out _))
+                        {
+                            pos += bytesConsumed + 1; // skip JsonUtf8Constant.DoubleQuote too
+                            return;
+                        }
 
-                    ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
-                    break;
-                }
+                        ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
+                        break;
+                    }
                 case JsonToken.Null:
                 case JsonToken.True:
                     pos += 4;
@@ -867,7 +859,7 @@ namespace SpanJson
                     escapedCharsSize++;
                     i++;
                     var nextByte = _bytes[i]; // check what type of escaped char it is
-                    if (nextByte == (byte) 'u' || nextByte == (byte) 'U')
+                    if (nextByte == (byte)'u' || nextByte == (byte)'U')
                     {
                         escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
                         i += 4;
@@ -902,56 +894,56 @@ namespace SpanJson
             switch (nextToken)
             {
                 case JsonToken.Null:
-                {
-                    ReadUtf8Null();
-                    return null;
-                }
+                    {
+                        ReadUtf8Null();
+                        return null;
+                    }
                 case JsonToken.False:
                 case JsonToken.True:
-                {
-                    return ReadUtf8Boolean();
-                }
+                    {
+                        return ReadUtf8Boolean();
+                    }
                 case JsonToken.Number:
-                {
-                    return new SpanJsonDynamicUtf8Number(ReadUtf8NumberInternal());
-                }
+                    {
+                        return new SpanJsonDynamicUtf8Number(ReadUtf8NumberInternal());
+                    }
                 case JsonToken.String:
-                {
-                    var span = ReadUtf8StringSpanWithQuotes(out _);
-                    return new SpanJsonDynamicUtf8String(span);
-                }
+                    {
+                        var span = ReadUtf8StringSpanWithQuotes(out _);
+                        return new SpanJsonDynamicUtf8String(span);
+                    }
                 case JsonToken.BeginObject:
-                {
-                    pos++;
-                    var count = 0;
-                    var dictionary = new Dictionary<string, object>();
-                    while (!TryReadUtf8IsEndObjectOrValueSeparator(ref count))
                     {
-                        var name = ConvertToString(ReadUtf8NameSpan());
-                        var value = ReadUtf8Dynamic(stack + 1);
-                        dictionary[name] = value; // take last one
-                    }
+                        pos++;
+                        var count = 0;
+                        var dictionary = new Dictionary<string, object>();
+                        while (!TryReadUtf8IsEndObjectOrValueSeparator(ref count))
+                        {
+                            var name = ConvertToString(ReadUtf8NameSpan());
+                            var value = ReadUtf8Dynamic(stack + 1);
+                            dictionary[name] = value; // take last one
+                        }
 
-                    return new SpanJsonDynamicObject(dictionary);
-                }
+                        return new SpanJsonDynamicObject(dictionary);
+                    }
                 case JsonToken.BeginArray:
-                {
-                    pos++;
-                    var count = 0;
-                    var list = new List<object>();
-                    while (!TryReadUtf8IsEndArrayOrValueSeparator(ref count))
                     {
-                        var value = ReadUtf8Dynamic(stack + 1);
-                        list.Add(value);
-                    }
+                        pos++;
+                        var count = 0;
+                        var list = new List<object>();
+                        while (!TryReadUtf8IsEndArrayOrValueSeparator(ref count))
+                        {
+                            var value = ReadUtf8Dynamic(stack + 1);
+                            list.Add(value);
+                        }
 
-                    return new SpanJsonDynamicArray<TSymbol>(list.ToArray());
-                }
+                        return new SpanJsonDynamicArray<TSymbol>(list.ToArray());
+                    }
                 default:
-                {
-                    ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
-                    return default;
-                }
+                    {
+                        ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
+                        return default;
+                    }
             }
         }
 
@@ -987,17 +979,17 @@ namespace SpanJson
                     return JsonToken.ValueSeparator;
                 case JsonUtf8Constant.NameSeparator:
                     return JsonToken.NameSeparator;
-                case (byte) '-':
-                case (byte) '1':
-                case (byte) '2':
-                case (byte) '3':
-                case (byte) '4':
-                case (byte) '5':
-                case (byte) '6':
-                case (byte) '7':
-                case (byte) '8':
-                case (byte) '9':
-                case (byte) '0':
+                case (byte)'-':
+                case (byte)'1':
+                case (byte)'2':
+                case (byte)'3':
+                case (byte)'4':
+                case (byte)'5':
+                case (byte)'6':
+                case (byte)'7':
+                case (byte)'8':
+                case (byte)'9':
+                case (byte)'0':
                     return JsonToken.Number;
                 default:
                     return JsonToken.None;
