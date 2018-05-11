@@ -23,6 +23,7 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 - Support for ``[DataMember(Name="MemberName")]`` to set field name
 - Support for ``[IgnoreDataMember]`` to ignore a specific member
 - Support for ``ShouldSerializeXXX`` pattern to decide at runtime if a member should be serialized
+- Pretty printing JSON
 
 - Different 'Resolvers' to control general behaviour:
   - Exclude Nulls with Camel Case: ``ExcludeNullCamelCaseResolver``
@@ -57,6 +58,10 @@ ValueTask<object> result = JsonSerializer.NonGeneric.Utf8.DeserializeAsync(input
 To use other resolvers use the appropriate overloads,e.g.:
 
 var serialized = JsonSerializer.NonGeneric.Utf16.Serialize<Input, IncludeNullsOriginalCaseResolver<char>>(includeNull);
+
+Pretty Printing:
+
+var pretty = JsonSerializer.PrettyPrinter.Print(serialized); // this works by reading the JSON and writing it out again with spaces and line breaks
 
 ```
 

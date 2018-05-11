@@ -489,7 +489,7 @@ namespace SpanJson
         ///     The value should already be properly escaped
         /// </summary>
         /// <param name="value"></param>
-        public void WriteUtf8Name(string value)
+        public void WriteUtf8Name(ReadOnlySpan<char> value)
         {
             ref var pos = ref _pos;
             var sLength = value.Length + 3;
