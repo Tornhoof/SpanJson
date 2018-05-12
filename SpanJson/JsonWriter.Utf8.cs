@@ -270,8 +270,7 @@ namespace SpanJson
         public void WriteUtf8String(string value)
         {
             ref var pos = ref _pos;
-            var valueLength = value.Length;
-            var sLength = valueLength + 7; // assume that a fully escaped char fits too + 2 double quotes
+            var sLength = Encoding.UTF8.GetMaxByteCount(value.Length) + 7; // assume that a fully escaped char fits too + 2 double quotes
             if (pos > _bytes.Length - sLength)
             {
                 Grow(sLength);
@@ -279,27 +278,34 @@ namespace SpanJson
 
             WriteUtf8DoubleQuote();
             var span = value.AsSpan();
-            ref var charsStart = ref MemoryMarshal.GetReference(span);
-            for (var i = 0; i < valueLength; i++)
+            var index = 0;
+            var from = 0;
+            while (index < span.Length)
             {
-                ref var c = ref Unsafe.Add(ref charsStart, i);
+                ref readonly var c = ref span[index];
                 if (c < 0x20 || c == JsonUtf8Constant.DoubleQuote || c == JsonUtf8Constant.Solidus || c == JsonUtf8Constant.ReverseSolidus)
                 {
+                    var length = index - from;
+                    pos += Encoding.UTF8.GetBytes(span.Slice(from, length), _bytes.Slice(pos));
                     WriteEscapedUtf8CharInternal(c);
-                    var remaining = 5 + valueLength - i; // make sure that all characters and an extra 5 for a full escape still fit
+                    index++;
+                    var remaining = 5 + span.Length - index; // make sure that all characters and an extra 5 for a full escape still fit
                     if (pos > _bytes.Length - remaining)
                     {
                         Grow(remaining);
                     }
-                }
-                else if (c > 0x7F) // UTF8 characters, we need to escape them
-                {
-                    EncodeUtf8CharInternal(ref c, ref i, ref pos, valueLength, span);
+
+                    from = index;
                 }
                 else
                 {
-                   _bytes[pos++] = (byte) c;
+                    index++;
                 }
+            }
+            // Still chars to encode
+            if (from < span.Length)
+            {
+                pos += Encoding.UTF8.GetBytes(span.Slice(from), _bytes.Slice(pos));
             }
 
             WriteUtf8DoubleQuote();
