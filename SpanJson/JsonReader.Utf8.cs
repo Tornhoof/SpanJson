@@ -242,7 +242,7 @@ namespace SpanJson
             if (span[pos] == JsonUtf8Constant.ReverseSolidus)
             {
                 pos++;
-                return UnescapeCharInternal(span, ref pos);
+                return UnescapeUtf8CharInternal(span, ref pos);
             }
 
             Span<char> charSpan = stackalloc char[1];
@@ -340,9 +340,9 @@ namespace SpanJson
             return Encoding.UTF8.GetString(span);
         }
 
-        private static char UnescapeCharInternal(ReadOnlySpan<byte> span, ref int index)
+        private char UnescapeUtf8CharInternal(ReadOnlySpan<byte> span, ref int pos)
         {
-            ref readonly var current = ref span[index++];
+            ref readonly var current = ref span[pos++];
             switch (current)
             {
                 case JsonUtf8Constant.DoubleQuote:
@@ -364,9 +364,9 @@ namespace SpanJson
                 case (byte) 'U':
                 case (byte) 'u':
                 {
-                    if (Utf8Parser.TryParse(span.Slice(index, 4), out uint value, out var bytesConsumed, 'X'))
+                    if (Utf8Parser.TryParse(span.Slice(pos, 4), out uint value, out _, 'X'))
                     {
-                        index += bytesConsumed;
+                        pos += 4; // always 4
                         return (char) value;
                     }
 
@@ -374,7 +374,7 @@ namespace SpanJson
                 }
             }
 
-            ThrowJsonParserExceptionWithoutPos(JsonParserException.ParserError.InvalidSymbol);
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
             return default;
         }
 
@@ -382,7 +382,7 @@ namespace SpanJson
         /// This is simply said pretty much twice as slow as the Utf16 version
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static string UnescapeUtf8(ReadOnlySpan<byte> span, int escapedCharsSize)
+        private string UnescapeUtf8(ReadOnlySpan<byte> span, int escapedCharsSize)
         {
             var unescapedLength = Encoding.UTF8.GetCharCount(span) - escapedCharsSize;
             var result = new string('\0', unescapedLength);
@@ -395,7 +395,7 @@ namespace SpanJson
                 ref readonly var current = ref span[index++];
                 if (current == JsonUtf8Constant.ReverseSolidus)
                 {
-                    writeableSpan[charOffset++] = UnescapeCharInternal(span, ref index);
+                    writeableSpan[charOffset++] = UnescapeUtf8CharInternal(span, ref index);
                 }
                 else if (current < 0x80) // ASCII
                 {

@@ -41,7 +41,7 @@ namespace SpanJson.Benchmarks
         //private static readonly StringBuilder StringBuilder = new StringBuilder();
 
 
-        //private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
+        private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
 
         //private static readonly MobileBadgeAward MobileBadgeAwardInput = ExpressionTreeFixture.Create<MobileBadgeAward>();
 
@@ -328,27 +328,28 @@ namespace SpanJson.Benchmarks
         //}
 
         private static string StringInput = "Hello\nWorld 😁";
-        //private static string StringInput = "Hello World";
+        //        private static string StringInput = "Hello World";
+        //private static string StringInput = "Hello😁World";
 
-        //[Benchmark]
-        //public System.String SerializeStringWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Serialize(StringInput);
-        //}
-
-
-        //[Benchmark]
-        //public System.Byte[] SerializeStringWithSpanJsonUtf8Serializer()
-        //{
-        //    return SpanJsonUtf8Serializer.Serialize(StringInput);
-        //}
+        [Benchmark]
+        public System.String SerializeStringWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Serialize(StringInput);
+        }
 
 
-        //[Benchmark]
-        //public System.Byte[] SerializeStringWithUtf8JsonSerializer()
-        //{
-        //    return Utf8JsonSerializer.Serialize(StringInput);
-        //}
+        [Benchmark]
+        public System.Byte[] SerializeStringWithSpanJsonUtf8Serializer()
+        {
+            return SpanJsonUtf8Serializer.Serialize(StringInput);
+        }
+
+
+        [Benchmark]
+        public System.Byte[] SerializeStringWithUtf8JsonSerializer()
+        {
+            return Utf8JsonSerializer.Serialize(StringInput);
+        }
 
         //private static readonly String StringOutputOfJilSerializer = JilSerializer.Serialize(StringInput);
         //[Benchmark]
@@ -357,19 +358,19 @@ namespace SpanJson.Benchmarks
         //    return JilSerializer.Deserialize<System.String>(StringOutputOfJilSerializer);
         //}
 
-        private static readonly String StringOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(StringInput);
-        [Benchmark]
-        public System.String DeserializeStringWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<System.String>(StringOutputOfSpanJsonSerializer);
-        }
+        //private static readonly String StringOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(StringInput);
+        //[Benchmark]
+        //public System.String DeserializeStringWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Deserialize<System.String>(StringOutputOfSpanJsonSerializer);
+        //}
 
-        private static readonly Byte[] StringOutputOfSpanJsonUtf8Serializer = SpanJsonUtf8Serializer.Serialize(StringInput);
-        [Benchmark]
-        public System.String DeserializeStringWithSpanJsonUtf8Serializer()
-        {
-            return SpanJsonUtf8Serializer.Deserialize<System.String>(StringOutputOfSpanJsonUtf8Serializer);
-        }
+        //private static readonly Byte[] StringOutputOfSpanJsonUtf8Serializer = SpanJsonUtf8Serializer.Serialize(StringInput);
+        //[Benchmark]
+        //public System.String DeserializeStringWithSpanJsonUtf8Serializer()
+        //{
+        //    return SpanJsonUtf8Serializer.Deserialize<System.String>(StringOutputOfSpanJsonUtf8Serializer);
+        //}
 
         //private static readonly Byte[] StringOutputOfUtf8JsonSerializer = Utf8JsonSerializer.Serialize(StringInput);
         //[Benchmark]

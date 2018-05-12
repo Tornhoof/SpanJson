@@ -237,41 +237,50 @@ namespace SpanJson
                 return span[pos++];
             }
 
-            if (span[pos] == JsonUtf16Constant.ReverseSolidus)
+            if (span[pos] == JsonUtf8Constant.ReverseSolidus)
             {
                 pos++;
-                switch (span[pos++])
-                {
-                    case JsonUtf16Constant.DoubleQuote:
-                        return JsonUtf16Constant.DoubleQuote;
-                    case JsonUtf16Constant.ReverseSolidus:
-                        return JsonUtf16Constant.ReverseSolidus;
-                    case JsonUtf16Constant.Solidus:
-                        return JsonUtf16Constant.Solidus;
-                    case 'b':
-                        return '\b';
-                    case 'f':
-                        return '\f';
-                    case 'n':
-                        return '\n';
-                    case 'r':
-                        return '\r';
-                    case 't':
-                        return '\t';
-                    case 'U':
-                    case 'u':
-                        if (span.Length == 6)
-                        {
-                            var result = (char) int.Parse(span.Slice(2, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture);
-                            pos += 4;
-                            return result;
-                        }
-
-                        break;
-                }
+                return UnescapeUtf16CharInternal(span, ref pos);
             }
 
             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(char));
+            return default;
+        }
+
+        private char UnescapeUtf16CharInternal(ReadOnlySpan<char> span, ref int pos)
+        {
+            ref readonly var current = ref span[pos++];
+            switch (current)
+            {
+                case JsonUtf16Constant.DoubleQuote:
+                case JsonUtf16Constant.ReverseSolidus:
+                    return current;
+                case JsonUtf16Constant.Solidus:
+                    return current;
+                case 'b':
+                    return '\b';
+                case 'f':
+                    return '\f';
+                case 'n':
+                    return '\n';
+                case 'r':
+                    return '\r';
+                case 't':
+                    return '\t';
+                case 'U':
+                case 'u':
+                {
+                    if (int.TryParse(span.Slice(pos, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var value))
+                    {
+                        pos += 4;
+                        return (char) value;
+                    }
+
+                    break;
+                }
+            }
+
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
             return default;
         }
 
@@ -368,6 +377,7 @@ namespace SpanJson
             return escapedCharSize == 0 ? span.ToString() : UnescapeUtf16(span, escapedCharSize);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private string UnescapeUtf16(ReadOnlySpan<char> span, int escapedCharSize)
         {
             var unescapedLength = span.Length - escapedCharSize;
@@ -377,51 +387,15 @@ namespace SpanJson
             var index = 0;
             while (index < span.Length)
             {
-                var current = span[index++];
+                ref readonly var current = ref span[index++];
                 if (current == JsonUtf16Constant.ReverseSolidus)
                 {
-                    current = span[index++];
-                    switch (current)
-                    {
-                        case JsonUtf16Constant.DoubleQuote:
-                            current = JsonUtf16Constant.DoubleQuote;
-                            break;
-                        case JsonUtf16Constant.ReverseSolidus:
-                            current = JsonUtf16Constant.ReverseSolidus;
-                            break;
-                        case JsonUtf16Constant.Solidus:
-                            current = JsonUtf16Constant.Solidus;
-                            break;
-                        case 'b':
-                            current = '\b';
-                            break;
-                        case 'f':
-                            current = '\f';
-                            break;
-                        case 'n':
-                            current = '\n';
-                            break;
-                        case 'r':
-                            current = '\r';
-                            break;
-                        case 't':
-                            current = '\t';
-                            break;
-                        case 'U':
-                        case 'u':
-                        {
-                            current = (char) int.Parse(span.Slice(index, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture);
-                            index += 4;
-                            break;
-                        }
-
-                        default:
-                            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
-                            break;
-                    }
+                    Unsafe.Add(ref c, unescapedIndex++) = UnescapeUtf16CharInternal(span, ref index);
                 }
-
-                Unsafe.Add(ref c, unescapedIndex++) = current;
+                else
+                {
+                    Unsafe.Add(ref c, unescapedIndex++) = current;
+                }
             }
 
             return result;
