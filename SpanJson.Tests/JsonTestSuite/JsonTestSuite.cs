@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -79,19 +80,19 @@ namespace SpanJson.Tests.JsonTestSuite
 
         [Theory]
         [MemberData(nameof(GetTestCases))]
-        public void Run(string name, string input, Result result, TestType type)
+        public void Run(string name, string input, Result result, TestType type, SymbolType symbolType)
         {
             switch (result)
             {
                 case Result.Accepted:
                 {
-                    Deserialize(input, type);
+                    Deserialize(input, type, symbolType);
                     _outputHelper.WriteLine($"{name} was accepted.");
                     break;
                 }
                 case Result.Rejected:
                 {
-                    Assert.ThrowsAny<Exception>(() => Deserialize(input, type));
+                    Assert.ThrowsAny<Exception>(() => Deserialize(input, type, symbolType));
                     _outputHelper.WriteLine($"{name} was rejected.");
                     break;
                 }
@@ -99,7 +100,7 @@ namespace SpanJson.Tests.JsonTestSuite
                 {
                     try
                     {
-                        Deserialize(input, type);
+                        Deserialize(input, type, symbolType);
                         _outputHelper.WriteLine($"{name} was accepted.");
                     }
                     catch
@@ -125,26 +126,30 @@ namespace SpanJson.Tests.JsonTestSuite
                         var name = zipArchiveEntry.Name;
                         var text = reader.ReadToEnd();
                         var type = GetTestType(name);
-                        if (name.StartsWith("y_"))
+                        foreach (var symbolType in Enum.GetValues(typeof(SymbolType)))
                         {
-                            result.Add(new object[] {name, text, Result.Accepted, type});
-                        }
 
-                        if (name.StartsWith("n_"))
-                        {
-                            // We have a specific list of errors we currently do not parse as errors
-                            if (IgnoredErrors.Contains(name))
+                            if (name.StartsWith("y_"))
                             {
-                                result.Add(new object[] {name, text, Result.Accepted, type});
+                                result.Add(new object[] {name, text, Result.Accepted, type, symbolType});
                             }
-                            else
+
+                            if (name.StartsWith("n_"))
                             {
-                                result.Add(new object[] {name, text, Result.Rejected, type});
+                                // We have a specific list of errors we currently do not parse as errors
+                                if (IgnoredErrors.Contains(name))
+                                {
+                                    result.Add(new object[] {name, text, Result.Accepted, type, symbolType });
+                                }
+                                else
+                                {
+                                    result.Add(new object[] {name, text, Result.Rejected, type, symbolType });
+                                }
                             }
-                        }
-                        else if (name.StartsWith("i_"))
-                        {
-                            result.Add(new object[] {name, text, Result.Both, type});
+                            else if (name.StartsWith("i_"))
+                            {
+                                result.Add(new object[] {name, text, Result.Both, type, symbolType });
+                            }
                         }
                     }
                 }
@@ -153,45 +158,58 @@ namespace SpanJson.Tests.JsonTestSuite
             return result;
         }
 
-        private object Deserialize(string input, TestType type)
+        private object Deserialize(string input, TestType type, SymbolType symbolType)
         {
-            var array = input[0] == JsonUtf8Constant.BeginArray;
+            var array = input[0] == JsonUtf16Constant.BeginArray;
             switch (type)
             {
                 case TestType.String:
                 {
                     if (array)
                     {
-                        return JsonSerializer.Generic.Utf16.Deserialize<string[]>(input);
+                        return DeserializeBySymbolType<string[]>(input, symbolType);
                     }
 
-                    return JsonSerializer.Generic.Utf16.Deserialize<string>(input);
+                    return DeserializeBySymbolType<string>(input, symbolType);
                 }
                 case TestType.Number:
                 {
                     if (array)
                     {
-                        return JsonSerializer.Generic.Utf16.Deserialize<double[]>(input);
+                        return DeserializeBySymbolType<double[]>(input, symbolType);
                     }
 
-                    return JsonSerializer.Generic.Utf16.Deserialize<double>(input);
+                    return DeserializeBySymbolType<double>(input, symbolType);
                 }
                 case TestType.Array:
                 {
-                    return JsonSerializer.Generic.Utf16.Deserialize<object[]>(input);
+                    return DeserializeBySymbolType<object[]>(input, symbolType);
                 }
                 case TestType.Object:
                 case TestType.Structure:
                 {
                     if (array)
                     {
-                        return JsonSerializer.Generic.Utf16.Deserialize<object[]>(input);
+                        return DeserializeBySymbolType<object[]>(input, symbolType);
                     }
 
-                    return JsonSerializer.Generic.Utf16.Deserialize<object>(input);
+                    return DeserializeBySymbolType<object>(input, symbolType);
                 }
                 default:
                     throw new NotImplementedException();
+            }
+        }
+
+        private static T DeserializeBySymbolType<T>(string input, SymbolType symbolType)
+        {
+            switch (symbolType)
+            {
+                case SymbolType.Utf8:
+                    return JsonSerializer.Generic.Utf8.Deserialize<T>(Encoding.UTF8.GetBytes(input));
+                case SymbolType.Utf16:
+                    return JsonSerializer.Generic.Utf16.Deserialize<T>(input);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(symbolType), symbolType, null);
             }
         }
 
@@ -218,6 +236,12 @@ namespace SpanJson.Tests.JsonTestSuite
             }
 
             return TestType.Structure;
+        }
+
+        public enum SymbolType
+        {
+            Utf8,
+            Utf16
         }
     }
 }

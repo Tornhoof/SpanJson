@@ -9,7 +9,7 @@ namespace SpanJson.Benchmarks.Fixture
 
         public object Generate()
         {
-            return new Uri($"http://{_stringValueFixture.Generate()}.com/{_stringValueFixture.Generate()}");
+            return new Uri($"http://{_stringValueFixture.GenerateAlphaNumeric()}.com/{_stringValueFixture.GenerateAlphaNumeric()}");
         }
     }
 }

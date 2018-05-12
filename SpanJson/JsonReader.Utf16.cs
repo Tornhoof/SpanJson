@@ -383,20 +383,81 @@ namespace SpanJson
         {
             var unescapedLength = span.Length - escapedCharSize;
             var result = new string('\0', unescapedLength);
-            ref var c = ref MemoryMarshal.GetReference(result.AsSpan());
-            var unescapedIndex = 0;
+            var charOffset = 0;
+            var writeableSpan = MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(result.AsSpan()), unescapedLength);
+            var from = 0;
             var index = 0;
             while (index < span.Length)
             {
-                ref readonly var current = ref span[index++];
+                ref readonly var current = ref span[index];
                 if (current == JsonUtf16Constant.ReverseSolidus)
                 {
-                    Unsafe.Add(ref c, unescapedIndex++) = UnescapeUtf16CharInternal(span, ref index);
+                    // We copy everything up to the escaped char as utf16 to the string
+                    var copyLength = index - from;
+                    span.Slice(from, copyLength).CopyTo(writeableSpan.Slice(charOffset));
+                    charOffset += copyLength;
+                    index++;
+                    current =  ref span[index++];
+                    char unescaped = default;
+                    switch (current)
+                    {
+                        case JsonUtf16Constant.DoubleQuote:
+                            unescaped = JsonUtf16Constant.DoubleQuote;
+                            break;
+                        case JsonUtf16Constant.ReverseSolidus:
+                            unescaped = JsonUtf16Constant.ReverseSolidus;
+                            break;
+                        case JsonUtf16Constant.Solidus:
+                            unescaped = JsonUtf16Constant.Solidus;
+                            break;
+                        case 'b':
+                            unescaped = '\b';
+                            break;
+                        case 'f':
+                            unescaped = '\f';
+                            break;
+                        case 'n':
+                            unescaped = '\n';
+                            break;
+                        case 'r':
+                            unescaped = '\r';
+                            break;
+                        case 't':
+                            unescaped = '\t';
+                            break;
+                        case 'U':
+                        case 'u':
+                        {
+                            if (int.TryParse(span.Slice(index, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var value))
+                            {
+                                index += 4;
+                                unescaped = (char) value;
+                                break;
+                            }
+
+                            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
+                            break;
+
+                        }
+                        default:
+                        {
+                            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
+                            break;
+                        }
+                    }
+
+                    writeableSpan[charOffset++] = unescaped;
+                    from = index;
                 }
                 else
                 {
-                    Unsafe.Add(ref c, unescapedIndex++) = current;
+                    index++;
                 }
+            }
+
+            if (from < span.Length) // still data to copy
+            {
+                span.Slice(from).CopyTo(writeableSpan.Slice(charOffset));
             }
 
             return result;
