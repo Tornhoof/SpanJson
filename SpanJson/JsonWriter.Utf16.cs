@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using SpanJson.Helpers;
 
 namespace SpanJson
@@ -377,8 +376,7 @@ namespace SpanJson
         public void WriteUtf16String(string value)
         {
             ref var pos = ref _pos;
-            var valueLength = value.Length;
-            var sLength = valueLength + 7; // assume that a fully escaped char fits too
+            var sLength = value.Length + 7; // assume that a fully escaped char fits too
             if (pos > _chars.Length - sLength)
             {
                 Grow(sLength);
@@ -386,14 +384,13 @@ namespace SpanJson
 
             WriteUtf16DoubleQuote();
             var span = value.AsSpan();
-            ref var start = ref MemoryMarshal.GetReference(span);
-            for (var i = 0; i < valueLength; i++)
+            for (var i = 0; i < span.Length; i++)
             {
-                ref var c = ref Unsafe.Add(ref start, i);
+                ref readonly var c = ref span[i];
                 if (c < 0x20 || c == JsonUtf16Constant.DoubleQuote || c == JsonUtf16Constant.Solidus || c == JsonUtf16Constant.ReverseSolidus)
                 {
                     WriteEscapedUtf16CharInternal(c);
-                    var remaining = 5 + valueLength - i; // make sure that all characters and an extra 5 for a full escape still fit
+                    var remaining = 5 + span.Length - i; // make sure that all characters and an extra 5 for a full escape still fit
                     if (pos > _chars.Length - remaining)
                     {
                         Grow(remaining);
