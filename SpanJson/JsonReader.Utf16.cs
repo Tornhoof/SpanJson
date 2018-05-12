@@ -247,6 +247,7 @@ namespace SpanJson
             return default;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private char UnescapeUtf16CharInternal(ReadOnlySpan<char> span, ref int pos)
         {
             ref readonly var current = ref span[pos++];

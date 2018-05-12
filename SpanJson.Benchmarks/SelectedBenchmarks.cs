@@ -27,13 +27,11 @@ namespace SpanJson.Benchmarks
         //    Encoding.UTF8.GetBytes(AccessTokenSerializedString);
 
 
-        //private static readonly Answer Answer = ExpressionTreeFixture.Create<Answer>();
+        private static readonly Answer Answer = ExpressionTreeFixture.Create<Answer>();
 
-        //private static readonly string AnswerSerializedString =
-        //    SpanJsonSerializer.Serialize(Answer);
+        private static readonly string AnswerSerializedString = SpanJsonSerializer.Serialize(Answer);
 
-        //private static readonly byte[] AnswerSerializedByteArray =
-        //    Encoding.UTF8.GetBytes(AnswerSerializedString);
+        private static readonly byte[] AnswerSerializedByteArray = Encoding.UTF8.GetBytes(AnswerSerializedString);
 
 
         //        private static readonly JilSerializer JilSerializer = new JilSerializer();
@@ -84,17 +82,17 @@ namespace SpanJson.Benchmarks
         //    return JsonSerializer.Generic.Utf8.Serialize(Answer);
         //}
 
-        //[Benchmark]
-        //public Answer DeserializeAnswerWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
-        //}
+        [Benchmark]
+        public Answer DeserializeAnswerWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
+        }
 
-        //[Benchmark]
-        //public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
-        //{
-        //    return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
-        //}
+        [Benchmark]
+        public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
+        {
+            return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
+        }
 
         //[Benchmark]
         //public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsyncUtf8()
@@ -327,29 +325,29 @@ namespace SpanJson.Benchmarks
         //    return JilSerializer.Serialize(StringInput);
         //}
 
-        private static string StringInput = "Hello\nWorld 😁";
-        //        private static string StringInput = "Hello World";
-        //private static string StringInput = "Hello😁World";
+        //private static string StringInput = "Hello\nWorld 😁";
+        ////        private static string StringInput = "Hello World";
+        ////private static string StringInput = "Hello😁World";
 
-        [Benchmark]
-        public System.String SerializeStringWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(StringInput);
-        }
-
-
-        [Benchmark]
-        public System.Byte[] SerializeStringWithSpanJsonUtf8Serializer()
-        {
-            return SpanJsonUtf8Serializer.Serialize(StringInput);
-        }
+        //[Benchmark]
+        //public System.String SerializeStringWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(StringInput);
+        //}
 
 
-        [Benchmark]
-        public System.Byte[] SerializeStringWithUtf8JsonSerializer()
-        {
-            return Utf8JsonSerializer.Serialize(StringInput);
-        }
+        //[Benchmark]
+        //public System.Byte[] SerializeStringWithSpanJsonUtf8Serializer()
+        //{
+        //    return SpanJsonUtf8Serializer.Serialize(StringInput);
+        //}
+
+
+        //[Benchmark]
+        //public System.Byte[] SerializeStringWithUtf8JsonSerializer()
+        //{
+        //    return Utf8JsonSerializer.Serialize(StringInput);
+        //}
 
         //private static readonly String StringOutputOfJilSerializer = JilSerializer.Serialize(StringInput);
         //[Benchmark]
