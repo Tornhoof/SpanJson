@@ -330,18 +330,18 @@ namespace SpanJson.Benchmarks
         private static string StringInput = "Hello\nWorld 😁";
         //private static string StringInput = "Hello World";
 
-        [Benchmark]
-        public System.String SerializeStringWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(StringInput);
-        }
+        //[Benchmark]
+        //public System.String SerializeStringWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(StringInput);
+        //}
 
 
-        [Benchmark]
-        public System.Byte[] SerializeStringWithSpanJsonUtf8Serializer()
-        {
-            return SpanJsonUtf8Serializer.Serialize(StringInput);
-        }
+        //[Benchmark]
+        //public System.Byte[] SerializeStringWithSpanJsonUtf8Serializer()
+        //{
+        //    return SpanJsonUtf8Serializer.Serialize(StringInput);
+        //}
 
 
         //[Benchmark]

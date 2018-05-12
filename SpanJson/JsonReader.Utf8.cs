@@ -381,6 +381,7 @@ namespace SpanJson
         /// <summary>
         /// This is simply said pretty much twice as slow as the Utf16 version
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static string UnescapeUtf8(ReadOnlySpan<byte> span, int escapedCharsSize)
         {
             var unescapedLength = Encoding.UTF8.GetCharCount(span) - escapedCharsSize;
@@ -388,28 +389,34 @@ namespace SpanJson
             var charOffset = 0;
             // We create a writeable span of the chars in the string (currently there is no string.create overload taking a span as state so this the solution for now).
             var writeableSpan = MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(result.AsSpan()), unescapedLength);
-            var from = 0;
             var index = 0;
             while (index < span.Length)
             {
-                ref readonly var current = ref span[index];
+                ref readonly var current = ref span[index++];
                 if (current == JsonUtf8Constant.ReverseSolidus)
                 {
-                    // We copy everything up to the escaped char as utf8 to the string
-                    charOffset += Encoding.UTF8.GetChars(span.Slice(from, index - from), writeableSpan.Slice(charOffset));
-                    index++;
                     writeableSpan[charOffset++] = UnescapeCharInternal(span, ref index);
-                    from = index;
                 }
-                else
+                else if (current < 0x80) // ASCII
                 {
-                    index++;
+                    writeableSpan[charOffset++] = (char) current;
                 }
-            }
-
-            if (from < span.Length) // still data to copy
-            {
-                Encoding.UTF8.GetChars(span.Slice(from), writeableSpan.Slice(charOffset));
+                else if (current < 0xDF) // two byte UTF8
+                {
+                    Encoding.UTF8.GetChars(span.Slice(index - 1, 2), writeableSpan.Slice(charOffset++));
+                    index += 1;
+                }
+                else if (current < 0xEF) // three byte UTF8
+                {
+                    Encoding.UTF8.GetChars(span.Slice(index - 1, 3), writeableSpan.Slice(charOffset++));
+                    index += 2;
+                }
+                else // four byte UTF8
+                {
+                    Encoding.UTF8.GetChars(span.Slice(index - 1, 4), writeableSpan.Slice(charOffset++));
+                    charOffset++; // two utf16 codepoints
+                    index += 3;
+                }
             }
 
             return result;
