@@ -13,13 +13,7 @@ namespace SpanJson.Formatters
     public abstract class ComplexFormatter : BaseFormatter
     {
         private const int NestingLimit = 256;
-        /// <summary>
-        ///     if the propertyType is object, we need to do it during runtime
-        ///     if the type is RuntimeHelpers.IsReferenceOrContainsReferences -> false, we can do everything statically (struct and
-        ///     struct children case)
-        ///     if the type is sealed or struct, then the type during generation is the type we can use for static lookup
-        ///     else we need to do runtime lookup
-        /// </summary>
+
         protected static SerializeDelegate<T, TSymbol, TResolver> BuildSerializeDelegate<T, TSymbol, TResolver>()
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {

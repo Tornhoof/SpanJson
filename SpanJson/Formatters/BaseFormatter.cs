@@ -40,7 +40,8 @@ namespace SpanJson.Formatters
 
 
         /// <summary>
-        /// Faster than SequenceEqual for some unknown reason, this needs to be a byte array and not a string otherwise we might run into problems with non ascii property names
+        /// Faster than SequenceEqual for some unknown reason
+        /// Using SequenceEqual makes the deserialization 10-15% slower, but in a standalone benchmark sequenceEqual is way faster
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected static bool StringEquals(ReadOnlySpan<char> span, int offset, string comparison)
