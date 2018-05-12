@@ -54,13 +54,21 @@ namespace SpanJson
 
         public float ReadUtf8Single()
         {
-            Utf8Parser.TryParse(ReadUtf8NumberInternal(), out float value, out var consumed);
+            var span = ReadUtf8NumberInternal();
+            if (!Utf8Parser.TryParse(span, out float value, out var consumed) || span.Length != consumed)
+            {
+                ThrowJsonParserException(JsonParserException.ParserError.InvalidNumberFormat);
+            }
             return value;
         }
 
         public double ReadUtf8Double()
         {
-            Utf8Parser.TryParse(ReadUtf8NumberInternal(), out double value, out var consumed);
+            var span = ReadUtf8NumberInternal();
+            if (!Utf8Parser.TryParse(span, out double value, out var consumed) || span.Length != consumed)
+            {
+                ThrowJsonParserException(JsonParserException.ParserError.InvalidNumberFormat);
+            }
             return value;
         }
 
@@ -280,7 +288,7 @@ namespace SpanJson
         public DateTime ReadUtf8DateTime()
         {
             var span = ReadUtf8StringSpan();
-            if (DateTimeParser.TryParseDateTime(span, out var value, out _))
+            if (DateTimeParser.TryParseDateTime(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
             }
@@ -292,7 +300,7 @@ namespace SpanJson
         public DateTimeOffset ReadUtf8DateTimeOffset()
         {
             var span = ReadUtf8StringSpan();
-            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out _))
+            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
             }
@@ -304,7 +312,7 @@ namespace SpanJson
         public TimeSpan ReadUtf8TimeSpan()
         {
             var span = ReadUtf8StringSpan();
-            if (Utf8Parser.TryParse(span, out TimeSpan result, out _))
+            if (Utf8Parser.TryParse(span, out TimeSpan result, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return result;
             }
@@ -429,6 +437,11 @@ namespace SpanJson
                             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
                             break;
 
+                        }
+                        default:
+                        {
+                            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
+                            break;
                         }
                     }
                     writeableSpan[charOffset++] = unescaped;
