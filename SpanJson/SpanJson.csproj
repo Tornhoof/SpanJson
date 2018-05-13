@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/Tornhoof/SpanJson/blob/master/LICENSE</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>JSON .NET Core 2.1</PackageTags>
-    <PackageReleaseNotes>Many correctness fixes</PackageReleaseNotes>
+    <PackageReleaseNotes>Support for annoating constructors to use those during deserialization</PackageReleaseNotes>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1701;1702;1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

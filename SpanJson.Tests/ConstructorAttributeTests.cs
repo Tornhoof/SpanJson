@@ -13,7 +13,7 @@ namespace SpanJson.Tests
         public class DefaultDO : IEquatable<DefaultDO>
         {
             [JsonConstructor]
-            public DefaultDO(string key, int value)
+            public DefaultDO(int value, string key)
             {
                 Key = key;
                 Value = value;
@@ -82,7 +82,7 @@ namespace SpanJson.Tests
         [Fact]
         public void TestDefaultUtf8()
         {
-            var defaultdo = new DefaultDO("Hello", 5);
+            var defaultdo = new DefaultDO(5, "Hello");
             var serialized = JsonSerializer.Generic.Utf8.Serialize(defaultdo);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<DefaultDO>(serialized);
             Assert.Equal(defaultdo, deserialized);
@@ -91,7 +91,7 @@ namespace SpanJson.Tests
         [Fact]
         public void TestDefaultUtf16()
         {
-            var defaultdo = new DefaultDO("Hello", 5);
+            var defaultdo = new DefaultDO(5, "Hello");
             var serialized = JsonSerializer.Generic.Utf16.Serialize(defaultdo);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<DefaultDO>(serialized);
             Assert.Equal(defaultdo, deserialized);
