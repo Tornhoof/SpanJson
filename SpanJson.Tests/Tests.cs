@@ -56,13 +56,37 @@ namespace SpanJson.Tests
 
         [Theory]
         [MemberData(nameof(GetModels))]
-        public void CanDeserializeAllFromJil(Type modelType)
+        public void CanSerializeDeserializeAllWithJil(Type modelType)
         {
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
             var serialized = JSON.Serialize(model, Options.ISO8601ExcludeNullsIncludeInherited);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized, modelType);
+            Assert.NotNull(deserialized);
+            Assert.IsType(modelType, deserialized);
+            Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
+            serialized = JsonSerializer.NonGeneric.Utf16.Serialize(model);
+            deserialized = JSON.Deserialize(serialized, modelType, Options.ISO8601ExcludeNullsIncludeInherited);
+            Assert.NotNull(deserialized);
+            Assert.IsType(modelType, deserialized);
+            Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetModels))]
+        public void CanSerializeDeserializeAllWithUtf8Json(Type modelType)
+        {
+            var fixture = new ExpressionTreeFixture();
+            var model = fixture.Create(modelType);
+            var serialized = Utf8Json.JsonSerializer.NonGeneric.Serialize(model);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.NonGeneric.Utf8.Deserialize(serialized, modelType);
+            Assert.NotNull(deserialized);
+            Assert.IsType(modelType, deserialized);
+            Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
+            serialized = JsonSerializer.NonGeneric.Utf8.Serialize(model);
+            deserialized = Utf8Json.JsonSerializer.NonGeneric.Deserialize(modelType, serialized);
             Assert.NotNull(deserialized);
             Assert.IsType(modelType, deserialized);
             Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
