@@ -23,6 +23,6 @@ namespace SpanJson.Resolvers
         public bool ExcludeNull { get; }
 
         public bool CanRead { get; }
-        public bool CanWrite { get; }
+        public bool CanWrite { get; set; }
     }
 }

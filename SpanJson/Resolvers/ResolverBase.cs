@@ -34,7 +34,7 @@ namespace SpanJson.Resolvers
             // ReSharper restore ConvertClosureToMethodGroup
         }
 
-        public JsonObjectDescription GetMemberInfos<T>()
+        public JsonObjectDescription GetObjectDescription<T>()
         {
             return Members.GetOrAdd(typeof(T), x => BuildMembers(x));
         }
@@ -42,7 +42,7 @@ namespace SpanJson.Resolvers
         /// <summary>
         /// TODO Extend with attributes and ShouldSerialize
         /// </summary>
-        public JsonObjectDescription GetDynamicMemberInfos(IDynamicMetaObjectProvider provider)
+        public JsonObjectDescription GetDynamicObjectDescription(IDynamicMetaObjectProvider provider)
         {
             var metaObject = provider.GetMetaObject(DynamicMetaObjectParameterExpression);
             var members = metaObject.GetDynamicMemberNames();
@@ -59,7 +59,7 @@ namespace SpanJson.Resolvers
                     _nullOptions == NullOptions.ExcludeNulls, true, true));
             }
 
-            return new JsonObjectDescription(result.ToArray());
+            return new JsonObjectDescription(null, result.ToArray());
         }
 
         public IJsonFormatter<T, TSymbol, TResolver> GetFormatter<T>()
@@ -82,6 +82,7 @@ namespace SpanJson.Resolvers
             var publicMembers = type.GetFields(BindingFlags.Public | BindingFlags.Instance)
                 .Where(a => !a.IsLiteral).Cast<MemberInfo>().Concat(
                     type.GetProperties(BindingFlags.Public | BindingFlags.Instance));
+            var jsonConstructor = type.GetConstructors().FirstOrDefault(a => a.GetCustomAttribute<JsonConstructorAttribute>() != null);
             var result = new List<JsonMemberInfo>();
             foreach (var memberInfo in publicMembers)
             {
@@ -109,7 +110,7 @@ namespace SpanJson.Resolvers
                 }
             }
 
-            return new JsonObjectDescription(result.ToArray());
+            return new JsonObjectDescription(jsonConstructor, result.ToArray());
         }
 
         private static string Escape(string input)

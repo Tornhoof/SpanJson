@@ -7,14 +7,16 @@ namespace SpanJson
     [AttributeUsage(AttributeTargets.Constructor)]
     public class JsonConstructorAttribute : Attribute
     {
+        public string[] ParameterNames { get; }
+
         public JsonConstructorAttribute()
         {
             
         }
 
-        public JsonConstructorAttribute(params string[] argumentNames)
+        public JsonConstructorAttribute(params string[] parameterNames)
         {
-
+            ParameterNames = parameterNames;
         }
     }
 }

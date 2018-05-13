@@ -18,7 +18,7 @@ namespace SpanJson.Formatters
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
-            var memberInfos = resolver.GetMemberInfos<T>().Where(a => a.CanRead).ToList();
+            var memberInfos = resolver.GetObjectDescription<T>().Where(a => a.CanRead).ToList();
             var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
             var nestingLimitParameter = Expression.Parameter(typeof(int), "nestingLimit");
@@ -161,7 +161,8 @@ namespace SpanJson.Formatters
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
-            var memberInfos = resolver.GetMemberInfos<T>().Where(a => a.CanWrite).ToList();
+            var objectDescription = resolver.GetObjectDescription<T>();
+            var memberInfos = objectDescription.Where(a => a.CanWrite).ToList();
             var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
             // can't deserialize abstract or interface
             if (memberInfos.Any(a => a.MemberType.IsAbstract || a.MemberType.IsInterface))
@@ -206,7 +207,8 @@ namespace SpanJson.Formatters
             if (typeof(TSymbol) == typeof(char))
             {
                 nameSpanMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16NameSpan));
-                tryReadEndObjectMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.TryReadUtf16IsEndObjectOrValueSeparator));
+                tryReadEndObjectMethodInfo =
+                    FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.TryReadUtf16IsEndObjectOrValueSeparator));
                 beginObjectOrThrowMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16BeginObjectOrThrow));
             }
             else if (typeof(TSymbol) == typeof(byte))
@@ -220,22 +222,66 @@ namespace SpanJson.Formatters
                 throw new NotSupportedException();
             }
 
+            Func<string, Expression, Expression> matchExpressionFunctor;
+            Expression[] constructorParameterExpresssions = null;
+            if (objectDescription.Constructor != null)
+            {
+                var dict = objectDescription.ConstructorMapping;
+                constructorParameterExpresssions = new Expression[dict.Count];
+                foreach (var valueTuple in dict)
+                {
+                    constructorParameterExpresssions[valueTuple.Value.Index] = Expression.Variable(valueTuple.Value.Type);
+                }
+
+                matchExpressionFunctor = (memberName, valueExpression) =>
+                {
+                    var element = dict[memberName];
+                    return Expression.Assign(constructorParameterExpresssions[element.Index], valueExpression);
+                };
+            }
+            else
+            {
+                // The normal assign to member type
+                matchExpressionFunctor = (memberName, valueExpression) =>
+                    Expression.Assign(Expression.PropertyOrField(returnValue, memberName), valueExpression);
+            }
+
             var switchValueAssignExpression = Expression.Assign(switchValue, Expression.Call(readerParameter, nameSpanMethodInfo));
-            var switchExpression = Expression.Block(new[] { switchValue }, switchValueAssignExpression,
-                BuildPropertyComparisonSwitchExpression<TSymbol, TResolver>(resolver, memberInfos, null, 0, switchValue, returnValue, readerParameter));
+            var switchExpression = Expression.Block(new[] {switchValue}, switchValueAssignExpression,
+                BuildPropertyComparisonSwitchExpression<TSymbol, TResolver>(resolver, memberInfos, null, 0, switchValue, matchExpressionFunctor,
+                    readerParameter));
             var countExpression = Expression.Parameter(typeof(int), "count");
             var abortExpression = Expression.IsTrue(Expression.Call(readerParameter, tryReadEndObjectMethodInfo, countExpression));
             var readBeginObject = Expression.Call(readerParameter, beginObjectOrThrowMethodInfo);
             var loopAbort = Expression.Label(typeof(void));
             var returnTarget = Expression.Label(returnValue.Type);
-            var block = Expression.Block(new[] { returnValue, countExpression }, readBeginObject,
-                Expression.Assign(returnValue, Expression.New(returnValue.Type)),
-                Expression.Loop(
-                    Expression.IfThenElse(abortExpression, Expression.Break(loopAbort),
-                        switchExpression), loopAbort
-                ),
-                Expression.Label(returnTarget, returnValue)
-            );
+            Expression block;
+            if (objectDescription.Constructor != null)
+            {
+                var blockParameters = new List<ParameterExpression> {returnValue, countExpression};
+                // ReSharper disable AssignNullToNotNullAttribute
+                blockParameters.AddRange(constructorParameterExpresssions.OfType<ParameterExpression>());
+                // ReSharper restore AssignNullToNotNullAttribute
+                block = Expression.Block(blockParameters, readBeginObject,
+                    Expression.Loop(
+                        Expression.IfThenElse(abortExpression, Expression.Break(loopAbort),
+                            switchExpression), loopAbort
+                    ),
+                    Expression.Assign(returnValue, Expression.New(objectDescription.Constructor, constructorParameterExpresssions)),
+                    Expression.Label(returnTarget, returnValue)
+                );
+            }
+            else
+            {
+                block = Expression.Block(new[] {returnValue, countExpression}, readBeginObject,
+                    Expression.Assign(returnValue, Expression.New(returnValue.Type)),
+                    Expression.Loop(
+                        Expression.IfThenElse(abortExpression, Expression.Break(loopAbort),
+                            switchExpression), loopAbort
+                    ),
+                    Expression.Label(returnTarget, returnValue)
+                );
+            }
 
             var lambda = Expression.Lambda<DeserializeDelegate<T, TSymbol, TResolver>>(block, readerParameter);
             return lambda.Compile();
@@ -245,15 +291,17 @@ namespace SpanJson.Formatters
         ///     We group the field names by the nth character and nest the switch tables to find the appropriate field/property to
         ///     assign to
         /// </summary>
-        private static Expression BuildPropertyComparisonSwitchExpression<TSymbol, TResolver>(TResolver resolver, ICollection<JsonMemberInfo> memberInfos, string prefix,
-            int index,
-            ParameterExpression switchValue, Expression returnValue, Expression readerParameter) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+        private static Expression BuildPropertyComparisonSwitchExpression<TSymbol, TResolver>(TResolver resolver, ICollection<JsonMemberInfo> memberInfos,
+            string prefix,
+            int index, ParameterExpression switchValue, Func<string, Expression, Expression> matchExpressionFunctor, Expression readerParameter)
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             var group = memberInfos.Where(a => (prefix == null || a.Name.StartsWith(prefix)) && a.Name.Length > index).GroupBy(a => a.Name[index]).ToList();
             if (!group.Any())
             {
                 return null;
             }
+
             MethodInfo skipNextMethodInfo;
             MethodInfo equalityMethodInfo;
             Expression indexedSwitchValue;
@@ -293,21 +341,24 @@ namespace SpanJson.Formatters
                 {
                     if (extendedComparisonNecessary) // ascii key
                     {
-                        var encoded = Encoding.UTF8.GetBytes(new[] { groupedMemberInfos.Key });
+                        var encoded = Encoding.UTF8.GetBytes(new[] {groupedMemberInfos.Key});
                         indexedSwitchValue = Expression.Call(switchValue, "Slice", Type.EmptyTypes, Expression.Constant(index),
                             Expression.Constant(encoded.Length));
-                        equalitySwitchValue = Expression.Call(switchValue, "Slice", Type.EmptyTypes, Expression.Constant(encoded.Length)); // For the equality comparison we need to change the switch value
+                        equalitySwitchValue =
+                            Expression.Call(switchValue, "Slice", Type.EmptyTypes,
+                                Expression.Constant(encoded.Length)); // For the equality comparison we need to change the switch value
                         switchKey = Expression.Constant(encoded);
                     }
                     else
                     {
-                        switchKey = Expression.Constant((byte)groupedMemberInfos.Key);
+                        switchKey = Expression.Constant((byte) groupedMemberInfos.Key);
                     }
                 }
                 else
                 {
                     throw new NotSupportedException();
                 }
+
                 var memberInfosPerChar = groupedMemberInfos.Count();
                 if (memberInfosPerChar == 1) // only one hit, we compare the remaining name and and assign the field if true
                 {
@@ -315,10 +366,11 @@ namespace SpanJson.Formatters
                     var formatter = resolver.GetFormatter(memberInfo.MemberType);
                     var checkLength = (prefix?.Length ?? 0) + 1;
                     var equalityCheckStart = extendedComparisonNecessary ? 0 : checkLength;
-                    Expression memberInfoConstant = GetConstantExpressionOfString<TSymbol>(memberInfo.Name.Substring(checkLength));                
+                    Expression memberInfoConstant = GetConstantExpressionOfString<TSymbol>(memberInfo.Name.Substring(checkLength));
                     var testExpression = Expression.Call(equalityMethodInfo, equalitySwitchValue, Expression.Constant(equalityCheckStart), memberInfoConstant);
-                    var matchExpression = Expression.Assign(Expression.PropertyOrField(returnValue, memberInfo.MemberName),
+                    var matchExpression = matchExpressionFunctor(memberInfo.MemberName,
                         Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"), readerParameter));
+
                     var switchCase = Expression.SwitchCase(Expression.IfThenElse(testExpression, matchExpression, defaultValue), switchKey);
                     cases.Add(switchCase);
                 }
@@ -326,14 +378,17 @@ namespace SpanJson.Formatters
                 {
                     var nextPrefix = prefix + groupedMemberInfos.Key;
                     var nextSwitch =
-                        BuildPropertyComparisonSwitchExpression<TSymbol, TResolver>(resolver, memberInfos, nextPrefix, index + 1, switchValue, returnValue, readerParameter);
+                        BuildPropertyComparisonSwitchExpression<TSymbol, TResolver>(resolver, memberInfos, nextPrefix, index + 1, switchValue,
+                            matchExpressionFunctor,
+                            readerParameter);
                     var exactMatch = groupedMemberInfos.SingleOrDefault(a => a.Name == nextPrefix);
                     Expression directMatchExpression = null;
                     if (exactMatch != null)
                     {
                         var formatter = resolver.GetFormatter(exactMatch.MemberType);
-                        var matchExpression = Expression.Assign(Expression.PropertyOrField(returnValue, exactMatch.MemberName),
+                        var matchExpression = matchExpressionFunctor(exactMatch.MemberName,
                             Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"), readerParameter));
+
                         var testExpression = Expression.Equal(Expression.Property(switchValue, "Length"), Expression.Constant(nextPrefix.Length));
                         directMatchExpression = Expression.IfThenElse(testExpression, matchExpression, nextSwitch);
                     }
@@ -342,6 +397,7 @@ namespace SpanJson.Formatters
                     cases.Add(switchCase);
                 }
             }
+
             var switchExpression = Expression.Switch(typeof(void), indexedSwitchValue, defaultValue, extendedComparsionMethodInfo, cases.ToArray());
             return switchExpression;
         }

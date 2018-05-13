@@ -47,10 +47,10 @@ namespace SpanJson.Tests
         public readonly struct NamedDO : IEquatable<NamedDO>
         {
             [JsonConstructor(nameof(Key), nameof(Value))]
-            public NamedDO(string key, int value)
+            public NamedDO(string first, int second)
             {
-                Key = key;
-                Value = value;
+                Key = first;
+                Value = second;
             }
 
 

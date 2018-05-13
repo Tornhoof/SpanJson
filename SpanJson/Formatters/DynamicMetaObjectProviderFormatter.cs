@@ -30,7 +30,7 @@ namespace SpanJson.Formatters
         private static Dictionary<string, DeserializeDelegate> BuildKnownMembers()
         {
             var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
-            var memberInfos = resolver.GetMemberInfos<T>().ToList();
+            var memberInfos = resolver.GetObjectDescription<T>().ToList();
             var inputParameter = Expression.Parameter(typeof(T), "input");
             var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
             var result = new Dictionary<string, DeserializeDelegate>(StringComparer.InvariantCulture);
@@ -146,7 +146,7 @@ namespace SpanJson.Formatters
             }
             else
             {
-                var memberInfos = Resolver.GetDynamicMemberInfos(value);
+                var memberInfos = Resolver.GetDynamicObjectDescription(value);
                 var counter = 0;
                 writer.WriteBeginObject();
                 foreach (var memberInfo in memberInfos)
