@@ -34,17 +34,15 @@ namespace SpanJson.Resolvers
             // ReSharper restore ConvertClosureToMethodGroup
         }
 
-        public JsonMemberInfo[] GetMemberInfos(Type type)
+        public JsonObjectDescription GetMemberInfos<T>()
         {
-            // ReSharper disable ConvertClosureToMethodGroup
-            return Members.GetOrAdd(type, x => BuildMembers(x));
-            // ReSharper restore ConvertClosureToMethodGroup
+            return Members.GetOrAdd(typeof(T), x => BuildMembers(x));
         }
 
         /// <summary>
         /// TODO Extend with attributes and ShouldSerialize
         /// </summary>
-        public JsonMemberInfo[] GetDynamicMemberInfos(IDynamicMetaObjectProvider provider)
+        public JsonObjectDescription GetDynamicMemberInfos(IDynamicMetaObjectProvider provider)
         {
             var metaObject = provider.GetMetaObject(DynamicMetaObjectParameterExpression);
             var members = metaObject.GetDynamicMemberNames();
@@ -61,17 +59,12 @@ namespace SpanJson.Resolvers
                     _nullOptions == NullOptions.ExcludeNulls, true, true));
             }
 
-            return result.ToArray();
+            return new JsonObjectDescription(result.ToArray());
         }
 
         public IJsonFormatter<T, TSymbol, TResolver> GetFormatter<T>()
         {
             return (IJsonFormatter<T, TSymbol, TResolver>) GetFormatter(typeof(T));
-        }
-
-        public JsonMemberInfo[] GetMemberInfos<T>()
-        {
-            return GetMemberInfos(typeof(T));
         }
 
         public static string MakeCamelCase(string name)
@@ -84,7 +77,7 @@ namespace SpanJson.Resolvers
             return string.Concat(char.ToLowerInvariant(name[0]), name.Substring(1));
         }
 
-        protected virtual JsonMemberInfo[] BuildMembers(Type type)
+        protected virtual JsonObjectDescription BuildMembers(Type type)
         {
             var publicMembers = type.GetFields(BindingFlags.Public | BindingFlags.Instance)
                 .Where(a => !a.IsLiteral).Cast<MemberInfo>().Concat(
@@ -116,7 +109,7 @@ namespace SpanJson.Resolvers
                 }
             }
 
-            return result.ToArray();
+            return new JsonObjectDescription(result.ToArray());
         }
 
         private static string Escape(string input)
@@ -254,8 +247,8 @@ namespace SpanJson.Resolvers
         private static readonly ConcurrentDictionary<Type, IJsonFormatter> Formatters =
             new ConcurrentDictionary<Type, IJsonFormatter>();
 
-        private static readonly ConcurrentDictionary<Type, JsonMemberInfo[]> Members =
-            new ConcurrentDictionary<Type, JsonMemberInfo[]>();
+        private static readonly ConcurrentDictionary<Type, JsonObjectDescription> Members =
+            new ConcurrentDictionary<Type, JsonObjectDescription>();
         // ReSharper restore StaticMemberInGenericType
     }
 }
