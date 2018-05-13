@@ -21,10 +21,6 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\SpanJson.Benchmarks\SpanJson.Benchmarks.csproj" />
-    <ProjectReference Include="..\SpanJson\SpanJson.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Update="Generated\BclTests.tt">
@@ -36,6 +32,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>BclTests.tt</DependentUpon>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SpanJson.Benchmarks\SpanJson.Benchmarks.csproj" />
+    <ProjectReference Include="..\SpanJson\SpanJson.csproj" />
   </ItemGroup>
 
   <ItemGroup>

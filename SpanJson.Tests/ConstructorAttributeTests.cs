@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using SpanJson.Benchmarks.Fixture;
 using Xunit;
 
 namespace SpanJson.Tests
@@ -112,5 +114,68 @@ namespace SpanJson.Tests
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<NamedDO>(serialized);
             Assert.Equal(nameddo, deserialized);
         }
+
+
+        [Theory]
+        [MemberData(nameof(CreateBaseClassTestData))]
+        public void BaseClassAnnotationUtf8(object input)
+        {
+            var serialized = JsonSerializer.NonGeneric.Utf8.Serialize(input);
+            var deserialized = JsonSerializer.NonGeneric.Utf8.Deserialize(serialized, input.GetType());
+            Assert.Equal(input, deserialized);
+        }
+
+        [Theory]
+        [MemberData(nameof(CreateBaseClassTestData))]
+        public void BaseClassAnnotationUtf16(object input)
+        {
+            var serialized = JsonSerializer.NonGeneric.Utf16.Serialize(input);
+            var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized, input.GetType());
+            Assert.Equal(input, deserialized);
+        }
+
+        public static IEnumerable<object[]> CreateBaseClassTestData()
+        {
+            Type[] types =
+            {
+                typeof(KeyValuePair<,>),
+                typeof(Tuple<,>),
+                typeof(Tuple<,,>),
+                typeof(Tuple<,,,>),
+                typeof(Tuple<,,,,>),
+                typeof(Tuple<,,,,,>),
+                typeof(Tuple<,,,,,,>),
+                typeof(ValueTuple<,>),
+                typeof(ValueTuple<,,>),
+                typeof(ValueTuple<,,,>),
+                typeof(ValueTuple<,,,,>),
+                typeof(ValueTuple<,,,,,>),
+                typeof(ValueTuple<,,,,,,>),
+            };
+
+            var fixture = new ExpressionTreeFixture();
+
+            Type[] parameterTypes =
+            {
+                typeof(int), typeof(string)
+            };
+
+            foreach (var type in types)
+            {
+                foreach (var parameterType in parameterTypes)
+                {
+                    var argLength = type.GetGenericArguments().Length;
+                    var closedType = type.MakeGenericType(Enumerable.Repeat(parameterType, argLength).ToArray());
+                    var args = new object[argLength];
+                    for (int i = 0; i < argLength; i++)
+                    {
+                        args[i] = fixture.Create(parameterType);
+                    }
+
+                    yield return new object[] {Activator.CreateInstance(closedType, args)};
+                }
+            }
+        }
     }
 }
+
