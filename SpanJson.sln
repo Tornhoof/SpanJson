@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanJson.Benchmarks", "Span
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanJson.Tests", "SpanJson.Tests\SpanJson.Tests.csproj", "{81A97B5A-D389-4F15-BCBA-6680C2407424}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpanJson.WebBenchmark", "SpanJson.WebBenchmark\SpanJson.WebBenchmark.csproj", "{08CD6EE5-9AC8-42D6-97C7-57E92DDBD07D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanJson.WebBenchmark", "SpanJson.WebBenchmark\SpanJson.WebBenchmark.csproj", "{08CD6EE5-9AC8-42D6-97C7-57E92DDBD07D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpanJson.Codegen", "SpanJson.Codegen\SpanJson.Codegen.csproj", "{C03F9446-867C-47E3-BE3A-3609B1ABF5D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{08CD6EE5-9AC8-42D6-97C7-57E92DDBD07D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08CD6EE5-9AC8-42D6-97C7-57E92DDBD07D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08CD6EE5-9AC8-42D6-97C7-57E92DDBD07D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C03F9446-867C-47E3-BE3A-3609B1ABF5D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C03F9446-867C-47E3-BE3A-3609B1ABF5D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C03F9446-867C-47E3-BE3A-3609B1ABF5D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C03F9446-867C-47E3-BE3A-3609B1ABF5D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -315,5 +315,10 @@ namespace SpanJson.Resolvers
         private static readonly ConcurrentDictionary<Type, JsonObjectDescription> Members =
             new ConcurrentDictionary<Type, JsonObjectDescription>();
         // ReSharper restore StaticMemberInGenericType
+
+        public static void RegisterFormatter(Type type, IJsonFormatter formatter)
+        {
+            Formatters.TryAdd(type, formatter);
+        }
     }
 }
