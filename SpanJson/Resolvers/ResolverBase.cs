@@ -79,6 +79,11 @@ namespace SpanJson.Resolvers
             return Members.GetOrAdd(typeof(T), x => BuildMembers(x));
         }
 
+        public JsonObjectDescription GetObjectDescription(Type type)
+        {
+            return Members.GetOrAdd(type, x => BuildMembers(x));
+        }
+
         /// <summary>
         /// TODO Extend with attributes and ShouldSerialize
         /// </summary>
@@ -309,5 +314,10 @@ namespace SpanJson.Resolvers
         private static readonly ConcurrentDictionary<Type, JsonObjectDescription> Members =
             new ConcurrentDictionary<Type, JsonObjectDescription>();
         // ReSharper restore StaticMemberInGenericType
+
+        public static void RegisterFormatter(Type type, IJsonFormatter formatter)
+        {
+            Formatters.TryAdd(type, formatter);
+        }
     }
 }
