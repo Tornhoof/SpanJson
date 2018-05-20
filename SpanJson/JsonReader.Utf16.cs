@@ -467,6 +467,7 @@ namespace SpanJson
         /// <summary>
         ///     Not escaped
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<char> ReadUtf16StringSpan()
         {
             if (ReadUtf16IsNull())
@@ -477,21 +478,21 @@ namespace SpanJson
             return ReadUtf16StringSpanInternal(out _);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ReadOnlySpan<char> ReadUtf16StringSpanInternal(out int escapedCharsSize)
         {
-            ref var pos = ref _pos;
-            if (_chars[pos] != JsonUtf16Constant.String)
+            ref var c = ref MemoryMarshal.GetReference(_chars);
+            ref var stringStart = ref Unsafe.Add(ref c, _pos++);
+            if (stringStart != JsonUtf16Constant.String)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
 
-            pos++;
+            var stringLength = 0;
             // We should also get info about how many escaped chars exist from here
-            if (TryFindEndOfUtf16String(pos, out var charsConsumed, out escapedCharsSize))
+            if (TryFindEndOfUtf16String(ref stringStart, _length - _pos, ref stringLength, out escapedCharsSize))
             {
-                var result = _chars.Slice(pos, charsConsumed);
-                pos += charsConsumed + 1; // skip the JsonUtf16Constant.DoubleQuote too
+                var result = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref stringStart, 1), stringLength - 1);
+                _pos += stringLength; // skip the doublequote too
                 return result;
             }
 
@@ -502,20 +503,21 @@ namespace SpanJson
         /// <summary>
         ///     Includes the quotes on each end
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ReadOnlySpan<char> ReadUtf16StringSpanWithQuotes(out int escapedCharsSize)
         {
-            ref var pos = ref _pos;
-            if (_chars[pos] != JsonUtf16Constant.String)
+            ref var c = ref MemoryMarshal.GetReference(_chars);
+            ref var stringStart = ref Unsafe.Add(ref c, _pos++);
+            if (stringStart != JsonUtf16Constant.String)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
 
+            var stringLength = 0;
             // We should also get info about how many escaped chars exist from here
-            if (TryFindEndOfUtf16String(pos + 1, out var charsConsumed, out escapedCharsSize))
+            if (TryFindEndOfUtf16String(ref stringStart, _length - _pos, ref stringLength, out escapedCharsSize))
             {
-                var result = _chars.Slice(pos, charsConsumed + 2); // we include quotes in this version
-                pos += charsConsumed + 2; // include both JsonUtf16Constant.DoubleQuote too 
+                var result = MemoryMarshal.CreateReadOnlySpan(ref stringStart, stringLength + 1);
+                _pos += stringLength; // skip the doublequote too
                 return result;
             }
 
@@ -848,6 +850,36 @@ namespace SpanJson
             }
 
             charsConsumed = default;
+            return false;
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool TryFindEndOfUtf16String(ref char cStart, int length, ref int stringLength, out int escapedCharsSize)
+        {
+            escapedCharsSize = 0;
+            while (stringLength < length)
+            {
+                ref var c = ref Unsafe.Add(ref cStart, ++stringLength);
+                if (c == JsonUtf16Constant.ReverseSolidus)
+                {
+                    escapedCharsSize++;
+                    c = ref Unsafe.Add(ref cStart, ++stringLength);
+                    if (c == 'u' || c == 'U')
+                    {
+                        escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
+                        stringLength += 4;
+                    }
+
+                }
+                else if (c == JsonUtf8Constant.String)
+                {
+                    cStart = c;
+                    return true;
+                }
+
+            }
+
             return false;
         }
 

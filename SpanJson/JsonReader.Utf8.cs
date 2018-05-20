@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -463,6 +464,7 @@ namespace SpanJson
         /// <summary>
         ///     Not escaped
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<byte> ReadUtf8StringSpan()
         {
             if (ReadUtf8IsNull())
@@ -473,21 +475,21 @@ namespace SpanJson
             return ReadUtf8StringSpanInternal(out _);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ReadOnlySpan<byte> ReadUtf8StringSpanInternal(out int escapedCharsSize)
         {
-            ref var pos = ref _pos;
-            if (_bytes[pos] != JsonUtf8Constant.String)
+            ref var b = ref MemoryMarshal.GetReference(_bytes);
+            ref var stringStart = ref Unsafe.Add(ref b, _pos++);
+            if (stringStart != JsonUtf8Constant.String)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
 
-            pos++;
+            var stringLength = 0;
             // We should also get info about how many escaped chars exist from here
-            if (TryFindEndOfUtf8String(pos, out var bytesConsumed, out escapedCharsSize))
+            if (TryFindEndOfUtf8String(ref stringStart, _length - _pos, ref stringLength, out escapedCharsSize))
             {
-                var result = _bytes.Slice(pos, bytesConsumed);
-                pos += bytesConsumed + 1; // skip the JsonUtf8Constant.DoubleQuote too
+                var result = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref stringStart, 1), stringLength - 1);
+                _pos += stringLength; // skip the doublequote too
                 return result;
             }
 
@@ -498,25 +500,26 @@ namespace SpanJson
         /// <summary>
         ///     Includes the quotes on each end
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ReadOnlySpan<byte> ReadUtf8StringSpanWithQuotes(out int escapedCharsSize)
         {
-            ref var pos = ref _pos;
-            if (_bytes[pos] != JsonUtf8Constant.String)
+            ref var b = ref MemoryMarshal.GetReference(_bytes);
+            ref var stringStart = ref Unsafe.Add(ref b, _pos++);
+            if (stringStart != JsonUtf8Constant.String)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
 
+            var stringLength = 0;
             // We should also get info about how many escaped chars exist from here
-            if (TryFindEndOfUtf8String(pos + 1, out var bytesConsumed, out escapedCharsSize))
+            if (TryFindEndOfUtf8String(ref stringStart, _length - _pos, ref stringLength, out escapedCharsSize))
             {
-                var result = _bytes.Slice(pos, bytesConsumed + 2); // we include quotes in this version
-                pos += bytesConsumed + 2; // include both JsonUtf8Constant.DoubleQuote too 
+                var result = MemoryMarshal.CreateReadOnlySpan(ref stringStart, stringLength + 1);
+                _pos += stringLength; // skip the doublequote too
                 return result;
             }
 
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
-            return default;
+            return null;
         }
 
         public decimal ReadUtf8Decimal()
@@ -533,29 +536,14 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ReadUtf8IsNull()
         {
-            SkipWhitespaceUtf8();
             ref var pos = ref _pos;
-            if (pos < _length && _bytes[pos] == JsonUtf8Constant.Null) // just peek the byte
+            ref var b = ref Unsafe.Add(ref MemoryMarshal.GetReference(_bytes), pos);
+            SkipWhitespaceUtf8Internal(ref b, ref pos);
+            if (pos < _length && Unsafe.ReadUnaligned<uint>(ref b) == 1819047278U)
             {
-                if (_bytes[pos + 1] != (byte)'u')
-                {
-                    ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
-                }
-
-                if (_bytes[pos + 2] != (byte)'l')
-                {
-                    ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
-                }
-
-                if (_bytes[pos + 3] != (byte)'l')
-                {
-                    ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
-                }
-
                 pos += 4;
                 return true;
             }
-
             return false;
         }
 
@@ -569,22 +557,30 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void SkipWhitespaceUtf8()
+        public void SkipWhitespaceUtf8()
         {
             ref var pos = ref _pos;
+            ref var b = ref Unsafe.Add(ref MemoryMarshal.GetReference(_bytes), pos);
+            SkipWhitespaceUtf8Internal(ref b, ref pos);
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SkipWhitespaceUtf8Internal(ref byte b, ref int pos)
+        {
             while (pos < _length)
             {
-                ref readonly var b = ref _bytes[pos];
                 switch (b)
                 {
                     case (byte)' ':
                     case (byte)'\t':
                     case (byte)'\r':
                     case (byte)'\n':
-                        {
-                            pos++;
-                            continue;
-                        }
+                    {
+                        pos++;
+                        b = ref Unsafe.Add(ref b, 1);
+                        continue;
+                    }
                     default:
                         return;
                 }
@@ -859,6 +855,35 @@ namespace SpanJson
             }
 
             bytesConsumed = default;
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool TryFindEndOfUtf8String(ref byte bStart, int length, ref int stringLength, out int escapedCharsSize)
+        {
+            escapedCharsSize = 0;
+            while (stringLength < length)
+            {
+                ref var b = ref Unsafe.Add(ref bStart, ++stringLength);
+                if (b == JsonUtf8Constant.ReverseSolidus)
+                {
+                    escapedCharsSize++;
+                    b = ref Unsafe.Add(ref bStart, ++stringLength);
+                    if (b == (byte) 'u' || b == (byte) 'U')
+                    {
+                        escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
+                        stringLength += 4;
+                    }
+
+                }
+                else if (b == JsonUtf8Constant.String)
+                {
+                    bStart = b;
+                    return true;
+                }
+
+            }
+
             return false;
         }
 
