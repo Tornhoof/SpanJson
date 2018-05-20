@@ -533,6 +533,10 @@ namespace SpanJson
             return default;
         }
 
+        /// <summary>
+        /// In UTF 16 the classic version is faster, in UTF8 the optimized via read unaligned is faster
+        /// </summary>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ReadUtf8IsNull()
         {
@@ -566,7 +570,7 @@ namespace SpanJson
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SkipWhitespaceUtf8Internal(ref byte b, ref int pos)
+        private void SkipWhitespaceUtf8Internal(ref byte b, ref int pos)
         {
             while (pos < _length)
             {
