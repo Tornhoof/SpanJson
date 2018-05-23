@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using SpanJson.Resolvers;
 using Xunit;
 
@@ -59,7 +60,7 @@ namespace SpanJson.Tests
         }
 
         [Fact]
-        public void SerializeDeserializeGeneric()
+        public void SerializeDeserializeGenericUtf16()
         {
             var includeNull = new IncludeNull {Key = 1};
             var serialized = JsonSerializer.Generic.Utf16.Serialize<IncludeNull, IncludeNullsOriginalCaseResolver<char>>(includeNull);
@@ -70,8 +71,22 @@ namespace SpanJson.Tests
             Assert.Equal(includeNull, deserialized);
         }
 
+
         [Fact]
-        public void SerializeDeserializeNonGeneric()
+        public void SerializeDeserializeGenericUtf16PrettyPrinted()
+        {
+            var includeNull = new IncludeNull { Key = 1 };
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<IncludeNull, IncludeNullsOriginalCaseResolver<char>>(includeNull);
+            Assert.NotNull(serialized);
+            var pretty = JsonSerializer.PrettyPrinter.Print(serialized);
+            Assert.Contains("null", pretty);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<IncludeNull, IncludeNullsOriginalCaseResolver<char>>(pretty);
+            Assert.NotNull(deserialized);
+            Assert.Equal(includeNull, deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeNonGenericUtf16()
         {
             var includeNull = new IncludeNull {Key = 1};
             var serialized = JsonSerializer.NonGeneric.Utf16.Serialize<IncludeNullsOriginalCaseResolver<char>>(includeNull);
@@ -81,5 +96,45 @@ namespace SpanJson.Tests
             Assert.NotNull(deserialized);
             Assert.Equal(includeNull, deserialized);
         }
+
+
+        [Fact]
+        public void SerializeDeserializeGenericUtf8()
+        {
+            var includeNull = new IncludeNull {Key = 1};
+            var serialized = JsonSerializer.Generic.Utf8.Serialize<IncludeNull, IncludeNullsOriginalCaseResolver<byte>>(includeNull);
+            Assert.NotNull(serialized);
+            Assert.Contains("null", Encoding.UTF8.GetString(serialized));
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<IncludeNull, IncludeNullsOriginalCaseResolver<byte>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(includeNull, deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeNonGenericUtf8()
+        {
+            var includeNull = new IncludeNull {Key = 1};
+            var serialized = JsonSerializer.NonGeneric.Utf8.Serialize<IncludeNullsOriginalCaseResolver<byte>>(includeNull);
+            Assert.NotNull(serialized);
+            Assert.Contains("null", Encoding.UTF8.GetString(serialized));
+            var deserialized = JsonSerializer.NonGeneric.Utf8.Deserialize<IncludeNullsOriginalCaseResolver<byte>>(serialized, typeof(IncludeNull));
+            Assert.NotNull(deserialized);
+            Assert.Equal(includeNull, deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeNonGenericUtf8PrettyPrinted()
+        {
+            var includeNull = new IncludeNull {Key = 1};
+            var serialized = JsonSerializer.NonGeneric.Utf8.Serialize<IncludeNullsOriginalCaseResolver<byte>>(includeNull);
+            Assert.NotNull(serialized);
+            var pretty = JsonSerializer.PrettyPrinter.Print(serialized);
+            var prettyPrinted = Encoding.UTF8.GetString(pretty);
+            Assert.Contains("null", prettyPrinted);
+            var deserialized = JsonSerializer.NonGeneric.Utf8.Deserialize<IncludeNullsOriginalCaseResolver<byte>>(pretty, typeof(IncludeNull));
+            Assert.NotNull(deserialized);
+            Assert.Equal(includeNull, deserialized);
+        }
+
     }
 }

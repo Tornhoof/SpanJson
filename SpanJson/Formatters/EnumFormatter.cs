@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace SpanJson.Formatters
@@ -61,13 +63,14 @@ namespace SpanJson.Formatters
             foreach (var value in Enum.GetValues(typeof(T)))
             {
                 Expression constantExpression;
+                var formattedValue = GetFormattedValue(value);
                 if (typeof(TSymbol) == typeof(char))
                 {
-                    constantExpression = Expression.Constant(value.ToString());
+                    constantExpression = Expression.Constant(formattedValue);
                 }
                 else if (typeof(TSymbol) == typeof(byte))
                 {
-                    constantExpression = Expression.Constant(Encoding.UTF8.GetBytes(value.ToString()));
+                    constantExpression = Expression.Constant(Encoding.UTF8.GetBytes(formattedValue));
                 }
                 else
                 {
@@ -112,7 +115,7 @@ namespace SpanJson.Formatters
             foreach (var value in Enum.GetValues(typeof(T)))
             {
                 Expression valueConstant;
-                var formattedValue = $"\"{value}\"";
+                var formattedValue = $"\"{GetFormattedValue(value)}\"";
                 if (typeof(TSymbol) == typeof(char))
                 {
                     valueConstant = Expression.Constant(formattedValue);
@@ -138,6 +141,11 @@ namespace SpanJson.Formatters
             return lambdaExpression.Compile();
         }
 
+        private static string GetFormattedValue(object enumValue)
+        {
+            var name = enumValue.ToString();
+            return typeof(T).GetMember(name)?.FirstOrDefault()?.GetCustomAttribute<EnumMemberAttribute>()?.Value ?? name;
+        }
 
         private delegate T DeserializeDelegate(ref JsonReader<TSymbol> reader);
 

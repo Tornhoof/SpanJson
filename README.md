@@ -23,6 +23,7 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 - Support for ``[DataMember(Name="MemberName")]`` to set field name
 - Support for ``[IgnoreDataMember]`` to ignore a specific member
 - Support for ``ShouldSerializeXXX`` pattern to decide at runtime if a member should be serialized
+- Support for ``[EnumMember]`` to specify the string value of the enum value
 - Pretty printing JSON
 - Support for tuples currently excludes the last type with 8 arguments (TRest)
 - Support for annotating a constructor with ``[JsonConstructor]`` to use that one instead of assigning members during deserialization
