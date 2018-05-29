@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using SpanJson.Benchmarks.Fixture;
 using Xunit;
 
@@ -9,6 +8,50 @@ namespace SpanJson.Tests
 {
     public class ConstructorAttributeTests
     {
+
+        public class InTest
+        {
+            public int Value { get; }
+
+            [JsonConstructor]
+            public InTest(in int value)
+            {
+                Value = value;
+            }
+        }
+
+        public readonly struct RefTest
+        {
+            public int Value { get; }
+
+            [JsonConstructor]
+            public RefTest(ref int value)
+            {
+                Value = value;
+            }
+        }
+
+        public class InNullableTest
+        {
+            public int Value { get; }
+
+            [JsonConstructor]
+            public InNullableTest(in int value)
+            {
+                Value = value;
+            }
+        }
+
+        public readonly struct RefNullableTest
+        {
+            public int Value { get; }
+
+            [JsonConstructor]
+            public RefNullableTest(ref int value)
+            {
+                Value = value;
+            }
+        }
 
         public class DefaultDO : IEquatable<DefaultDO>
         {
@@ -113,6 +156,80 @@ namespace SpanJson.Tests
             var serialized = JsonSerializer.Generic.Utf16.Serialize(nameddo);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<NamedDO>(serialized);
             Assert.Equal(nameddo, deserialized);
+        }
+
+        [Fact]
+        public void InTestUtf16()
+        {
+            var intest = new InTest(5);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(intest);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<InTest>(serialized);
+            Assert.Equal(intest.Value, deserialized.Value);
+        }
+
+        [Fact]
+        public void InTestUtf8()
+        {
+            var intest = new InTest(5);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(intest);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<InTest>(serialized);
+            Assert.Equal(intest.Value, deserialized.Value);
+        }
+        [Fact]
+        public void RefTestUtf16()
+        {
+            var value = 8;
+            var refTest = new RefTest(ref value);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(refTest);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<RefTest>(serialized);
+            Assert.Equal(refTest.Value, deserialized.Value);
+        }
+
+        [Fact]
+        public void RefTestUtf8()
+        {
+            var value = 8;
+            var refTest = new RefTest(ref value);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(refTest);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<RefTest>(serialized);
+            Assert.Equal(refTest.Value, deserialized.Value);
+        }
+
+        [Fact]
+        public void InNullableTestUtf16()
+        {
+            var intest = new InNullableTest(5);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(intest);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<InNullableTest>(serialized);
+            Assert.Equal(intest.Value, deserialized.Value);
+        }
+
+        [Fact]
+        public void InNullableTestUtf8()
+        {
+            var intest = new InNullableTest(5);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(intest);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<InNullableTest>(serialized);
+            Assert.Equal(intest.Value, deserialized.Value);
+        }
+        [Fact]
+        public void RefNullableTestUtf16()
+        {
+            var value = 8;
+            var refTest = new RefNullableTest(ref value);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(refTest);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<RefNullableTest>(serialized);
+            Assert.Equal(refTest.Value, deserialized.Value);
+        }
+
+        [Fact]
+        public void RefNullableTestUtf8()
+        {
+            var value = 8;
+            var refTest = new RefNullableTest(ref value);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(refTest);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<RefNullableTest>(serialized);
+            Assert.Equal(refTest.Value, deserialized.Value);
         }
 
 
