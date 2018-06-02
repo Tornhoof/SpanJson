@@ -8,7 +8,7 @@ namespace SpanJson.Benchmarks
 {
     [MemoryDiagnoser]
     //[ShortRunJob]
-    //[DisassemblyDiagnoser(printIL: true, recursiveDepth: 2)]
+    [DisassemblyDiagnoser(printIL: true, recursiveDepth: 2)]
     public class SelectedBenchmarks
     {
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
@@ -79,17 +79,17 @@ namespace SpanJson.Benchmarks
         //    return JsonSerializer.Generic.Utf8.Serialize(Answer);
         //}
 
-        [Benchmark]
-        public Answer DeserializeAnswerWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
-        }
+        //[Benchmark]
+        //public Answer DeserializeAnswerWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
+        //}
 
-        [Benchmark]
-        public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
-        {
-            return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
-        }
+        //[Benchmark]
+        //public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
+        //{
+        //    return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
+        //}
 
         //[Benchmark]
         //public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsyncUtf8()
@@ -494,5 +494,28 @@ namespace SpanJson.Benchmarks
         //    return reader.ReadUtf16UInt64();
         //}
 
+        //private static readonly byte[] NullBytes = Encoding.UTF8.GetBytes("null");
+        //[Benchmark]
+        //public bool ReadIsNull()
+        //{
+        //    var reader = new JsonReader<char>("null");
+        //    return reader.ReadUtf16IsNull();
+        //}
+
+        private static readonly byte[] FalseBytes = Encoding.UTF8.GetBytes("false");
+        [Benchmark]
+        public bool ReadFalse()
+        {
+            var reader = new JsonReader<char>("false");
+            return reader.ReadUtf16Boolean();
+        }
+
+        private static readonly byte[] TrueBytes = Encoding.UTF8.GetBytes("true");
+        [Benchmark]
+        public bool ReadTrue()
+        {
+            var reader = new JsonReader<char>("true");
+            return reader.ReadUtf16Boolean();
+        }
     }
 }

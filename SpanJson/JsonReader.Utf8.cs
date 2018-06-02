@@ -181,51 +181,22 @@ namespace SpanJson
         {
             SkipWhitespaceUtf8();
             ref var pos = ref _pos;
-            if (_bytes[pos] == JsonUtf8Constant.True) // just peek the byte
+            if (pos <= _length - 4)
             {
-                if (_bytes[pos + 1] != (byte)'r')
+                ref var b = ref MemoryMarshal.GetReference(_bytes);
+                ref var start = ref Unsafe.Add(ref b, pos);
+                var value = Unsafe.ReadUnaligned<uint>(ref start);
+                if (value == 0x65757274U /*eurt */)
                 {
-                    ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(bool));
+                    pos += 4;
+                    return true;
                 }
 
-                if (_bytes[pos + 2] != (byte)'u')
+                if (pos <= _length - 5 && value == 0x736C6166U /* slaf */ && Unsafe.Add(ref b, pos + 4) == (byte) 'e')
                 {
-                    ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(bool));
+                    pos += 5;
+                    return false;
                 }
-
-                if (_bytes[pos + 3] != (byte)'e')
-                {
-                    ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(bool));
-                }
-
-                pos += 4;
-                return true;
-            }
-
-            if (_bytes[pos] == JsonUtf8Constant.False) // just peek the byte
-            {
-                if (_bytes[pos + 1] != (byte)'a')
-                {
-                    ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(bool));
-                }
-
-                if (_bytes[pos + 2] != (byte)'l')
-                {
-                    ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(bool));
-                }
-
-                if (_bytes[pos + 3] != (byte)'s')
-                {
-                    ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(bool));
-                }
-
-                if (_bytes[pos + 4] != (byte)'e')
-                {
-                    ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(bool));
-                }
-
-                pos += 5;
-                return false;
             }
 
             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(bool));
@@ -538,23 +509,10 @@ namespace SpanJson
         {
             SkipWhitespaceUtf8();
             ref var pos = ref _pos;
-            if (pos < _length && _bytes[pos] == JsonUtf8Constant.Null) // just peek the byte
+            ref var b = ref MemoryMarshal.GetReference(_bytes);
+            ref var start = ref Unsafe.Add(ref b, pos);
+            if (pos <= _length - 4 && Unsafe.ReadUnaligned<uint>(ref start) == 0x6C6C756EU /* llun */)
             {
-                if (_bytes[pos + 1] != (byte)'u')
-                {
-                    ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
-                }
-
-                if (_bytes[pos + 2] != (byte)'l')
-                {
-                    ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
-                }
-
-                if (_bytes[pos + 3] != (byte)'l')
-                {
-                    ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
-                }
-
                 pos += 4;
                 return true;
             }
