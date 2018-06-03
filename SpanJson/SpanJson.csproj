@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/Tornhoof/SpanJson</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>JSON</PackageTags>
-    <PackageReleaseNotes>Initial version for .NET Core 2.1</PackageReleaseNotes>
+    <PackageReleaseNotes>Array bound fixes</PackageReleaseNotes>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1701;1702;1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
