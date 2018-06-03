@@ -11,7 +11,7 @@ namespace SpanJson.Tests
         [Theory]
         [InlineData(@"{""Name"":""\\"", ""Test"":""Something""}", "Something")]
         [InlineData(@"{""Name"":"""", ""Test"":""Something""}", "Something")]
-        public void ReadNextSegmentTest(string json, string expected)
+        public void ReadNextSegmentTestUtf16(string json, string expected)
         {
             var reader = new JsonReader<char>(json);
             reader.ReadUtf16BeginObjectOrThrow();
@@ -27,6 +27,33 @@ namespace SpanJson.Tests
                 else if (name.ToString() == "Name")
                 {
                     reader.SkipNextUtf16Segment();
+                }
+                else
+                {
+                    throw new InvalidOperationException();
+                }
+            }
+        }
+
+        [Theory]
+        [InlineData(@"{""Name"":""\\"", ""Test"":""Something""}", "Something")]
+        [InlineData(@"{""Name"":"""", ""Test"":""Something""}", "Something")]
+        public void ReadNextSegmentTestUtf8(string json, string expected)
+        {
+            var reader = new JsonReader<byte>(Encoding.UTF8.GetBytes(json));
+            reader.ReadUtf8BeginObjectOrThrow();
+            var count = 0;
+            while (!reader.TryReadUtf8IsEndObjectOrValueSeparator(ref count))
+            {
+                var name = Encoding.UTF8.GetString(reader.ReadUtf8NameSpan());
+                if (name == "Test")
+                {
+                    var value = reader.ReadUtf8String();
+                    Assert.Equal(expected, value);
+                }
+                else if (name == "Name")
+                {
+                    reader.SkipNextUtf8Segment();
                 }
                 else
                 {

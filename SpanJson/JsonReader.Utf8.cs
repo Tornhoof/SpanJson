@@ -788,10 +788,8 @@ namespace SpanJson
                     }
                 case JsonToken.String:
                     {
-                        pos++;
-                        if (TryFindEndOfUtf8String(pos, out var bytesConsumed, out _))
+                        if (SkipUtf8String(ref pos))
                         {
-                            pos += bytesConsumed + 1; // skip JsonUtf8Constant.DoubleQuote too
                             return;
                         }
 
@@ -861,33 +859,18 @@ namespace SpanJson
             return false;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool TryFindEndOfUtf8String(int pos, out int bytesConsumed, out int escapedCharsSize)
+        private bool SkipUtf8String(ref int pos)
         {
-            escapedCharsSize = 0;
-            for (var i = pos; i < _bytes.Length; i++)
+            ref var b = ref MemoryMarshal.GetReference(_bytes);
+            ref var stringStart = ref Unsafe.Add(ref b, pos++);
+            var stringLength = 0;
+            // We should also get info about how many escaped chars exist from here
+            if (TryFindEndOfUtf8String(ref stringStart, _length - pos, ref stringLength, out _))
             {
-                ref readonly var b = ref _bytes[i];
-                if (b == JsonUtf8Constant.ReverseSolidus)
-                {
-                    escapedCharsSize++;
-                    i++;
-                    var nextByte = _bytes[i]; // check what type of escaped char it is
-                    if (nextByte == (byte)'u' || nextByte == (byte)'U')
-                    {
-                        escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
-                        i += 4;
-                    }
-
-                }
-                else if (b == JsonUtf8Constant.String)
-                {
-                    bytesConsumed = i - pos;
-                    return true;
-                }
+                pos += stringLength; // skip the doublequote too
+                return true;
             }
 
-            bytesConsumed = default;
             return false;
         }
 

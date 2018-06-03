@@ -779,10 +779,8 @@ namespace SpanJson
                 }
                 case JsonToken.String:
                 {
-                    pos++;
-                    if (TryFindEndOfUtf16String(pos, out var charsConsumed, out _))
+                    if (SkipUtf16String(ref pos))
                     {
-                        pos += charsConsumed + 1; // skip JsonUtf16Constant.DoubleQuote too
                         return;
                     }
 
@@ -853,33 +851,23 @@ namespace SpanJson
             return false;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool TryFindEndOfUtf16String(int pos, out int charsConsumed, out int escapedCharsSize)
+        private bool SkipUtf16String(ref int pos)
         {
-            escapedCharsSize = 0;
-            for (var i = pos; i < _chars.Length; i++)
+            ref var c = ref MemoryMarshal.GetReference(_chars);
+            ref var stringStart = ref Unsafe.Add(ref c, pos++);
+            if (stringStart != JsonUtf16Constant.String)
             {
-                var c = _chars[i];
-                if (c == JsonUtf16Constant.ReverseSolidus)
-                {
-                    escapedCharsSize++;
-                    i++;
-                    var nextChar = _chars[i]; // check what type of escaped char it is
-                    if (nextChar == 'u' || nextChar == 'U')
-                    {
-                        escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
-                        i += 4;
-                    }
-
-                }
-                else if (c == JsonUtf16Constant.String)
-                {
-                    charsConsumed = i - pos;
-                    return true;
-                }
+                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
 
-            charsConsumed = default;
+            var stringLength = 0;
+            // We should also get info about how many escaped chars exist from here
+            if (TryFindEndOfUtf16String(ref stringStart, _length - pos, ref stringLength, out _))
+            {
+                pos += stringLength; // skip the doublequote too
+                return true;
+            }
+
             return false;
         }
 
