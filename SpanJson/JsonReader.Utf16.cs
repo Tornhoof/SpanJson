@@ -452,23 +452,28 @@ namespace SpanJson
 
         private ReadOnlySpan<char> ReadUtf16StringSpanInternal(out int escapedCharsSize)
         {
-            ref var c = ref MemoryMarshal.GetReference(_chars);
-            ref var stringStart = ref Unsafe.Add(ref c, _pos++);
-            if (stringStart != JsonUtf16Constant.String)
+            ref var pos = ref _pos;
+            if (pos <= _length - 2)
             {
-                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
-            }
+                ref var c = ref MemoryMarshal.GetReference(_chars);
+                ref var stringStart = ref Unsafe.Add(ref c, pos++);
+                if (stringStart != JsonUtf16Constant.String)
+                {
+                    ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
+                }
 
-            var stringLength = 0;
-            // We should also get info about how many escaped chars exist from here
-            if (TryFindEndOfUtf16String(ref stringStart, _length - _pos, ref stringLength, out escapedCharsSize))
-            {
-                var result = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref stringStart, 1), stringLength - 1);
-                _pos += stringLength; // skip the doublequote too
-                return result;
+                var stringLength = 0;
+                // We should also get info about how many escaped chars exist from here
+                if (TryFindEndOfUtf16String(ref stringStart, _length - pos, ref stringLength, out escapedCharsSize))
+                {
+                    var result = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref stringStart, 1), stringLength - 1);
+                    pos += stringLength; // skip the doublequote too
+                    return result;
+                }
             }
 
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
+            escapedCharsSize = default;
             return null;
         }
 
@@ -477,23 +482,28 @@ namespace SpanJson
         /// </summary>
         private ReadOnlySpan<char> ReadUtf16StringSpanWithQuotes(out int escapedCharsSize)
         {
-            ref var c = ref MemoryMarshal.GetReference(_chars);
-            ref var stringStart = ref Unsafe.Add(ref c, _pos++);
-            if (stringStart != JsonUtf16Constant.String)
+            ref var pos = ref _pos;
+            if (pos <= _length - 2)
             {
-                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
-            }
+                ref var c = ref MemoryMarshal.GetReference(_chars);
+                ref var stringStart = ref Unsafe.Add(ref c, pos++);
+                if (stringStart != JsonUtf16Constant.String)
+                {
+                    ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
+                }
 
-            var stringLength = 0;
-            // We should also get info about how many escaped chars exist from here
-            if (TryFindEndOfUtf16String(ref stringStart, _length - _pos, ref stringLength, out escapedCharsSize))
-            {
-                var result = MemoryMarshal.CreateReadOnlySpan(ref stringStart, stringLength + 1);
-                _pos += stringLength; // skip the doublequote too
-                return result;
+                var stringLength = 0;
+                // We should also get info about how many escaped chars exist from here
+                if (TryFindEndOfUtf16String(ref stringStart, _length - pos, ref stringLength, out escapedCharsSize))
+                {
+                    var result = MemoryMarshal.CreateReadOnlySpan(ref stringStart, stringLength + 1);
+                    pos += stringLength; // skip the doublequote too
+                    return result;
+                }
             }
 
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
+            escapedCharsSize = default;
             return null;
         }
 
