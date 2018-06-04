@@ -1,9 +1,11 @@
 ﻿using System.Text;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Attributes.Jobs;
 using SpanJson.Benchmarks.Fixture;
 using SpanJson.Benchmarks.Generated;
 using SpanJson.Benchmarks.Models;
 using SpanJson.Benchmarks.Serializers;
+using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Benchmarks
@@ -13,6 +15,7 @@ namespace SpanJson.Benchmarks
     //[DisassemblyDiagnoser(printIL: true, recursiveDepth: 2)]
     public class SelectedBenchmarks
     {
+        private static readonly bool InitSpecial = Benchmarks.InitSpecial.Init();
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
         //private static readonly AccessToken AccessToken = ExpressionTreeFixture.Create<AccessToken>();
 
@@ -38,12 +41,12 @@ namespace SpanJson.Benchmarks
         //private static readonly StringBuilder StringBuilder = new StringBuilder();
 
 
-        private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
+        //private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
 
-        private static readonly MobileBadgeAward MobileBadgeAwardInput = ExpressionTreeFixture.Create<MobileBadgeAward>();
+        //private static readonly MobileBadgeAward MobileBadgeAwardInput = ExpressionTreeFixture.Create<MobileBadgeAward>();
 
-        private static readonly string MobileBadgeAwardSerializedString = JsonSerializer.Generic.Utf16.Serialize(MobileBadgeAwardInput);
-        private static readonly byte[] MobileBadgeAwardSerializedByteArray = JsonSerializer.Generic.Utf8.Serialize(MobileBadgeAwardInput);
+        //private static readonly string MobileBadgeAwardSerializedString = JsonSerializer.Generic.Utf16.Serialize(MobileBadgeAwardInput);
+        //private static readonly byte[] MobileBadgeAwardSerializedByteArray = JsonSerializer.Generic.Utf8.Serialize(MobileBadgeAwardInput);
 
         //[Benchmark]
         //public string SerializeMobileBadgeAwardWithSpanJsonSerializer()
@@ -69,31 +72,28 @@ namespace SpanJson.Benchmarks
         //    return JsonSerializer.Generic.Utf8.Deserialize<MobileBadgeAward>(MobileBadgeAwardSerializedByteArray);
         //}
 
-        //[Benchmark]
-        //public string SerializeAnswerWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Serialize(Answer);
-        //}
+        [Benchmark]
+        public string SerializeAnswerWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Serialize(Answer);
+        }
 
-        //[Benchmark]
-        //public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
-        //{
-        //    return JsonSerializer.Generic.Utf8.Serialize(Answer);
-        //}
+        [Benchmark]
+        public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
+        {
+            return JsonSerializer.Generic.Utf8.Serialize(Answer);
+        }
 
-        //[Benchmark]
-        //public Answer DeserializeAnswerWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
-        //}
-
+        [Benchmark]
+        public Answer DeserializeAnswerWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
+        }
 
         [Benchmark]
         public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
         {
-          //  return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
-            var jsonReader = new JsonReader<byte>(AnswerSerializedByteArray);
-            return AnswerUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref jsonReader);
+            return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
         }
 
         //[Benchmark]
