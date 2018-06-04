@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jil;
+using SpanJson.Benchmarks;
 using SpanJson.Benchmarks.Fixture;
 using SpanJson.Benchmarks.Models;
 using Xunit;
@@ -15,6 +16,7 @@ namespace SpanJson.Tests
         [MemberData(nameof(GetModels))]
         public void CanSerializeDeserializeAllUtf16(Type modelType)
         {
+            InitSpecial.Init();
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
             var serialized = JsonSerializer.NonGeneric.Utf16.Serialize(model);
@@ -29,6 +31,7 @@ namespace SpanJson.Tests
         [MemberData(nameof(GetModels))]
         public void CanSerializeDeserializeAllUtf8(Type modelType)
         {
+            InitSpecial.Init();
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
             var serialized = JsonSerializer.NonGeneric.Utf8.Serialize(model);
