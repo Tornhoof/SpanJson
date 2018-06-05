@@ -475,7 +475,7 @@ namespace SpanJson.Formatters
             {
                 var name = reader.ReadNameSpan();
                 var length = name.Length;
-                ref var b = ref MemoryMarshal.GetReference(MemoryMarshal.AsBytes(name));
+                ref var b =  ref Unsafe.As<TSymbol, byte>(ref MemoryMarshal.GetReference(name));
                 Deserializer(length, result, ref b, ref reader);
             }
 
@@ -539,9 +539,11 @@ namespace SpanJson.Formatters
                     var memberInfo = group.Single();
                     var length = index + group.Key.offset;
                     var formatter = resolver.GetFormatter(memberInfo.MemberType);
+                    var formatterType = formatter.GetType();
+                    var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
                     var matchExpression =
                         Expression.Block(Expression.Assign(Expression.PropertyOrField(resultParameter, memberInfo.MemberName),
-                                Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"), readerParameter)),
+                                Expression.Call(Expression.Field(null, fieldInfo), formatter.GetType().GetMethod("Deserialize"), readerParameter)),
                             Expression.Goto(endOfBlockLabel));
                     Expression comparisonExpression = null;
                     if (group.Key.Key != 0 || group.Key.offset != 0)
