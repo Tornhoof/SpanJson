@@ -437,15 +437,25 @@ namespace SpanJson.Formatters
     public abstract class ComplexFormatter<T, TSymbol, TResolver> : ComplexFormatter
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
+        private static readonly int SymbolSize = GetSymbolSize();
         private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
 
         private static readonly Func<T> CreateFunctor = BuildCreateFunctor<T>(typeof(T));
         private static readonly SerializeDelegate<T, TSymbol, TResolver> Serializer = BuildSerializeDelegate<T, TSymbol, TResolver>();
-        private static readonly int SymbolSize = GetSymbolSize();
 
         private static int GetSymbolSize()
         {
-            return Unsafe.SizeOf<TSymbol>();
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return sizeof(char);
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                return sizeof(byte);
+            }
+
+            throw new NotSupportedException();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -472,7 +482,7 @@ namespace SpanJson.Formatters
             return result;
         }
 
-        private delegate T DeserializeDelegate(int length, T result, ref byte b, ref JsonReader<TSymbol> reader);
+        private delegate void DeserializeDelegate(int length, T result, ref byte b, ref JsonReader<TSymbol> reader);
 
         private static DeserializeDelegate BuildDeserializeDelegate()
         {
@@ -484,17 +494,34 @@ namespace SpanJson.Formatters
             var lengthParameter = Expression.Parameter(typeof(int), "length");
             var resultParameter = Expression.Parameter(typeof(T), "result");
             var endOfBlockLabel = Expression.Label();
+            MethodInfo skipNextMethodInfo;
+            if (typeof(TSymbol) == typeof(char))
+            {
+                skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextUtf16Segment));
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextUtf8Segment));
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+
             var expressions = new List<Expression>
             {
                 BuildMemberComparisons(memberInfos, 0, lengthParameter, byteParameter, resultParameter, readerParameter, endOfBlockLabel),
-                Expression.Label(endOfBlockLabel)
+                Expression.Call(readerParameter, skipNextMethodInfo),
+                Expression.Label(endOfBlockLabel),
             };
+
             var block = Expression.Block(expressions);
             var lambda = Expression.Lambda<DeserializeDelegate>(block, lengthParameter, resultParameter, byteParameter, readerParameter);
             return lambda.Compile();
         }
 
-        private static Expression BuildMemberComparisons(List<JsonMemberInfo> memberInfos, int index, ParameterExpression lengthParameter, ParameterExpression byteParameter, ParameterExpression resultParameter, ParameterExpression readerParameter, LabelTarget endOfBlockLabel)
+        private static Expression BuildMemberComparisons(List<JsonMemberInfo> memberInfos, int index, ParameterExpression lengthParameter,
+            ParameterExpression byteParameter, ParameterExpression resultParameter, ParameterExpression readerParameter, LabelTarget endOfBlockLabel)
         {
             var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
             var grouping = memberInfos.Where(a => a.CanRead && a.Name.Length >= index).GroupBy(a => CalculateKey(a.Name, index))
@@ -510,58 +537,45 @@ namespace SpanJson.Formatters
                 if (group.Count() == 1) // need to check remaining values too 
                 {
                     var memberInfo = group.Single();
-                    var i = index + group.Key.offset;
-                    var lengthEqualExpression = Expression.Equal(lengthParameter, Expression.Constant(i));
+                    var length = index + group.Key.offset;
                     var formatter = resolver.GetFormatter(memberInfo.MemberType);
                     var matchExpression =
-                        Expression.Block(Expression.Assign(resultParameter,
+                        Expression.Block(Expression.Assign(Expression.PropertyOrField(resultParameter, memberInfo.MemberName),
                                 Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"), readerParameter)),
                             Expression.Goto(endOfBlockLabel));
+                    Expression comparisonExpression = null;
                     if (group.Key.Key != 0 || group.Key.offset != 0)
                     {
-                        Expression ifExpression = lengthEqualExpression;
-                        ifExpression = Expression.AndAlso(ifExpression,
-                            Expression.Equal(GetReadMethod(byteParameter, group.Key.intType, Expression.Constant(index)),
-                                GetConstantExpressionForGroupKey(group.Key.Key, group.Key.intType)));
-                        while (i < memberInfo.Name.Length)
+                        comparisonExpression = Expression.Equal(GetReadMethod(byteParameter, group.Key.intType, Expression.Constant(index * SymbolSize)),
+                            GetConstantExpressionForGroupKey(group.Key.Key, group.Key.intType));
+                        var nameLength = memberInfo.Name.Length;
+                        while (length < nameLength)
                         {
-                            var subKey = CalculateKey(memberInfo.Name, i);
-                            ifExpression = Expression.AndAlso(ifExpression,
-                                Expression.Equal(GetReadMethod(byteParameter, subKey.intType, Expression.Constant(index)),
+                            var subKey = CalculateKey(memberInfo.Name, length);
+                            comparisonExpression = Expression.AndAlso(comparisonExpression,
+                                Expression.Equal(GetReadMethod(byteParameter, subKey.intType, Expression.Constant(length * SymbolSize)),
                                     GetConstantExpressionForGroupKey(subKey.Key, subKey.intType)));
-                            i += subKey.offset;
+                            length += subKey.offset;
                         }
-
-                        expressions.Add(Expression.IfThen(ifExpression, matchExpression));
                     }
+
+                    var lengthExpression = Expression.Equal(lengthParameter, Expression.Constant(length));
+                    var ifExpression = comparisonExpression == null ? lengthExpression : Expression.AndAlso(lengthExpression, comparisonExpression);
+                    expressions.Add(Expression.IfThen(ifExpression, matchExpression));
                 }
                 else
                 {
-                    var nextIndex = index + group.Key.offset;
-                    var ifExpression = Expression.AndAlso(Expression.GreaterThanOrEqual(lengthParameter, Expression.Constant(nextIndex)), 
-                        Expression.Equal(GetReadMethod(byteParameter, group.Key.intType, Expression.Constant(index)),
+                    var nextLength = index + group.Key.offset;
+                    var ifExpression = Expression.AndAlso(Expression.GreaterThanOrEqual(lengthParameter, Expression.Constant(nextLength)),
+                        Expression.Equal(GetReadMethod(byteParameter, group.Key.intType, Expression.Constant(index * SymbolSize)),
                             GetConstantExpressionForGroupKey(group.Key.Key, group.Key.intType)));
-                    var subBlock = BuildMemberComparisons(group.ToList(), nextIndex, lengthParameter, byteParameter, resultParameter, readerParameter, endOfBlockLabel);
+                    var subBlock = BuildMemberComparisons(group.ToList(), nextLength, lengthParameter, byteParameter, resultParameter, readerParameter,
+                        endOfBlockLabel);
                     expressions.Add(Expression.IfThen(ifExpression, subBlock));
-                    MethodInfo skipNextMethodInfo;
-                    if (typeof(TSymbol) == typeof(char))
-                    {
-                        skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextUtf16Segment));
-                    }
-                    else if (typeof(TSymbol) == typeof(byte))
-                    {
-                        skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextUtf8Segment));
-                    }
-                    else
-                    {
-                        throw new NotSupportedException();
-                    }
-
-                    expressions.Add(Expression.Call(readerParameter, skipNextMethodInfo));
-                    expressions.Add(Expression.Goto(endOfBlockLabel));
                 }
             }
-            return null;
+
+            return Expression.Block(expressions);
         }
 
         private static Expression GetConstantExpressionForGroupKey(ulong key, Type intType)
@@ -623,7 +637,7 @@ namespace SpanJson.Formatters
         {
             if (typeof(TSymbol) == typeof(char))
             {
-                return CalculateKeyUtf16(memberName, index);
+                return CalculateKeyUtf16(memberName, index); // for calculating the key the index is actually only half as much due to two byte chars
             }
 
             if (typeof(TSymbol) == typeof(byte))
