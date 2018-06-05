@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
@@ -54,6 +55,7 @@ namespace SpanJson.Formatters
             {
                 throw new NotSupportedException();
             }
+
             expressions.Add(Expression.Call(writerParameter, writeBeginObjectMethodInfo));
             var writeSeperator = Expression.Variable(typeof(bool), "writeSeperator");
             for (var i = 0; i < memberInfos.Count; i++)
@@ -72,7 +74,9 @@ namespace SpanJson.Formatters
                 }
                 else
                 {
-                    serializeMethodInfo = typeof(BaseFormatter).GetMethod(nameof(SerializeRuntimeDecisionInternal), BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(memberInfo.MemberType, typeof(TSymbol), typeof(TResolver));
+                    serializeMethodInfo = typeof(BaseFormatter)
+                        .GetMethod(nameof(SerializeRuntimeDecisionInternal), BindingFlags.NonPublic | BindingFlags.Static)
+                        .MakeGenericMethod(memberInfo.MemberType, typeof(TSymbol), typeof(TResolver));
                     parameterExpressions.Add(formatterExpression);
                 }
 
@@ -146,7 +150,7 @@ namespace SpanJson.Formatters
             }
 
             expressions.Add(Expression.Call(writerParameter, writeEndObjectMethodInfo));
-            var blockExpression = Expression.Block(new[] { writeSeperator }, expressions);
+            var blockExpression = Expression.Block(new[] {writeSeperator}, expressions);
             var lambda =
                 Expression.Lambda<SerializeDelegate<T, TSymbol, TResolver>>(blockExpression, writerParameter, valueParameter, nestingLimitParameter);
             return lambda.Compile();
@@ -402,7 +406,6 @@ namespace SpanJson.Formatters
             return switchExpression;
         }
 
-
         /// <summary>
         ///     Couldn't get it working with Expression Trees,ref return lvalues do not work yet
         /// </summary>
@@ -427,5 +430,280 @@ namespace SpanJson.Formatters
 
         protected delegate void SerializeDelegate<in T, TSymbol, in TResolver>(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct;
+    }
+
+    public abstract class ComplexFormatter<T, TSymbol, TResolver> : ComplexFormatter
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    {
+        private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
+
+        private static readonly Func<T> CreateFunctor = BuildCreateFunctor<T>(typeof(T));
+        private static readonly SerializeDelegate<T, TSymbol, TResolver> Serializer = BuildSerializeDelegate<T, TSymbol, TResolver>();
+        private static readonly int SymbolSize = GetSymbolSize();
+
+        private static int GetSymbolSize()
+        {
+            return Unsafe.SizeOf<TSymbol>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void SerializeInternal(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
+        {
+            Serializer(ref writer, value, nestingLimit);
+        }
+
+        // TODO: Find a way to support constructor attribute
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected T DeserializeInternal(ref JsonReader<TSymbol> reader)
+        {
+            var result = CreateFunctor();
+            var count = 0;
+            reader.ReadBeginObjectOrThrow();
+            while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
+            {
+                var name = reader.ReadNameSpan();
+                var length = name.Length;
+                ref var b = ref MemoryMarshal.GetReference(MemoryMarshal.AsBytes(name));
+                Deserializer(length, result, ref b, ref reader);
+            }
+
+            return result;
+        }
+
+        private delegate T DeserializeDelegate(int length, T result, ref byte b, ref JsonReader<TSymbol> reader);
+
+        private static DeserializeDelegate BuildDeserializeDelegate()
+        {
+            var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
+            var objectDescription = resolver.GetObjectDescription<T>();
+            var memberInfos = objectDescription.Where(a => a.CanWrite).ToList();
+            var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
+            var byteParameter = Expression.Parameter(typeof(byte).MakeByRefType(), "b");
+            var lengthParameter = Expression.Parameter(typeof(int), "length");
+            var resultParameter = Expression.Parameter(typeof(T), "result");
+            var endOfBlockLabel = Expression.Label();
+            var expressions = new List<Expression>
+            {
+                BuildMemberComparisons(memberInfos, 0, lengthParameter, byteParameter, resultParameter, readerParameter, endOfBlockLabel),
+                Expression.Label(endOfBlockLabel)
+            };
+            var block = Expression.Block(expressions);
+            var lambda = Expression.Lambda<DeserializeDelegate>(block, lengthParameter, resultParameter, byteParameter, readerParameter);
+            return lambda.Compile();
+        }
+
+        private static Expression BuildMemberComparisons(List<JsonMemberInfo> memberInfos, int index, ParameterExpression lengthParameter, ParameterExpression byteParameter, ParameterExpression resultParameter, ParameterExpression readerParameter, LabelTarget endOfBlockLabel)
+        {
+            var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
+            var grouping = memberInfos.Where(a => a.CanRead && a.Name.Length >= index).GroupBy(a => CalculateKey(a.Name, index))
+                .OrderByDescending(a => a.Key.Key).ToList();
+            if (!grouping.Any())
+            {
+                throw new InvalidOperationException(); // should never happen
+            }
+
+            var expressions = new List<Expression>();
+            foreach (var group in grouping)
+            {
+                if (group.Count() == 1) // need to check remaining values too 
+                {
+                    var memberInfo = group.Single();
+                    var i = index + group.Key.offset;
+                    var lengthEqualExpression = Expression.Equal(lengthParameter, Expression.Constant(i));
+                    var formatter = resolver.GetFormatter(memberInfo.MemberType);
+                    var matchExpression =
+                        Expression.Block(Expression.Assign(resultParameter,
+                                Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"), readerParameter)),
+                            Expression.Goto(endOfBlockLabel));
+                    if (group.Key.Key != 0 || group.Key.offset != 0)
+                    {
+                        Expression ifExpression = lengthEqualExpression;
+                        ifExpression = Expression.AndAlso(ifExpression,
+                            Expression.Equal(GetReadMethod(byteParameter, group.Key.intType, Expression.Constant(index)),
+                                GetConstantExpressionForGroupKey(group.Key.Key, group.Key.intType)));
+                        while (i < memberInfo.Name.Length)
+                        {
+                            var subKey = CalculateKey(memberInfo.Name, i);
+                            ifExpression = Expression.AndAlso(ifExpression,
+                                Expression.Equal(GetReadMethod(byteParameter, subKey.intType, Expression.Constant(index)),
+                                    GetConstantExpressionForGroupKey(subKey.Key, subKey.intType)));
+                            i += subKey.offset;
+                        }
+
+                        expressions.Add(Expression.IfThen(ifExpression, matchExpression));
+                    }
+                }
+                else
+                {
+                    var nextIndex = index + group.Key.offset;
+                    var ifExpression = Expression.AndAlso(Expression.GreaterThanOrEqual(lengthParameter, Expression.Constant(nextIndex)), 
+                        Expression.Equal(GetReadMethod(byteParameter, group.Key.intType, Expression.Constant(index)),
+                            GetConstantExpressionForGroupKey(group.Key.Key, group.Key.intType)));
+                    var subBlock = BuildMemberComparisons(group.ToList(), nextIndex, lengthParameter, byteParameter, resultParameter, readerParameter, endOfBlockLabel);
+                    expressions.Add(Expression.IfThen(ifExpression, subBlock));
+                    MethodInfo skipNextMethodInfo;
+                    if (typeof(TSymbol) == typeof(char))
+                    {
+                        skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextUtf16Segment));
+                    }
+                    else if (typeof(TSymbol) == typeof(byte))
+                    {
+                        skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextUtf8Segment));
+                    }
+                    else
+                    {
+                        throw new NotSupportedException();
+                    }
+
+                    expressions.Add(Expression.Call(readerParameter, skipNextMethodInfo));
+                    expressions.Add(Expression.Goto(endOfBlockLabel));
+                }
+            }
+            return null;
+        }
+
+        private static Expression GetConstantExpressionForGroupKey(ulong key, Type intType)
+        {
+            if (intType == typeof(byte))
+            {
+                return Expression.Constant((byte) key);
+            }
+
+            if (intType == typeof(ushort))
+            {
+                return Expression.Constant((ushort) key);
+            }
+
+            if (intType == typeof(uint))
+            {
+                return Expression.Constant((uint) key);
+            }
+
+            if (intType == typeof(ulong))
+            {
+                return Expression.Constant(key);
+            }
+            throw new NotSupportedException();
+        }
+
+        private static Expression GetReadMethod(ParameterExpression byteParameter, Type intType, Expression offsetParameter)
+        {
+            string methodName;
+            if (intType == typeof(byte))
+            {
+                methodName = nameof(ReadByte);
+            }
+
+            else if (intType == typeof(ushort))
+            {
+                methodName = nameof(ReadUInt16);
+            }
+
+            else if (intType == typeof(uint))
+            {
+                methodName = nameof(ReadUInt32);
+            }
+
+            else if (intType == typeof(ulong))
+            {
+                methodName = nameof(ReadUInt64);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+
+            var methodInfo = typeof(ComplexFormatter<T, TSymbol, TResolver>).GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic);
+            return Expression.Call(methodInfo, byteParameter, offsetParameter);
+        }
+
+        private static (ulong Key, Type intType, int offset) CalculateKey(string memberName, int index)
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return CalculateKeyUtf16(memberName, index);
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                return CalculateKeyUtf8(memberName, index);
+            }
+
+            throw new NotSupportedException();
+        }
+
+        private static (ulong Key, Type intType, int offset) CalculateKeyUtf8(string memberName, int index)
+        {
+            int remaining = memberName.Length - index;
+            if (remaining >= 8)
+            {
+                return (BitConverter.ToUInt64(Encoding.UTF8.GetBytes(memberName), index), typeof(ulong), 8);
+            }
+
+            if (remaining >= 4)
+            {
+                return (BitConverter.ToUInt32(Encoding.UTF8.GetBytes(memberName), index), typeof(uint), 4);
+            }
+
+            if (remaining >= 2)
+            {
+                return (BitConverter.ToUInt16(Encoding.UTF8.GetBytes(memberName), index), typeof(ushort), 2);
+            }
+
+            if (remaining >= 1)
+            {
+                return (Encoding.UTF8.GetBytes(memberName)[index], typeof(byte), 1);
+            }
+
+            return (0, typeof(uint), 0);
+        }
+
+
+        private static (ulong Key, Type intType, int offset) CalculateKeyUtf16(string memberName, int index)
+        {
+            int remaining = memberName.Length - index;
+            if (remaining >= 4)
+            {
+                return (BitConverter.ToUInt64(Encoding.Unicode.GetBytes(memberName), index * 2), typeof(ulong), 4);
+            }
+
+            if (remaining >= 2)
+            {
+                return (BitConverter.ToUInt32(Encoding.Unicode.GetBytes(memberName), index * 2), typeof(uint), 2);
+            }
+
+            if (remaining >= 1)
+            {
+                return (BitConverter.ToUInt16(Encoding.Unicode.GetBytes(memberName), index * 2), typeof(ushort), 1);
+            }
+
+            return (0, typeof(uint), 0);
+        }
+
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static byte ReadByte(ref byte b, int offset)
+        {
+            return Unsafe.Add(ref b, offset);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static ushort ReadUInt16(ref byte b, int offset)
+        {
+            return Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref b, offset));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static uint ReadUInt32(ref byte b, int offset)
+        {
+            return Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref b, offset));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static ulong ReadUInt64(ref byte b, int offset)
+        {
+            return Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref b, offset));
+        }
     }
 }

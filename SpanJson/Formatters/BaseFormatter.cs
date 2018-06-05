@@ -131,6 +131,5 @@ namespace SpanJson.Formatters
                 RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, value, nextNestingLimit);
             }
         }
-
     }
 }
