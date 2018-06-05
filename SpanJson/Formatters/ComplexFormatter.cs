@@ -59,21 +59,21 @@ namespace SpanJson.Formatters
             for (var i = 0; i < memberInfos.Count; i++)
             {
                 var memberInfo = memberInfos[i];
-                var formatter = resolver.GetFormatter(memberInfo.MemberType);
-                Expression formatterExpression = Expression.Constant(formatter);
+                var formatterType = resolver.GetFormatter(memberInfo.MemberType).GetType();
                 Expression serializerInstance = null;
                 MethodInfo serializeMethodInfo;
                 var memberExpression = Expression.PropertyOrField(valueParameter, memberInfo.MemberName);
                 var parameterExpressions = new List<Expression> {writerParameter, memberExpression};
+                var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
                 if (IsNoRuntimeDecisionRequired(memberInfo.MemberType))
                 {
-                    serializeMethodInfo = formatter.GetType().GetMethod("Serialize", BindingFlags.Public | BindingFlags.Instance);
-                    serializerInstance = formatterExpression;
+                    serializeMethodInfo = formatterType.GetMethod("Serialize", BindingFlags.Public | BindingFlags.Instance);                    
+                    serializerInstance = Expression.Field(null, fieldInfo);
                 }
                 else
                 {
                     serializeMethodInfo = typeof(BaseFormatter).GetMethod(nameof(SerializeRuntimeDecisionInternal), BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(memberInfo.MemberType, typeof(TSymbol), typeof(TResolver));
-                    parameterExpressions.Add(formatterExpression);
+                    parameterExpressions.Add(Expression.Field(null, fieldInfo));
                 }
 
                 if (RecursionCandidate.LookupRecursionCandidate(memberInfo.MemberType)) // only for possible candidates
@@ -363,13 +363,14 @@ namespace SpanJson.Formatters
                 if (memberInfosPerChar == 1) // only one hit, we compare the remaining name and and assign the field if true
                 {
                     var memberInfo = groupedMemberInfos.Single();
-                    var formatter = resolver.GetFormatter(memberInfo.MemberType);
+                    var formatterType = resolver.GetFormatter(memberInfo.MemberType).GetType();
+                    var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
                     var checkLength = (prefix?.Length ?? 0) + 1;
                     var equalityCheckStart = extendedComparisonNecessary ? 0 : checkLength;
                     Expression memberInfoConstant = GetConstantExpressionOfString<TSymbol>(memberInfo.Name.Substring(checkLength));
                     var testExpression = Expression.Call(equalityMethodInfo, equalitySwitchValue, Expression.Constant(equalityCheckStart), memberInfoConstant);
                     var matchExpression = matchExpressionFunctor(memberInfo.MemberName,
-                        Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"), readerParameter));
+                        Expression.Call(Expression.Field(null, fieldInfo), formatterType.GetMethod("Deserialize"), readerParameter));
 
                     var switchCase = Expression.SwitchCase(Expression.IfThenElse(testExpression, matchExpression, defaultValue), switchKey);
                     cases.Add(switchCase);
@@ -385,9 +386,10 @@ namespace SpanJson.Formatters
                     Expression directMatchExpression = null;
                     if (exactMatch != null)
                     {
-                        var formatter = resolver.GetFormatter(exactMatch.MemberType);
+                        var formatterType = resolver.GetFormatter(exactMatch.MemberType).GetType();
+                        var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
                         var matchExpression = matchExpressionFunctor(exactMatch.MemberName,
-                            Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"), readerParameter));
+                            Expression.Call(Expression.Field(null, fieldInfo), formatterType.GetMethod("Deserialize"), readerParameter));
 
                         var testExpression = Expression.Equal(Expression.Property(switchValue, "Length"), Expression.Constant(nextPrefix.Length));
                         directMatchExpression = Expression.IfThenElse(testExpression, matchExpression, nextSwitch);
