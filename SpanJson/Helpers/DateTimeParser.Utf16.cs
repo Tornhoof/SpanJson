@@ -77,12 +77,12 @@ namespace SpanJson.Helpers
         ///     2017-06-12T05:30:45.768 (local)
         ///     2017-06-12T05:30:45
         ///     2017-06-12T05:30:45Z
-        ///     2017-06-12T05:30:45 (local)
+        ///     2017-06-12 (local)
         /// </summary>
         private static bool TryParseDate(ReadOnlySpan<char> source, out Date value,
             out int charsConsumed)
         {
-            if (source.Length < 19)
+            if (source.Length < 10)
             {
                 value = default;
                 charsConsumed = 0;
@@ -148,6 +148,13 @@ namespace SpanJson.Helpers
                 }
 
                 day = (int) (digit1 * 10 + digit2);
+            }
+
+            if (source.Length == 10)
+            {
+                value = new Date(year, month, day, 0, 0, 0, 0, DateTimeKind.Local, TimeSpan.Zero);
+                charsConsumed = 10;
+                return true;
             }
 
             if (source[10] != 'T')

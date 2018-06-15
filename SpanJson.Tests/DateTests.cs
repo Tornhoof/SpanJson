@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Text;
+using Jil;
 using SpanJson.Benchmarks.Fixture;
 using SpanJson.Helpers;
 using Xunit;
@@ -54,7 +55,50 @@ namespace SpanJson.Tests
                 default:
                     throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
             }
+
+            Assert.True(DateTimeParser.TryParseDateTimeOffset(Encoding.UTF8.GetBytes(input), out var utf8dtoValue, out _));
+            Assert.Equal(length, input.Length);
+            Assert.Equal(length, dtoConsumed);
+            Assert.True(DateTimeParser.TryParseDateTime(Encoding.UTF8.GetBytes(input), out var utf8dtValue, out _));
+
+            Assert.Equal(dtoValue, utf8dtoValue);
+            Assert.Equal(dtValue, utf8dtValue);
         }
+
+        [Theory]
+        [InlineData("1970-01-01", 10, 1970, 01, 01)]
+        [InlineData("2017-06-12", 10, 2017, 6, 12)]
+        [InlineData("2050-01-01", 10, 2050, 01, 01)]
+        public void ParseDate(string input, int length, int year, int month, int day)
+        {
+            Assert.True(DateTimeParser.TryParseDateTimeOffset(input.AsSpan(), out var dtoValue, out var dtoConsumed));
+            Assert.Equal(length, input.Length);
+            Assert.Equal(length, dtoConsumed);
+            Assert.True(DateTimeParser.TryParseDateTime(input.AsSpan(), out var dtValue, out var dtConsumed));
+            Assert.Equal(length, dtConsumed);
+
+            Assert.Equal(year, dtoValue.Year);
+            Assert.Equal(month, dtoValue.Month);
+            Assert.Equal(day, dtValue.Day);
+            Assert.Equal(year, dtValue.Year);
+            Assert.Equal(month, dtValue.Month);
+            Assert.Equal(day, dtValue.Day);
+
+            Assert.True(DateTimeOffset.TryParseExact(input.AsSpan(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var bclDtoValue));
+            Assert.True(DateTime.TryParseExact(input.AsSpan(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var bclDtValue));
+
+            Assert.Equal(bclDtValue, dtValue);
+            Assert.Equal(bclDtoValue, dtoValue);
+
+            Assert.True(DateTimeParser.TryParseDateTimeOffset(Encoding.UTF8.GetBytes(input), out var utf8dtoValue, out _));
+            Assert.Equal(length, input.Length);
+            Assert.Equal(length, dtoConsumed);
+            Assert.True(DateTimeParser.TryParseDateTime(Encoding.UTF8.GetBytes(input), out var utf8dtValue, out _));
+
+            Assert.Equal(bclDtValue, utf8dtValue);
+            Assert.Equal(bclDtoValue, utf8dtoValue);
+        }
+
 
         /// <summary>
         ///     To make sure the fractions are properly parsed
