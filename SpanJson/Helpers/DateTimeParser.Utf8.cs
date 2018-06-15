@@ -220,7 +220,7 @@ namespace SpanJson.Helpers
 
 
             var fraction = 0;
-            if (source.Length > currentOffset + 1 && source[currentOffset] == (byte)'.')
+            if (source.Length > currentOffset + 1 && source[currentOffset] == (byte) '.')
             {
                 currentOffset++;
                 var temp = source[currentOffset++] - 48U; // one needs to exist
@@ -279,7 +279,7 @@ namespace SpanJson.Helpers
                         break;
                 }
 
-                fraction = (int)temp;
+                fraction = (int) temp;
             }
 
             var offsetChar = source.Length <= currentOffset ? default : source[currentOffset++];

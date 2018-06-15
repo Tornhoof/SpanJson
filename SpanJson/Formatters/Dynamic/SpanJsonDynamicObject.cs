@@ -30,6 +30,7 @@ namespace SpanJson.Formatters.Dynamic
                 result = _dictionary;
                 return true;
             }
+
             return base.TryConvert(binder, out result);
         }
 

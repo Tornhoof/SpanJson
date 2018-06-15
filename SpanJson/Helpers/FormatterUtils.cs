@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Buffers;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace SpanJson.Helpers
@@ -59,6 +60,14 @@ namespace SpanJson.Helpers
             }
 
             return digits;
+        }
+
+        public static void Grow<T>(ref T[] array)
+        {
+            var backup = array;
+            array = ArrayPool<T>.Shared.Rent(backup.Length * 2);
+            backup.CopyTo(array, 0);
+            ArrayPool<T>.Shared.Return(backup);
         }
     }
 }

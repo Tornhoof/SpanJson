@@ -7,11 +7,6 @@ namespace SpanJson.Resolvers
 {
     public class JsonObjectDescription : IReadOnlyList<JsonMemberInfo>
     {
-        public ConstructorInfo Constructor { get; }
-        public JsonConstructorAttribute Attribute { get; }
-        public JsonMemberInfo[] Members { get; }
-        public IReadOnlyDictionary<string, (Type Type, int Index)> ConstructorMapping { get; }
-
         public JsonObjectDescription(ConstructorInfo constructor, JsonConstructorAttribute attribute, JsonMemberInfo[] members)
         {
             Members = members;
@@ -23,22 +18,27 @@ namespace SpanJson.Resolvers
             }
         }
 
-        public IEnumerator<JsonMemberInfo> GetEnumerator()
-        {
-            for (int i = 0; i < Members.Length; i++)
-            {
-                yield return Members[i];
-            }
-        }
+        public ConstructorInfo Constructor { get; }
+        public JsonConstructorAttribute Attribute { get; }
+        public JsonMemberInfo[] Members { get; }
+        public IReadOnlyDictionary<string, (Type Type, int Index)> ConstructorMapping { get; }
+
+        public int Count => Members.Length;
+
+        public JsonMemberInfo this[int index] => Members[index];
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
-        public int Count => Members.Length;
-
-        public JsonMemberInfo this[int index] => Members[index];
+        public IEnumerator<JsonMemberInfo> GetEnumerator()
+        {
+            for (var i = 0; i < Members.Length; i++)
+            {
+                yield return Members[i];
+            }
+        }
 
         private Dictionary<string, (Type Type, int Index)> BuildMapping()
         {
@@ -55,8 +55,8 @@ namespace SpanJson.Resolvers
             {
                 JsonMemberInfo memberInfo;
                 if (memberInfoDictionary.TryGetValue(constructorParameter.Name, out memberInfo) ||
-                    (Attribute.ParameterNames != null && index < Attribute.ParameterNames.Length &&
-                     memberInfoDictionary.TryGetValue(Attribute.ParameterNames[index], out memberInfo)))
+                    Attribute.ParameterNames != null && index < Attribute.ParameterNames.Length &&
+                    memberInfoDictionary.TryGetValue(Attribute.ParameterNames[index], out memberInfo))
                 {
                     constructorValueIndexDictionary[memberInfo.MemberName] = (memberInfo.MemberType, index++);
                     memberInfo.CanWrite = true; // it's writeable now

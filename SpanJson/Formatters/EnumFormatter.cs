@@ -28,7 +28,7 @@ namespace SpanJson.Formatters
         }
 
         /// <summary>
-        /// Not sure if it's useful to build something like the automaton from the compelxformatter here
+        ///     Not sure if it's useful to build something like the automaton from the compelxformatter here
         /// </summary>
         /// <returns></returns>
         private static DeserializeDelegate BuildDeserializeDelegate()
@@ -87,7 +87,7 @@ namespace SpanJson.Formatters
             var returnTarget = Expression.Label(returnValue.Type);
             var returnLabel = Expression.Label(returnTarget, returnValue);
             expressions.Add(returnLabel);
-            var blockExpression = Expression.Block(new[] { jsonValue, returnValue }, expressions);
+            var blockExpression = Expression.Block(new[] {jsonValue, returnValue}, expressions);
             var lambdaExpression =
                 Expression.Lambda<DeserializeDelegate>(blockExpression, readerParameter);
             return lambdaExpression.Compile();

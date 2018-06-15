@@ -15,6 +15,23 @@ namespace SpanJson.Resolvers
     {
         private static readonly IReadOnlyDictionary<Type, JsonConstructorAttribute> BaseClassJsonConstructorMap = BuildMap();
 
+        protected static readonly ParameterExpression DynamicMetaObjectParameterExpression = Expression.Parameter(typeof(object));
+
+        protected static bool TryBaseClassJsonConstructorAttribute(Type type, out JsonConstructorAttribute attribute)
+        {
+            if (BaseClassJsonConstructorMap.TryGetValue(type, out attribute))
+            {
+                return true;
+            }
+
+            if (type.IsGenericType && BaseClassJsonConstructorMap.TryGetValue(type.GetGenericTypeDefinition(), out attribute))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         private static Dictionary<Type, JsonConstructorAttribute> BuildMap()
         {
             // TODO: what to do with the 8 args constructor with TRest?
@@ -32,28 +49,13 @@ namespace SpanJson.Resolvers
                 {typeof(ValueTuple<,,,>), new JsonConstructorAttribute()},
                 {typeof(ValueTuple<,,,,>), new JsonConstructorAttribute()},
                 {typeof(ValueTuple<,,,,,>), new JsonConstructorAttribute()},
-                {typeof(ValueTuple<,,,,,,>), new JsonConstructorAttribute()},
+                {typeof(ValueTuple<,,,,,,>), new JsonConstructorAttribute()}
             };
 
             return result;
         }
-
-        protected static bool TryBaseClassJsonConstructorAttribute(Type type, out JsonConstructorAttribute attribute)
-        {
-            if (BaseClassJsonConstructorMap.TryGetValue(type, out attribute))
-            {
-                return true;
-            }
-            if (type.IsGenericType && BaseClassJsonConstructorMap.TryGetValue(type.GetGenericTypeDefinition(), out attribute))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        protected static readonly ParameterExpression DynamicMetaObjectParameterExpression = Expression.Parameter(typeof(object));
     }
+
     public abstract class ResolverBase<TSymbol, TResolver> : ResolverBase, IJsonFormatterResolver<TSymbol, TResolver>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
@@ -74,13 +76,8 @@ namespace SpanJson.Resolvers
             // ReSharper restore ConvertClosureToMethodGroup
         }
 
-        public JsonObjectDescription GetObjectDescription<T>()
-        {
-            return Members.GetOrAdd(typeof(T), x => BuildMembers(x));
-        }
-
         /// <summary>
-        /// TODO Extend with attributes and ShouldSerialize
+        ///     TODO Extend with attributes and ShouldSerialize
         /// </summary>
         public JsonObjectDescription GetDynamicObjectDescription(IDynamicMetaObjectProvider provider)
         {
@@ -105,6 +102,11 @@ namespace SpanJson.Resolvers
         public IJsonFormatter<T, TSymbol, TResolver> GetFormatter<T>()
         {
             return (IJsonFormatter<T, TSymbol, TResolver>) GetFormatter(typeof(T));
+        }
+
+        public JsonObjectDescription GetObjectDescription<T>()
+        {
+            return Members.GetOrAdd(typeof(T), x => BuildMembers(x));
         }
 
         public static string MakeCamelCase(string name)
@@ -148,13 +150,15 @@ namespace SpanJson.Resolvers
                         _nullOptions == NullOptions.ExcludeNulls, canRead, canWrite));
                 }
             }
+
             TryGetAnnotedAttributeConstructor(type, out var constructor, out var attribute);
             return new JsonObjectDescription(constructor, attribute, result.ToArray());
         }
 
         private void TryGetAnnotedAttributeConstructor(Type type, out ConstructorInfo constructor, out JsonConstructorAttribute attribute)
         {
-            constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(a => a.GetCustomAttribute<JsonConstructorAttribute>() != null);
+            constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
+                .FirstOrDefault(a => a.GetCustomAttribute<JsonConstructorAttribute>() != null);
             if (constructor != null)
             {
                 attribute = constructor.GetCustomAttribute<JsonConstructorAttribute>();
@@ -164,9 +168,11 @@ namespace SpanJson.Resolvers
             if (TryBaseClassJsonConstructorAttribute(type, out attribute))
             {
                 // We basically take the one with the most parameters, this needs to match the dictionary // TODO find better method
-                constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance).OrderByDescending(a => a.GetParameters().Length).FirstOrDefault();
+                constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance).OrderByDescending(a => a.GetParameters().Length)
+                    .FirstOrDefault();
                 return;
             }
+
             constructor = default;
             attribute = default;
         }

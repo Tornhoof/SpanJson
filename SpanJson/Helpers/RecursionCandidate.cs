@@ -78,6 +78,7 @@ namespace SpanJson.Helpers
                     }
                 }
             }
+
             RuntimeLookup.TryAdd(type, false);
             return false;
         }

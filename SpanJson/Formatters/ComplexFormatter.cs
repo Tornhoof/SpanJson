@@ -54,6 +54,7 @@ namespace SpanJson.Formatters
             {
                 throw new NotSupportedException();
             }
+
             expressions.Add(Expression.Call(writerParameter, writeBeginObjectMethodInfo));
             var writeSeperator = Expression.Variable(typeof(bool), "writeSeperator");
             for (var i = 0; i < memberInfos.Count; i++)
@@ -67,12 +68,14 @@ namespace SpanJson.Formatters
                 var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
                 if (IsNoRuntimeDecisionRequired(memberInfo.MemberType))
                 {
-                    serializeMethodInfo = formatterType.GetMethod("Serialize", BindingFlags.Public | BindingFlags.Instance);                    
+                    serializeMethodInfo = formatterType.GetMethod("Serialize", BindingFlags.Public | BindingFlags.Instance);
                     serializerInstance = Expression.Field(null, fieldInfo);
                 }
                 else
                 {
-                    serializeMethodInfo = typeof(BaseFormatter).GetMethod(nameof(SerializeRuntimeDecisionInternal), BindingFlags.NonPublic | BindingFlags.Static).MakeGenericMethod(memberInfo.MemberType, typeof(TSymbol), typeof(TResolver));
+                    serializeMethodInfo = typeof(BaseFormatter)
+                        .GetMethod(nameof(SerializeRuntimeDecisionInternal), BindingFlags.NonPublic | BindingFlags.Static)
+                        .MakeGenericMethod(memberInfo.MemberType, typeof(TSymbol), typeof(TResolver));
                     parameterExpressions.Add(Expression.Field(null, fieldInfo));
                 }
 
@@ -146,15 +149,10 @@ namespace SpanJson.Formatters
             }
 
             expressions.Add(Expression.Call(writerParameter, writeEndObjectMethodInfo));
-            var blockExpression = Expression.Block(new[] { writeSeperator }, expressions);
+            var blockExpression = Expression.Block(new[] {writeSeperator}, expressions);
             var lambda =
                 Expression.Lambda<SerializeDelegate<T, TSymbol, TResolver>>(blockExpression, writerParameter, valueParameter, nestingLimitParameter);
             return lambda.Compile();
-        }
-
-        private static bool IsNoRuntimeDecisionRequired(Type memberType)
-        {
-            return memberType.IsValueType || memberType.IsSealed;
         }
 
         protected static DeserializeDelegate<T, TSymbol, TResolver> BuildDeserializeDelegate<T, TSymbol, TResolver>()
@@ -285,6 +283,11 @@ namespace SpanJson.Formatters
 
             var lambda = Expression.Lambda<DeserializeDelegate<T, TSymbol, TResolver>>(block, readerParameter);
             return lambda.Compile();
+        }
+
+        private static bool IsNoRuntimeDecisionRequired(Type memberType)
+        {
+            return memberType.IsValueType || memberType.IsSealed;
         }
 
         /// <summary>

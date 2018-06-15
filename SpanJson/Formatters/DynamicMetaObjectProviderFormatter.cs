@@ -25,44 +25,12 @@ namespace SpanJson.Formatters
 
         private static readonly TResolver Resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
         private static readonly IJsonFormatter<T, TSymbol, TResolver> DefaultFormatter = Resolver.GetFormatter<T>();
+
         private static readonly Dictionary<string, DeserializeDelegate> KnownMembersDictionary = BuildKnownMembers();
+        private static readonly ConcurrentDictionary<string, Func<T, object>> GetMemberCache = new ConcurrentDictionary<string, Func<T, object>>();
 
-        private static Dictionary<string, DeserializeDelegate> BuildKnownMembers()
-        {
-            var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
-            var memberInfos = resolver.GetObjectDescription<T>().ToList();
-            var inputParameter = Expression.Parameter(typeof(T), "input");
-            var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
-            var result = new Dictionary<string, DeserializeDelegate>(StringComparer.InvariantCulture);
-            // can't deserialize abstract or interface
-            foreach (var jsonMemberInfo in memberInfos)
-            {
-                if (!jsonMemberInfo.CanWrite)
-                {
-                    var skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextSegment));
-                    var skipExpression = Expression.Lambda<DeserializeDelegate>(Expression.Call(readerParameter, skipNextMethodInfo), inputParameter, readerParameter).Compile();
-                    result.Add(jsonMemberInfo.Name, skipExpression);
-                }
-                else if (jsonMemberInfo.MemberType.IsAbstract || jsonMemberInfo.MemberType.IsInterface)
-                {
-                    var throwExpression = Expression.Lambda<DeserializeDelegate>(Expression.Block(
-                            Expression.Throw(Expression.Constant(new NotSupportedException($"{typeof(T).Name} contains abstract or interface members."))),
-                            Expression.Default(typeof(T))),
-                        inputParameter, readerParameter).Compile();
-                    result.Add(jsonMemberInfo.Name, throwExpression);
-                }
-                else
-                {
-                    var formatter = ((IJsonFormatterResolver) resolver).GetFormatter(jsonMemberInfo.MemberType);
-                    var assignExpression = Expression.Assign(Expression.PropertyOrField(inputParameter, jsonMemberInfo.MemberName),
-                        Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"), readerParameter));
-                    var lambda = Expression.Lambda<DeserializeDelegate>(assignExpression, inputParameter, readerParameter).Compile();
-                    result.Add(jsonMemberInfo.Name, lambda);
-                }
-            }
 
-            return result;
-        }
+        private static readonly ConcurrentDictionary<string, Action<T, object>> SetMemberCache = new ConcurrentDictionary<string, Action<T, object>>();
 
         public T Deserialize(ref JsonReader<TSymbol> reader)
         {
@@ -89,36 +57,6 @@ namespace SpanJson.Formatters
             }
 
             return result;
-        }
-
-        private static readonly ConcurrentDictionary<string, Func<T,object>> GetMemberCache = new ConcurrentDictionary<string, Func<T, object>>();
-        private static readonly ConcurrentDictionary<string, Action<T, object>> SetMemberCache = new ConcurrentDictionary<string, Action<T, object>>();
-
-
-        private static Func<T, object> GetOrAddGetMember(string memberName)
-        {
-            return GetMemberCache.GetOrAdd(memberName, s =>
-            {
-                var binder = (GetMemberBinder) Binder.GetMember(CSharpBinderFlags.None, s, typeof(T),
-                    new[] {CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null)});
-                var callSite = CallSite<Func<CallSite, object, object>>.Create(binder);
-                return target => callSite.Target(callSite, target);
-            });
-        }
-
-        private static Action<T, object> GetOrAddSetMember(string memberName)
-        {
-            return SetMemberCache.GetOrAdd(memberName, s =>
-            {
-                var binder = Binder.SetMember(CSharpBinderFlags.None, memberName, null,
-                    new[]
-                    {
-                        CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null),
-                        CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null)
-                    });
-                var callsite = CallSite<Func<CallSite, object, object, object>>.Create(binder);
-                return (target, value) => callsite.Target(callsite, target, value);
-            });
         }
 
         public void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
@@ -171,6 +109,72 @@ namespace SpanJson.Formatters
                 writer.WriteEndObject();
             }
         }
+
+        private static Dictionary<string, DeserializeDelegate> BuildKnownMembers()
+        {
+            var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
+            var memberInfos = resolver.GetObjectDescription<T>().ToList();
+            var inputParameter = Expression.Parameter(typeof(T), "input");
+            var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
+            var result = new Dictionary<string, DeserializeDelegate>(StringComparer.InvariantCulture);
+            // can't deserialize abstract or interface
+            foreach (var jsonMemberInfo in memberInfos)
+            {
+                if (!jsonMemberInfo.CanWrite)
+                {
+                    var skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextSegment));
+                    var skipExpression = Expression
+                        .Lambda<DeserializeDelegate>(Expression.Call(readerParameter, skipNextMethodInfo), inputParameter, readerParameter).Compile();
+                    result.Add(jsonMemberInfo.Name, skipExpression);
+                }
+                else if (jsonMemberInfo.MemberType.IsAbstract || jsonMemberInfo.MemberType.IsInterface)
+                {
+                    var throwExpression = Expression.Lambda<DeserializeDelegate>(Expression.Block(
+                            Expression.Throw(Expression.Constant(new NotSupportedException($"{typeof(T).Name} contains abstract or interface members."))),
+                            Expression.Default(typeof(T))),
+                        inputParameter, readerParameter).Compile();
+                    result.Add(jsonMemberInfo.Name, throwExpression);
+                }
+                else
+                {
+                    var formatter = ((IJsonFormatterResolver) resolver).GetFormatter(jsonMemberInfo.MemberType);
+                    var assignExpression = Expression.Assign(Expression.PropertyOrField(inputParameter, jsonMemberInfo.MemberName),
+                        Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"), readerParameter));
+                    var lambda = Expression.Lambda<DeserializeDelegate>(assignExpression, inputParameter, readerParameter).Compile();
+                    result.Add(jsonMemberInfo.Name, lambda);
+                }
+            }
+
+            return result;
+        }
+
+
+        private static Func<T, object> GetOrAddGetMember(string memberName)
+        {
+            return GetMemberCache.GetOrAdd(memberName, s =>
+            {
+                var binder = (GetMemberBinder) Binder.GetMember(CSharpBinderFlags.None, s, typeof(T),
+                    new[] {CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null)});
+                var callSite = CallSite<Func<CallSite, object, object>>.Create(binder);
+                return target => callSite.Target(callSite, target);
+            });
+        }
+
+        private static Action<T, object> GetOrAddSetMember(string memberName)
+        {
+            return SetMemberCache.GetOrAdd(memberName, s =>
+            {
+                var binder = Binder.SetMember(CSharpBinderFlags.None, memberName, null,
+                    new[]
+                    {
+                        CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null),
+                        CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null)
+                    });
+                var callsite = CallSite<Func<CallSite, object, object, object>>.Create(binder);
+                return (target, value) => callsite.Target(callsite, target, value);
+            });
+        }
+
         protected delegate void DeserializeDelegate(T input, ref JsonReader<TSymbol> reader);
     }
 }

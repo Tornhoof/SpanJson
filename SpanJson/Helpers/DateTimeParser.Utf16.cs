@@ -279,7 +279,7 @@ namespace SpanJson.Helpers
                         break;
                 }
 
-                fraction = (int)temp;
+                fraction = (int) temp;
             }
 
             var offsetChar = source.Length <= currentOffset ? default : source[currentOffset++];

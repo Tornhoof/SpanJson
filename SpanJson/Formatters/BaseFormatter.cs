@@ -8,7 +8,6 @@ namespace SpanJson.Formatters
 {
     public abstract class BaseFormatter
     {
-
         protected static Func<T> BuildCreateFunctor<T>(Type defaultType)
         {
             var type = typeof(T);
@@ -21,6 +20,7 @@ namespace SpanJson.Formatters
                     return () => throw new NotSupportedException($"Can't create {typeof(T).Name}.");
                 }
             }
+
             return Expression.Lambda<Func<T>>(Expression.New(type)).Compile();
         }
 
@@ -40,8 +40,9 @@ namespace SpanJson.Formatters
 
 
         /// <summary>
-        /// Faster than SequenceEqual for some unknown reason
-        /// Using SequenceEqual makes the deserialization 10-15% slower, but in a standalone benchmark sequenceEqual is way faster
+        ///     Faster than SequenceEqual for some unknown reason
+        ///     Using SequenceEqual makes the deserialization 10-15% slower, but in a standalone benchmark sequenceEqual is way
+        ///     faster
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected static bool StringEquals(ReadOnlySpan<char> span, int offset, string comparison)
@@ -50,6 +51,7 @@ namespace SpanJson.Formatters
             {
                 return false;
             }
+
             for (var i = 0; i < comparison.Length; i++)
             {
                 ref readonly var left = ref span[offset + i];
@@ -70,7 +72,8 @@ namespace SpanJson.Formatters
         }
 
         /// <summary>
-        /// Faster than SequenceEqual for some unknown reason, this needs to be a byte array and not a string otherwise we might run into problems with non ascii property names
+        ///     Faster than SequenceEqual for some unknown reason, this needs to be a byte array and not a string otherwise we
+        ///     might run into problems with non ascii property names
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected static bool ByteEquals(ReadOnlySpan<byte> span, int offset, byte[] comparison)
@@ -79,6 +82,7 @@ namespace SpanJson.Formatters
             {
                 return false;
             }
+
             for (var i = 0; i < comparison.Length; i++)
             {
                 ref readonly var left = ref span[offset + i];
@@ -131,6 +135,5 @@ namespace SpanJson.Formatters
                 RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, value, nextNestingLimit);
             }
         }
-
     }
 }
