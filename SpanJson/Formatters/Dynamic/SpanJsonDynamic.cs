@@ -14,6 +14,15 @@ namespace SpanJson.Formatters.Dynamic
 
         public TSymbol[] Symbols { get; }
 
+        protected abstract BaseDynamicTypeConverter<TSymbol> Converter { get; }
+
+
+        public bool TryConvert(Type outputType, out object result)
+        {
+            var returnType = Nullable.GetUnderlyingType(outputType) ?? outputType;
+            return Converter.TryConvertTo(returnType, Symbols, out result);
+        }
+
         public override string ToString()
         {
             if (typeof(TSymbol) == typeof(char))
@@ -33,18 +42,9 @@ namespace SpanJson.Formatters.Dynamic
             throw new NotSupportedException();
         }
 
-
-        public bool TryConvert(Type outputType, out object result)
-        {
-            var returnType = Nullable.GetUnderlyingType(outputType) ?? outputType;
-            return Converter.TryConvertTo(returnType, Symbols, out result);
-        }
-
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
             return TryConvert(binder.ReturnType, out result);
         }
-
-        protected abstract BaseDynamicTypeConverter<TSymbol> Converter { get; }
     }
 }

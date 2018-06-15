@@ -5,12 +5,12 @@ namespace SpanJson
     public static partial class JsonSerializer
     {
         /// <summary>
-        /// Very primitive JSON pretty printer
+        ///     Very primitive JSON pretty printer
         /// </summary>
         public static class PrettyPrinter
         {
             /// <summary>
-            /// Pretty prints a json input with 2 space indentation.
+            ///     Pretty prints a json input with 2 space indentation.
             /// </summary>
             /// <param name="input">Input</param>
             /// <returns>String</returns>
@@ -21,8 +21,9 @@ namespace SpanJson
                 Print(ref reader, ref writer, 0);
                 return writer.ToString();
             }
+
             /// <summary>
-            /// Pretty prints a json input with 2 space indentation.
+            ///     Pretty prints a json input with 2 space indentation.
             /// </summary>
             /// <param name="input">Input</param>
             /// <returns>Byte array</returns>

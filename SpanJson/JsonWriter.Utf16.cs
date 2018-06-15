@@ -121,7 +121,7 @@ namespace SpanJson
 
         public void WriteUtf16Double(double value)
         {
-            Span<char> span = stackalloc char[JsonSharedConstant.MaxNumberBufferSize]; 
+            Span<char> span = stackalloc char[JsonSharedConstant.MaxNumberBufferSize];
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
             if (pos > _chars.Length - written)
@@ -135,7 +135,7 @@ namespace SpanJson
 
         public void WriteUtf16Decimal(decimal value)
         {
-            Span<char> span = stackalloc char[JsonSharedConstant.MaxNumberBufferSize]; 
+            Span<char> span = stackalloc char[JsonSharedConstant.MaxNumberBufferSize];
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
             if (pos > _chars.Length - written)

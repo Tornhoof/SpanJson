@@ -21,7 +21,6 @@ namespace SpanJson.Helpers
             if (value.Offset == TimeSpan.Zero)
             {
                 Unsafe.Add(ref c, charsWritten++) = 'Z';
-              
             }
             else
             {
@@ -92,6 +91,7 @@ namespace SpanJson.Helpers
             {
                 sign = '+';
             }
+
             Unsafe.Add(ref c, charsWritten) = sign;
             WriteTwoDigits(offset.Hours, ref c, charsWritten + 1);
             Unsafe.Add(ref c, charsWritten + 3) = ':';
@@ -104,15 +104,15 @@ namespace SpanJson.Helpers
         {
             var temp = '0' + value;
             value /= 10;
-            Unsafe.Add(ref c, startIndex + 3) = (char) (temp - (value * 10));
+            Unsafe.Add(ref c, startIndex + 3) = (char) (temp - value * 10);
 
             temp = '0' + value;
             value /= 10;
-            Unsafe.Add(ref c, startIndex + 2) = (char) (temp - (value * 10));
+            Unsafe.Add(ref c, startIndex + 2) = (char) (temp - value * 10);
 
             temp = '0' + value;
             value /= 10;
-            Unsafe.Add(ref c, startIndex + 1) = (char) (temp - (value * 10));
+            Unsafe.Add(ref c, startIndex + 1) = (char) (temp - value * 10);
 
             Unsafe.Add(ref c, startIndex) = (char) ('0' + value);
         }
@@ -122,18 +122,18 @@ namespace SpanJson.Helpers
         {
             var temp = '0' + value;
             value /= 10;
-            Unsafe.Add(ref c, startIndex + 1) = (char) (temp - (value * 10));
+            Unsafe.Add(ref c, startIndex + 1) = (char) (temp - value * 10);
             Unsafe.Add(ref c, startIndex) = (char) ('0' + value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void WriteDigits(uint value, ref char c, int pos)
         {
-            for (int i = 7; i > 0; i--)
+            for (var i = 7; i > 0; i--)
             {
                 ulong temp = '0' + value;
                 value /= 10;
-                Unsafe.Add(ref c, pos + i - 1) = (char) (temp - (value * 10));
+                Unsafe.Add(ref c, pos + i - 1) = (char) (temp - value * 10);
             }
         }
     }

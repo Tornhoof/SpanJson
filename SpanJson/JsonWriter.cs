@@ -8,7 +8,6 @@ namespace SpanJson
 {
     public ref partial struct JsonWriter<TSymbol> where TSymbol : struct
     {
-
         private Span<char> _chars;
         private Span<byte> _bytes;
         private int _pos;
@@ -269,7 +268,7 @@ namespace SpanJson
                     Grow(count);
                 }
 
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     _chars[_pos++] = ' ';
                 }
@@ -281,7 +280,7 @@ namespace SpanJson
                     Grow(count);
                 }
 
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     _bytes[_pos++] = (byte) ' ';
                 }
@@ -301,6 +300,7 @@ namespace SpanJson
                 {
                     Grow(1);
                 }
+
                 WriteUtf16DoubleQuote();
             }
             else if (typeof(TSymbol) == typeof(byte))
@@ -309,6 +309,7 @@ namespace SpanJson
                 {
                     Grow(1);
                 }
+
                 WriteUtf8DoubleQuote();
             }
             else
@@ -327,6 +328,7 @@ namespace SpanJson
                 {
                     Grow(remaining);
                 }
+
                 WriteUtf16DoubleQuote();
                 WriteUtf16Verbatim(MemoryMarshal.Cast<TSymbol, char>(values));
                 WriteUtf16DoubleQuote();
@@ -338,6 +340,7 @@ namespace SpanJson
                 {
                     Grow(remaining);
                 }
+
                 WriteUtf8DoubleQuote();
                 WriteUtf8Verbatim(MemoryMarshal.Cast<TSymbol, byte>(values));
                 WriteUtf8DoubleQuote();

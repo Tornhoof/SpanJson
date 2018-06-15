@@ -4,8 +4,112 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
-<#@ include file="ListAndArray.ttinclude" once="true" #>
 <#
+void GenerateListSerializeCode(string typeName, string utfName)
+{
+#>
+            if (value == null)
+            {
+                writer.Write<#= utfName #>Null();
+                return;
+            }
+            var valueLength = value.Count;
+            writer.Write<#= utfName #>BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, value[0], nestingLimit);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.Write<#= utfName #>ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, value[i], nestingLimit);
+                }
+            }
+
+            writer.Write<#= utfName #>EndArray();
+<#
+}
+void GenerateListDeserializeCode(string typeName, string utfName)
+{
+#>
+            if (reader.Read<#= utfName #>IsNull())
+            {
+                return null;
+            }
+            reader.Read<#= utfName #>BeginArrayOrThrow();
+            var list = new List<<#= typeName #>>();
+            var count = 0;
+            while (!reader.TryRead<#= utfName #>IsEndArrayOrValueSeparator(ref count))
+            {
+                list.Add(ElementFormatter.Deserialize(ref reader));
+            }
+
+            return list;
+<#
+}
+void GenerateArraySerializeCode(string typeName, string utfName)
+{
+#>
+            if (value == null)
+            {
+                writer.Write<#= utfName #>Null();
+                return;
+            }
+            var valueLength = value.Length;
+            writer.Write<#= utfName #>BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, value[0], nestingLimit);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.Write<#= utfName #>ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, value[i], nestingLimit);
+                }
+            }
+
+            writer.Write<#= utfName #>EndArray();
+<#
+}
+void GenerateArrayDeserializeCode(string typeName, string utfName)
+{
+#>
+            <#= typeName #>[] temp = null;
+            <#= typeName #>[] result;
+            try
+            {
+                temp = ArrayPool<<#= typeName #>>.Shared.Rent(4);
+                reader.Read<#= utfName #>BeginArrayOrThrow();
+                var count = 0;
+                while (!reader.TryRead<#= utfName #>IsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
+                {
+                    if (count == temp.Length)
+                    {
+                        FormatterUtils.Grow(ref temp);
+                    }
+
+                    temp[count - 1] = ElementFormatter.Deserialize(ref reader);
+                }
+
+                if (count == 0)
+                {
+                    result = Array.Empty<<#= typeName #>>();
+                }
+                else
+                {
+                    result = new <#= typeName #>[count];
+                    Array.Copy(temp, result, count);
+                }
+            }
+            finally
+            {
+                if (temp != null)
+                {
+                    ArrayPool<<#= typeName #>>.Shared.Return(temp);
+                }
+            }
+
+            return result;
+<#
+}
     var types = new[]
     {
         typeof(sbyte),

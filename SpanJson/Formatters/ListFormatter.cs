@@ -5,11 +5,20 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public abstract class ListFormatter : BaseFormatter
+    /// <summary>
+    ///     Used for types which are not built-in
+    /// </summary>
+    public sealed class ListFormatter<TList, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TList, TSymbol, TResolver>
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TList : class, IList<T>
+
     {
-        protected static TList Deserialize<TList, T, TSymbol, TResolver>(ref JsonReader<TSymbol> reader, IJsonFormatter<T, TSymbol, TResolver> formatter,
-            Func<TList> createFunctor)
-            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TList : class, IList<T>
+        private static readonly Func<TList> CreateFunctor = BuildCreateFunctor<TList>(typeof(List<T>));
+        public static readonly ListFormatter<TList, T, TSymbol, TResolver> Default = new ListFormatter<TList, T, TSymbol, TResolver>();
+
+        private static readonly IJsonFormatter<T, TSymbol, TResolver> ElementFormatter =
+            StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
+
+        public TList Deserialize(ref JsonReader<TSymbol> reader)
         {
             if (reader.ReadIsNull())
             {
@@ -17,94 +26,38 @@ namespace SpanJson.Formatters
             }
 
             reader.ReadBeginArrayOrThrow();
-            var list = createFunctor();
+            var list = CreateFunctor();
             var count = 0;
             while (!reader.TryReadIsEndArrayOrValueSeparator(ref count))
             {
-                list.Add(formatter.Deserialize(ref reader));
+                list.Add(ElementFormatter.Deserialize(ref reader));
             }
 
             return list;
         }
-        /// <summary>
-        /// Special case, the integrated types do not 
-        /// </summary>
-        protected static void Serialize<TList, T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, TList value,
-            IJsonFormatter<T, TSymbol, TResolver> formatter, int nestingLimit) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
-            where TSymbol : struct
-            where TList : class, IList<T>
-        {
-            if (value == null)
-            {
-                writer.WriteNull();
-                return;
-            }
-
-            var nextNestingLimit = RecursionCandidate<T>.IsRecursionCandidate ? nestingLimit + 1 : nestingLimit;
-            var valueLength = value.Count;
-            writer.WriteBeginArray();
-            if (valueLength > 0)
-            {
-                formatter.Serialize(ref writer, value[0], nextNestingLimit);
-                for (var i = 1; i < valueLength; i++)
-                {
-                    writer.WriteValueSeparator();
-                    formatter.Serialize(ref writer, value[i], nextNestingLimit);
-                }
-            }
-
-            writer.WriteEndArray();
-        }
-
-        protected static void SerializeRuntimeDecision<TList, T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, TList value,
-            IJsonFormatter<T, TSymbol, TResolver> formatter, int nestingLimit) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
-            where TSymbol : struct
-            where TList : class, IList<T>
-        {
-            if (value == null)
-            {
-                writer.WriteNull();
-                return;
-            }
-
-            var nextNestingLimit = RecursionCandidate<T>.IsRecursionCandidate ? nestingLimit + 1 : nestingLimit;
-            var valueLength = value.Count;
-            writer.WriteBeginArray();
-            if (valueLength > 0)
-            {
-                SerializeRuntimeDecisionInternal(ref writer, value[0], formatter, nextNestingLimit);
-                for (var i = 1; i < valueLength; i++)
-                {
-                    writer.WriteValueSeparator();
-                    SerializeRuntimeDecisionInternal(ref writer, value[i], formatter, nextNestingLimit);
-                }
-            }
-
-            writer.WriteEndArray();
-        }
-    }
-
-    /// <summary>
-    ///     Used for types which are not built-in
-    /// </summary>
-    public sealed class ListFormatter<TList, T, TSymbol, TResolver> : ListFormatter, IJsonFormatter<TList, TSymbol, TResolver>
-        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TList : class, IList<T>
-
-    {
-        private static readonly Func<TList> CreateFunctor = BuildCreateFunctor<TList>(typeof(List<T>));
-        public static readonly ListFormatter<TList, T, TSymbol, TResolver> Default = new ListFormatter<TList, T, TSymbol, TResolver>();
-
-        private static readonly IJsonFormatter<T, TSymbol, TResolver> DefaultFormatter =
-            StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
-
-        public TList Deserialize(ref JsonReader<TSymbol> reader)
-        {
-            return Deserialize(ref reader, DefaultFormatter, CreateFunctor);
-        }
 
         public void Serialize(ref JsonWriter<TSymbol> writer, TList value, int nestingLimit)
         {
-            SerializeRuntimeDecision(ref writer, value, DefaultFormatter, nestingLimit);
+            if (value == null)
+            {
+                writer.WriteNull();
+                return;
+            }
+
+            var nextNestingLimit = RecursionCandidate<T>.IsRecursionCandidate ? nestingLimit + 1 : nestingLimit;
+            var valueLength = value.Count;
+            writer.WriteBeginArray();
+            if (valueLength > 0)
+            {
+                SerializeRuntimeDecisionInternal(ref writer, value[0], ElementFormatter, nextNestingLimit);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteValueSeparator();
+                    SerializeRuntimeDecisionInternal(ref writer, value[i], ElementFormatter, nextNestingLimit);
+                }
+            }
+
+            writer.WriteEndArray();
         }
     }
 }

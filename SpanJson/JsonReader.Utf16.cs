@@ -409,7 +409,6 @@ namespace SpanJson
 
                             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
                             break;
-
                         }
                         default:
                         {
@@ -832,20 +831,18 @@ namespace SpanJson
                 if (c == JsonUtf16Constant.ReverseSolidus)
                 {
                     escapedCharsSize++;
-                    c = ref Unsafe.Add(ref cStart, ++stringLength);
+                    c =  ref Unsafe.Add(ref cStart, ++stringLength);
                     if (c == 'u' || c == 'U')
                     {
                         escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
                         stringLength += 4;
                     }
-
                 }
                 else if (c == JsonUtf8Constant.String)
                 {
                     cStart = c;
                     return true;
                 }
-
             }
 
             return false;

@@ -1,10 +1,10 @@
-﻿using SpanJson.Helpers;
-using System;
+﻿using System;
 using System.Buffers.Text;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using SpanJson.Helpers;
 
 namespace SpanJson
 {
@@ -117,7 +117,7 @@ namespace SpanJson
                 Grow(written);
             }
 
-            for (int i = 0; i < written; i++)
+            for (var i = 0; i < written; i++)
             {
                 _bytes[pos++] = (byte) span[i];
             }
@@ -133,15 +133,15 @@ namespace SpanJson
                 Grow(written);
             }
 
-            for (int i = 0; i < written; i++)
+            for (var i = 0; i < written; i++)
             {
-                _bytes[pos++] = (byte)span[i];
+                _bytes[pos++] = (byte) span[i];
             }
         }
 
         public void WriteUtf8Decimal(decimal value)
         {
-            Span<byte> span = stackalloc byte[JsonSharedConstant.MaxNumberBufferSize]; 
+            Span<byte> span = stackalloc byte[JsonSharedConstant.MaxNumberBufferSize];
             Utf8Formatter.TryFormat(value, span, out var bytesWritten);
             ref var pos = ref _pos;
             if (pos > _bytes.Length - bytesWritten)
@@ -260,11 +260,11 @@ namespace SpanJson
         }
 
         /// <summary>
-        /// We know that for a pure ascii string all characters will fit if there are no escapes
-        /// We make sure that initially the buffer is large enough and an additional fully escaped char fits too
-        /// After each escape we make sure that all remaining ascii chars and extra fully escaped char fit
-        /// For UTF8 encoded bytes we make sure that the 5 for the fully escaped value and 4 for the utf fit
-        /// That's all done to make sure we don't have resizing in the fast path (the ascii case)
+        ///     We know that for a pure ascii string all characters will fit if there are no escapes
+        ///     We make sure that initially the buffer is large enough and an additional fully escaped char fits too
+        ///     After each escape we make sure that all remaining ascii chars and extra fully escaped char fit
+        ///     For UTF8 encoded bytes we make sure that the 5 for the fully escaped value and 4 for the utf fit
+        ///     That's all done to make sure we don't have resizing in the fast path (the ascii case)
         /// </summary>
         /// <param name="value"></param>
         public void WriteUtf8String(string value)
@@ -302,6 +302,7 @@ namespace SpanJson
                     index++;
                 }
             }
+
             // Still chars to encode
             if (from < span.Length)
             {

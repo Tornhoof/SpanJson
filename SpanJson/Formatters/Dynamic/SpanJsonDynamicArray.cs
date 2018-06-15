@@ -21,6 +21,10 @@ namespace SpanJson.Formatters.Dynamic
             _input = input;
         }
 
+        public object this[int index] => _input[index];
+
+        public int Length => _input.Length;
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
@@ -69,10 +73,6 @@ namespace SpanJson.Formatters.Dynamic
             result = default;
             return false;
         }
-
-        public object this[int index] => _input[index];
-
-        public int Length => _input.Length;
 
         public override string ToString()
         {

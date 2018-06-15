@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+
 namespace SpanJson.Formatters.Dynamic
-{    
+{
     public abstract class SpanJsonDynamicString<TSymbol> : SpanJsonDynamic<TSymbol> where TSymbol : struct
     {
         private static readonly DynamicTypeConverter DynamicConverter = new DynamicTypeConverter();

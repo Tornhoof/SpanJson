@@ -5,11 +5,19 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public abstract class EnumerableFormatter : BaseFormatter
+    /// <summary>
+    ///     Used for types which are not built-in
+    /// </summary>
+    public sealed class EnumerableFormatter<TEnumerable, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TEnumerable, TSymbol, TResolver>
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TEnumerable : class, IEnumerable<T>
+
     {
-        protected static TEnumerable Deserialize<TEnumerable, T, TSymbol, TResolver>(ref JsonReader<TSymbol> reader,
-            IJsonFormatter<T, TSymbol, TResolver> formatter)
-            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TEnumerable : class, IEnumerable<T>
+        public static readonly EnumerableFormatter<TEnumerable, T, TSymbol, TResolver> Default = new EnumerableFormatter<TEnumerable, T, TSymbol, TResolver>();
+
+        private static readonly IJsonFormatter<T, TSymbol, TResolver> ElementFormatter =
+            StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
+
+        public TEnumerable Deserialize(ref JsonReader<TSymbol> reader)
         {
             if (reader.ReadIsNull())
             {
@@ -18,10 +26,8 @@ namespace SpanJson.Formatters
 
             throw new NotImplementedException(); // generic IEnumerable<> deserialization is not supported
         }
-        protected static void Serialize<TEnumerable, T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, TEnumerable value,
-            IJsonFormatter<T, TSymbol, TResolver> formatter, int nestingLimit) where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
-            where TSymbol : struct
-            where TEnumerable : class, IEnumerable<T>
+
+        public void Serialize(ref JsonWriter<TSymbol> writer, TEnumerable value, int nestingLimit)
         {
             if (value == null)
             {
@@ -38,12 +44,12 @@ namespace SpanJson.Formatters
                 if (enumerator.MoveNext())
                 {
                     // first one, so we can write the separator prior to every following one
-                    SerializeRuntimeDecisionInternal(ref writer, enumerator.Current, formatter, nextNestingLimit);
+                    SerializeRuntimeDecisionInternal(ref writer, enumerator.Current, ElementFormatter, nextNestingLimit);
                     // write all the other ones
                     while (enumerator.MoveNext())
                     {
                         writer.WriteValueSeparator();
-                        SerializeRuntimeDecisionInternal(ref writer, enumerator.Current, formatter, nextNestingLimit);
+                        SerializeRuntimeDecisionInternal(ref writer, enumerator.Current, ElementFormatter, nextNestingLimit);
                     }
                 }
 
@@ -53,30 +59,6 @@ namespace SpanJson.Formatters
             {
                 enumerator?.Dispose();
             }
-        }
-    }
-
-    /// <summary>
-    ///     Used for types which are not built-in
-    /// </summary>
-    public sealed class EnumerableFormatter<TEnumerable, T, TSymbol, TResolver> : EnumerableFormatter, IJsonFormatter<TEnumerable, TSymbol, TResolver>
-        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TEnumerable : class, IEnumerable<T>
-
-    {
-        public static readonly EnumerableFormatter<TEnumerable, T, TSymbol, TResolver> Default = new EnumerableFormatter<TEnumerable, T, TSymbol, TResolver>();
-
-
-        private static readonly IJsonFormatter<T, TSymbol, TResolver> DefaultFormatter =
-            StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
-
-        public TEnumerable Deserialize(ref JsonReader<TSymbol> reader)
-        {
-            return Deserialize<TEnumerable, T, TSymbol, TResolver>(ref reader, DefaultFormatter);
-        }
-
-        public void Serialize(ref JsonWriter<TSymbol> writer, TEnumerable value, int nestingLimit)
-        {
-            Serialize(ref writer, value, DefaultFormatter, nestingLimit);
         }
     }
 }
