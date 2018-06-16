@@ -17,6 +17,8 @@ namespace SpanJson.Codegen
         public static string Generate(Type[] dataTypes)
         {
             StringBuilder sb = new StringBuilder();
+            sb.AppendLine("using System;");
+            sb.AppendLine("using System.Text;");
             sb.AppendLine("using System.Collections.Generic;");
             sb.AppendLine("using System.Runtime.InteropServices;");
             sb.AppendLine("using SpanJson.Benchmarks.Models;");
@@ -40,18 +42,20 @@ namespace SpanJson.Codegen
                 {
                     continue;
                 }
+
+                var currentFullName = current.FullName.Replace('+', '.');
                 var objectDescription = resolver.GetObjectDescription(current);
                 sb.AppendLine(
-                    $"public sealed class {current.Name}{SymbolName}Formatter : BaseGeneratedFormatter<{current.Name},{typeof(TSymbol).Name},ExcludeNullsOriginalCaseResolver<char>>, IJsonFormatter<{current.Name}, {typeof(TSymbol).Name}, TResolver>  where TResolver : class, IJsonFormatterResolver<{typeof(TSymbol).Name}, TResolver>, new()");
+                    $"public sealed class {current.Name}{SymbolName}Formatter : BaseGeneratedFormatter<{currentFullName},{typeof(TSymbol).Name},ExcludeNullsOriginalCaseResolver<{typeof(TSymbol).Name}>>, IJsonFormatter<{currentFullName}, {typeof(TSymbol).Name}, ExcludeNullsOriginalCaseResolver<{typeof(TSymbol).Name}>>");
                 sb.AppendLine("{");
                 GenerateSerializerNameFields(sb, current, objectDescription);
                 sb.AppendLine(
-                    $"public static readonly {current.Name}{SymbolName}Formatter Default = new {current.Name}{SymbolName}Formatter>();");
-                sb.AppendLine($"public {current.Name} Deserialize(ref JsonReader<{typeof(TSymbol).Name}> reader)");
+                    $"public static readonly {current.Name}{SymbolName}Formatter Default = new {current.Name}{SymbolName}Formatter();");
+                sb.AppendLine($"public {currentFullName} Deserialize(ref JsonReader<{typeof(TSymbol).Name}> reader)");
                 sb.AppendLine("{");
                 GenerateDeserializer(sb, current, objectDescription, queue);
                 sb.AppendLine("}");
-                sb.AppendLine($"public void Serialize(ref JsonWriter<{typeof(TSymbol).Name}> writer, {current.Name} value, int nestingLimit)");
+                sb.AppendLine($"public void Serialize(ref JsonWriter<{typeof(TSymbol).Name}> writer, {current.FullName.Replace('+', '.')} value, int nestingLimit)");
                 sb.AppendLine("{");
                 GenerateSerializer(sb, current, objectDescription, queue);
                 sb.AppendLine("}");
@@ -132,7 +136,8 @@ namespace SpanJson.Codegen
             sb.AppendLine("{");
             sb.AppendLine("return null;");
             sb.AppendLine("}");
-            sb.AppendLine($"var result = new {current.Name}();");
+            var currentFullName = current.FullName.Replace('+', '.');
+            sb.AppendLine($"var result = new {currentFullName}();");
             sb.AppendLine("var count = 0;");
             sb.AppendLine($"reader.Read{SymbolName}BeginObjectOrThrow();");
             sb.AppendLine($"while (!reader.TryRead{SymbolName}IsEndObjectOrValueSeparator(ref count))");
@@ -213,7 +218,7 @@ namespace SpanJson.Codegen
             if (formatter is ComplexFormatter)
             {
                 queue.Enqueue(type);
-                return $"{type.Name}{SymbolName}Formatter<{GetFullName(typeof(TResolver))}>.Default";
+                return $"{type.Name}{SymbolName}Formatter.Default";
             }
 
             if (type.IsArray)

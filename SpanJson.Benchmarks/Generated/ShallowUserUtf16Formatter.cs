@@ -1,13 +1,13 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using SpanJson.Benchmarks.Models;
 using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Benchmarks.Generated
+namespace SpanJson.Generated
 {
-    public sealed class ShallowUserUtf16Formatter<TResolver> : BaseGeneratedFormatter<ShallowUser, char, TResolver>,
-        IJsonFormatter<ShallowUser, char, TResolver> where TResolver : class, IJsonFormatterResolver<char, TResolver>, new()
+    public sealed class ShallowUserUtf16Formatter : BaseGeneratedFormatter<ShallowUser, char, ExcludeNullsOriginalCaseResolver<char>>,
+        IJsonFormatter<ShallowUser, char, ExcludeNullsOriginalCaseResolver<char>>
     {
         private const string _user_idName = "\"user_id\":";
         private const string _display_nameName = "\"display_name\":";
@@ -17,7 +17,7 @@ namespace SpanJson.Benchmarks.Generated
         private const string _linkName = "\"link\":";
         private const string _accept_rateName = "\"accept_rate\":";
         private const string _badge_countsName = "\"badge_counts\":";
-        public static readonly ShallowUserUtf16Formatter<TResolver> Default = new ShallowUserUtf16Formatter<TResolver>();
+        public static readonly ShallowUserUtf16Formatter Default = new ShallowUserUtf16Formatter();
 
         public ShallowUser Deserialize(ref JsonReader<char> reader)
         {
@@ -75,7 +75,7 @@ namespace SpanJson.Benchmarks.Generated
                 if (length == 12 && ReadUInt64(ref b, 0) == 28992352104284258UL && ReadUInt64(ref b, 8) == 31244147622871141UL &&
                     ReadUInt64(ref b, 16) == 32370120545140853UL)
                 {
-                    result.badge_counts = BadgeCountUtf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
+                    result.badge_counts = BadgeCountUtf16Formatter.Default.Deserialize(ref reader);
                     continue;
                 }
 
@@ -196,7 +196,7 @@ namespace SpanJson.Benchmarks.Generated
                 }
 
                 writer.WriteUtf16Verbatim(_badge_countsName);
-                BadgeCountUtf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Serialize(ref writer, value.badge_counts, nestingLimit);
+                BadgeCountUtf16Formatter.Default.Serialize(ref writer, value.badge_counts, nestingLimit);
                 writeSeparator = true;
             }
 

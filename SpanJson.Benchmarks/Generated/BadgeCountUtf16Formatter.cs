@@ -1,18 +1,18 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using SpanJson.Benchmarks.Models;
 using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Benchmarks.Generated
+namespace SpanJson.Generated
 {
-    public sealed class BadgeCountUtf16Formatter<TResolver> : BaseGeneratedFormatter<User.BadgeCount, char, TResolver>,
-        IJsonFormatter<User.BadgeCount, char, TResolver> where TResolver : class, IJsonFormatterResolver<char, TResolver>, new()
+    public sealed class BadgeCountUtf16Formatter : BaseGeneratedFormatter<User.BadgeCount, char, ExcludeNullsOriginalCaseResolver<char>>,
+        IJsonFormatter<User.BadgeCount, char, ExcludeNullsOriginalCaseResolver<char>>
     {
         private const string _goldName = "\"gold\":";
         private const string _silverName = "\"silver\":";
         private const string _bronzeName = "\"bronze\":";
-        public static readonly BadgeCountUtf16Formatter<TResolver> Default = new BadgeCountUtf16Formatter<TResolver>();
+        public static readonly BadgeCountUtf16Formatter Default = new BadgeCountUtf16Formatter();
 
         public User.BadgeCount Deserialize(ref JsonReader<char> reader)
         {

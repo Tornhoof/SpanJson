@@ -1,16 +1,16 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using SpanJson.Benchmarks.Models;
 using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Benchmarks.Generated
+namespace SpanJson.Generated
 {
-    public sealed class BadgeCountUtf8Formatter<TResolver> : BaseGeneratedFormatter<User.BadgeCount, byte, TResolver>,
-        IJsonFormatter<User.BadgeCount, byte, TResolver> where TResolver : class, IJsonFormatterResolver<byte, TResolver>, new()
+    public sealed class BadgeCountUtf8Formatter : BaseGeneratedFormatter<User.BadgeCount, byte, ExcludeNullsOriginalCaseResolver<byte>>,
+        IJsonFormatter<User.BadgeCount, byte, ExcludeNullsOriginalCaseResolver<byte>>
     {
-        public static readonly BadgeCountUtf8Formatter<TResolver> Default = new BadgeCountUtf8Formatter<TResolver>();
+        public static readonly BadgeCountUtf8Formatter Default = new BadgeCountUtf8Formatter();
         private readonly byte[] _bronzeName = Encoding.UTF8.GetBytes("\"bronze\":");
         private readonly byte[] _goldName = Encoding.UTF8.GetBytes("\"gold\":");
         private readonly byte[] _silverName = Encoding.UTF8.GetBytes("\"silver\":");
@@ -29,20 +29,20 @@ namespace SpanJson.Benchmarks.Generated
             {
                 var name = reader.ReadUtf8NameSpan();
                 var length = name.Length;
-                ref var c = ref MemoryMarshal.GetReference(name);
-                if (length == 6 && ReadUInt32(ref c, 0) == 1986816371U && ReadUInt16(ref c, 4) == 29285)
+                ref var b = ref MemoryMarshal.GetReference(name);
+                if (length == 6 && ReadUInt32(ref b, 0) == 1986816371U && ReadUInt16(ref b, 4) == 29285)
                 {
                     result.silver = NullableInt32Utf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 6 && ReadUInt32(ref c, 0) == 1852797538U && ReadUInt16(ref c, 4) == 25978)
+                if (length == 6 && ReadUInt32(ref b, 0) == 1852797538U && ReadUInt16(ref b, 4) == 25978)
                 {
                     result.bronze = NullableInt32Utf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 4 && ReadUInt32(ref c, 0) == 1684828007U)
+                if (length == 4 && ReadUInt32(ref b, 0) == 1684828007U)
                 {
                     result.gold = NullableInt32Utf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;

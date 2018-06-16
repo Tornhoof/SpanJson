@@ -1,16 +1,16 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using SpanJson.Benchmarks.Models;
 using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Benchmarks.Generated
+namespace SpanJson.Generated
 {
-    public sealed class CommentUtf8Formatter<TResolver> : BaseGeneratedFormatter<Comment, byte, TResolver>, IJsonFormatter<Comment, byte, TResolver>
-        where TResolver : class, IJsonFormatterResolver<byte, TResolver>, new()
+    public sealed class CommentUtf8Formatter : BaseGeneratedFormatter<Comment, byte, ExcludeNullsOriginalCaseResolver<byte>>,
+        IJsonFormatter<Comment, byte, ExcludeNullsOriginalCaseResolver<byte>>
     {
-        public static readonly CommentUtf8Formatter<TResolver> Default = new CommentUtf8Formatter<TResolver>();
+        public static readonly CommentUtf8Formatter Default = new CommentUtf8Formatter();
         private readonly byte[] _body_markdownName = Encoding.UTF8.GetBytes("\"body_markdown\":");
         private readonly byte[] _bodyName = Encoding.UTF8.GetBytes("\"body\":");
         private readonly byte[] _comment_idName = Encoding.UTF8.GetBytes("\"comment_id\":");
@@ -38,76 +38,76 @@ namespace SpanJson.Benchmarks.Generated
             {
                 var name = reader.ReadUtf8NameSpan();
                 var length = name.Length;
-                ref var c = ref MemoryMarshal.GetReference(name);
-                if (length == 13 && ReadUInt64(ref c, 0) == 8241989049890664290UL && ReadUInt32(ref c, 8) == 2003788907U && ReadByte(ref c, 12) == 110)
+                ref var b = ref MemoryMarshal.GetReference(name);
+                if (length == 13 && ReadUInt64(ref b, 0) == 8241989049890664290UL && ReadUInt32(ref b, 8) == 2003788907U && ReadByte(ref b, 12) == 110)
                 {
                     result.body_markdown = StringUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 9 && ReadUInt64(ref c, 0) == 8104636957754355568UL && ReadByte(ref c, 8) == 101)
+                if (length == 9 && ReadUInt64(ref b, 0) == 8104636957754355568UL && ReadByte(ref b, 8) == 101)
                 {
                     result.post_type = NullableFormatter<PostType, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 13 && ReadUInt64(ref c, 0) == 8031149010623423858UL && ReadUInt32(ref c, 8) == 1702065503U && ReadByte(ref c, 12) == 114)
+                if (length == 13 && ReadUInt64(ref b, 0) == 8031149010623423858UL && ReadUInt32(ref b, 8) == 1702065503U && ReadByte(ref b, 12) == 114)
                 {
-                    result.reply_to_user = ShallowUserUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
+                    result.reply_to_user = ShallowUserUtf8Formatter.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 13 && ReadUInt64(ref c, 0) == 7957695015158116963UL && ReadUInt32(ref c, 8) == 1952539743U && ReadByte(ref c, 12) == 101)
+                if (length == 13 && ReadUInt64(ref b, 0) == 7957695015158116963UL && ReadUInt32(ref b, 8) == 1952539743U && ReadByte(ref b, 12) == 101)
                 {
                     result.creation_date = NullableDateTimeUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 10 && ReadUInt64(ref c, 0) == 6878243912808230755UL && ReadUInt16(ref c, 8) == 25705)
+                if (length == 10 && ReadUInt64(ref b, 0) == 6878243912808230755UL && ReadUInt16(ref b, 8) == 25705)
                 {
                     result.comment_id = NullableInt32Utf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 4 && ReadUInt32(ref c, 0) == 2036625250U)
+                if (length == 4 && ReadUInt32(ref b, 0) == 2036625250U)
                 {
                     result.body = StringUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 7 && ReadUInt32(ref c, 0) == 1953722224U && ReadUInt16(ref c, 4) == 26975 && ReadByte(ref c, 6) == 100)
+                if (length == 7 && ReadUInt32(ref b, 0) == 1953722224U && ReadUInt16(ref b, 4) == 26975 && ReadByte(ref b, 6) == 100)
                 {
                     result.post_id = NullableInt32Utf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 6 && ReadUInt32(ref c, 0) == 1953064037U && ReadUInt16(ref c, 4) == 25701)
+                if (length == 6 && ReadUInt32(ref b, 0) == 1953064037U && ReadUInt16(ref b, 4) == 25701)
                 {
                     result.edited = NullableBooleanUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 5 && ReadUInt32(ref c, 0) == 1919902579U && ReadByte(ref c, 4) == 101)
+                if (length == 5 && ReadUInt32(ref b, 0) == 1919902579U && ReadByte(ref b, 4) == 101)
                 {
                     result.score = NullableInt32Utf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 7 && ReadUInt32(ref c, 0) == 1870033013U && ReadUInt16(ref c, 4) == 25972 && ReadByte(ref c, 6) == 100)
+                if (length == 7 && ReadUInt32(ref b, 0) == 1870033013U && ReadUInt16(ref b, 4) == 25972 && ReadByte(ref b, 6) == 100)
                 {
                     result.upvoted = NullableBooleanUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 4 && ReadUInt32(ref c, 0) == 1802398060U)
+                if (length == 4 && ReadUInt32(ref b, 0) == 1802398060U)
                 {
                     result.link = StringUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 5 && ReadUInt32(ref c, 0) == 1701738351U && ReadByte(ref c, 4) == 114)
+                if (length == 5 && ReadUInt32(ref b, 0) == 1701738351U && ReadByte(ref b, 4) == 114)
                 {
-                    result.owner = ShallowUserUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
+                    result.owner = ShallowUserUtf8Formatter.Default.Deserialize(ref reader);
                     continue;
                 }
 
@@ -214,7 +214,7 @@ namespace SpanJson.Benchmarks.Generated
                 }
 
                 writer.WriteUtf8Verbatim(_ownerName);
-                ShallowUserUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Serialize(ref writer, value.owner, nestingLimit);
+                ShallowUserUtf8Formatter.Default.Serialize(ref writer, value.owner, nestingLimit);
                 writeSeparator = true;
             }
 
@@ -226,7 +226,7 @@ namespace SpanJson.Benchmarks.Generated
                 }
 
                 writer.WriteUtf8Verbatim(_reply_to_userName);
-                ShallowUserUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Serialize(ref writer, value.reply_to_user, nestingLimit);
+                ShallowUserUtf8Formatter.Default.Serialize(ref writer, value.reply_to_user, nestingLimit);
                 writeSeparator = true;
             }
 

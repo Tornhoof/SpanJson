@@ -1,13 +1,13 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using SpanJson.Benchmarks.Models;
 using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Benchmarks.Generated
+namespace SpanJson.Generated
 {
-    public sealed class CommentUtf16Formatter<TResolver> : BaseGeneratedFormatter<Comment, char, TResolver>, IJsonFormatter<Comment, char, TResolver>
-        where TResolver : class, IJsonFormatterResolver<char, TResolver>, new()
+    public sealed class CommentUtf16Formatter : BaseGeneratedFormatter<Comment, char, ExcludeNullsOriginalCaseResolver<char>>,
+        IJsonFormatter<Comment, char, ExcludeNullsOriginalCaseResolver<char>>
     {
         private const string _comment_idName = "\"comment_id\":";
         private const string _post_idName = "\"post_id\":";
@@ -21,7 +21,7 @@ namespace SpanJson.Benchmarks.Generated
         private const string _linkName = "\"link\":";
         private const string _body_markdownName = "\"body_markdown\":";
         private const string _upvotedName = "\"upvoted\":";
-        public static readonly CommentUtf16Formatter<TResolver> Default = new CommentUtf16Formatter<TResolver>();
+        public static readonly CommentUtf16Formatter Default = new CommentUtf16Formatter();
 
         public Comment Deserialize(ref JsonReader<char> reader)
         {
@@ -103,7 +103,7 @@ namespace SpanJson.Benchmarks.Generated
                 if (length == 13 && ReadUInt64(ref b, 0) == 30399778527707250UL && ReadUInt64(ref b, 8) == 31244220637315193UL &&
                     ReadUInt64(ref b, 16) == 28429466576683103UL && ReadUInt16(ref b, 24) == 114)
                 {
-                    result.reply_to_user = ShallowUserUtf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
+                    result.reply_to_user = ShallowUserUtf16Formatter.Default.Deserialize(ref reader);
                     continue;
                 }
 
@@ -115,7 +115,7 @@ namespace SpanJson.Benchmarks.Generated
 
                 if (length == 5 && ReadUInt64(ref b, 0) == 28429445101977711UL && ReadUInt16(ref b, 8) == 114)
                 {
-                    result.owner = ShallowUserUtf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
+                    result.owner = ShallowUserUtf16Formatter.Default.Deserialize(ref reader);
                     continue;
                 }
 
@@ -229,7 +229,7 @@ namespace SpanJson.Benchmarks.Generated
                 }
 
                 writer.WriteUtf16Verbatim(_ownerName);
-                ShallowUserUtf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Serialize(ref writer, value.owner, nestingLimit);
+                ShallowUserUtf16Formatter.Default.Serialize(ref writer, value.owner, nestingLimit);
                 writeSeparator = true;
             }
 
@@ -241,7 +241,7 @@ namespace SpanJson.Benchmarks.Generated
                 }
 
                 writer.WriteUtf16Verbatim(_reply_to_userName);
-                ShallowUserUtf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Serialize(ref writer, value.reply_to_user, nestingLimit);
+                ShallowUserUtf16Formatter.Default.Serialize(ref writer, value.reply_to_user, nestingLimit);
                 writeSeparator = true;
             }
 

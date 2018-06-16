@@ -1,16 +1,16 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using SpanJson.Benchmarks.Models;
 using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Benchmarks.Generated
+namespace SpanJson.Generated
 {
-    public sealed class ShallowUserUtf8Formatter<TResolver> : BaseGeneratedFormatter<ShallowUser, byte, TResolver>, IJsonFormatter<ShallowUser, byte, TResolver>
-        where TResolver : class, IJsonFormatterResolver<byte, TResolver>, new()
+    public sealed class ShallowUserUtf8Formatter : BaseGeneratedFormatter<ShallowUser, byte, ExcludeNullsOriginalCaseResolver<byte>>,
+        IJsonFormatter<ShallowUser, byte, ExcludeNullsOriginalCaseResolver<byte>>
     {
-        public static readonly ShallowUserUtf8Formatter<TResolver> Default = new ShallowUserUtf8Formatter<TResolver>();
+        public static readonly ShallowUserUtf8Formatter Default = new ShallowUserUtf8Formatter();
         private readonly byte[] _accept_rateName = Encoding.UTF8.GetBytes("\"accept_rate\":");
         private readonly byte[] _badge_countsName = Encoding.UTF8.GetBytes("\"badge_counts\":");
         private readonly byte[] _display_nameName = Encoding.UTF8.GetBytes("\"display_name\":");
@@ -34,50 +34,50 @@ namespace SpanJson.Benchmarks.Generated
             {
                 var name = reader.ReadUtf8NameSpan();
                 var length = name.Length;
-                ref var c = ref MemoryMarshal.GetReference(name);
-                if (length == 11 && ReadUInt64(ref c, 0) == 8241433869197468513UL && ReadUInt16(ref c, 8) == 29793 && ReadByte(ref c, 10) == 101)
+                ref var b = ref MemoryMarshal.GetReference(name);
+                if (length == 11 && ReadUInt64(ref b, 0) == 8241433869197468513UL && ReadUInt16(ref b, 8) == 29793 && ReadByte(ref b, 10) == 101)
                 {
                     result.accept_rate = NullableInt32Utf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 9 && ReadUInt64(ref c, 0) == 8104636957719884661UL && ReadByte(ref c, 8) == 101)
+                if (length == 9 && ReadUInt64(ref b, 0) == 8104636957719884661UL && ReadByte(ref b, 8) == 101)
                 {
                     result.user_type = NullableFormatter<UserType, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 12 && ReadUInt64(ref c, 0) == 8026363850035323234UL && ReadUInt32(ref c, 8) == 1937010293U)
+                if (length == 12 && ReadUInt64(ref b, 0) == 8026363850035323234UL && ReadUInt32(ref b, 8) == 1937010293U)
                 {
-                    result.badge_counts = BadgeCountUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
+                    result.badge_counts = BadgeCountUtf8Formatter.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 10 && ReadUInt64(ref c, 0) == 7598805624095270258UL && ReadUInt16(ref c, 8) == 28271)
+                if (length == 10 && ReadUInt64(ref b, 0) == 7598805624095270258UL && ReadUInt16(ref b, 8) == 28271)
                 {
                     result.reputation = NullableInt32Utf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 12 && ReadUInt64(ref c, 0) == 6879637024156117348UL && ReadUInt32(ref c, 8) == 1701667182U)
+                if (length == 12 && ReadUInt64(ref b, 0) == 6879637024156117348UL && ReadUInt32(ref b, 8) == 1701667182U)
                 {
                     result.display_name = StringUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 13 && ReadUInt64(ref c, 0) == 6874019606196875888UL && ReadUInt32(ref c, 8) == 1734438249U && ReadByte(ref c, 12) == 101)
+                if (length == 13 && ReadUInt64(ref b, 0) == 6874019606196875888UL && ReadUInt32(ref b, 8) == 1734438249U && ReadByte(ref b, 12) == 101)
                 {
                     result.profile_image = StringUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 7 && ReadUInt32(ref c, 0) == 1919251317U && ReadUInt16(ref c, 4) == 26975 && ReadByte(ref c, 6) == 100)
+                if (length == 7 && ReadUInt32(ref b, 0) == 1919251317U && ReadUInt16(ref b, 4) == 26975 && ReadByte(ref b, 6) == 100)
                 {
                     result.user_id = NullableInt32Utf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 4 && ReadUInt32(ref c, 0) == 1802398060U)
+                if (length == 4 && ReadUInt32(ref b, 0) == 1802398060U)
                 {
                     result.link = StringUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
                     continue;
@@ -186,7 +186,7 @@ namespace SpanJson.Benchmarks.Generated
                 }
 
                 writer.WriteUtf8Verbatim(_badge_countsName);
-                BadgeCountUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>.Default.Serialize(ref writer, value.badge_counts, nestingLimit);
+                BadgeCountUtf8Formatter.Default.Serialize(ref writer, value.badge_counts, nestingLimit);
                 writeSeparator = true;
             }
 
