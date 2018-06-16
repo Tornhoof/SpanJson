@@ -62,11 +62,11 @@ namespace SpanJson.Codegen
                 {
                     if (typeof(TSymbol) == typeof(char))
                     {
-                        sb.AppendLine($"private static readonly char[] _{memberInfo.MemberName}Name = \"\\\"{memberInfo.Name}\\\":\".ToCharArray();");
+                        sb.AppendLine($"private const string _{memberInfo.MemberName}Name = \"\\\"{memberInfo.Name}\\\":\";");
                     }
                     else if (typeof(TSymbol) == typeof(byte))
                     {
-                        sb.AppendLine($"private static readonly byte[] _{memberInfo.MemberName}Name = Encoding.UTF8.GetBytes(\"\\\"{memberInfo.Name}\\\":\");");
+                        sb.AppendLine($"private readonly byte[] _{memberInfo.MemberName}Name = Encoding.UTF8.GetBytes(\"\\\"{memberInfo.Name}\\\":\");");
                     }
                 }
             }

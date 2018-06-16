@@ -10,30 +10,30 @@ namespace SpanJson.Benchmarks.Generated
     public sealed class AnswerUtf16Formatter<TResolver> : BaseGeneratedFormatter<Answer, char, TResolver>, IJsonFormatter<Answer, char, TResolver>
         where TResolver : class, IJsonFormatterResolver<char, TResolver>, new()
     {
-        private readonly char[] _question_idName = "\"question_id\":".ToCharArray();
-        private readonly char[] _answer_idName = "\"answer_id\":".ToCharArray();
-        private readonly char[] _locked_dateName = "\"locked_date\":".ToCharArray();
-        private readonly char[] _creation_dateName = "\"creation_date\":".ToCharArray();
-        private readonly char[] _last_edit_dateName = "\"last_edit_date\":".ToCharArray();
-        private readonly char[] _last_activity_dateName = "\"last_activity_date\":".ToCharArray();
-        private readonly char[] _scoreName = "\"score\":".ToCharArray();
-        private readonly char[] _community_owned_dateName = "\"community_owned_date\":".ToCharArray();
-        private readonly char[] _is_acceptedName = "\"is_accepted\":".ToCharArray();
-        private readonly char[] _bodyName = "\"body\":".ToCharArray();
-        private readonly char[] _ownerName = "\"owner\":".ToCharArray();
-        private readonly char[] _titleName = "\"title\":".ToCharArray();
-        private readonly char[] _up_vote_countName = "\"up_vote_count\":".ToCharArray();
-        private readonly char[] _down_vote_countName = "\"down_vote_count\":".ToCharArray();
-        private readonly char[] _commentsName = "\"comments\":".ToCharArray();
-        private readonly char[] _linkName = "\"link\":".ToCharArray();
-        private readonly char[] _tagsName = "\"tags\":".ToCharArray();
-        private readonly char[] _upvotedName = "\"upvoted\":".ToCharArray();
-        private readonly char[] _downvotedName = "\"downvoted\":".ToCharArray();
-        private readonly char[] _acceptedName = "\"accepted\":".ToCharArray();
-        private readonly char[] _last_editorName = "\"last_editor\":".ToCharArray();
-        private readonly char[] _comment_countName = "\"comment_count\":".ToCharArray();
-        private readonly char[] _body_markdownName = "\"body_markdown\":".ToCharArray();
-        private readonly char[] _share_linkName = "\"share_link\":".ToCharArray();
+        private const string _question_idName = "\"question_id\":";
+        private const string _answer_idName = "\"answer_id\":";
+        private const string _locked_dateName = "\"locked_date\":";
+        private const string _creation_dateName = "\"creation_date\":";
+        private const string _last_edit_dateName = "\"last_edit_date\":";
+        private const string _last_activity_dateName = "\"last_activity_date\":";
+        private const string _scoreName = "\"score\":";
+        private const string _community_owned_dateName = "\"community_owned_date\":";
+        private const string _is_acceptedName = "\"is_accepted\":";
+        private const string _bodyName = "\"body\":";
+        private const string _ownerName = "\"owner\":";
+        private const string _titleName = "\"title\":";
+        private const string _up_vote_countName = "\"up_vote_count\":";
+        private const string _down_vote_countName = "\"down_vote_count\":";
+        private const string _commentsName = "\"comments\":";
+        private const string _linkName = "\"link\":";
+        private const string _tagsName = "\"tags\":";
+        private const string _upvotedName = "\"upvoted\":";
+        private const string _downvotedName = "\"downvoted\":";
+        private const string _acceptedName = "\"accepted\":";
+        private const string _last_editorName = "\"last_editor\":";
+        private const string _comment_countName = "\"comment_count\":";
+        private const string _body_markdownName = "\"body_markdown\":";
+        private const string _share_linkName = "\"share_link\":";
         public static readonly AnswerUtf16Formatter<TResolver> Default = new AnswerUtf16Formatter<TResolver>();
 
         public Answer Deserialize(ref JsonReader<char> reader)

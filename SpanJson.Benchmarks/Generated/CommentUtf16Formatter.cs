@@ -9,18 +9,18 @@ namespace SpanJson.Benchmarks.Generated
     public sealed class CommentUtf16Formatter<TResolver> : BaseGeneratedFormatter<Comment, char, TResolver>, IJsonFormatter<Comment, char, TResolver>
         where TResolver : class, IJsonFormatterResolver<char, TResolver>, new()
     {
-        private readonly char[] _comment_idName = "\"comment_id\":".ToCharArray();
-        private readonly char[] _post_idName = "\"post_id\":".ToCharArray();
-        private readonly char[] _creation_dateName = "\"creation_date\":".ToCharArray();
-        private readonly char[] _post_typeName = "\"post_type\":".ToCharArray();
-        private readonly char[] _scoreName = "\"score\":".ToCharArray();
-        private readonly char[] _editedName = "\"edited\":".ToCharArray();
-        private readonly char[] _bodyName = "\"body\":".ToCharArray();
-        private readonly char[] _ownerName = "\"owner\":".ToCharArray();
-        private readonly char[] _reply_to_userName = "\"reply_to_user\":".ToCharArray();
-        private readonly char[] _linkName = "\"link\":".ToCharArray();
-        private readonly char[] _body_markdownName = "\"body_markdown\":".ToCharArray();
-        private readonly char[] _upvotedName = "\"upvoted\":".ToCharArray();
+        private const string _comment_idName = "\"comment_id\":";
+        private const string _post_idName = "\"post_id\":";
+        private const string _creation_dateName = "\"creation_date\":";
+        private const string _post_typeName = "\"post_type\":";
+        private const string _scoreName = "\"score\":";
+        private const string _editedName = "\"edited\":";
+        private const string _bodyName = "\"body\":";
+        private const string _ownerName = "\"owner\":";
+        private const string _reply_to_userName = "\"reply_to_user\":";
+        private const string _linkName = "\"link\":";
+        private const string _body_markdownName = "\"body_markdown\":";
+        private const string _upvotedName = "\"upvoted\":";
         public static readonly CommentUtf16Formatter<TResolver> Default = new CommentUtf16Formatter<TResolver>();
 
         public Comment Deserialize(ref JsonReader<char> reader)
