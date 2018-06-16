@@ -13,7 +13,7 @@ namespace SpanJson.Benchmarks
     {
         public static bool Init()
         {
-            var types = Assembly.GetExecutingAssembly().GetTypes().Where(a => a.IsClass && !a.IsAbstract && a.Namespace.StartsWith("SpanJson.Benchmarks.Generated")).ToArray();
+            var types = Assembly.GetAssembly(typeof(MobileBadgeAward)).GetTypes().Where(a => a.IsClass && !a.IsAbstract && a.Namespace.StartsWith("SpanJson.Benchmarks.Generated")).ToArray();
             foreach (var type in types)
             {
                 if (type.TryGetTypeOfGenericInterface(typeof(IJsonFormatter<,,>), out var argumentTypes) && argumentTypes.Length == 3)

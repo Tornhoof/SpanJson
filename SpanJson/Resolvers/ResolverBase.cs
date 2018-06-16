@@ -253,15 +253,15 @@ namespace SpanJson.Resolvers
                 return GetDefaultOrCreate(typeof(NullableFormatter<,,>).MakeGenericType(underlyingType,
                     typeof(TSymbol), typeof(TResolver)));
             }
+            throw new NotImplementedException();
+            //// no integrated type, let's build it
+            //if (type.IsValueType)
+            //{
+            //    return GetDefaultOrCreate(
+            //        typeof(ComplexStructFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
+            //}
 
-            // no integrated type, let's build it
-            if (type.IsValueType)
-            {
-                return GetDefaultOrCreate(
-                    typeof(ComplexStructFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
-            }
-
-            return GetDefaultOrCreate(typeof(ComplexClassFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
+            //return GetDefaultOrCreate(typeof(ComplexClassFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
         }
 
         private static IJsonFormatter GetIntegrated(Type type)

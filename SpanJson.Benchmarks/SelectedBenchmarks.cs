@@ -12,7 +12,8 @@ namespace SpanJson.Benchmarks
     [DisassemblyDiagnoser(printIL: true, recursiveDepth: 2)]
     public class SelectedBenchmarks
     {
-        static SelectedBenchmarks()
+        [GlobalSetup]
+        public void InitGenerated()
         {
             InitSpecial.Init();
         }

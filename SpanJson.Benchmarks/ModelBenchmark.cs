@@ -8,6 +8,11 @@ namespace SpanJson.Benchmarks
     [Config(typeof(MyConfig))]
     public class ModelBenchmark
     {
+        [GlobalSetup]
+        public void InitGenerated()
+        {
+            InitSpecial.Init();
+        }
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
         private static readonly AccessToken AccessTokenInput = ExpressionTreeFixture.Create<AccessToken>();
 
