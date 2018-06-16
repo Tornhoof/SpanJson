@@ -10,30 +10,30 @@ namespace SpanJson.Benchmarks.Generated
     public sealed class AnswerUtf16Formatter<TResolver> : BaseGeneratedFormatter<Answer, char, TResolver>, IJsonFormatter<Answer, char, TResolver>
         where TResolver : class, IJsonFormatterResolver<char, TResolver>, new()
     {
-        private static readonly char[] _question_idName = "\"question_id\":".ToCharArray();
-        private static readonly char[] _answer_idName = "\"answer_id\":".ToCharArray();
-        private static readonly char[] _locked_dateName = "\"locked_date\":".ToCharArray();
-        private static readonly char[] _creation_dateName = "\"creation_date\":".ToCharArray();
-        private static readonly char[] _last_edit_dateName = "\"last_edit_date\":".ToCharArray();
-        private static readonly char[] _last_activity_dateName = "\"last_activity_date\":".ToCharArray();
-        private static readonly char[] _scoreName = "\"score\":".ToCharArray();
-        private static readonly char[] _community_owned_dateName = "\"community_owned_date\":".ToCharArray();
-        private static readonly char[] _is_acceptedName = "\"is_accepted\":".ToCharArray();
-        private static readonly char[] _bodyName = "\"body\":".ToCharArray();
-        private static readonly char[] _ownerName = "\"owner\":".ToCharArray();
-        private static readonly char[] _titleName = "\"title\":".ToCharArray();
-        private static readonly char[] _up_vote_countName = "\"up_vote_count\":".ToCharArray();
-        private static readonly char[] _down_vote_countName = "\"down_vote_count\":".ToCharArray();
-        private static readonly char[] _commentsName = "\"comments\":".ToCharArray();
-        private static readonly char[] _linkName = "\"link\":".ToCharArray();
-        private static readonly char[] _tagsName = "\"tags\":".ToCharArray();
-        private static readonly char[] _upvotedName = "\"upvoted\":".ToCharArray();
-        private static readonly char[] _downvotedName = "\"downvoted\":".ToCharArray();
-        private static readonly char[] _acceptedName = "\"accepted\":".ToCharArray();
-        private static readonly char[] _last_editorName = "\"last_editor\":".ToCharArray();
-        private static readonly char[] _comment_countName = "\"comment_count\":".ToCharArray();
-        private static readonly char[] _body_markdownName = "\"body_markdown\":".ToCharArray();
-        private static readonly char[] _share_linkName = "\"share_link\":".ToCharArray();
+        private readonly char[] _question_idName = "\"question_id\":".ToCharArray();
+        private readonly char[] _answer_idName = "\"answer_id\":".ToCharArray();
+        private readonly char[] _locked_dateName = "\"locked_date\":".ToCharArray();
+        private readonly char[] _creation_dateName = "\"creation_date\":".ToCharArray();
+        private readonly char[] _last_edit_dateName = "\"last_edit_date\":".ToCharArray();
+        private readonly char[] _last_activity_dateName = "\"last_activity_date\":".ToCharArray();
+        private readonly char[] _scoreName = "\"score\":".ToCharArray();
+        private readonly char[] _community_owned_dateName = "\"community_owned_date\":".ToCharArray();
+        private readonly char[] _is_acceptedName = "\"is_accepted\":".ToCharArray();
+        private readonly char[] _bodyName = "\"body\":".ToCharArray();
+        private readonly char[] _ownerName = "\"owner\":".ToCharArray();
+        private readonly char[] _titleName = "\"title\":".ToCharArray();
+        private readonly char[] _up_vote_countName = "\"up_vote_count\":".ToCharArray();
+        private readonly char[] _down_vote_countName = "\"down_vote_count\":".ToCharArray();
+        private readonly char[] _commentsName = "\"comments\":".ToCharArray();
+        private readonly char[] _linkName = "\"link\":".ToCharArray();
+        private readonly char[] _tagsName = "\"tags\":".ToCharArray();
+        private readonly char[] _upvotedName = "\"upvoted\":".ToCharArray();
+        private readonly char[] _downvotedName = "\"downvoted\":".ToCharArray();
+        private readonly char[] _acceptedName = "\"accepted\":".ToCharArray();
+        private readonly char[] _last_editorName = "\"last_editor\":".ToCharArray();
+        private readonly char[] _comment_countName = "\"comment_count\":".ToCharArray();
+        private readonly char[] _body_markdownName = "\"body_markdown\":".ToCharArray();
+        private readonly char[] _share_linkName = "\"share_link\":".ToCharArray();
         public static readonly AnswerUtf16Formatter<TResolver> Default = new AnswerUtf16Formatter<TResolver>();
 
         public Answer Deserialize(ref JsonReader<char> reader)

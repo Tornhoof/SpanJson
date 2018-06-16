@@ -9,9 +9,9 @@ namespace SpanJson.Benchmarks.Generated
     public sealed class BadgeCountUtf16Formatter<TResolver> : BaseGeneratedFormatter<User.BadgeCount, char, TResolver>,
         IJsonFormatter<User.BadgeCount, char, TResolver> where TResolver : class, IJsonFormatterResolver<char, TResolver>, new()
     {
-        private static readonly char[] _goldName = "\"gold\":".ToCharArray();
-        private static readonly char[] _silverName = "\"silver\":".ToCharArray();
-        private static readonly char[] _bronzeName = "\"bronze\":".ToCharArray();
+        private readonly char[] _goldName = "\"gold\":".ToCharArray();
+        private readonly char[] _silverName = "\"silver\":".ToCharArray();
+        private readonly char[] _bronzeName = "\"bronze\":".ToCharArray();
         public static readonly BadgeCountUtf16Formatter<TResolver> Default = new BadgeCountUtf16Formatter<TResolver>();
 
         public User.BadgeCount Deserialize(ref JsonReader<char> reader)

@@ -13,6 +13,10 @@ namespace SpanJson.Benchmarks
     [DisassemblyDiagnoser(printIL: true, recursiveDepth: 2)]
     public class SelectedBenchmarks
     {
+        static SelectedBenchmarks()
+        {
+            InitSpecial.Init();
+        }
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
         //private static readonly AccessToken AccessToken = ExpressionTreeFixture.Create<AccessToken>();
 
@@ -45,17 +49,17 @@ namespace SpanJson.Benchmarks
         private static readonly string MobileBadgeAwardSerializedString = JsonSerializer.Generic.Utf16.Serialize(MobileBadgeAwardInput);
         private static readonly byte[] MobileBadgeAwardSerializedByteArray = JsonSerializer.Generic.Utf8.Serialize(MobileBadgeAwardInput);
 
-        [Benchmark]
-        public string SerializeMobileBadgeAwardWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(MobileBadgeAwardInput);
-        }
+        //[Benchmark]
+        //public string SerializeMobileBadgeAwardWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(MobileBadgeAwardInput);
+        //}
 
-        [Benchmark]
-        public byte[] SerializeMobileBadgeAwardWithSpanJsonSerializerUtf8()
-        {
-            return JsonSerializer.Generic.Utf8.Serialize(MobileBadgeAwardInput);
-        }
+        //[Benchmark]
+        //public byte[] SerializeMobileBadgeAwardWithSpanJsonSerializerUtf8()
+        //{
+        //    return JsonSerializer.Generic.Utf8.Serialize(MobileBadgeAwardInput);
+        //}
 
         //[Benchmark]
         //public string SerializeMobileBadgeAwardWithSpanJsonSerializer()
@@ -99,11 +103,11 @@ namespace SpanJson.Benchmarks
             return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
         }
 
-        //[Benchmark]
-        //public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
-        //{
-        //    return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
-        //}
+        [Benchmark]
+        public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
+        {
+            return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
+        }
 
         //[Benchmark]
         //public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsyncUtf8()

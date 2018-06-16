@@ -11,30 +11,30 @@ namespace SpanJson.Benchmarks.Generated
     public sealed class AnswerUtf8Formatter<TResolver> : BaseGeneratedFormatter<Answer, byte, TResolver>, IJsonFormatter<Answer, byte, TResolver>
         where TResolver : class, IJsonFormatterResolver<byte, TResolver>, new()
     {
-        private static readonly byte[] _question_idName = Encoding.UTF8.GetBytes("\"question_id\":");
-        private static readonly byte[] _answer_idName = Encoding.UTF8.GetBytes("\"answer_id\":");
-        private static readonly byte[] _locked_dateName = Encoding.UTF8.GetBytes("\"locked_date\":");
-        private static readonly byte[] _creation_dateName = Encoding.UTF8.GetBytes("\"creation_date\":");
-        private static readonly byte[] _last_edit_dateName = Encoding.UTF8.GetBytes("\"last_edit_date\":");
-        private static readonly byte[] _last_activity_dateName = Encoding.UTF8.GetBytes("\"last_activity_date\":");
-        private static readonly byte[] _scoreName = Encoding.UTF8.GetBytes("\"score\":");
-        private static readonly byte[] _community_owned_dateName = Encoding.UTF8.GetBytes("\"community_owned_date\":");
-        private static readonly byte[] _is_acceptedName = Encoding.UTF8.GetBytes("\"is_accepted\":");
-        private static readonly byte[] _bodyName = Encoding.UTF8.GetBytes("\"body\":");
-        private static readonly byte[] _ownerName = Encoding.UTF8.GetBytes("\"owner\":");
-        private static readonly byte[] _titleName = Encoding.UTF8.GetBytes("\"title\":");
-        private static readonly byte[] _up_vote_countName = Encoding.UTF8.GetBytes("\"up_vote_count\":");
-        private static readonly byte[] _down_vote_countName = Encoding.UTF8.GetBytes("\"down_vote_count\":");
-        private static readonly byte[] _commentsName = Encoding.UTF8.GetBytes("\"comments\":");
-        private static readonly byte[] _linkName = Encoding.UTF8.GetBytes("\"link\":");
-        private static readonly byte[] _tagsName = Encoding.UTF8.GetBytes("\"tags\":");
-        private static readonly byte[] _upvotedName = Encoding.UTF8.GetBytes("\"upvoted\":");
-        private static readonly byte[] _downvotedName = Encoding.UTF8.GetBytes("\"downvoted\":");
-        private static readonly byte[] _acceptedName = Encoding.UTF8.GetBytes("\"accepted\":");
-        private static readonly byte[] _last_editorName = Encoding.UTF8.GetBytes("\"last_editor\":");
-        private static readonly byte[] _comment_countName = Encoding.UTF8.GetBytes("\"comment_count\":");
-        private static readonly byte[] _body_markdownName = Encoding.UTF8.GetBytes("\"body_markdown\":");
-        private static readonly byte[] _share_linkName = Encoding.UTF8.GetBytes("\"share_link\":");
+        private readonly byte[] _question_idName = Encoding.UTF8.GetBytes("\"question_id\":");
+        private readonly byte[] _answer_idName = Encoding.UTF8.GetBytes("\"answer_id\":");
+        private readonly byte[] _locked_dateName = Encoding.UTF8.GetBytes("\"locked_date\":");
+        private readonly byte[] _creation_dateName = Encoding.UTF8.GetBytes("\"creation_date\":");
+        private readonly byte[] _last_edit_dateName = Encoding.UTF8.GetBytes("\"last_edit_date\":");
+        private readonly byte[] _last_activity_dateName = Encoding.UTF8.GetBytes("\"last_activity_date\":");
+        private readonly byte[] _scoreName = Encoding.UTF8.GetBytes("\"score\":");
+        private readonly byte[] _community_owned_dateName = Encoding.UTF8.GetBytes("\"community_owned_date\":");
+        private readonly byte[] _is_acceptedName = Encoding.UTF8.GetBytes("\"is_accepted\":");
+        private readonly byte[] _bodyName = Encoding.UTF8.GetBytes("\"body\":");
+        private readonly byte[] _ownerName = Encoding.UTF8.GetBytes("\"owner\":");
+        private readonly byte[] _titleName = Encoding.UTF8.GetBytes("\"title\":");
+        private readonly byte[] _up_vote_countName = Encoding.UTF8.GetBytes("\"up_vote_count\":");
+        private readonly byte[] _down_vote_countName = Encoding.UTF8.GetBytes("\"down_vote_count\":");
+        private readonly byte[] _commentsName = Encoding.UTF8.GetBytes("\"comments\":");
+        private readonly byte[] _linkName = Encoding.UTF8.GetBytes("\"link\":");
+        private readonly byte[] _tagsName = Encoding.UTF8.GetBytes("\"tags\":");
+        private readonly byte[] _upvotedName = Encoding.UTF8.GetBytes("\"upvoted\":");
+        private readonly byte[] _downvotedName = Encoding.UTF8.GetBytes("\"downvoted\":");
+        private readonly byte[] _acceptedName = Encoding.UTF8.GetBytes("\"accepted\":");
+        private readonly byte[] _last_editorName = Encoding.UTF8.GetBytes("\"last_editor\":");
+        private readonly byte[] _comment_countName = Encoding.UTF8.GetBytes("\"comment_count\":");
+        private readonly byte[] _body_markdownName = Encoding.UTF8.GetBytes("\"body_markdown\":");
+        private readonly byte[] _share_linkName = Encoding.UTF8.GetBytes("\"share_link\":");
         public static readonly AnswerUtf8Formatter<TResolver> Default = new AnswerUtf8Formatter<TResolver>();
 
         public Answer Deserialize(ref JsonReader<byte> reader)

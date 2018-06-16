@@ -10,14 +10,14 @@ namespace SpanJson.Benchmarks.Generated
     public sealed class ShallowUserUtf8Formatter<TResolver> : BaseGeneratedFormatter<ShallowUser, byte, TResolver>, IJsonFormatter<ShallowUser, byte, TResolver>
         where TResolver : class, IJsonFormatterResolver<byte, TResolver>, new()
     {
-        private static readonly byte[] _user_idName = Encoding.UTF8.GetBytes("\"user_id\":");
-        private static readonly byte[] _display_nameName = Encoding.UTF8.GetBytes("\"display_name\":");
-        private static readonly byte[] _reputationName = Encoding.UTF8.GetBytes("\"reputation\":");
-        private static readonly byte[] _user_typeName = Encoding.UTF8.GetBytes("\"user_type\":");
-        private static readonly byte[] _profile_imageName = Encoding.UTF8.GetBytes("\"profile_image\":");
-        private static readonly byte[] _linkName = Encoding.UTF8.GetBytes("\"link\":");
-        private static readonly byte[] _accept_rateName = Encoding.UTF8.GetBytes("\"accept_rate\":");
-        private static readonly byte[] _badge_countsName = Encoding.UTF8.GetBytes("\"badge_counts\":");
+        private readonly byte[] _user_idName = Encoding.UTF8.GetBytes("\"user_id\":");
+        private readonly byte[] _display_nameName = Encoding.UTF8.GetBytes("\"display_name\":");
+        private readonly byte[] _reputationName = Encoding.UTF8.GetBytes("\"reputation\":");
+        private readonly byte[] _user_typeName = Encoding.UTF8.GetBytes("\"user_type\":");
+        private readonly byte[] _profile_imageName = Encoding.UTF8.GetBytes("\"profile_image\":");
+        private readonly byte[] _linkName = Encoding.UTF8.GetBytes("\"link\":");
+        private readonly byte[] _accept_rateName = Encoding.UTF8.GetBytes("\"accept_rate\":");
+        private readonly byte[] _badge_countsName = Encoding.UTF8.GetBytes("\"badge_counts\":");
         public static readonly ShallowUserUtf8Formatter<TResolver> Default = new ShallowUserUtf8Formatter<TResolver>();
 
         public ShallowUser Deserialize(ref JsonReader<byte> reader)

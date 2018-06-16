@@ -9,14 +9,14 @@ namespace SpanJson.Benchmarks.Generated
     public sealed class ShallowUserUtf16Formatter<TResolver> : BaseGeneratedFormatter<ShallowUser, char, TResolver>,
         IJsonFormatter<ShallowUser, char, TResolver> where TResolver : class, IJsonFormatterResolver<char, TResolver>, new()
     {
-        private static readonly char[] _user_idName = "\"user_id\":".ToCharArray();
-        private static readonly char[] _display_nameName = "\"display_name\":".ToCharArray();
-        private static readonly char[] _reputationName = "\"reputation\":".ToCharArray();
-        private static readonly char[] _user_typeName = "\"user_type\":".ToCharArray();
-        private static readonly char[] _profile_imageName = "\"profile_image\":".ToCharArray();
-        private static readonly char[] _linkName = "\"link\":".ToCharArray();
-        private static readonly char[] _accept_rateName = "\"accept_rate\":".ToCharArray();
-        private static readonly char[] _badge_countsName = "\"badge_counts\":".ToCharArray();
+        private readonly char[] _user_idName = "\"user_id\":".ToCharArray();
+        private readonly char[] _display_nameName = "\"display_name\":".ToCharArray();
+        private readonly char[] _reputationName = "\"reputation\":".ToCharArray();
+        private readonly char[] _user_typeName = "\"user_type\":".ToCharArray();
+        private readonly char[] _profile_imageName = "\"profile_image\":".ToCharArray();
+        private readonly char[] _linkName = "\"link\":".ToCharArray();
+        private readonly char[] _accept_rateName = "\"accept_rate\":".ToCharArray();
+        private readonly char[] _badge_countsName = "\"badge_counts\":".ToCharArray();
         public static readonly ShallowUserUtf16Formatter<TResolver> Default = new ShallowUserUtf16Formatter<TResolver>();
 
         public ShallowUser Deserialize(ref JsonReader<char> reader)

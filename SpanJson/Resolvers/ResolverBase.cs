@@ -76,6 +76,11 @@ namespace SpanJson.Resolvers
             // ReSharper restore ConvertClosureToMethodGroup
         }
 
+        public JsonObjectDescription GetObjectDescription(Type type)
+        {
+            return Members.GetOrAdd(type, x => BuildMembers(x));
+        }
+
         /// <summary>
         ///     TODO Extend with attributes and ShouldSerialize
         /// </summary>
@@ -106,7 +111,7 @@ namespace SpanJson.Resolvers
 
         public JsonObjectDescription GetObjectDescription<T>()
         {
-            return Members.GetOrAdd(typeof(T), x => BuildMembers(x));
+            return GetObjectDescription(typeof(T));
         }
 
         public static string MakeCamelCase(string name)

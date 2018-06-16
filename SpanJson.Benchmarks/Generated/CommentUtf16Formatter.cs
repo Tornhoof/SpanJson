@@ -9,18 +9,18 @@ namespace SpanJson.Benchmarks.Generated
     public sealed class CommentUtf16Formatter<TResolver> : BaseGeneratedFormatter<Comment, char, TResolver>, IJsonFormatter<Comment, char, TResolver>
         where TResolver : class, IJsonFormatterResolver<char, TResolver>, new()
     {
-        private static readonly char[] _comment_idName = "\"comment_id\":".ToCharArray();
-        private static readonly char[] _post_idName = "\"post_id\":".ToCharArray();
-        private static readonly char[] _creation_dateName = "\"creation_date\":".ToCharArray();
-        private static readonly char[] _post_typeName = "\"post_type\":".ToCharArray();
-        private static readonly char[] _scoreName = "\"score\":".ToCharArray();
-        private static readonly char[] _editedName = "\"edited\":".ToCharArray();
-        private static readonly char[] _bodyName = "\"body\":".ToCharArray();
-        private static readonly char[] _ownerName = "\"owner\":".ToCharArray();
-        private static readonly char[] _reply_to_userName = "\"reply_to_user\":".ToCharArray();
-        private static readonly char[] _linkName = "\"link\":".ToCharArray();
-        private static readonly char[] _body_markdownName = "\"body_markdown\":".ToCharArray();
-        private static readonly char[] _upvotedName = "\"upvoted\":".ToCharArray();
+        private readonly char[] _comment_idName = "\"comment_id\":".ToCharArray();
+        private readonly char[] _post_idName = "\"post_id\":".ToCharArray();
+        private readonly char[] _creation_dateName = "\"creation_date\":".ToCharArray();
+        private readonly char[] _post_typeName = "\"post_type\":".ToCharArray();
+        private readonly char[] _scoreName = "\"score\":".ToCharArray();
+        private readonly char[] _editedName = "\"edited\":".ToCharArray();
+        private readonly char[] _bodyName = "\"body\":".ToCharArray();
+        private readonly char[] _ownerName = "\"owner\":".ToCharArray();
+        private readonly char[] _reply_to_userName = "\"reply_to_user\":".ToCharArray();
+        private readonly char[] _linkName = "\"link\":".ToCharArray();
+        private readonly char[] _body_markdownName = "\"body_markdown\":".ToCharArray();
+        private readonly char[] _upvotedName = "\"upvoted\":".ToCharArray();
         public static readonly CommentUtf16Formatter<TResolver> Default = new CommentUtf16Formatter<TResolver>();
 
         public Comment Deserialize(ref JsonReader<char> reader)
