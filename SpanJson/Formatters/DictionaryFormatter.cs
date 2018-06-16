@@ -8,12 +8,12 @@ namespace SpanJson.Formatters
     /// <summary>
     ///     Used for types which are not built-in
     /// </summary>
-    public sealed class DictionaryFormatter<TDictionary, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TDictionary, TSymbol, TResolver>
+    public sealed class DictionaryFormatter<TDictionary, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TDictionary, TSymbol>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : class, IDictionary<string, T>
     {
         private static readonly Func<TDictionary> CreateFunctor = BuildCreateFunctor<TDictionary>(typeof(Dictionary<string, T>));
         public static readonly DictionaryFormatter<TDictionary, T, TSymbol, TResolver> Default = new DictionaryFormatter<TDictionary, T, TSymbol, TResolver>();
-        private static readonly IJsonFormatter<T, TSymbol, TResolver> ElementFormatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
+        private static readonly IJsonFormatter<T, TSymbol> ElementFormatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
 
         public TDictionary Deserialize(ref JsonReader<TSymbol> reader)
         {
@@ -52,7 +52,7 @@ namespace SpanJson.Formatters
                 foreach (var kvp in value)
                 {
                     writer.WriteName(kvp.Key);
-                    SerializeRuntimeDecisionInternal(ref writer, kvp.Value, ElementFormatter, nextNestingLimit);
+                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, kvp.Value, ElementFormatter, nextNestingLimit);
                     if (counter++ < valueLength - 1)
                     {
                         writer.WriteValueSeparator();

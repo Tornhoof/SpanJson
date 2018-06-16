@@ -63,6 +63,15 @@ namespace SpanJson.Resolvers
         private readonly NullOptions _nullOptions;
 
 
+        // ReSharper disable StaticMemberInGenericType
+        private static readonly ConcurrentDictionary<Type, IJsonFormatter> Formatters =
+            new ConcurrentDictionary<Type, IJsonFormatter>();
+
+        private static readonly ConcurrentDictionary<Type, JsonObjectDescription> Members =
+            new ConcurrentDictionary<Type, JsonObjectDescription>();
+        // ReSharper restore StaticMemberInGenericType
+
+
         protected ResolverBase(NullOptions nullOptions, NamingConventions namingConventions)
         {
             _nullOptions = nullOptions;
@@ -99,14 +108,16 @@ namespace SpanJson.Resolvers
             return new JsonObjectDescription(null, null, result.ToArray());
         }
 
-        public IJsonFormatter<T, TSymbol, TResolver> GetFormatter<T>()
+        public IJsonFormatter<T, TSymbol> GetFormatter<T>()
         {
-            return (IJsonFormatter<T, TSymbol, TResolver>) GetFormatter(typeof(T));
+            return (IJsonFormatter<T, TSymbol>) GetFormatter(typeof(T));
         }
 
         public JsonObjectDescription GetObjectDescription<T>()
         {
+            // ReSharper disable ConvertClosureToMethodGroup
             return Members.GetOrAdd(typeof(T), x => BuildMembers(x));
+            // ReSharper restore ConvertClosureToMethodGroup
         }
 
         public static string MakeCamelCase(string name)
@@ -264,56 +275,16 @@ namespace SpanJson.Resolvers
             var allTypes = typeof(TResolver).Assembly.GetTypes();
             foreach (var candidate in allTypes.Where(a => a.IsPublic))
             {
-                if (candidate.IsGenericTypeDefinition && candidate.ContainsGenericParameters && candidate.IsGenericType && candidate.IsClass &&
-                    !candidate.IsAbstract)
+                if (candidate.TryGetTypeOfGenericInterface(typeof(IJsonFormatter<,>), out var argumentTypes) && argumentTypes.Length == 2)
                 {
-                    var genArgs = candidate.GetGenericArguments();
-                    if (genArgs.Length == 1)
+                    if (argumentTypes[0] == type && argumentTypes[1] == typeof(TSymbol))
                     {
-                        var genericArg = genArgs.Single();
-                        if (typeof(IJsonFormatterResolver).IsAssignableFrom(genericArg))
-                        {
-                            var constraint = genericArg.GetGenericParameterConstraints()[0];
-                            var firstConstraintArg = constraint.GetGenericArguments()[0];
-                            if (firstConstraintArg == typeof(TSymbol)) // make sure it's the proper one
-                            {
-                                var iface = typeof(IJsonFormatter<,,>).MakeGenericType(type, typeof(TSymbol), genericArg);
-                                if (iface.IsAssignableFrom(candidate))
-                                {
-                                    return GetDefaultOrCreate(candidate.MakeGenericType(typeof(TResolver)));
-                                }
-                            }
-                        }
-                    }
-                    else if (genArgs.Length == 2)
-                    {
-                        var resolverGenArg = genArgs[1];
-                        if (typeof(IJsonFormatterResolver).IsAssignableFrom(resolverGenArg))
-                        {
-                            var constraint = resolverGenArg.GetGenericParameterConstraints()[0];
-                            var firstConstraintArg = constraint.GetGenericArguments()[0];
-                            if (firstConstraintArg.IsValueType) // make sure it's the proper one
-                            {
-                                var iface = typeof(IJsonFormatter<,,>).MakeGenericType(type, genArgs[0], genArgs[1]);
-                                if (iface.IsAssignableFrom(candidate))
-                                {
-                                    return GetDefaultOrCreate(candidate.MakeGenericType(typeof(TSymbol), typeof(TResolver)));
-                                }
-                            }
-                        }
+                        return GetDefaultOrCreate(candidate);
                     }
                 }
             }
 
             return null;
         }
-
-        // ReSharper disable StaticMemberInGenericType
-        private static readonly ConcurrentDictionary<Type, IJsonFormatter> Formatters =
-            new ConcurrentDictionary<Type, IJsonFormatter>();
-
-        private static readonly ConcurrentDictionary<Type, JsonObjectDescription> Members =
-            new ConcurrentDictionary<Type, JsonObjectDescription>();
-        // ReSharper restore StaticMemberInGenericType
     }
 }

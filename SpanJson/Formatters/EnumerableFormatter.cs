@@ -8,13 +8,13 @@ namespace SpanJson.Formatters
     /// <summary>
     ///     Used for types which are not built-in
     /// </summary>
-    public sealed class EnumerableFormatter<TEnumerable, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TEnumerable, TSymbol, TResolver>
+    public sealed class EnumerableFormatter<TEnumerable, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TEnumerable, TSymbol>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TEnumerable : class, IEnumerable<T>
 
     {
         public static readonly EnumerableFormatter<TEnumerable, T, TSymbol, TResolver> Default = new EnumerableFormatter<TEnumerable, T, TSymbol, TResolver>();
 
-        private static readonly IJsonFormatter<T, TSymbol, TResolver> ElementFormatter =
+        private static readonly IJsonFormatter<T, TSymbol> ElementFormatter =
             StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
 
         public TEnumerable Deserialize(ref JsonReader<TSymbol> reader)
@@ -44,12 +44,12 @@ namespace SpanJson.Formatters
                 if (enumerator.MoveNext())
                 {
                     // first one, so we can write the separator prior to every following one
-                    SerializeRuntimeDecisionInternal(ref writer, enumerator.Current, ElementFormatter, nextNestingLimit);
+                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, enumerator.Current, ElementFormatter, nextNestingLimit);
                     // write all the other ones
                     while (enumerator.MoveNext())
                     {
                         writer.WriteValueSeparator();
-                        SerializeRuntimeDecisionInternal(ref writer, enumerator.Current, ElementFormatter, nextNestingLimit);
+                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, enumerator.Current, ElementFormatter, nextNestingLimit);
                     }
                 }
 

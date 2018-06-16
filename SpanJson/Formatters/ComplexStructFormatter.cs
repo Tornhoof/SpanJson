@@ -3,7 +3,7 @@
     /// <summary>
     ///     Used for types which are not built-in
     /// </summary>
-    public sealed class ComplexStructFormatter<T, TSymbol, TResolver> : ComplexFormatter, IJsonFormatter<T, TSymbol, TResolver>
+    public sealed class ComplexStructFormatter<T, TSymbol, TResolver> : ComplexFormatter, IJsonFormatter<T, TSymbol>
         where T : struct where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
         public static readonly ComplexStructFormatter<T, TSymbol, TResolver>

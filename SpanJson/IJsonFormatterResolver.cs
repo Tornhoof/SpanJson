@@ -12,7 +12,7 @@ namespace SpanJson
     public interface IJsonFormatterResolver<TSymbol, in TResolver> : IJsonFormatterResolver
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
-        IJsonFormatter<T, TSymbol, TResolver> GetFormatter<T>();
+        IJsonFormatter<T, TSymbol> GetFormatter<T>();
         JsonObjectDescription GetObjectDescription<T>();
 
         JsonObjectDescription GetDynamicObjectDescription(IDynamicMetaObjectProvider provider);

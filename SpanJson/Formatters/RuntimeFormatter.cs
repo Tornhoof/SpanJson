@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
+using System.Reflection;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public sealed class RuntimeFormatter<TSymbol, TResolver> : BaseFormatter, IJsonFormatter<object, TSymbol, TResolver>
+    public sealed class RuntimeFormatter<TSymbol, TResolver> : BaseFormatter, IJsonFormatter<object, TSymbol>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
         public static readonly RuntimeFormatter<TSymbol, TResolver> Default = new RuntimeFormatter<TSymbol, TResolver>();
@@ -47,11 +48,11 @@ namespace SpanJson.Formatters
                 };
             }
 
-            var formatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter(type);
-            var formatterExpression = Expression.Constant(formatter);
-            var serializeMethodInfo = formatter.GetType().GetMethod("Serialize");
+            var formatterType = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter(type).GetType();
+            var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+            var serializeMethodInfo = formatterType.GetMethod("Serialize");
             var lambda = Expression.Lambda<SerializeDelegate>(
-                Expression.Call(formatterExpression, serializeMethodInfo, writerParameter,
+                Expression.Call(Expression.Field(null, fieldInfo), serializeMethodInfo, writerParameter,
                     Expression.Convert(valueParameter, type), nestingLimitParameter), writerParameter, valueParameter, nestingLimitParameter);
             return lambda.Compile();
         }

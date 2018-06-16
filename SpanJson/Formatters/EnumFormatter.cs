@@ -8,7 +8,7 @@ using System.Text;
 
 namespace SpanJson.Formatters
 {
-    public sealed class EnumFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T, TSymbol, TResolver> where T : Enum
+    public sealed class EnumFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T, TSymbol> where T : Enum
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
         where TSymbol : struct
     {

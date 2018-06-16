@@ -159,9 +159,9 @@ namespace SpanJson.Formatters
         utfName = "Utf8";
     }
 #>
-    public sealed class <#= t.Name #><#= utfName #>Formatter<TResolver> : IJsonFormatter<<#= t.Name #>, <#= symbol.Name #>, TResolver> where TResolver : IJsonFormatterResolver<<#= symbol.Name #>, TResolver>, new()
+    public sealed class <#= t.Name #><#= utfName #>Formatter : IJsonFormatter<<#= t.Name #>, <#= symbol.Name #>> 
     {
-        public static readonly <#= t.Name #><#= utfName #>Formatter<TResolver> Default = new <#= t.Name #><#= utfName #>Formatter<TResolver>();
+        public static readonly <#= t.Name #><#= utfName #>Formatter Default = new <#= t.Name #><#= utfName #>Formatter();
 
         public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #> value, int nestingLimit)
         {
@@ -181,10 +181,10 @@ namespace SpanJson.Formatters
         }
     }
 <# if(t.IsValueType) { #>
-    public sealed class Nullable<#= t.Name #><#= utfName #>Formatter<TResolver> : IJsonFormatter<<#= t.Name #>?, <#= symbol.Name #>,TResolver> where TResolver : IJsonFormatterResolver<<#= symbol.Name #>, TResolver>, new()
+    public sealed class Nullable<#= t.Name #><#= utfName #>Formatter : IJsonFormatter<<#= t.Name #>?, <#= symbol.Name #>> 
     {
-        public static readonly Nullable<#= t.Name #><#= utfName #>Formatter<TResolver> Default = new Nullable<#= t.Name #><#= utfName #>Formatter<TResolver>();
-        private static readonly <#= t.Name #><#= utfName #>Formatter<TResolver> ElementFormatter = <#= t.Name #><#= utfName #>Formatter<TResolver>.Default;
+        public static readonly Nullable<#= t.Name #><#= utfName #>Formatter Default = new Nullable<#= t.Name #><#= utfName #>Formatter();
+        private static readonly <#= t.Name #><#= utfName #>Formatter ElementFormatter = <#= t.Name #><#= utfName #>Formatter.Default;
         public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>? value, int nestingLimit)
         {
             if (value == null)
@@ -206,10 +206,10 @@ namespace SpanJson.Formatters
             return ElementFormatter.Deserialize(ref reader);
         }
     }
-    public sealed class Nullable<#= t.Name #><#= utfName #>ArrayFormatter<TResolver> : IJsonFormatter<<#= t.Name #>?[], <#= symbol.Name #>,TResolver> where TResolver : IJsonFormatterResolver<<#= symbol.Name #>, TResolver>, new()
+    public sealed class Nullable<#= t.Name #><#= utfName #>ArrayFormatter : IJsonFormatter<<#= t.Name #>?[], <#= symbol.Name #>> 
     {
-        public static readonly Nullable<#= t.Name #><#= utfName #>ArrayFormatter<TResolver> Default = new Nullable<#= t.Name #><#= utfName #>ArrayFormatter<TResolver>();
-        private static readonly Nullable<#= t.Name #><#= utfName #>Formatter<TResolver> ElementFormatter = Nullable<#= t.Name #><#= utfName #>Formatter<TResolver>.Default;
+        public static readonly Nullable<#= t.Name #><#= utfName #>ArrayFormatter Default = new Nullable<#= t.Name #><#= utfName #>ArrayFormatter();
+        private static readonly Nullable<#= t.Name #><#= utfName #>Formatter ElementFormatter = Nullable<#= t.Name #><#= utfName #>Formatter.Default;
         public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>?[] value, int nestingLimit)
         {
 <#
@@ -225,10 +225,10 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class Nullable<#= t.Name #><#= utfName #>ListFormatter<TResolver> : IJsonFormatter<List<<#= t.Name #>?>, <#= symbol.Name #>,TResolver> where TResolver : IJsonFormatterResolver<<#= symbol.Name #>, TResolver>, new()
+    public sealed class Nullable<#= t.Name #><#= utfName #>ListFormatter : IJsonFormatter<List<<#= t.Name #>?>, <#= symbol.Name #>> 
     {
-        public static readonly Nullable<#= t.Name #><#= utfName #>ListFormatter<TResolver> Default = new Nullable<#= t.Name #><#= utfName #>ListFormatter<TResolver>();
-        private static readonly Nullable<#= t.Name #><#= utfName #>Formatter<TResolver> ElementFormatter = Nullable<#= t.Name #><#= utfName #>Formatter<TResolver>.Default;
+        public static readonly Nullable<#= t.Name #><#= utfName #>ListFormatter Default = new Nullable<#= t.Name #><#= utfName #>ListFormatter();
+        private static readonly Nullable<#= t.Name #><#= utfName #>Formatter ElementFormatter = Nullable<#= t.Name #><#= utfName #>Formatter.Default;
 
         public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, List<<#= t.Name #>?> value, int nestingLimit)
         {
@@ -246,10 +246,10 @@ namespace SpanJson.Formatters
     }
 <# } #>
 
-    public sealed class <#= t.Name #><#= utfName #>ArrayFormatter<TResolver> : IJsonFormatter<<#= t.Name #>[], <#= symbol.Name #>, TResolver> where TResolver : IJsonFormatterResolver<<#= symbol.Name #>, TResolver>, new()
+    public sealed class <#= t.Name #><#= utfName #>ArrayFormatter : IJsonFormatter<<#= t.Name #>[], <#= symbol.Name #>> 
     {
-        public static readonly <#= t.Name #><#= utfName #>ArrayFormatter<TResolver> Default = new <#= t.Name #><#= utfName #>ArrayFormatter<TResolver>();
-        private static readonly <#= t.Name #><#= utfName #>Formatter<TResolver> ElementFormatter = <#= t.Name #><#= utfName #>Formatter<TResolver>.Default;
+        public static readonly <#= t.Name #><#= utfName #>ArrayFormatter Default = new <#= t.Name #><#= utfName #>ArrayFormatter();
+        private static readonly <#= t.Name #><#= utfName #>Formatter ElementFormatter = <#= t.Name #><#= utfName #>Formatter.Default;
         public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>[] value, int nestingLimit)
         {
 <#
@@ -265,10 +265,10 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class <#= t.Name #><#= utfName #>ListFormatter<TResolver> : IJsonFormatter<List<<#= t.Name #>>, <#= symbol.Name #>,TResolver> where TResolver : IJsonFormatterResolver<<#= symbol.Name #>, TResolver>, new()
+    public sealed class <#= t.Name #><#= utfName #>ListFormatter : IJsonFormatter<List<<#= t.Name #>>, <#= symbol.Name #>> 
     {
-        public static readonly <#= t.Name #><#= utfName #>ListFormatter<TResolver> Default = new <#= t.Name #><#= utfName #>ListFormatter<TResolver>();
-        private static readonly <#= t.Name #><#= utfName #>Formatter<TResolver> ElementFormatter = <#= t.Name #><#= utfName #>Formatter<TResolver>.Default;
+        public static readonly <#= t.Name #><#= utfName #>ListFormatter Default = new <#= t.Name #><#= utfName #>ListFormatter();
+        private static readonly <#= t.Name #><#= utfName #>Formatter ElementFormatter = <#= t.Name #><#= utfName #>Formatter.Default;
 
         public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, List<<#= t.Name #>> value, int nestingLimit)
         {

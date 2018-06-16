@@ -31,7 +31,7 @@ namespace SpanJson
 
             private static class Inner<T, TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
             {
-                private static readonly IJsonFormatter<T, TSymbol, TResolver> Formatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
+                private static readonly IJsonFormatter<T, TSymbol> Formatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
 
                 public static string InnerSerializeToString(T input)
                 {
