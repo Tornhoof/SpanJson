@@ -217,6 +217,11 @@ namespace SpanJson.Resolvers
                 return integrated;
             }
 
+            if (type == typeof(object))
+            {
+                return GetDefaultOrCreate(typeof(RuntimeFormatter<TSymbol, TResolver>));
+            }
+
             if (type.IsArray)
             {
                 return GetDefaultOrCreate(typeof(ArrayFormatter<,,>).MakeGenericType(type.GetElementType(),
