@@ -4,7 +4,7 @@ using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Generated
+namespace SpanJson.Benchmarks.Generated
 {
     public sealed class MobileUpdateNoticeUtf16Formatter : BaseGeneratedFormatter<MobileUpdateNotice, char, ExcludeNullsOriginalCaseResolver<char>>,
         IJsonFormatter<MobileUpdateNotice, char, ExcludeNullsOriginalCaseResolver<char>>

@@ -6,7 +6,7 @@ using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Generated
+namespace SpanJson.Benchmarks.Generated
 {
     public sealed class MobileBannerAdUtf8Formatter : BaseGeneratedFormatter<MobileBannerAd, byte, ExcludeNullsOriginalCaseResolver<byte>>,
         IJsonFormatter<MobileBannerAd, byte, ExcludeNullsOriginalCaseResolver<byte>>

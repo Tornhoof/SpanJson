@@ -4,7 +4,7 @@ using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Generated
+namespace SpanJson.Benchmarks.Generated
 {
     public sealed class TagWikiUtf16Formatter : BaseGeneratedFormatter<TagWiki, char, ExcludeNullsOriginalCaseResolver<char>>,
         IJsonFormatter<TagWiki, char, ExcludeNullsOriginalCaseResolver<char>>

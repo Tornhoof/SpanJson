@@ -4,7 +4,7 @@ using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Generated
+namespace SpanJson.Benchmarks.Generated
 {
     public sealed class SearchExcerptUtf16Formatter : BaseGeneratedFormatter<SearchExcerpt, char, ExcludeNullsOriginalCaseResolver<char>>,
         IJsonFormatter<SearchExcerpt, char, ExcludeNullsOriginalCaseResolver<char>>

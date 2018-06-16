@@ -5,7 +5,7 @@ using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Generated
+namespace SpanJson.Benchmarks.Generated
 {
     public sealed class MobileFeedUtf16Formatter : BaseGeneratedFormatter<MobileFeed, char, ExcludeNullsOriginalCaseResolver<char>>,
         IJsonFormatter<MobileFeed, char, ExcludeNullsOriginalCaseResolver<char>>

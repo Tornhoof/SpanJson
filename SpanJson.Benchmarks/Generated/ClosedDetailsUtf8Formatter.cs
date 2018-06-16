@@ -6,7 +6,7 @@ using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Generated
+namespace SpanJson.Benchmarks.Generated
 {
     public sealed class ClosedDetailsUtf8Formatter : BaseGeneratedFormatter<Question.ClosedDetails, byte, ExcludeNullsOriginalCaseResolver<byte>>,
         IJsonFormatter<Question.ClosedDetails, byte, ExcludeNullsOriginalCaseResolver<byte>>

@@ -4,7 +4,7 @@ using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Generated
+namespace SpanJson.Benchmarks.Generated
 {
     public sealed class ReputationHistoryUtf16Formatter : BaseGeneratedFormatter<ReputationHistory, char, ExcludeNullsOriginalCaseResolver<char>>,
         IJsonFormatter<ReputationHistory, char, ExcludeNullsOriginalCaseResolver<char>>

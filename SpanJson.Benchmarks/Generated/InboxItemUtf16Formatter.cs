@@ -4,7 +4,7 @@ using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Generated
+namespace SpanJson.Benchmarks.Generated
 {
     public sealed class InboxItemUtf16Formatter : BaseGeneratedFormatter<InboxItem, char, ExcludeNullsOriginalCaseResolver<char>>,
         IJsonFormatter<InboxItem, char, ExcludeNullsOriginalCaseResolver<char>>

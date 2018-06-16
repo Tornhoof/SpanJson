@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using SpanJson.Benchmarks.Models;
+using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Benchmarks
@@ -10,23 +13,17 @@ namespace SpanJson.Benchmarks
     {
         public static bool Init()
         {
-            //ResolverBase<char, ExcludeNullsOriginalCaseResolver<char>>.RegisterFormatter(typeof(Answer),
-            //    new AnswerUtf16Formatter<ExcludeNullsOriginalCaseResolver<char>>());
-            //ResolverBase<char, ExcludeNullsOriginalCaseResolver<char>>.RegisterFormatter(typeof(User.BadgeCount),
-            //    new BadgeCountUtf16Formatter<ExcludeNullsOriginalCaseResolver<char>>());
-            //ResolverBase<char, ExcludeNullsOriginalCaseResolver<char>>.RegisterFormatter(typeof(Comment),
-            //    new CommentUtf16Formatter<ExcludeNullsOriginalCaseResolver<char>>());
-            //ResolverBase<char, ExcludeNullsOriginalCaseResolver<char>>.RegisterFormatter(typeof(ShallowUser),
-            //    new ShallowUserUtf16Formatter<ExcludeNullsOriginalCaseResolver<char>>());
+            var types = Assembly.GetExecutingAssembly().GetTypes().Where(a => a.IsClass && !a.IsAbstract && a.Namespace.StartsWith("SpanJson.Benchmarks.Generated")).ToArray();
+            foreach (var type in types)
+            {
+                if (type.TryGetTypeOfGenericInterface(typeof(IJsonFormatter<,,>), out var argumentTypes) && argumentTypes.Length == 3)
+                {
+                    var mi = typeof(ResolverBase<,>).MakeGenericType(argumentTypes[1], argumentTypes[2])
+                        .GetMethod("RegisterFormatter", BindingFlags.Static | BindingFlags.Public);
+                    mi.Invoke(null, new []{argumentTypes[0], Activator.CreateInstance(type)});
+                }
+            }
 
-            //ResolverBase<byte, ExcludeNullsOriginalCaseResolver<byte>>.RegisterFormatter(typeof(Answer),
-            //    new AnswerUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>());
-            //ResolverBase<byte, ExcludeNullsOriginalCaseResolver<byte>>.RegisterFormatter(typeof(User.BadgeCount),
-            //    new BadgeCountUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>());
-            //ResolverBase<byte, ExcludeNullsOriginalCaseResolver<byte>>.RegisterFormatter(typeof(Comment),
-            //    new CommentUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>());
-            //ResolverBase<byte, ExcludeNullsOriginalCaseResolver<byte>>.RegisterFormatter(typeof(ShallowUser),
-            //    new ShallowUserUtf8Formatter<ExcludeNullsOriginalCaseResolver<byte>>());
             return true;
         }
     }

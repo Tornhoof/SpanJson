@@ -5,7 +5,7 @@ using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Generated
+namespace SpanJson.Benchmarks.Generated
 {
     public sealed class MobileCommunityBulletinUtf8Formatter : BaseGeneratedFormatter<MobileCommunityBulletin, byte, ExcludeNullsOriginalCaseResolver<byte>>,
         IJsonFormatter<MobileCommunityBulletin, byte, ExcludeNullsOriginalCaseResolver<byte>>

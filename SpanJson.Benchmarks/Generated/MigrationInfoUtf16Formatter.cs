@@ -4,7 +4,7 @@ using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Generated
+namespace SpanJson.Benchmarks.Generated
 {
     public sealed class MigrationInfoUtf16Formatter : BaseGeneratedFormatter<Question.MigrationInfo, char, ExcludeNullsOriginalCaseResolver<char>>,
         IJsonFormatter<Question.MigrationInfo, char, ExcludeNullsOriginalCaseResolver<char>>

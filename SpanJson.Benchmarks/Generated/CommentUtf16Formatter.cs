@@ -4,7 +4,7 @@ using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Generated
+namespace SpanJson.Benchmarks.Generated
 {
     public sealed class CommentUtf16Formatter : BaseGeneratedFormatter<Comment, char, ExcludeNullsOriginalCaseResolver<char>>,
         IJsonFormatter<Comment, char, ExcludeNullsOriginalCaseResolver<char>>

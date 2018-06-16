@@ -4,7 +4,7 @@ using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Generated
+namespace SpanJson.Benchmarks.Generated
 {
     public sealed class AccountMergeUtf16Formatter : BaseGeneratedFormatter<AccountMerge, char, ExcludeNullsOriginalCaseResolver<char>>,
         IJsonFormatter<AccountMerge, char, ExcludeNullsOriginalCaseResolver<char>>

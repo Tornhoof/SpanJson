@@ -5,7 +5,7 @@ using SpanJson.Codegen;
 using SpanJson.Formatters;
 using SpanJson.Resolvers;
 
-namespace SpanJson.Generated
+namespace SpanJson.Benchmarks.Generated
 {
     public sealed class QuestionTimelineUtf8Formatter : BaseGeneratedFormatter<QuestionTimeline, byte, ExcludeNullsOriginalCaseResolver<byte>>,
         IJsonFormatter<QuestionTimeline, byte, ExcludeNullsOriginalCaseResolver<byte>>
