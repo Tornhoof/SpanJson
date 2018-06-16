@@ -14,15 +14,23 @@ namespace SpanJson.Codegen
     {
         private static readonly string SymbolName = GetSymbolName();
         private static readonly IJsonFormatterResolver<TSymbol, TResolver> Resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
-        public static string Generate(Type dataType)
+        public static string Generate(Type[] dataTypes)
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("using SpanJson;");
+            sb.AppendLine("using System.Collections.Generic;");
+            sb.AppendLine("using System.Runtime.InteropServices;");
+            sb.AppendLine("using SpanJson.Benchmarks.Models;");
+            sb.AppendLine("using SpanJson.Codegen;");
+            sb.AppendLine("using SpanJson.Formatters;");
+            sb.AppendLine("using SpanJson.Resolvers;");
             sb.AppendLine();
             sb.AppendLine("namespace SpanJson.Generated");
             sb.AppendLine("{");
             Queue<Type> queue = new Queue<Type>();
-            queue.Enqueue(dataType);
+            foreach (var dataType in dataTypes)
+            {
+                queue.Enqueue(dataType);
+            }
             var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
             HashSet<Type> alreadyDone = new HashSet<Type>();
             while (queue.Count > 0)
@@ -34,11 +42,11 @@ namespace SpanJson.Codegen
                 }
                 var objectDescription = resolver.GetObjectDescription(current);
                 sb.AppendLine(
-                    $"public sealed class {current.Name}{SymbolName}Formatter<TResolver> : BaseGeneratedFormatter<{current.Name},{typeof(TSymbol).Name},TResolver>, IJsonFormatter<{current.Name}, {typeof(TSymbol).Name}, TResolver>  where TResolver : class, IJsonFormatterResolver<{typeof(TSymbol).Name}, TResolver>, new()");
+                    $"public sealed class {current.Name}{SymbolName}Formatter : BaseGeneratedFormatter<{current.Name},{typeof(TSymbol).Name},ExcludeNullsOriginalCaseResolver<char>>, IJsonFormatter<{current.Name}, {typeof(TSymbol).Name}, TResolver>  where TResolver : class, IJsonFormatterResolver<{typeof(TSymbol).Name}, TResolver>, new()");
                 sb.AppendLine("{");
                 GenerateSerializerNameFields(sb, current, objectDescription);
                 sb.AppendLine(
-                    $"public static readonly {current.Name}{SymbolName}Formatter<TResolver> Default = new {current.Name}{SymbolName}Formatter<TResolver>();");
+                    $"public static readonly {current.Name}{SymbolName}Formatter Default = new {current.Name}{SymbolName}Formatter>();");
                 sb.AppendLine($"public {current.Name} Deserialize(ref JsonReader<{typeof(TSymbol).Name}> reader)");
                 sb.AppendLine("{");
                 GenerateDeserializer(sb, current, objectDescription, queue);
@@ -131,7 +139,14 @@ namespace SpanJson.Codegen
             sb.AppendLine("{");
             sb.AppendLine($"var name = reader.Read{SymbolName}NameSpan();");
             sb.AppendLine("var length = name.Length;");
-            sb.AppendLine("ref var c = ref MemoryMarshal.GetReference(name);");
+            if (typeof(TSymbol) == typeof(char))
+            {
+                sb.AppendLine("ref var b = ref MemoryMarshal.GetReference(MemoryMarshal.AsBytes(name));");
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                sb.AppendLine("ref var b = ref MemoryMarshal.GetReference(name);");
+            }
             GenerateIfStatements(objectDescription.Members, sb, queue, 0);
             sb.AppendLine($"reader.SkipNext{SymbolName}Segment();");
             sb.AppendLine("}");
@@ -140,6 +155,8 @@ namespace SpanJson.Codegen
 
         private static void GenerateIfStatements(ICollection<JsonMemberInfo> memberInfos, StringBuilder sb, Queue<Type> queue, int index)
         {
+            var symbolSize = typeof(TSymbol) == typeof(char) ? 2 : 1;
+
             var grouping = memberInfos.Where(a => a.CanRead && a.Name.Length >= index).GroupBy(a => CalculateKey(a.Name, index))
                 .OrderByDescending(a => a.Key.Key).ToList();
             if (!grouping.Any())
@@ -154,33 +171,33 @@ namespace SpanJson.Codegen
                 if (group.Count() == 1) // need to check remaining values too 
                 {
                     var memberInfo = group.Single();
-                    int i = index + group.Key.offset;
+                    int length = index + group.Key.offset;
                     if (group.Key.Key == 0 && group.Key.offset == 0) // full direct match, no checks necessary anymore
                     {
                         sb.AppendLine(
-                            $"if(length == {i}) {{result.{memberInfo.MemberName} = {GetPropertyFormatter(memberInfo, queue)}.Deserialize(ref reader);continue;}}");
+                            $"if(length == {length}) {{result.{memberInfo.MemberName} = {GetPropertyFormatter(memberInfo, queue)}.Deserialize(ref reader);continue;}}");
                         continue;
                     }
 
                     var subSb = new StringBuilder();
-                    subSb.Append($"{readMethod}(ref c, {index}) == {group.Key.Key}{keySuffix}");
-                    while (i < memberInfo.Name.Length)
+                    subSb.Append($"{readMethod}(ref b, {index * symbolSize}) == {group.Key.Key}{keySuffix}");
+                    while (length < memberInfo.Name.Length)
                     {
                         subSb.Append(" && ");
-                        var subKey = CalculateKey(memberInfo.Name, i);
+                        var subKey = CalculateKey(memberInfo.Name, length);
                         (string readSubMethod, string keySubSuffix) = GetReadMethod(subKey.intType);
-                        subSb.Append($"{readSubMethod}(ref c, {i}) == {subKey.Key}{keySubSuffix}");
-                        i += subKey.offset;
+                        subSb.Append($"{readSubMethod}(ref b, {length * symbolSize}) == {subKey.Key}{keySubSuffix}");
+                        length += subKey.offset;
                     }
 
                     sb.AppendLine(
-                        $"if(length == {i} && {subSb}) {{result.{memberInfo.MemberName} = {GetPropertyFormatter(memberInfo, queue)}.Deserialize(ref reader);continue;}}");
+                        $"if(length == {length} && {subSb}) {{result.{memberInfo.MemberName} = {GetPropertyFormatter(memberInfo, queue)}.Deserialize(ref reader);continue;}}");
                 }
                 else
                 {
                     var nextIndex = index + group.Key.offset;
                     sb.AppendLine(
-                        $"if(length >= {nextIndex} && {readMethod}(ref c, {index}) == {group.Key.Key}{keySuffix})\r\n{{");
+                        $"if(length >= {nextIndex} && {readMethod}(ref b, {index * symbolSize}) == {group.Key.Key}{keySuffix})\r\n{{");
                     GenerateIfStatements(group.ToList(), sb, queue, nextIndex);
                     sb.AppendLine($"reader.SkipNext{SymbolName}Segment();");
                     sb.AppendLine("continue;\r\n}");

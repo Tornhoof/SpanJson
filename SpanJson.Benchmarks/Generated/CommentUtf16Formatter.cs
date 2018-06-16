@@ -37,11 +37,11 @@ namespace SpanJson.Benchmarks.Generated
             {
                 var name = reader.ReadUtf16NameSpan();
                 var length = name.Length;
-                ref var c = ref MemoryMarshal.GetReference(name);
-                if (length >= 4 && ReadUInt64(ref c, 0) == 34058901685993570UL)
+                ref var b = ref MemoryMarshal.GetReference(MemoryMarshal.AsBytes(name));
+                if (length >= 4 && ReadUInt64(ref b, 0) == 34058901685993570UL)
                 {
-                    if (length == 13 && ReadUInt64(ref c, 4) == 32088563963986015UL && ReadUInt64(ref c, 8) == 33495998976491627UL &&
-                        ReadUInt16(ref c, 12) == 110)
+                    if (length == 13 && ReadUInt64(ref b, 8) == 32088563963986015UL && ReadUInt64(ref b, 16) == 33495998976491627UL &&
+                        ReadUInt16(ref b, 24) == 110)
                     {
                         result.body_markdown = StringUtf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
                         continue;
@@ -57,15 +57,15 @@ namespace SpanJson.Benchmarks.Generated
                     continue;
                 }
 
-                if (length >= 4 && ReadUInt64(ref c, 0) == 32651591226949744UL)
+                if (length >= 4 && ReadUInt64(ref b, 0) == 32651591226949744UL)
                 {
-                    if (length == 9 && ReadUInt64(ref c, 4) == 31525717090238559UL && ReadUInt16(ref c, 8) == 101)
+                    if (length == 9 && ReadUInt64(ref b, 8) == 31525717090238559UL && ReadUInt16(ref b, 16) == 101)
                     {
                         result.post_type = NullableFormatter<PostType, char, ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
                         continue;
                     }
 
-                    if (length == 7 && ReadUInt32(ref c, 4) == 6881375U && ReadUInt16(ref c, 6) == 100)
+                    if (length == 7 && ReadUInt32(ref b, 8) == 6881375U && ReadUInt16(ref b, 12) == 100)
                     {
                         result.post_id = NullableInt32Utf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
                         continue;
@@ -75,52 +75,52 @@ namespace SpanJson.Benchmarks.Generated
                     continue;
                 }
 
-                if (length == 6 && ReadUInt64(ref c, 0) == 32651548276555877UL && ReadUInt32(ref c, 4) == 6553701U)
+                if (length == 6 && ReadUInt64(ref b, 0) == 32651548276555877UL && ReadUInt32(ref b, 8) == 6553701U)
                 {
                     result.edited = NullableBooleanUtf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 5 && ReadUInt64(ref c, 0) == 32088624092872819UL && ReadUInt16(ref c, 4) == 101)
+                if (length == 5 && ReadUInt64(ref b, 0) == 32088624092872819UL && ReadUInt16(ref b, 8) == 101)
                 {
                     result.score = NullableInt32Utf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 7 && ReadUInt64(ref c, 0) == 31244229228363893UL && ReadUInt32(ref c, 4) == 6619252U && ReadUInt16(ref c, 6) == 100)
+                if (length == 7 && ReadUInt64(ref b, 0) == 31244229228363893UL && ReadUInt32(ref b, 8) == 6619252U && ReadUInt16(ref b, 12) == 100)
                 {
                     result.upvoted = NullableBooleanUtf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 10 && ReadUInt64(ref c, 0) == 30681240620171363UL && ReadUInt64(ref c, 4) == 26740621010927717UL &&
-                    ReadUInt32(ref c, 8) == 6553705U)
+                if (length == 10 && ReadUInt64(ref b, 0) == 30681240620171363UL && ReadUInt64(ref b, 8) == 26740621010927717UL &&
+                    ReadUInt32(ref b, 16) == 6553705U)
                 {
                     result.comment_id = NullableInt32Utf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 13 && ReadUInt64(ref c, 0) == 30399778527707250UL && ReadUInt64(ref c, 4) == 31244220637315193UL &&
-                    ReadUInt64(ref c, 8) == 28429466576683103UL && ReadUInt16(ref c, 12) == 114)
+                if (length == 13 && ReadUInt64(ref b, 0) == 30399778527707250UL && ReadUInt64(ref b, 8) == 31244220637315193UL &&
+                    ReadUInt64(ref b, 16) == 28429466576683103UL && ReadUInt16(ref b, 24) == 114)
                 {
                     result.reply_to_user = ShallowUserUtf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 4 && ReadUInt64(ref c, 0) == 30118294961324140UL)
+                if (length == 4 && ReadUInt64(ref b, 0) == 30118294961324140UL)
                 {
                     result.link = StringUtf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 5 && ReadUInt64(ref c, 0) == 28429445101977711UL && ReadUInt16(ref c, 4) == 114)
+                if (length == 5 && ReadUInt64(ref b, 0) == 28429445101977711UL && ReadUInt16(ref b, 8) == 114)
                 {
                     result.owner = ShallowUserUtf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 13 && ReadUInt64(ref c, 0) == 27303506540101731UL && ReadUInt64(ref c, 4) == 30962724186423412UL &&
-                    ReadUInt64(ref c, 8) == 32651513916817503UL && ReadUInt16(ref c, 12) == 101)
+                if (length == 13 && ReadUInt64(ref b, 0) == 27303506540101731UL && ReadUInt64(ref b, 8) == 30962724186423412UL &&
+                    ReadUInt64(ref b, 16) == 32651513916817503UL && ReadUInt16(ref b, 24) == 101)
                 {
                     result.creation_date = NullableDateTimeUtf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
                     continue;

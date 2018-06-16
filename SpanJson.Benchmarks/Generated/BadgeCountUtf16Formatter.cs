@@ -28,20 +28,20 @@ namespace SpanJson.Benchmarks.Generated
             {
                 var name = reader.ReadUtf16NameSpan();
                 var length = name.Length;
-                ref var c = ref MemoryMarshal.GetReference(name);
-                if (length == 6 && ReadUInt64(ref c, 0) == 33214511115206771UL && ReadUInt32(ref c, 4) == 7471205U)
+                ref var b = ref MemoryMarshal.GetReference(MemoryMarshal.AsBytes(name));
+                if (length == 6 && ReadUInt64(ref b, 0) == 33214511115206771UL && ReadUInt32(ref b, 8) == 7471205U)
                 {
                     result.silver = NullableInt32Utf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 6 && ReadUInt64(ref c, 0) == 30962724187013218UL && ReadUInt32(ref c, 4) == 6619258U)
+                if (length == 6 && ReadUInt64(ref b, 0) == 30962724187013218UL && ReadUInt32(ref b, 8) == 6619258U)
                 {
                     result.bronze = NullableInt32Utf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
                     continue;
                 }
 
-                if (length == 4 && ReadUInt64(ref c, 0) == 28147961534808167UL)
+                if (length == 4 && ReadUInt64(ref b, 0) == 28147961534808167UL)
                 {
                     result.gold = NullableInt32Utf16Formatter<ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
                     continue;

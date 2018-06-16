@@ -10,19 +10,19 @@ namespace SpanJson.Benchmarks.Generated
     public sealed class CommentUtf8Formatter<TResolver> : BaseGeneratedFormatter<Comment, byte, TResolver>, IJsonFormatter<Comment, byte, TResolver>
         where TResolver : class, IJsonFormatterResolver<byte, TResolver>, new()
     {
-        private readonly byte[] _comment_idName = Encoding.UTF8.GetBytes("\"comment_id\":");
-        private readonly byte[] _post_idName = Encoding.UTF8.GetBytes("\"post_id\":");
-        private readonly byte[] _creation_dateName = Encoding.UTF8.GetBytes("\"creation_date\":");
-        private readonly byte[] _post_typeName = Encoding.UTF8.GetBytes("\"post_type\":");
-        private readonly byte[] _scoreName = Encoding.UTF8.GetBytes("\"score\":");
-        private readonly byte[] _editedName = Encoding.UTF8.GetBytes("\"edited\":");
-        private readonly byte[] _bodyName = Encoding.UTF8.GetBytes("\"body\":");
-        private readonly byte[] _ownerName = Encoding.UTF8.GetBytes("\"owner\":");
-        private readonly byte[] _reply_to_userName = Encoding.UTF8.GetBytes("\"reply_to_user\":");
-        private readonly byte[] _linkName = Encoding.UTF8.GetBytes("\"link\":");
-        private readonly byte[] _body_markdownName = Encoding.UTF8.GetBytes("\"body_markdown\":");
-        private readonly byte[] _upvotedName = Encoding.UTF8.GetBytes("\"upvoted\":");
         public static readonly CommentUtf8Formatter<TResolver> Default = new CommentUtf8Formatter<TResolver>();
+        private readonly byte[] _body_markdownName = Encoding.UTF8.GetBytes("\"body_markdown\":");
+        private readonly byte[] _bodyName = Encoding.UTF8.GetBytes("\"body\":");
+        private readonly byte[] _comment_idName = Encoding.UTF8.GetBytes("\"comment_id\":");
+        private readonly byte[] _creation_dateName = Encoding.UTF8.GetBytes("\"creation_date\":");
+        private readonly byte[] _editedName = Encoding.UTF8.GetBytes("\"edited\":");
+        private readonly byte[] _linkName = Encoding.UTF8.GetBytes("\"link\":");
+        private readonly byte[] _ownerName = Encoding.UTF8.GetBytes("\"owner\":");
+        private readonly byte[] _post_idName = Encoding.UTF8.GetBytes("\"post_id\":");
+        private readonly byte[] _post_typeName = Encoding.UTF8.GetBytes("\"post_type\":");
+        private readonly byte[] _reply_to_userName = Encoding.UTF8.GetBytes("\"reply_to_user\":");
+        private readonly byte[] _scoreName = Encoding.UTF8.GetBytes("\"score\":");
+        private readonly byte[] _upvotedName = Encoding.UTF8.GetBytes("\"upvoted\":");
 
         public Comment Deserialize(ref JsonReader<byte> reader)
         {
