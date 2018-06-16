@@ -4,28 +4,27 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.CSharp.RuntimeBinder;
 using SpanJson.Formatters.Dynamic;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
+using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 
 namespace SpanJson.Formatters
 {
-    public class DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T, TSymbol, TResolver>
+    public class DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T, TSymbol>
         where T : IDynamicMetaObjectProvider
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
         where TSymbol : struct
     {
         private static readonly Func<T> CreateFunctor = BuildCreateFunctor<T>(null);
 
-        public static readonly DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver> Default =
-            new DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver>();
+        public static readonly DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver> Default = new DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver>();
 
-        private static readonly TResolver Resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
-        private static readonly IJsonFormatter<T, TSymbol, TResolver> DefaultFormatter = Resolver.GetFormatter<T>();
-
+        private static readonly IJsonFormatterResolver<TSymbol, TResolver> Resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
         private static readonly Dictionary<string, DeserializeDelegate> KnownMembersDictionary = BuildKnownMembers();
         private static readonly ConcurrentDictionary<string, Func<T, object>> GetMemberCache = new ConcurrentDictionary<string, Func<T, object>>();
 
@@ -137,9 +136,10 @@ namespace SpanJson.Formatters
                 }
                 else
                 {
-                    var formatter = ((IJsonFormatterResolver) resolver).GetFormatter(jsonMemberInfo.MemberType);
+                    var formatterType = resolver.GetFormatter(jsonMemberInfo.MemberType).GetType();
+                    var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
                     var assignExpression = Expression.Assign(Expression.PropertyOrField(inputParameter, jsonMemberInfo.MemberName),
-                        Expression.Call(Expression.Constant(formatter), formatter.GetType().GetMethod("Deserialize"), readerParameter));
+                        Expression.Call(Expression.Field(null, fieldInfo), formatterType.GetMethod("Deserialize"), readerParameter));
                     var lambda = Expression.Lambda<DeserializeDelegate>(assignExpression, inputParameter, readerParameter).Compile();
                     result.Add(jsonMemberInfo.Name, lambda);
                 }

@@ -118,7 +118,7 @@ namespace SpanJson.Formatters
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected static void SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer,
-            T value, IJsonFormatter<T, TSymbol, TResolver> formatter,
+            T value, IJsonFormatter<T, TSymbol> formatter,
             int nextNestingLimit)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {

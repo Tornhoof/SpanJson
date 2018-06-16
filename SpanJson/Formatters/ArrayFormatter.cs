@@ -8,12 +8,12 @@ namespace SpanJson.Formatters
     /// <summary>
     ///     Used for types which are not built-in
     /// </summary>
-    public sealed class ArrayFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T[], TSymbol, TResolver>
+    public sealed class ArrayFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T[], TSymbol>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
         public static readonly ArrayFormatter<T, TSymbol, TResolver> Default = new ArrayFormatter<T, TSymbol, TResolver>();
 
-        private static readonly IJsonFormatter<T, TSymbol, TResolver> ElementFormatter =
+        private static readonly IJsonFormatter<T, TSymbol> ElementFormatter =
             StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
 
         public T[] Deserialize(ref JsonReader<TSymbol> reader)
@@ -69,11 +69,11 @@ namespace SpanJson.Formatters
             writer.WriteBeginArray();
             if (valueLength > 0)
             {
-                SerializeRuntimeDecisionInternal(ref writer, value[0], ElementFormatter, nextNestingLimit);
+                SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0], ElementFormatter, nextNestingLimit);
                 for (var i = 1; i < valueLength; i++)
                 {
                     writer.WriteValueSeparator();
-                    SerializeRuntimeDecisionInternal(ref writer, value[i], ElementFormatter, nextNestingLimit);
+                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i], ElementFormatter, nextNestingLimit);
                 }
             }
 

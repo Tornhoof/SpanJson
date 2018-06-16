@@ -8,15 +8,14 @@ namespace SpanJson.Formatters
     /// <summary>
     ///     Used for types which are not built-in
     /// </summary>
-    public sealed class ListFormatter<TList, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TList, TSymbol, TResolver>
+    public sealed class ListFormatter<TList, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TList, TSymbol>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TList : class, IList<T>
 
     {
         private static readonly Func<TList> CreateFunctor = BuildCreateFunctor<TList>(typeof(List<T>));
         public static readonly ListFormatter<TList, T, TSymbol, TResolver> Default = new ListFormatter<TList, T, TSymbol, TResolver>();
 
-        private static readonly IJsonFormatter<T, TSymbol, TResolver> ElementFormatter =
-            StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
+        private static readonly IJsonFormatter<T, TSymbol> ElementFormatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
 
         public TList Deserialize(ref JsonReader<TSymbol> reader)
         {
@@ -49,11 +48,11 @@ namespace SpanJson.Formatters
             writer.WriteBeginArray();
             if (valueLength > 0)
             {
-                SerializeRuntimeDecisionInternal(ref writer, value[0], ElementFormatter, nextNestingLimit);
+                SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0], ElementFormatter, nextNestingLimit);
                 for (var i = 1; i < valueLength; i++)
                 {
                     writer.WriteValueSeparator();
-                    SerializeRuntimeDecisionInternal(ref writer, value[i], ElementFormatter, nextNestingLimit);
+                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i], ElementFormatter, nextNestingLimit);
                 }
             }
 
