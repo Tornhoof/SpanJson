@@ -7,7 +7,7 @@ namespace SpanJson.Helpers
     public static partial class DateTimeParser
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryParseDateTimeOffset(ReadOnlySpan<char> source, out DateTimeOffset value, out int charsConsumed)
+        public static bool TryParseDateTimeOffset(in ReadOnlySpan<char> source, out DateTimeOffset value, out int charsConsumed)
         {
             if (TryParseDate(source, out var date, out charsConsumed))
             {
@@ -41,7 +41,7 @@ namespace SpanJson.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryParseDateTime(ReadOnlySpan<char> source, out DateTime value, out int charsConsumed)
+        public static bool TryParseDateTime(in ReadOnlySpan<char> source, out DateTime value, out int charsConsumed)
         {
             if (TryParseDate(source, out var date, out charsConsumed))
             {
@@ -79,7 +79,7 @@ namespace SpanJson.Helpers
         ///     2017-06-12T05:30:45Z
         ///     2017-06-12 (local)
         /// </summary>
-        private static bool TryParseDate(ReadOnlySpan<char> source, out Date value,
+        private static bool TryParseDate(in ReadOnlySpan<char> source, out Date value,
             out int charsConsumed)
         {
             if (source.Length < 10)

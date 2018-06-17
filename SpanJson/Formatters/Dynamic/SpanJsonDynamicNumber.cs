@@ -7,7 +7,7 @@ namespace SpanJson.Formatters.Dynamic
     {
         private static readonly DynamicTypeConverter DynamicConverter = new DynamicTypeConverter();
 
-        protected SpanJsonDynamicNumber(ReadOnlySpan<TSymbol> span) : base(span)
+        protected SpanJsonDynamicNumber(in ReadOnlySpan<TSymbol> span) : base(span)
         {
         }
 

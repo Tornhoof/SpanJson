@@ -50,7 +50,7 @@ namespace SpanJson
                     return invoker.ToByteArraySerializer(input);
                 }
 
-                public static object InnerDeserialize(ReadOnlySpan<TSymbol> input, Type type)
+                public static object InnerDeserialize(in ReadOnlySpan<TSymbol> input, Type type)
                 {
                     if (input == null)
                     {
@@ -162,7 +162,7 @@ namespace SpanJson
 
                 private static DeserializeDelegate BuildDeserializer(Type type)
                 {
-                    var inputParam = Expression.Parameter(typeof(ReadOnlySpan<TSymbol>), "input");
+                    var inputParam = Expression.Parameter(typeof(ReadOnlySpan<TSymbol>).MakeByRefType(), "input");
                     Expression genericCall = Expression.Call(typeof(Generic), nameof(Generic.DeserializeInternal),
                         new[] {type, typeof(TSymbol), typeof(TResolver)}, inputParam);
                     if (type.IsValueType)
@@ -223,7 +223,7 @@ namespace SpanJson
                 }
 
 
-                private delegate object DeserializeDelegate(ReadOnlySpan<TSymbol> input);
+                private delegate object DeserializeDelegate(in ReadOnlySpan<TSymbol> input);
 
                 private delegate ValueTask<object> DeserializeFromStreamDelegateAsync(Stream stream, CancellationToken cancellationToken = default);
 
@@ -297,7 +297,7 @@ namespace SpanJson
                 /// <param name="input">Input</param>
                 /// <param name="type">Object Type</param>
                 /// <returns>Deserialized object</returns>
-                public static object Deserialize<TResolver>(ReadOnlySpan<char> input, Type type)
+                public static object Deserialize<TResolver>(in ReadOnlySpan<char> input, Type type)
                     where TResolver : IJsonFormatterResolver<char, TResolver>, new()
                 {
                     return Inner<char, TResolver>.InnerDeserialize(input, type);
@@ -309,7 +309,7 @@ namespace SpanJson
                 /// <param name="input">Input</param>
                 /// <param name="type">Object Type</param>
                 /// <returns>Deserialized object</returns>
-                public static object Deserialize(ReadOnlySpan<char> input, Type type)
+                public static object Deserialize(in ReadOnlySpan<char> input, Type type)
                 {
                     return Deserialize<ExcludeNullsOriginalCaseResolver<char>>(input, type);
                 }
@@ -399,7 +399,7 @@ namespace SpanJson
                 /// <param name="input">Input</param>
                 /// <param name="type">Object Type</param>
                 /// <returns>Deserialized object</returns>
-                public static object Deserialize<TResolver>(ReadOnlySpan<byte> input, Type type)
+                public static object Deserialize<TResolver>(in ReadOnlySpan<byte> input, Type type)
                     where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
                 {
                     return Inner<byte, TResolver>.InnerDeserialize(input, type);
@@ -411,7 +411,7 @@ namespace SpanJson
                 /// <param name="input">Input</param>
                 /// <param name="type">Object Type</param>
                 /// <returns>Deserialized object</returns>
-                public static object Deserialize(ReadOnlySpan<byte> input, Type type)
+                public static object Deserialize(in ReadOnlySpan<byte> input, Type type)
                 {
                     return Deserialize<ExcludeNullsOriginalCaseResolver<byte>>(input, type);
                 }

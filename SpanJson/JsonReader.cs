@@ -12,7 +12,7 @@ namespace SpanJson
 
         private int _pos;
 
-        public JsonReader(ReadOnlySpan<TSymbol> input)
+        public JsonReader(in ReadOnlySpan<TSymbol> input)
         {
             _length = input.Length;
             _pos = 0;

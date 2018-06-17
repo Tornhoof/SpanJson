@@ -410,7 +410,7 @@ namespace SpanJson
             WriteUtf16Verbatim(value.AsSpan());
         }
 
-        public void WriteUtf16Verbatim(ReadOnlySpan<char> value)
+        public void WriteUtf16Verbatim(in ReadOnlySpan<char> value)
         {
             ref var pos = ref _pos;
             var sLength = value.Length;
@@ -427,7 +427,7 @@ namespace SpanJson
         ///     The value should already be properly escaped
         /// </summary>
         /// <param name="value"></param>
-        public void WriteUtf16Name(ReadOnlySpan<char> value)
+        public void WriteUtf16Name(in ReadOnlySpan<char> value)
         {
             ref var pos = ref _pos;
             var sLength = value.Length + 3;

@@ -14,7 +14,7 @@ namespace SpanJson
             /// </summary>
             /// <param name="input">Input</param>
             /// <returns>String</returns>
-            public static string Print(ReadOnlySpan<char> input)
+            public static string Print(in ReadOnlySpan<char> input)
             {
                 var reader = new JsonReader<char>(input);
                 var writer = new JsonWriter<char>();
@@ -27,7 +27,7 @@ namespace SpanJson
             /// </summary>
             /// <param name="input">Input</param>
             /// <returns>Byte array</returns>
-            public static byte[] Print(ReadOnlySpan<byte> input)
+            public static byte[] Print(in ReadOnlySpan<byte> input)
             {
                 var reader = new JsonReader<byte>(input);
                 var writer = new JsonWriter<byte>();
