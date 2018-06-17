@@ -442,29 +442,29 @@ namespace SpanJson.Formatters
             string methodName;
             if (intType == typeof(byte))
             {
-                methodName = nameof(ReadUnalignedHelper.ReadByte);
+                methodName = nameof(SpanHelper.ReadByte);
             }
 
             else if (intType == typeof(ushort))
             {
-                methodName = nameof(ReadUnalignedHelper.ReadUInt16);
+                methodName = nameof(SpanHelper.ReadUInt16);
             }
 
             else if (intType == typeof(uint))
             {
-                methodName = nameof(ReadUnalignedHelper.ReadUInt32);
+                methodName = nameof(SpanHelper.ReadUInt32);
             }
 
             else if (intType == typeof(ulong))
             {
-                methodName = nameof(ReadUnalignedHelper.ReadUInt64);
+                methodName = nameof(SpanHelper.ReadUInt64);
             }
             else
             {
                 throw new NotSupportedException();
             }
 
-            var methodInfo = typeof(ReadUnalignedHelper).GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
+            var methodInfo = typeof(SpanHelper).GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
             return Expression.Call(methodInfo, nameSpanExpression, offsetParameter);
         }
 

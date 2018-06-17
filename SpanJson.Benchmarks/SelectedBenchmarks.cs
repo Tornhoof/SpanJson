@@ -67,17 +67,17 @@ namespace SpanJson.Benchmarks
         //    return JsonSerializer.Generic.Utf8.Deserialize<MobileBadgeAward>(MobileBadgeAwardSerializedByteArray);
         //}
 
-        //[Benchmark]
-        //public string SerializeAnswerWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Serialize(Answer);
-        //}
+        [Benchmark]
+        public string SerializeAnswerWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Serialize(Answer);
+        }
 
-        //[Benchmark]
-        //public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
-        //{
-        //    return JsonSerializer.Generic.Utf8.Serialize(Answer);
-        //}
+        [Benchmark]
+        public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
+        {
+            return JsonSerializer.Generic.Utf8.Serialize(Answer);
+        }
 
         [Benchmark]
         public Answer DeserializeAnswerWithSpanJsonSerializer()
@@ -90,6 +90,21 @@ namespace SpanJson.Benchmarks
         {
             return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
         }
+
+
+        //[Benchmark]
+        //public BadgeRank DeserializeBadgeRankWithSpanJsonSerializerUtf16()
+        //{
+        //    return SpanJsonSerializer.Deserialize<BadgeRank>("\"bronze\"");
+        //}
+
+        //private static readonly byte[] bronze = Encoding.UTF8.GetBytes("\"bronze\"");
+
+        //[Benchmark]
+        //public BadgeRank DeserializeBadgeRankWithSpanJsonSerializerUtf8()
+        //{
+        //    return SpanJsonUtf8Serializer.Deserialize<BadgeRank>(bronze);
+        //}
 
         //[Benchmark]
         //public async ValueTask<Answer> DeserializeAnswerWithSpanJsonSerializerAsyncUtf8()

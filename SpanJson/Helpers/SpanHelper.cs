@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SpanJson.Helpers
 {
-    public static class ReadUnalignedHelper
+    public static class SpanHelper
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte ReadByte(in ReadOnlySpan<byte> span, int offset)
@@ -30,6 +30,19 @@ namespace SpanJson.Helpers
         public static ulong ReadUInt64(in ReadOnlySpan<byte> span, int offset)
         {
             return Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref MemoryMarshal.GetReference(span), offset));
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool StringEquals(in ReadOnlySpan<char> span, string comparison)
+        {
+            return span.SequenceEqual(comparison);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool ByteEquals(in ReadOnlySpan<byte> span, byte[] comparison)
+        {
+            return span.SequenceEqual(comparison);
         }
     }
 }
