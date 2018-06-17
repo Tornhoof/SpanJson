@@ -212,7 +212,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private char ReadUtf8CharInternal(ReadOnlySpan<byte> span)
+        private char ReadUtf8CharInternal(in ReadOnlySpan<byte> span)
         {
             var pos = 0;
             if (span.Length == 1)
@@ -343,7 +343,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static string ConvertToString(ReadOnlySpan<byte> span)
+        private static string ConvertToString(in ReadOnlySpan<byte> span)
         {
             return Encoding.UTF8.GetString(span);
         }
@@ -352,7 +352,7 @@ namespace SpanJson
         ///     This is simply said pretty much twice as slow as the Utf16 version
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string UnescapeUtf8(ReadOnlySpan<byte> span, int escapedCharsSize)
+        private string UnescapeUtf8(in ReadOnlySpan<byte> span, int escapedCharsSize)
         {
             var unescapedLength = Encoding.UTF8.GetCharCount(span) - escapedCharsSize;
             var result = new string('\0', unescapedLength);

@@ -28,79 +28,6 @@ namespace SpanJson.Formatters
         {
             return args?.Length > 0 ? type.GetMethod(name, args) : type.GetMethod(name);
         }
-
-
-        protected static MethodInfo FindHelperMethod(string name, params Type[] args)
-        {
-            const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Static;
-            return args?.Length > 0
-                ? typeof(BaseFormatter).GetMethod(name, flags, null, CallingConventions.Any, args, null)
-                : typeof(BaseFormatter).GetMethod(name, flags);
-        }
-
-
-        /// <summary>
-        ///     Faster than SequenceEqual for some unknown reason
-        ///     Using SequenceEqual makes the deserialization 10-15% slower, but in a standalone benchmark sequenceEqual is way
-        ///     faster
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static bool StringEquals(ReadOnlySpan<char> span, int offset, string comparison)
-        {
-            if (span.Length - offset != comparison.Length)
-            {
-                return false;
-            }
-
-            for (var i = 0; i < comparison.Length; i++)
-            {
-                ref readonly var left = ref span[offset + i];
-                if (comparison[i] != left)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static bool SwitchStringEquals(ReadOnlySpan<char> span, string comparison)
-        {
-            return StringEquals(span, 0, comparison);
-        }
-
-        /// <summary>
-        ///     Faster than SequenceEqual for some unknown reason, this needs to be a byte array and not a string otherwise we
-        ///     might run into problems with non ascii property names
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static bool ByteEquals(ReadOnlySpan<byte> span, int offset, byte[] comparison)
-        {
-            if (span.Length - offset != comparison.Length)
-            {
-                return false;
-            }
-
-            for (var i = 0; i < comparison.Length; i++)
-            {
-                ref readonly var left = ref span[offset + i];
-                if (comparison[i] != left)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static bool SwitchByteEquals(ReadOnlySpan<byte> span, byte[] comparison)
-        {
-            return ByteEquals(span, 0, comparison);
-        }
-
         protected static ConstantExpression GetConstantExpressionOfString<TSymbol>(string input)
         {
             if (typeof(TSymbol) == typeof(char))
@@ -134,6 +61,23 @@ namespace SpanJson.Formatters
             {
                 RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, value, nextNestingLimit);
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static int GetSymbolSize<TSymbol>() where TSymbol : struct
+        {
+
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return sizeof(char);
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                return sizeof(byte);
+            }
+
+            throw new NotSupportedException();
         }
     }
 }

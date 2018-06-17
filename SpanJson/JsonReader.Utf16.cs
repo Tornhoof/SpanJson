@@ -202,7 +202,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private char ReadUtf16CharInternal(ReadOnlySpan<char> span, ref int pos)
+        private char ReadUtf16CharInternal(in ReadOnlySpan<char> span, ref int pos)
         {
             if (span.Length == 1)
             {
@@ -220,7 +220,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private char UnescapeUtf16CharInternal(ReadOnlySpan<char> span, ref int pos)
+        private char UnescapeUtf16CharInternal(in ReadOnlySpan<char> span, ref int pos)
         {
             ref readonly var current = ref span[pos++];
             switch (current)
@@ -351,7 +351,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string UnescapeUtf16(ReadOnlySpan<char> span, int escapedCharSize)
+        private string UnescapeUtf16(in ReadOnlySpan<char> span, int escapedCharSize)
         {
             var unescapedLength = span.Length - escapedCharSize;
             var result = new string('\0', unescapedLength);

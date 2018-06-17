@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
+using SpanJson.Helpers;
 
 namespace SpanJson.Formatters
 {
@@ -42,12 +43,12 @@ namespace SpanJson.Formatters
             if (typeof(TSymbol) == typeof(char))
             {
                 readMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16StringSpan));
-                comparisonMethodInfo = FindHelperMethod(nameof(SwitchStringEquals));
+                comparisonMethodInfo = typeof(SpanHelper).GetMethod(nameof(SpanHelper.StringEquals), BindingFlags.Static | BindingFlags.Public);
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
                 readMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8StringSpan));
-                comparisonMethodInfo = FindHelperMethod(nameof(SwitchByteEquals));
+                comparisonMethodInfo = typeof(SpanHelper).GetMethod(nameof(SpanHelper.ByteEquals), BindingFlags.Static | BindingFlags.Public);
             }
             else
             {

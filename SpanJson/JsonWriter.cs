@@ -188,7 +188,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteName(ReadOnlySpan<char> name)
+        public void WriteName(in ReadOnlySpan<char> name)
         {
             if (typeof(TSymbol) == typeof(char))
             {
@@ -206,7 +206,7 @@ namespace SpanJson
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteVerbatim(ReadOnlySpan<TSymbol> values)
+        public void WriteVerbatim(in ReadOnlySpan<TSymbol> values)
         {
             if (typeof(TSymbol) == typeof(char))
             {
@@ -319,7 +319,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteNameSpan(ReadOnlySpan<TSymbol> values)
+        public void WriteNameSpan(in ReadOnlySpan<TSymbol> values)
         {
             var remaining = values.Length + 3;
             if (typeof(TSymbol) == typeof(char))

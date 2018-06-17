@@ -7,7 +7,7 @@ namespace SpanJson.Formatters.Dynamic
 {
     public abstract class SpanJsonDynamic<TSymbol> : DynamicObject, ISpanJsonDynamicValue<TSymbol> where TSymbol : struct
     {
-        protected SpanJsonDynamic(ReadOnlySpan<TSymbol> span)
+        protected SpanJsonDynamic(in ReadOnlySpan<TSymbol> span)
         {
             Symbols = span.ToArray();
         }

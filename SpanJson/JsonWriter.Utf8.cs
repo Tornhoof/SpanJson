@@ -479,7 +479,7 @@ namespace SpanJson
         }
 
 
-        public void WriteUtf8Verbatim(ReadOnlySpan<byte> value)
+        public void WriteUtf8Verbatim(in ReadOnlySpan<byte> value)
         {
             ref var pos = ref _pos;
             var sLength = value.Length;
@@ -496,7 +496,7 @@ namespace SpanJson
         ///     The value should already be properly escaped
         /// </summary>
         /// <param name="value"></param>
-        public void WriteUtf8Name(ReadOnlySpan<char> value)
+        public void WriteUtf8Name(in ReadOnlySpan<char> value)
         {
             ref var pos = ref _pos;
             var sLength = value.Length + 3;
