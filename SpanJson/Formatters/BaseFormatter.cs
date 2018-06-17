@@ -44,7 +44,7 @@ namespace SpanJson.Formatters
         ///     faster
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static bool StringEquals(ReadOnlySpan<char> span, int offset, string comparison)
+        protected static bool StringEquals(in ReadOnlySpan<char> span, int offset, string comparison)
         {
             if (span.Length - offset != comparison.Length)
             {
@@ -65,7 +65,7 @@ namespace SpanJson.Formatters
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static bool SwitchStringEquals(ReadOnlySpan<char> span, string comparison)
+        protected static bool SwitchStringEquals(in ReadOnlySpan<char> span, string comparison)
         {
             return StringEquals(span, 0, comparison);
         }
@@ -75,7 +75,7 @@ namespace SpanJson.Formatters
         ///     might run into problems with non ascii property names
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static bool ByteEquals(ReadOnlySpan<byte> span, int offset, byte[] comparison)
+        protected static bool ByteEquals(in ReadOnlySpan<byte> span, int offset, byte[] comparison)
         {
             if (span.Length - offset != comparison.Length)
             {
@@ -95,7 +95,7 @@ namespace SpanJson.Formatters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static bool SwitchByteEquals(ReadOnlySpan<byte> span, byte[] comparison)
+        protected static bool SwitchByteEquals(in ReadOnlySpan<byte> span, byte[] comparison)
         {
             return ByteEquals(span, 0, comparison);
         }

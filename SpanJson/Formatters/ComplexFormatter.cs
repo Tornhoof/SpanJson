@@ -15,7 +15,7 @@ namespace SpanJson.Formatters
     {
         private const int NestingLimit = 256;
 
-        protected static SerializeDelegate<T, TSymbol, TResolver> BuildSerializeDelegate<T, TSymbol, TResolver>()
+        protected static SerializeDelegate<T, TSymbol> BuildSerializeDelegate<T, TSymbol, TResolver>()
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
@@ -152,11 +152,11 @@ namespace SpanJson.Formatters
             expressions.Add(Expression.Call(writerParameter, writeEndObjectMethodInfo));
             var blockExpression = Expression.Block(new[] {writeSeperator}, expressions);
             var lambda =
-                Expression.Lambda<SerializeDelegate<T, TSymbol, TResolver>>(blockExpression, writerParameter, valueParameter, nestingLimitParameter);
+                Expression.Lambda<SerializeDelegate<T, TSymbol>>(blockExpression, writerParameter, valueParameter, nestingLimitParameter);
             return lambda.Compile();
         }
 
-        protected static DeserializeDelegate<T, TSymbol, TResolver> BuildDeserializeDelegate<T, TSymbol, TResolver>()
+        protected static DeserializeDelegate<T, TSymbol> BuildDeserializeDelegate<T, TSymbol, TResolver>()
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
@@ -167,7 +167,7 @@ namespace SpanJson.Formatters
             if (memberInfos.Any(a => a.MemberType.IsAbstract || a.MemberType.IsInterface))
             {
                 return Expression
-                    .Lambda<DeserializeDelegate<T, TSymbol, TResolver>>(Expression.Block(
+                    .Lambda<DeserializeDelegate<T, TSymbol>>(Expression.Block(
                             Expression.Throw(Expression.Constant(new NotSupportedException($"{typeof(T).Name} contains abstract or interface members."))),
                             Expression.Default(typeof(T))),
                         readerParameter).Compile();
@@ -175,7 +175,7 @@ namespace SpanJson.Formatters
 
             if (typeof(T).IsAbstract)
             {
-                return Expression.Lambda<DeserializeDelegate<T, TSymbol, TResolver>>(Expression.Default(typeof(T)), readerParameter).Compile();
+                return Expression.Lambda<DeserializeDelegate<T, TSymbol>>(Expression.Default(typeof(T)), readerParameter).Compile();
             }
 
             if (memberInfos.Count == 0)
@@ -195,7 +195,7 @@ namespace SpanJson.Formatters
                     createExpression = Expression.Default(typeof(T));
                 }
 
-                return Expression.Lambda<DeserializeDelegate<T, TSymbol, TResolver>>(createExpression, readerParameter).Compile();
+                return Expression.Lambda<DeserializeDelegate<T, TSymbol>>(createExpression, readerParameter).Compile();
             }
 
             var returnValue = Expression.Variable(typeof(T), "result");
@@ -212,7 +212,6 @@ namespace SpanJson.Formatters
             else if (typeof(TSymbol) == typeof(byte))
             {
                 nameSpanMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8NameSpan));
-
                 tryReadEndObjectMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.TryReadUtf8IsEndObjectOrValueSeparator));
                 beginObjectOrThrowMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8BeginObjectOrThrow));
             }
@@ -252,7 +251,7 @@ namespace SpanJson.Formatters
             var assignNameSpan = Expression.Assign(nameSpan, nameSpanExpression);
             var lengthExpression = Expression.Assign(lengthParameter, Expression.PropertyOrField(nameSpan, "Length"));
             var byteNameSpan = Expression.Variable(typeof(ReadOnlySpan<byte>), "byteNameSpan");
-            List<ParameterExpression> parameters = new List<ParameterExpression>{nameSpan, lengthParameter};
+            var parameters = new List<ParameterExpression>{nameSpan, lengthParameter};
             if (typeof(TSymbol) == typeof(char))
             {
                 Expression<Action> functor = () => MemoryMarshal.AsBytes(new ReadOnlySpan<char>());
@@ -322,7 +321,7 @@ namespace SpanJson.Formatters
                 );
             }
 
-            var lambda = Expression.Lambda<DeserializeDelegate<T, TSymbol, TResolver>>(block, readerParameter);
+            var lambda = Expression.Lambda<DeserializeDelegate<T, TSymbol>>(block, readerParameter);
             return lambda.Compile();
         }
 
@@ -331,31 +330,10 @@ namespace SpanJson.Formatters
             return memberType.IsValueType || memberType.IsSealed;
         }
 
-
-        /// <summary>
-        ///     Couldn't get it working with Expression Trees,ref return lvalues do not work yet
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static char GetChar(ReadOnlySpan<char> span, int index)
-        {
-            return span[index];
-        }
-
-        /// <summary>
-        ///     Couldn't get it working with Expression Trees,ref return lvalues do not work yet
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static byte GetByte(ReadOnlySpan<byte> span, int index)
-        {
-            return span[index];
-        }
-
-        protected delegate T DeserializeDelegate<out T, TSymbol, in TResolver>(ref JsonReader<TSymbol> reader)
-            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct;
+        protected delegate T DeserializeDelegate<out T, TSymbol>(ref JsonReader<TSymbol> reader) where TSymbol : struct;
 
 
-        protected delegate void SerializeDelegate<in T, TSymbol, in TResolver>(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
-            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct;
+        protected delegate void SerializeDelegate<in T, TSymbol>(ref JsonWriter<TSymbol> writer, T value, int nestingLimit) where TSymbol : struct;
 
         private static Expression BuildMemberComparisons<TSymbol, TResolver>(List<JsonMemberInfo> memberInfos, int index, ParameterExpression lengthParameter,
             ParameterExpression nameSpanExpression, ParameterExpression readerParameter, LabelTarget endOfBlockLabel,
@@ -364,7 +342,7 @@ namespace SpanJson.Formatters
         {
             var symbolSize = GetSymbolSize<TSymbol>();
             var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
-            var grouping = memberInfos.Where(a => a.CanRead && a.Name.Length >= index).GroupBy(a => CalculateKey<TSymbol>(a.Name, index))
+            var grouping = memberInfos.Where(a => a.CanRead && GetLength<TSymbol>(a.Name) >= index).GroupBy(a => CalculateKey<TSymbol>(a.Name, index))
                 .OrderByDescending(a => a.Key.Key).ToList();
             if (!grouping.Any())
             {
@@ -389,7 +367,7 @@ namespace SpanJson.Formatters
                     {
                         comparisonExpression = Expression.Equal(GetReadMethod(nameSpanExpression, group.Key.intType, Expression.Constant(index * symbolSize)),
                             GetConstantExpressionForGroupKey(group.Key.Key, group.Key.intType));
-                        var nameLength = memberInfo.Name.Length;
+                        var nameLength = GetLength<TSymbol>(memberInfo.Name);
                         while (length < nameLength)
                         {
                             var subKey = CalculateKey<TSymbol>(memberInfo.Name, length);
@@ -417,6 +395,21 @@ namespace SpanJson.Formatters
             }
 
             return Expression.Block(expressions);
+        }
+
+        private static int GetLength<TSymbol>(string name)
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return name.Length;
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                return Encoding.UTF8.GetByteCount(name);
+            }
+
+            throw new NotSupportedException();
         }
 
         private static Expression GetConstantExpressionForGroupKey(ulong key, Type intType)
@@ -449,29 +442,29 @@ namespace SpanJson.Formatters
             string methodName;
             if (intType == typeof(byte))
             {
-                methodName = nameof(ReadByte);
+                methodName = nameof(ReadUnalignedHelper.ReadByte);
             }
 
             else if (intType == typeof(ushort))
             {
-                methodName = nameof(ReadUInt16);
+                methodName = nameof(ReadUnalignedHelper.ReadUInt16);
             }
 
             else if (intType == typeof(uint))
             {
-                methodName = nameof(ReadUInt32);
+                methodName = nameof(ReadUnalignedHelper.ReadUInt32);
             }
 
             else if (intType == typeof(ulong))
             {
-                methodName = nameof(ReadUInt64);
+                methodName = nameof(ReadUnalignedHelper.ReadUInt64);
             }
             else
             {
                 throw new NotSupportedException();
             }
 
-            var methodInfo = typeof(ComplexFormatter).GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic);
+            var methodInfo = typeof(ReadUnalignedHelper).GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
             return Expression.Call(methodInfo, nameSpanExpression, offsetParameter);
         }
 
@@ -492,7 +485,7 @@ namespace SpanJson.Formatters
 
         private static (ulong Key, Type intType, int offset) CalculateKeyUtf8(string memberName, int index)
         {
-            int remaining = memberName.Length - index;
+            int remaining = GetLength < byte >(memberName) - index;
             if (remaining >= 8)
             {
                 return (BitConverter.ToUInt64(Encoding.UTF8.GetBytes(memberName), index), typeof(ulong), 8);
@@ -519,7 +512,7 @@ namespace SpanJson.Formatters
 
         private static (ulong Key, Type intType, int offset) CalculateKeyUtf16(string memberName, int index)
         {
-            int remaining = memberName.Length - index;
+            int remaining = GetLength<char>(memberName) - index;
             if (remaining >= 4)
             {
                 return (BitConverter.ToUInt64(Encoding.Unicode.GetBytes(memberName), index * 2), typeof(ulong), 4);
@@ -538,30 +531,5 @@ namespace SpanJson.Formatters
             return (0, typeof(uint), 0);
         }
 
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static byte ReadByte(ReadOnlySpan<byte> span, int offset)
-        {
-            return span[offset];
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static ushort ReadUInt16(ReadOnlySpan<byte> span, int offset)
-        {
-            return Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref MemoryMarshal.GetReference(span), offset));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static uint ReadUInt32(ReadOnlySpan<byte> span, int offset)
-        {
-            return Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref MemoryMarshal.GetReference(span), offset));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static ulong ReadUInt64(ReadOnlySpan<byte> span, int offset)
-        {
-            return Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref MemoryMarshal.GetReference(span), offset));
-        }
     }
 }
