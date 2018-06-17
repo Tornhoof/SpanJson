@@ -38,7 +38,6 @@ namespace SpanJson.Formatters
                 : typeof(BaseFormatter).GetMethod(name, flags);
         }
 
-
         /// <summary>
         ///     Faster than SequenceEqual for some unknown reason
         ///     Using SequenceEqual makes the deserialization 10-15% slower, but in a standalone benchmark sequenceEqual is way
@@ -134,6 +133,23 @@ namespace SpanJson.Formatters
             {
                 RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, value, nextNestingLimit);
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static int GetSymbolSize<TSymbol>() where TSymbol : struct
+        {
+
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return sizeof(char);
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                return sizeof(byte);
+            }
+
+            throw new NotSupportedException();
         }
     }
 }
