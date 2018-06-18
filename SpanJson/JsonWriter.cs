@@ -12,9 +12,11 @@ namespace SpanJson
         private Span<byte> _bytes;
         private int _pos;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public JsonWriter(int initialSize)
         {
             Data = ArrayPool<TSymbol>.Shared.Rent(initialSize);
+            _pos = 0;
             if (typeof(TSymbol) == typeof(char))
             {
                 _chars = MemoryMarshal.Cast<TSymbol, char>(Data);
@@ -27,10 +29,11 @@ namespace SpanJson
             }
             else
             {
-                throw new NotSupportedException();
-            }
+                ThrowNotSupportedException();
+                _chars = null;
+                _bytes = null;
 
-            _pos = 0;
+            }
         }
 
         public int Position => _pos;
@@ -354,7 +357,7 @@ namespace SpanJson
 
         private static void ThrowNotSupportedException()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 }

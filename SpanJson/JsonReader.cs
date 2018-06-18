@@ -12,6 +12,7 @@ namespace SpanJson
 
         private int _pos;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public JsonReader(in ReadOnlySpan<TSymbol> input)
         {
             _length = input.Length;
@@ -29,7 +30,9 @@ namespace SpanJson
             }
             else
             {
-                throw new NotImplementedException();
+                ThrowNotSupportedException();
+                _chars = default;
+                _bytes = default;
             }
         }
 
@@ -64,7 +67,7 @@ namespace SpanJson
 
         private static void ThrowNotSupportedException()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

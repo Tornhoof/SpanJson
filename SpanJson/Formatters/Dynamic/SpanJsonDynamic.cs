@@ -23,6 +23,7 @@ namespace SpanJson.Formatters.Dynamic
             return Converter.TryConvertTo(returnType, Symbols, out result);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override string ToString()
         {
             if (typeof(TSymbol) == typeof(char))
