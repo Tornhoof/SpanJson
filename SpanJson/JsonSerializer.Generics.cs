@@ -55,10 +55,11 @@ namespace SpanJson
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSize);
                     Formatter.Serialize(ref jsonWriter, input, 0);
-                    _lastSerializationSize = jsonWriter.Position;
+                    var newSize = jsonWriter.Position;
+                    _lastSerializationSize = newSize;
                     var temp = jsonWriter.Data;
                     var data = Unsafe.As<TSymbol[], char[]>(ref temp);
-                    var result = writer.WriteAsync(data, 0, _lastSerializationSize);
+                    var result = writer.WriteAsync(data, 0, newSize);
                     if (result.IsCompletedSuccessfully)
                     {
                         // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
@@ -73,10 +74,11 @@ namespace SpanJson
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSize);
                     Formatter.Serialize(ref jsonWriter, input, 0);
-                    _lastSerializationSize = jsonWriter.Position;
+                    var newSize = jsonWriter.Position;
+                    _lastSerializationSize = newSize;
                     var temp = jsonWriter.Data;
                     var data = Unsafe.As<TSymbol[], byte[]>(ref temp);
-                    var result = stream.WriteAsync(data, 0, _lastSerializationSize, cancellationToken);
+                    var result = stream.WriteAsync(data, 0, newSize, cancellationToken);
                     if (result.IsCompletedSuccessfully)
                     {
                         // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
