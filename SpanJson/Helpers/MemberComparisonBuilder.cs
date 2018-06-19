@@ -36,6 +36,10 @@ namespace SpanJson.Helpers
         /// This is a very fast way to match the correct namespan for e.g assigning members
         /// as it's only a comparison of length (this excludes most of the values) and
         /// comparing the individual integer length parts of the name against constants
+        /// This improves the performance in deserialization specifically for UTF8 as byte arrays
+        /// are handled differently than strings for comparisons in expression trees
+        /// The speed for both is practically the same with this method
+        /// It also simplifies the code if the member name is actually multibyte utf8 (e.g. chinese)
         /// </summary>
         public static Expression Build<TSymbol>(List<JsonMemberInfo> memberInfos, int index, ParameterExpression lengthParameter,
             ParameterExpression nameSpanExpression, LabelTarget endOfBlockLabel,
@@ -168,7 +172,7 @@ namespace SpanJson.Helpers
         {
             if (typeof(TSymbol) == typeof(char))
             {
-                return CalculateKeyUtf16(memberName, index); // for calculating the key the index is actually only half as much due to two byte chars
+                return CalculateKeyUtf16(memberName, index);
             }
 
             if (typeof(TSymbol) == typeof(byte))
@@ -204,7 +208,6 @@ namespace SpanJson.Helpers
 
             return (0, typeof(uint), 0);
         }
-
 
         private static (ulong Key, Type intType, int offset) CalculateKeyUtf16(string memberName, int index)
         {
