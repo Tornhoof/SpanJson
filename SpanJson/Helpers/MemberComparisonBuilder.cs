@@ -26,7 +26,17 @@ namespace SpanJson.Helpers
 
             throw new NotSupportedException();
         }
-
+        /// <summary>
+        /// This method builds a chain of if statements  of the following logic:
+        /// if(length == x AND ReadInteger(span) == y AND ...) then assign value
+        /// the ReadInteger comparisons are basically constant values of the encoded value
+        /// UTF8 -> 8 chars -> 8 bytes
+        /// UTF16 -> 4 chars -> 8 bytes
+        /// etc.
+        /// This is a very fast way to match the correct namespan for e.g assigning members
+        /// as it's only a comparison of length (this excludes most of the values) and
+        /// comparing the individual integer length parts of the name against constants
+        /// </summary>
         public static Expression Build<TSymbol>(List<JsonMemberInfo> memberInfos, int index, ParameterExpression lengthParameter,
             ParameterExpression nameSpanExpression, LabelTarget endOfBlockLabel,
             Func<JsonMemberInfo, Expression> matchExpressionFunctor) where TSymbol : struct
