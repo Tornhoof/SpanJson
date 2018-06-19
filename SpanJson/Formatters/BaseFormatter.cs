@@ -62,22 +62,5 @@ namespace SpanJson.Formatters
                 RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, value, nextNestingLimit);
             }
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected static int GetSymbolSize<TSymbol>() where TSymbol : struct
-        {
-
-            if (typeof(TSymbol) == typeof(char))
-            {
-                return sizeof(char);
-            }
-
-            if (typeof(TSymbol) == typeof(byte))
-            {
-                return sizeof(byte);
-            }
-
-            throw new NotSupportedException();
-        }
     }
 }
