@@ -31,18 +31,5 @@ namespace SpanJson.Helpers
         {
             return Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref MemoryMarshal.GetReference(span), offset));
         }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool StringEquals(in ReadOnlySpan<char> span, string comparison)
-        {
-            return span.SequenceEqual(comparison);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool ByteEquals(in ReadOnlySpan<byte> span, byte[] comparison)
-        {
-            return span.SequenceEqual(comparison);
-        }
     }
 }
