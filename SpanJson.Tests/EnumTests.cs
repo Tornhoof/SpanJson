@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 using SpanJson.Resolvers;
@@ -51,15 +52,30 @@ namespace SpanJson.Tests
             Assert.Equal(value, deserialized);
         }
 
+        [Theory]
+        [InlineData(TestEnum.Hello)]
+        [InlineData(TestEnum.World)]
+        [InlineData(TestEnum.Universe)]
+        [InlineData(TestEnum.Renamed)]
+        public void SerializeDeserializeUtf16(TestEnum value)
+        {
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(value);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<TestEnum>(serialized);
+            Assert.Equal(value, deserialized);
+        }
+
         public class TestDO
         {
             public TestEnum? Value { get; set; }
+
+            public int? AnotherValue { get; set; }
         }
 
         [Fact]
         public void SerializeDeserializeNullableEnumUtf16()
         {
-            var test = new TestDO {Value = null};
+            var test = new TestDO {Value = null, AnotherValue = 1};
             var serialized = JsonSerializer.Generic.Utf16.Serialize<TestDO, IncludeNullsOriginalCaseResolver<char>>(test);
             Assert.Contains("null", serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<TestDO, IncludeNullsOriginalCaseResolver<char>>(serialized);
@@ -70,12 +86,26 @@ namespace SpanJson.Tests
         [Fact]
         public void SerializeDeserializeNullableEnumUtf8()
         {
-            var test = new TestDO { Value = null };
+            var test = new TestDO { Value = null, AnotherValue = 1 };
             var serialized = JsonSerializer.Generic.Utf8.Serialize<TestDO, IncludeNullsOriginalCaseResolver<byte>>(test);
             Assert.Contains("null", Encoding.UTF8.GetString(serialized));
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<TestDO, IncludeNullsOriginalCaseResolver<byte>>(serialized);
             Assert.NotNull(deserialized);
             Assert.Null(deserialized.Value);
+        }
+
+        [Fact]
+        public void DeserializeUnknownEnumUtf8()
+        {
+            var serialized = Encoding.UTF8.GetBytes("{\"Value\":\"Unused\",\"AnotherValue\":1}");
+            Assert.Throws<InvalidOperationException>(() => JsonSerializer.Generic.Utf8.Deserialize<TestDO>(serialized));
+        }
+
+        [Fact]
+        public void DeserializeUnknownEnumUtf16()
+        {
+            var serialized = "{\"Value\":\"Unused\",\"AnotherValue\":1}";
+            Assert.Throws<InvalidOperationException>(() => JsonSerializer.Generic.Utf16.Deserialize<TestDO>(serialized));
         }
     }
 }

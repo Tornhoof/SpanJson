@@ -231,8 +231,8 @@ namespace SpanJson.Formatters
             {
                 throw new NotSupportedException();
             }
-
-            Func<string, Expression, Expression> matchExpressionFunctor;
+            // We need to decide during generation if we handle constructors or normal member assignment, the difference is done in the functor below
+            Func<JsonMemberInfo, Expression> matchExpressionFunctor;
             Expression[] constructorParameterExpresssions = null;
             if (objectDescription.Constructor != null)
             {
@@ -243,17 +243,27 @@ namespace SpanJson.Formatters
                     constructorParameterExpresssions[valueTuple.Value.Index] = Expression.Variable(valueTuple.Value.Type);
                 }
 
-                matchExpressionFunctor = (memberName, valueExpression) =>
+                matchExpressionFunctor = memberInfo =>
                 {
-                    var element = dict[memberName];
-                    return Expression.Assign(constructorParameterExpresssions[element.Index], valueExpression);
+                    var element = dict[memberInfo.MemberName];
+                    var formatter = resolver.GetFormatter(memberInfo.MemberType);
+                    var formatterType = formatter.GetType();
+                    var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+                    return Expression.Assign(constructorParameterExpresssions[element.Index],
+                        Expression.Call(Expression.Field(null, fieldInfo), formatter.GetType().GetMethod("Deserialize"), readerParameter));
                 };
             }
             else
             {
                 // The normal assign to member type
-                matchExpressionFunctor = (memberName, valueExpression) =>
-                    Expression.Assign(Expression.PropertyOrField(returnValue, memberName), valueExpression);
+                matchExpressionFunctor = memberInfo =>
+                {
+                    var formatter = resolver.GetFormatter(memberInfo.MemberType);
+                    var formatterType = formatter.GetType();
+                    var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+                    return Expression.Assign(Expression.PropertyOrField(returnValue, memberInfo.MemberName),
+                        Expression.Call(Expression.Field(null, fieldInfo), formatter.GetType().GetMethod("Deserialize"), readerParameter));
+                };
             }
 
             var nameSpan = Expression.Variable(typeof(ReadOnlySpan<TSymbol>), "nameSpan");
@@ -289,12 +299,11 @@ namespace SpanJson.Formatters
             {
                 throw new NotSupportedException();
             }
-
             var expressions = new List<Expression>
             {
                 assignNameSpan,
                 lengthExpression,
-                BuildMemberComparisons<TSymbol, TResolver>(memberInfos, 0, lengthParameter, byteNameSpan, readerParameter, endOfBlockLabel, matchExpressionFunctor),
+                MemberComparisonBuilder.Build<TSymbol>(memberInfos, 0, lengthParameter, byteNameSpan, endOfBlockLabel, matchExpressionFunctor),
                 Expression.Call(readerParameter, skipNextMethodInfo),
                 Expression.Label(endOfBlockLabel),
             };
@@ -347,201 +356,7 @@ namespace SpanJson.Formatters
 
         protected delegate void SerializeDelegate<in T, TSymbol>(ref JsonWriter<TSymbol> writer, T value, int nestingLimit) where TSymbol : struct;
 
-        private static Expression BuildMemberComparisons<TSymbol, TResolver>(List<JsonMemberInfo> memberInfos, int index, ParameterExpression lengthParameter,
-            ParameterExpression nameSpanExpression, ParameterExpression readerParameter, LabelTarget endOfBlockLabel,
-            Func<string, Expression, Expression> matchExpressionFunctor)
-            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
-        {
-            var symbolSize = GetSymbolSize<TSymbol>();
-            var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
-            var grouping = memberInfos.Where(a => a.CanRead && GetLength<TSymbol>(a.Name) >= index).GroupBy(a => CalculateKey<TSymbol>(a.Name, index))
-                .OrderByDescending(a => a.Key.Key).ToList();
-            if (!grouping.Any())
-            {
-                throw new InvalidOperationException(); // should never happen
-            }
-
-            var expressions = new List<Expression>();
-            foreach (var group in grouping)
-            {
-                if (group.Count() == 1) // need to check remaining values too 
-                {
-                    var memberInfo = group.Single();
-                    var length = index + group.Key.offset;
-                    var formatter = resolver.GetFormatter(memberInfo.MemberType);
-                    var formatterType = formatter.GetType();
-                    var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
-                    var matchExpression = matchExpressionFunctor(memberInfo.MemberName,
-                        Expression.Call(Expression.Field(null, fieldInfo), formatter.GetType().GetMethod("Deserialize"), readerParameter));
-                    matchExpression = Expression.Block(matchExpression, Expression.Goto(endOfBlockLabel));
-                    Expression comparisonExpression = null;
-                    if (group.Key.Key != 0 || group.Key.offset != 0)
-                    {
-                        comparisonExpression = Expression.Equal(GetReadMethod(nameSpanExpression, group.Key.intType, Expression.Constant(index * symbolSize)),
-                            GetConstantExpressionForGroupKey(group.Key.Key, group.Key.intType));
-                        var nameLength = GetLength<TSymbol>(memberInfo.Name);
-                        while (length < nameLength)
-                        {
-                            var subKey = CalculateKey<TSymbol>(memberInfo.Name, length);
-                            comparisonExpression = Expression.AndAlso(comparisonExpression,
-                                Expression.Equal(GetReadMethod(nameSpanExpression, subKey.intType, Expression.Constant(length * symbolSize)),
-                                    GetConstantExpressionForGroupKey(subKey.Key, subKey.intType)));
-                            length += subKey.offset;
-                        }
-                    }
-
-                    var lengthExpression = Expression.Equal(lengthParameter, Expression.Constant(length));
-                    var ifExpression = comparisonExpression == null ? lengthExpression : Expression.AndAlso(lengthExpression, comparisonExpression);
-                    expressions.Add(Expression.IfThen(ifExpression, matchExpression));
-                }
-                else
-                {
-                    var nextLength = index + group.Key.offset;
-                    var ifExpression = Expression.AndAlso(Expression.GreaterThanOrEqual(lengthParameter, Expression.Constant(nextLength)),
-                        Expression.Equal(GetReadMethod(nameSpanExpression, group.Key.intType, Expression.Constant(index * symbolSize)),
-                            GetConstantExpressionForGroupKey(group.Key.Key, group.Key.intType)));
-                    var subBlock = BuildMemberComparisons<TSymbol, TResolver>(group.ToList(), nextLength, lengthParameter, nameSpanExpression, readerParameter,
-                        endOfBlockLabel, matchExpressionFunctor);
-                    expressions.Add(Expression.IfThen(ifExpression, subBlock));
-                }
-            }
-
-            return Expression.Block(expressions);
-        }
-
-        private static int GetLength<TSymbol>(string name)
-        {
-            if (typeof(TSymbol) == typeof(char))
-            {
-                return name.Length;
-            }
-
-            if (typeof(TSymbol) == typeof(byte))
-            {
-                return Encoding.UTF8.GetByteCount(name);
-            }
-
-            throw new NotSupportedException();
-        }
-
-        private static Expression GetConstantExpressionForGroupKey(ulong key, Type intType)
-        {
-            if (intType == typeof(byte))
-            {
-                return Expression.Constant((byte) key);
-            }
-
-            if (intType == typeof(ushort))
-            {
-                return Expression.Constant((ushort) key);
-            }
-
-            if (intType == typeof(uint))
-            {
-                return Expression.Constant((uint) key);
-            }
-
-            if (intType == typeof(ulong))
-            {
-                return Expression.Constant(key);
-            }
-
-            throw new NotSupportedException();
-        }
-
-        private static Expression GetReadMethod(ParameterExpression nameSpanExpression, Type intType, Expression offsetParameter)
-        {
-            string methodName;
-            if (intType == typeof(byte))
-            {
-                methodName = nameof(SpanHelper.ReadByte);
-            }
-
-            else if (intType == typeof(ushort))
-            {
-                methodName = nameof(SpanHelper.ReadUInt16);
-            }
-
-            else if (intType == typeof(uint))
-            {
-                methodName = nameof(SpanHelper.ReadUInt32);
-            }
-
-            else if (intType == typeof(ulong))
-            {
-                methodName = nameof(SpanHelper.ReadUInt64);
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
-
-            var methodInfo = typeof(SpanHelper).GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
-            return Expression.Call(methodInfo, nameSpanExpression, offsetParameter);
-        }
-
-        private static (ulong Key, Type intType, int offset) CalculateKey<TSymbol>(string memberName, int index)
-        {
-            if (typeof(TSymbol) == typeof(char))
-            {
-                return CalculateKeyUtf16(memberName, index); // for calculating the key the index is actually only half as much due to two byte chars
-            }
-
-            if (typeof(TSymbol) == typeof(byte))
-            {
-                return CalculateKeyUtf8(memberName, index);
-            }
-
-            throw new NotSupportedException();
-        }
-
-        private static (ulong Key, Type intType, int offset) CalculateKeyUtf8(string memberName, int index)
-        {
-            int remaining = GetLength < byte >(memberName) - index;
-            if (remaining >= 8)
-            {
-                return (BitConverter.ToUInt64(Encoding.UTF8.GetBytes(memberName), index), typeof(ulong), 8);
-            }
-
-            if (remaining >= 4)
-            {
-                return (BitConverter.ToUInt32(Encoding.UTF8.GetBytes(memberName), index), typeof(uint), 4);
-            }
-
-            if (remaining >= 2)
-            {
-                return (BitConverter.ToUInt16(Encoding.UTF8.GetBytes(memberName), index), typeof(ushort), 2);
-            }
-
-            if (remaining >= 1)
-            {
-                return (Encoding.UTF8.GetBytes(memberName)[index], typeof(byte), 1);
-            }
-
-            return (0, typeof(uint), 0);
-        }
-
-
-        private static (ulong Key, Type intType, int offset) CalculateKeyUtf16(string memberName, int index)
-        {
-            int remaining = GetLength<char>(memberName) - index;
-            if (remaining >= 4)
-            {
-                return (BitConverter.ToUInt64(Encoding.Unicode.GetBytes(memberName), index * 2), typeof(ulong), 4);
-            }
-
-            if (remaining >= 2)
-            {
-                return (BitConverter.ToUInt32(Encoding.Unicode.GetBytes(memberName), index * 2), typeof(uint), 2);
-            }
-
-            if (remaining >= 1)
-            {
-                return (BitConverter.ToUInt16(Encoding.Unicode.GetBytes(memberName), index * 2), typeof(ushort), 1);
-            }
-
-            return (0, typeof(uint), 0);
-        }
+ 
 
     }
 }

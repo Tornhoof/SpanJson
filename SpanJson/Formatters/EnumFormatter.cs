@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
 using SpanJson.Helpers;
+using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
@@ -31,64 +33,71 @@ namespace SpanJson.Formatters
         /// <summary>
         ///     Not sure if it's useful to build something like the automaton from the compelxformatter here
         /// </summary>
-        /// <returns></returns>
         private static DeserializeDelegate BuildDeserializeDelegate()
         {
             var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
-
-            var jsonValue = Expression.Variable(typeof(ReadOnlySpan<TSymbol>), "jsonValue");
-            var returnValue = Expression.Variable(typeof(T), "returnValue");
-            MethodInfo readMethodInfo;
-            MethodInfo comparisonMethodInfo;
+            MethodInfo nameSpanMethodInfo;
             if (typeof(TSymbol) == typeof(char))
             {
-                readMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16StringSpan));
-                comparisonMethodInfo = typeof(SpanHelper).GetMethod(nameof(SpanHelper.StringEquals), BindingFlags.Static | BindingFlags.Public);
+                nameSpanMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16StringSpan));
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                readMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8StringSpan));
-                comparisonMethodInfo = typeof(SpanHelper).GetMethod(nameof(SpanHelper.ByteEquals), BindingFlags.Static | BindingFlags.Public);
+                nameSpanMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8StringSpan));
             }
             else
             {
                 throw new NotSupportedException();
             }
-
-            var expressions = new List<Expression>
+            var returnValue = Expression.Variable(typeof(T), "returnValue");
+            var nameSpan = Expression.Variable(typeof(ReadOnlySpan<TSymbol>), "nameSpan");
+            var lengthParameter = Expression.Variable(typeof(int), "length");
+            var endOfBlockLabel = Expression.Label();
+            var nameSpanExpression = Expression.Call(readerParameter, nameSpanMethodInfo);
+            var assignNameSpan = Expression.Assign(nameSpan, nameSpanExpression);
+            var lengthExpression = Expression.Assign(lengthParameter, Expression.PropertyOrField(nameSpan, "Length"));
+            var byteNameSpan = Expression.Variable(typeof(ReadOnlySpan<byte>), "byteNameSpan");
+            var parameters = new List<ParameterExpression> {nameSpan, lengthParameter, returnValue};
+            if (typeof(TSymbol) == typeof(char))
             {
-                Expression.Assign(jsonValue,
-                    Expression.Call(readerParameter, readMethodInfo))
-            };
-            var cases = new List<SwitchCase>();
-            foreach (var value in Enum.GetValues(typeof(T)))
+                Expression<Action> functor = () => MemoryMarshal.AsBytes(new ReadOnlySpan<char>());
+                var asBytesMethodInfo = (functor.Body as MethodCallExpression).Method;
+                nameSpanExpression = Expression.Call(null, asBytesMethodInfo, assignNameSpan);
+                assignNameSpan = Expression.Assign(byteNameSpan, nameSpanExpression);
+                parameters.Add(byteNameSpan);
+            }
+            else
             {
-                Expression constantExpression;
-                var formattedValue = GetFormattedValue(value);
-                if (typeof(TSymbol) == typeof(char))
-                {
-                    constantExpression = Expression.Constant(formattedValue);
-                }
-                else if (typeof(TSymbol) == typeof(byte))
-                {
-                    constantExpression = Expression.Constant(Encoding.UTF8.GetBytes(formattedValue));
-                }
-                else
-                {
-                    throw new NotSupportedException();
-                }
-
-                var switchCase = Expression.SwitchCase(Expression.Assign(returnValue, Expression.Constant(value)), constantExpression);
-                cases.Add(switchCase);
+                byteNameSpan = nameSpan;
             }
 
-            var switchExpression = Expression.Switch(typeof(void), jsonValue,
-                Expression.Throw(Expression.Constant(new InvalidOperationException())), comparisonMethodInfo, cases.ToArray());
-            expressions.Add(switchExpression);
+            var memberInfos = new List<JsonMemberInfo>();
+            var dict = new Dictionary<string, T>();
+            foreach (var value in Enum.GetValues(typeof(T)))
+            {
+                var formattedValue = GetFormattedValue(value);
+                memberInfos.Add(new JsonMemberInfo(value.ToString(), typeof(T), null, formattedValue, false, true, false));
+                dict.Add(value.ToString(), (T) value);
+            }
+
+            Expression MatchExpressionFunctor(JsonMemberInfo memberInfo)
+            {
+                var enumValue = dict[memberInfo.MemberName];
+                return Expression.Assign(returnValue, Expression.Constant(enumValue));
+            }
+
             var returnTarget = Expression.Label(returnValue.Type);
             var returnLabel = Expression.Label(returnTarget, returnValue);
-            expressions.Add(returnLabel);
-            var blockExpression = Expression.Block(new[] {jsonValue, returnValue}, expressions);
+            var expressions = new List<Expression>
+            {
+                assignNameSpan,
+                lengthExpression,
+                MemberComparisonBuilder.Build<TSymbol>(memberInfos, 0, lengthParameter, byteNameSpan, endOfBlockLabel, MatchExpressionFunctor),
+                Expression.Throw(Expression.Constant(new InvalidOperationException())),
+                Expression.Label(endOfBlockLabel),
+                returnLabel
+            };
+            var blockExpression = Expression.Block(parameters, expressions);
             var lambdaExpression =
                 Expression.Lambda<DeserializeDelegate>(blockExpression, readerParameter);
             return lambdaExpression.Compile();
