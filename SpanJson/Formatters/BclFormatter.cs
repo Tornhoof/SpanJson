@@ -32,7 +32,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public SByte? Deserialize(ref JsonReader<Char> reader)
@@ -294,7 +294,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public SByte? Deserialize(ref JsonReader<Byte> reader)
@@ -556,7 +556,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Int16? Deserialize(ref JsonReader<Char> reader)
@@ -818,7 +818,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Int16? Deserialize(ref JsonReader<Byte> reader)
@@ -1080,7 +1080,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Int32? Deserialize(ref JsonReader<Char> reader)
@@ -1342,7 +1342,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Int32? Deserialize(ref JsonReader<Byte> reader)
@@ -1604,7 +1604,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Int64? Deserialize(ref JsonReader<Char> reader)
@@ -1866,7 +1866,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Int64? Deserialize(ref JsonReader<Byte> reader)
@@ -2128,7 +2128,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Byte? Deserialize(ref JsonReader<Char> reader)
@@ -2390,7 +2390,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Byte? Deserialize(ref JsonReader<Byte> reader)
@@ -2652,7 +2652,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public UInt16? Deserialize(ref JsonReader<Char> reader)
@@ -2914,7 +2914,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public UInt16? Deserialize(ref JsonReader<Byte> reader)
@@ -3176,7 +3176,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public UInt32? Deserialize(ref JsonReader<Char> reader)
@@ -3438,7 +3438,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public UInt32? Deserialize(ref JsonReader<Byte> reader)
@@ -3700,7 +3700,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public UInt64? Deserialize(ref JsonReader<Char> reader)
@@ -3962,7 +3962,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public UInt64? Deserialize(ref JsonReader<Byte> reader)
@@ -4224,7 +4224,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Single? Deserialize(ref JsonReader<Char> reader)
@@ -4486,7 +4486,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Single? Deserialize(ref JsonReader<Byte> reader)
@@ -4748,7 +4748,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Double? Deserialize(ref JsonReader<Char> reader)
@@ -5010,7 +5010,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Double? Deserialize(ref JsonReader<Byte> reader)
@@ -5272,7 +5272,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Decimal? Deserialize(ref JsonReader<Char> reader)
@@ -5534,7 +5534,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Decimal? Deserialize(ref JsonReader<Byte> reader)
@@ -5796,7 +5796,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Boolean? Deserialize(ref JsonReader<Char> reader)
@@ -6058,7 +6058,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Boolean? Deserialize(ref JsonReader<Byte> reader)
@@ -6320,7 +6320,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Char? Deserialize(ref JsonReader<Char> reader)
@@ -6582,7 +6582,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Char? Deserialize(ref JsonReader<Byte> reader)
@@ -6844,7 +6844,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public DateTime? Deserialize(ref JsonReader<Char> reader)
@@ -7106,7 +7106,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public DateTime? Deserialize(ref JsonReader<Byte> reader)
@@ -7368,7 +7368,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public DateTimeOffset? Deserialize(ref JsonReader<Char> reader)
@@ -7630,7 +7630,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public DateTimeOffset? Deserialize(ref JsonReader<Byte> reader)
@@ -7892,7 +7892,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public TimeSpan? Deserialize(ref JsonReader<Char> reader)
@@ -8154,7 +8154,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public TimeSpan? Deserialize(ref JsonReader<Byte> reader)
@@ -8416,7 +8416,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Guid? Deserialize(ref JsonReader<Char> reader)
@@ -8678,7 +8678,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public Guid? Deserialize(ref JsonReader<Byte> reader)
