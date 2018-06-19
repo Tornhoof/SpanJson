@@ -64,11 +64,23 @@ namespace SpanJson.Formatters
                 var formatterType = resolver.GetFormatter(memberInfo.MemberType).GetType();
                 Expression serializerInstance = null;
                 MethodInfo serializeMethodInfo;
-                var memberExpression = Expression.PropertyOrField(valueParameter, memberInfo.MemberName);
+                Expression memberExpression = Expression.PropertyOrField(valueParameter, memberInfo.MemberName);
                 var parameterExpressions = new List<Expression> {writerParameter, memberExpression};
                 var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
                 if (IsNoRuntimeDecisionRequired(memberInfo.MemberType))
                 {
+
+                    var underlyingType = Nullable.GetUnderlyingType(memberInfo.MemberType);
+                    // if it's nullable and we don't need the null, we call the underlying provider directly
+                    if (memberInfo.ExcludeNull && underlyingType != null ) 
+                    {
+                        formatterType = resolver.GetFormatter(underlyingType).GetType();
+                        fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+                        var methodInfo = memberInfo.MemberType.GetMethod("GetValueOrDefault", Type.EmptyTypes);
+                        memberExpression = Expression.Call(memberExpression, methodInfo);
+                        parameterExpressions = new List<Expression> {writerParameter, memberExpression};
+                    }
+
                     serializeMethodInfo = formatterType.GetMethod("Serialize", BindingFlags.Public | BindingFlags.Instance);
                     serializerInstance = Expression.Field(null, fieldInfo);
                 }

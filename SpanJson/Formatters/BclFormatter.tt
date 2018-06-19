@@ -193,7 +193,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
 
         public <#= t.Name #>? Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
