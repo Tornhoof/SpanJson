@@ -5,12 +5,13 @@ namespace SpanJson.Benchmarks.Fixture
     public class TimespanFixture : IValueFixture
     {
         private long _lastValue;
+        private const long StartValue = -6 * TimeSpan.TicksPerHour;
         public Type Type { get; } = typeof(TimeSpan);
 
         public object Generate()
         {
-            _lastValue += 1000;
-            return TimeSpan.FromTicks(_lastValue);
+            _lastValue += TimeSpan.TicksPerMinute * 30 + TimeSpan.TicksPerMillisecond * 555;
+            return TimeSpan.FromTicks(StartValue + _lastValue);
         }
     }
 }

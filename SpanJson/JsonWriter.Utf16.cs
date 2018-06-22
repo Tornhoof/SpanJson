@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers.Text;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using SpanJson.Helpers;
@@ -346,15 +347,21 @@ namespace SpanJson
         public void WriteUtf16TimeSpan(TimeSpan value)
         {
             ref var pos = ref _pos;
-            const int dtSize = 20; // Form o + two JsonUtf16Constant.DoubleQuote
-            if (pos > _chars.Length - dtSize)
+            const int tsSize = 28; // Form c + two JsonUtf16Constant.DoubleQuote
+            if (pos > _chars.Length - tsSize)
             {
-                Grow(dtSize);
+                Grow(tsSize);
             }
 
             WriteUtf16DoubleQuote();
-            value.TryFormat(_chars.Slice(pos), out var written, "c", CultureInfo.InvariantCulture);
-            pos += written;
+            Span<byte> byteSpan = stackalloc byte[tsSize];
+            Utf8Formatter.TryFormat(value, byteSpan, out var bytesWritten);
+            for (int i = 0; i < byteSpan.Length; i++)
+            {
+                _chars[i + pos] = (char) byteSpan[i];
+            }
+
+            pos += bytesWritten;
             WriteUtf16DoubleQuote();
         }
 
