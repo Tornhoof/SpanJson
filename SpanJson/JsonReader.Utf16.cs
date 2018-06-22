@@ -270,7 +270,7 @@ namespace SpanJson
         public DateTime ReadUtf16DateTime()
         {
             var span = ReadUtf16StringSpan();
-            if (DateTimeParser.TryParseDateTime(span, out var value, out var charsConsumed))
+            if (DateTimeParser.TryParseDateTime(span, out var value, out var charsConsumed) && charsConsumed == span.Length)
             {
                 return value;
             }
@@ -282,7 +282,7 @@ namespace SpanJson
         public DateTimeOffset ReadUtf16DateTimeOffset()
         {
             var span = ReadUtf16StringSpan();
-            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var charsConsumed))
+            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var charsConsumed) && charsConsumed == span.Length)
             {
                 return value;
             }
@@ -294,11 +294,16 @@ namespace SpanJson
         public TimeSpan ReadUtf16TimeSpan()
         {
             var span = ReadUtf16StringSpan();
-            if (TimeSpan.TryParse(span, CultureInfo.InvariantCulture, out var result))
+            Span<byte> byteSpan = stackalloc byte[26];
+            for (int i = 0; i < span.Length; i++)
             {
-                return result;
+                byteSpan[i] = (byte) span[i];
             }
 
+            if (Utf8Parser.TryParse(byteSpan, out TimeSpan value, out var bytesConsumed) && bytesConsumed == span.Length)
+            {
+                return value;
+            }
             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(TimeSpan));
             return default;
         }
@@ -306,13 +311,13 @@ namespace SpanJson
         public Guid ReadUtf16Guid()
         {
             var span = ReadUtf16StringSpan();
-            Span<byte> byteSpan = stackalloc byte[36];
-            for (int i = 0; i < span.Length; i++)
+            Span<byte> byteSpan = stackalloc byte[36]; // easy way
+            for (var i = 0; i < span.Length; i++)
             {
                 byteSpan[i] = (byte) span[i];
             }
 
-            if (Utf8Parser.TryParse(byteSpan, out Guid result, out _, 'D'))
+            if (Utf8Parser.TryParse(byteSpan, out Guid result, out var bytesConsumed, 'D') && bytesConsumed == span.Length) 
             {
                 return result;
             }
