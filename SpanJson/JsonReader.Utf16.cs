@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -305,11 +306,16 @@ namespace SpanJson
         public Guid ReadUtf16Guid()
         {
             var span = ReadUtf16StringSpan();
-            if (Guid.TryParse(span, out var result))
+            Span<byte> byteSpan = stackalloc byte[36];
+            for (int i = 0; i < span.Length; i++)
+            {
+                byteSpan[i] = (byte) span[i];
+            }
+
+            if (Utf8Parser.TryParse(byteSpan, out Guid result, out _, 'D'))
             {
                 return result;
             }
-
             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(Guid));
             return default;
         }
