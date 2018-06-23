@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -931,14 +932,40 @@ namespace SpanJson
                 {
                     pos++;
                     var count = 0;
-                    var list = new List<object>();
-                    while (!TryReadUtf8IsEndArrayOrValueSeparator(ref count))
+                    object[] temp = null;
+                    try
                     {
-                        var value = ReadUtf8Dynamic(stack + 1);
-                        list.Add(value);
-                    }
+                        temp = ArrayPool<object>.Shared.Rent(4);
+                        while (!TryReadUtf8IsEndArrayOrValueSeparator(ref count))
+                        {
+                            if (count == temp.Length)
+                            {
+                                FormatterUtils.Grow(ref temp);
+                            }
 
-                    return new SpanJsonDynamicArray<TSymbol>(list.ToArray());
+                            temp[count - 1] = ReadUtf8Dynamic(stack + 1);
+                        }
+
+                        object[] result;
+                        if (count == 0)
+                        {
+                            result = Array.Empty<object>();
+                        }
+                        else
+                        {
+                            result = new object[count];
+                            Array.Copy(temp, result, count);
+                        }
+
+                        return new SpanJsonDynamicArray<TSymbol>(result);
+                    }
+                    finally
+                    {
+                        if (temp != null)
+                        {
+                            ArrayPool<object>.Shared.Return(temp);
+                        }
+                    }
                 }
                 default:
                 {
