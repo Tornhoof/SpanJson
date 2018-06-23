@@ -274,6 +274,32 @@ namespace SpanJson.Tests
             Assert.Equal(dynamicChild2.Name, (string) deserializedDynamic.Children[1].Name);
         }
 
+        [Fact]
+        public void DeserializeLargeArrayUtf16()
+        {
+            var array = Enumerable.Range(1, 100000).ToArray();
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(array);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
+            Assert.Equal(100000, deserialized.Length);
+            for (int i = 0; i < deserialized.Length; i++)
+            {
+                Assert.Equal(array[i], (int) deserialized[i]);
+            }
+        }
+
+        [Fact]
+        public void DeserializeLargeArrayUtf8()
+        {
+            var array = Enumerable.Range(1, 100000).ToArray();
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(array);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
+            Assert.Equal(100000, deserialized.Length);
+            for (int i = 0; i < deserialized.Length; i++)
+            {
+                Assert.Equal(array[i], (int)deserialized[i]);
+            }
+        }
+
         public class NonDynamicParent
         {
             public class DynamicChild : DynamicObject
