@@ -185,5 +185,49 @@ namespace SpanJson.Tests
             var decoded = char.ConvertToUtf32(s, 0);
             Assert.Equal(codePoint, decoded);
         }
+
+        [Fact]
+        public void SkipLargeArrayUtf16()
+        {
+            var array = Enumerable.Range(1, 100000).ToArray();
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(array);
+
+            var reader = new JsonReader<char>(serialized);
+            reader.SkipNextUtf16Segment();
+            Assert.Equal(serialized.Length, reader.Position);
+        }
+
+        [Fact]
+        public void SkipLargeArrayUtf8()
+        {
+            var array = Enumerable.Range(1, 100000).ToArray();
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(array);
+
+            var reader = new JsonReader<byte>(serialized);
+            reader.SkipNextUtf8Segment();
+            Assert.Equal(serialized.Length, reader.Position);
+        }
+
+        [Fact]
+        public void SkipLargeZeroArrayUtf16()
+        {
+            var array = Enumerable.Range(1, 100000).Select(x => new int[0]).ToArray();
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(array);
+
+            var reader = new JsonReader<char>(serialized);
+            reader.SkipNextUtf16Segment();
+            Assert.Equal(serialized.Length, reader.Position);
+        }
+
+        [Fact]
+        public void SkipLargeZeroArrayUtf8()
+        {
+            var array = Enumerable.Range(1, 100000).Select(x => new int[0]).ToArray();
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(array);
+
+            var reader = new JsonReader<byte>(serialized);
+            reader.SkipNextUtf8Segment();
+            Assert.Equal(serialized.Length, reader.Position);
+        }
     }
 }
