@@ -36,6 +36,8 @@ namespace SpanJson
             }
         }
 
+        public int Position => _pos;
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void ThrowJsonParserException(JsonParserException.ParserError error, Type type)
         {

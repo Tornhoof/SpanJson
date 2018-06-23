@@ -717,49 +717,53 @@ namespace SpanJson
         private void SkipNextUtf8Segment(int stack)
         {
             ref var pos = ref _pos;
-            var token = ReadUtf8NextToken();
-            switch (token)
+            while (pos < _length)
             {
-                case JsonToken.None:
-                    break;
-                case JsonToken.BeginArray:
-                case JsonToken.BeginObject:
+                var token = ReadUtf8NextToken();
+                switch (token)
                 {
-                    pos++;
-                    SkipNextUtf8Segment(stack + 1);
-                    break;
-                }
-                case JsonToken.EndObject:
-                case JsonToken.EndArray:
-                {
-                    pos++;
-                    if (stack - 1 > 0)
+                    case JsonToken.None:
+                        return;
+                    case JsonToken.BeginArray:
+                    case JsonToken.BeginObject:
                     {
-                        SkipNextUtf8Segment(stack - 1);
+                        pos++;
+                        stack++;
+                        continue;
                     }
-
-                    break;
-                }
-                case JsonToken.Number:
-                case JsonToken.String:
-                case JsonToken.True:
-                case JsonToken.False:
-                case JsonToken.Null:
-                case JsonToken.ValueSeparator:
-                case JsonToken.NameSeparator:
-                {
-                    do
+                    case JsonToken.EndObject:
+                    case JsonToken.EndArray:
                     {
-                        SkipNextUtf8Value(token);
-                        token = ReadUtf8NextToken();
-                    } while (stack > 0 && (byte) token > 4); // No None or the Begin/End-Array/Object tokens
+                        pos++;
+                        if (stack - 1 > 0)
+                        {
+                            stack--;
+                            continue;
+                        }
 
-                    if (stack > 0)
-                    {
-                        SkipNextUtf8Segment(stack);
+                        return;
                     }
+                    case JsonToken.Number:
+                    case JsonToken.String:
+                    case JsonToken.True:
+                    case JsonToken.False:
+                    case JsonToken.Null:
+                    case JsonToken.ValueSeparator:
+                    case JsonToken.NameSeparator:
+                    {
+                        do
+                        {
+                            SkipNextUtf8Value(token);
+                            token = ReadUtf8NextToken();
+                        } while (stack > 0 && (byte) token > 4); // No None or the Begin/End-Array/Object tokens
 
-                    break;
+                        if (stack > 0)
+                        {
+                            continue;
+                        }
+
+                        return;
+                    }
                 }
             }
         }
