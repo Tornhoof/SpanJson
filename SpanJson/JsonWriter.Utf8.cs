@@ -311,31 +311,6 @@ namespace SpanJson
 
             WriteUtf8DoubleQuote();
         }
-
-        private void EncodeUtf8CharInternal(ref char c, ref int i, ref int pos, int valueLength, ReadOnlySpan<char> span)
-        {
-            ReadOnlySpan<char> temp;
-            int remaining;
-            if ((uint) c - 0xD000 < 0x1000u)
-            {
-                remaining = 13 + valueLength - i; // make sure that all characters, an extra 5 for a full escape and 2x4 for the utf8 bytes, still fit
-                temp = span.Slice(i, 2);
-                i++;
-            }
-            else
-            {
-                remaining = 9 + valueLength - i; // make sure that all characters, an extra 5 for a full escape and 4 for the utf8 bytes, still fit
-                temp = MemoryMarshal.CreateReadOnlySpan(ref c, 1);
-            }
-
-            if (pos > _bytes.Length - remaining)
-            {
-                Grow(remaining);
-            }
-
-            pos += Encoding.UTF8.GetBytes(temp, _bytes.Slice(pos));
-        }
-
         private void WriteEscapedUtf8CharInternal(char value)
         {
             switch (value)

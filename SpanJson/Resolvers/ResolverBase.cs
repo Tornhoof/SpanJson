@@ -85,9 +85,18 @@ namespace SpanJson.Resolvers
             // ReSharper restore ConvertClosureToMethodGroup
         }
 
-        /// <summary>
-        ///     TODO Extend with attributes and ShouldSerialize
-        /// </summary>
+        public IJsonFormatter GetFormatter(JsonMemberInfo memberInfo, Type overrideMemberType = null)
+        {
+            // ReSharper disable ConvertClosureToMethodGroup
+            if (memberInfo.CustomSerializer != null)
+            {
+                return GetDefaultOrCreate(memberInfo.CustomSerializer);
+            }
+            var type = overrideMemberType ?? memberInfo.MemberType;
+            return GetFormatter(type);
+            // ReSharper restore ConvertClosureToMethodGroup
+        }
+
         public JsonObjectDescription GetDynamicObjectDescription(IDynamicMetaObjectProvider provider)
         {
             var metaObject = provider.GetMetaObject(DynamicMetaObjectParameterExpression);
@@ -102,7 +111,7 @@ namespace SpanJson.Resolvers
                 }
 
                 result.Add(new JsonMemberInfo(memberInfoName, typeof(object), null, name,
-                    _nullOptions == NullOptions.ExcludeNulls, true, true));
+                    _nullOptions == NullOptions.ExcludeNulls, true, true, null));
             }
 
             return new JsonObjectDescription(null, null, result.ToArray());
@@ -154,11 +163,13 @@ namespace SpanJson.Resolvers
                         name = MakeCamelCase(name);
                     }
 
+                    var customSerializer = memberInfo.GetCustomAttribute<JsonCustomSerializerAttribute>()?.Type;
+
                     var shouldSerialize = type.GetMethod($"ShouldSerialize{memberInfo.Name}");
                     var memberType = memberInfo is FieldInfo fi ? fi.FieldType :
                         memberInfo is PropertyInfo pi ? pi.PropertyType : null;
                     result.Add(new JsonMemberInfo(memberInfo.Name, memberType, shouldSerialize, name,
-                        _nullOptions == NullOptions.ExcludeNulls, canRead, canWrite));
+                        _nullOptions == NullOptions.ExcludeNulls, canRead, canWrite, customSerializer));
                 }
             }
 
@@ -205,8 +216,8 @@ namespace SpanJson.Resolvers
 
         private static IJsonFormatter GetDefaultOrCreate(Type type)
         {
-            return (IJsonFormatter) (type.GetField("Default", BindingFlags.Public | BindingFlags.Static)
-                                         ?.GetValue(null) ?? Activator.CreateInstance(type));
+            return (IJsonFormatter)(type.GetField("Default", BindingFlags.Public | BindingFlags.Static)
+                                        ?.GetValue(null) ?? Activator.CreateInstance(type)); // leave the createinstance here, this helps with recursive types
         }
 
         private static IJsonFormatter BuildFormatter(Type type)
@@ -280,6 +291,10 @@ namespace SpanJson.Resolvers
             var allTypes = typeof(TResolver).Assembly.GetTypes();
             foreach (var candidate in allTypes.Where(a => a.IsPublic))
             {
+                if (candidate.TryGetTypeOfGenericInterface(typeof(ICustomJsonFormatter<>), out _))
+                {
+                    continue;
+                }
                 if (candidate.TryGetTypeOfGenericInterface(typeof(IJsonFormatter<,>), out var argumentTypes) && argumentTypes.Length == 2)
                 {
                     if (argumentTypes[0] == type && argumentTypes[1] == typeof(TSymbol))

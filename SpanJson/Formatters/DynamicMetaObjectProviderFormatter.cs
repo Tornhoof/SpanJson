@@ -117,31 +117,31 @@ namespace SpanJson.Formatters
             var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
             var result = new Dictionary<string, DeserializeDelegate>(StringComparer.InvariantCulture);
             // can't deserialize abstract or interface
-            foreach (var jsonMemberInfo in memberInfos)
+            foreach (var memberInfo in memberInfos)
             {
-                if (!jsonMemberInfo.CanWrite)
+                if (!memberInfo.CanWrite)
                 {
                     var skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextSegment));
                     var skipExpression = Expression
                         .Lambda<DeserializeDelegate>(Expression.Call(readerParameter, skipNextMethodInfo), inputParameter, readerParameter).Compile();
-                    result.Add(jsonMemberInfo.Name, skipExpression);
+                    result.Add(memberInfo.Name, skipExpression);
                 }
-                else if (jsonMemberInfo.MemberType.IsAbstract || jsonMemberInfo.MemberType.IsInterface)
+                else if (memberInfo.MemberType.IsAbstract || memberInfo.MemberType.IsInterface)
                 {
                     var throwExpression = Expression.Lambda<DeserializeDelegate>(Expression.Block(
                             Expression.Throw(Expression.Constant(new NotSupportedException($"{typeof(T).Name} contains abstract or interface members."))),
                             Expression.Default(typeof(T))),
                         inputParameter, readerParameter).Compile();
-                    result.Add(jsonMemberInfo.Name, throwExpression);
+                    result.Add(memberInfo.Name, throwExpression);
                 }
                 else
                 {
-                    var formatterType = resolver.GetFormatter(jsonMemberInfo.MemberType).GetType();
+                    var formatterType = resolver.GetFormatter(memberInfo).GetType();
                     var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
-                    var assignExpression = Expression.Assign(Expression.PropertyOrField(inputParameter, jsonMemberInfo.MemberName),
-                        Expression.Call(Expression.Field(null, fieldInfo), formatterType.GetMethod("Deserialize"), readerParameter));
+                    var assignExpression = Expression.Assign(Expression.PropertyOrField(inputParameter, memberInfo.MemberName),
+                        Expression.Call(Expression.Field(null, fieldInfo), FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()), readerParameter));
                     var lambda = Expression.Lambda<DeserializeDelegate>(assignExpression, inputParameter, readerParameter).Compile();
-                    result.Add(jsonMemberInfo.Name, lambda);
+                    result.Add(memberInfo.Name, lambda);
                 }
             }
 

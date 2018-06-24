@@ -27,6 +27,7 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 - Pretty printing JSON
 - Support for tuples currently excludes the last type with 8 arguments (TRest)
 - Support for annotating a constructor with ``[JsonConstructor]`` to use that one instead of assigning members during deserialization
+- Support for custom serializes with ``[JsonCustomSerializer]`` to use that one instead of the normal formatter, see example below
 
 - Different 'Resolvers' to control general behaviour:
   - Exclude Nulls with Camel Case: ``ExcludeNullCamelCaseResolver``
@@ -129,6 +130,53 @@ namespace Test
 		public string Key { get; }
 		public int Value { get; }
 	}
+}
+```
+
+```csharp
+// Type with a custom serializer to (de)serialize the long value into/from string
+public class TestDTO
+{
+    [JsonCustomSerializer(typeof(LongAsStringFormatter))]
+    public long Value { get; set; }
+}
+
+// Serializes the Long into a string
+public sealed class LongAsStringFormatter : ICustomJsonFormatter<long>
+{
+    public static readonly LongAsStringFormatter Default = new LongAsStringFormatter();
+
+    public void Serialize(ref JsonWriter<char> writer, long value, int nestingLimit)
+    {
+        StringUtf16Formatter.Default.Serialize(ref writer, value.ToString(CultureInfo.InvariantCulture), nestingLimit);
+    }
+
+    public long Deserialize(ref JsonReader<char> reader)
+    {
+        var value = StringUtf16Formatter.Default.Deserialize(ref reader);
+        if (long.TryParse(value, out long longValue))
+        {
+            return longValue;
+        }
+
+        throw new InvalidOperationException("Invalid value.");
+    }
+
+    public void Serialize(ref JsonWriter<byte> writer, long value, int nestingLimit)
+    {
+        StringUtf8Formatter.Default.Serialize(ref writer, value.ToString(CultureInfo.InvariantCulture), nestingLimit);
+    }
+
+    public long Deserialize(ref JsonReader<byte> reader)
+    {
+        var value = StringUtf8Formatter.Default.Deserialize(ref reader);
+        if (long.TryParse(value, out long longValue))
+        {
+            return longValue;
+        }
+
+        throw new InvalidOperationException("Invalid value.");
+    }
 }
 ```
 

@@ -76,7 +76,7 @@ namespace SpanJson.Formatters
             foreach (var value in Enum.GetValues(typeof(T)))
             {
                 var formattedValue = GetFormattedValue(value);
-                memberInfos.Add(new JsonMemberInfo(value.ToString(), typeof(T), null, formattedValue, false, true, false));
+                memberInfos.Add(new JsonMemberInfo(value.ToString(), typeof(T), null, formattedValue, false, true, false, null));
                 dict.Add(value.ToString(), (T) value);
             }
 

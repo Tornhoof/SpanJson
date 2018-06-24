@@ -61,7 +61,7 @@ namespace SpanJson.Formatters
             for (var i = 0; i < memberInfos.Count; i++)
             {
                 var memberInfo = memberInfos[i];
-                var formatterType = resolver.GetFormatter(memberInfo.MemberType).GetType();
+                var formatterType = resolver.GetFormatter(memberInfo).GetType();
                 Expression serializerInstance = null;
                 MethodInfo serializeMethodInfo;
                 Expression memberExpression = Expression.PropertyOrField(valueParameter, memberInfo.MemberName);
@@ -72,16 +72,17 @@ namespace SpanJson.Formatters
 
                     var underlyingType = Nullable.GetUnderlyingType(memberInfo.MemberType);
                     // if it's nullable and we don't need the null, we call the underlying provider directly
-                    if (memberInfo.ExcludeNull && underlyingType != null ) 
+                    if (memberInfo.ExcludeNull && underlyingType != null)
                     {
-                        formatterType = resolver.GetFormatter(underlyingType).GetType();
+                        formatterType = resolver.GetFormatter(memberInfo, underlyingType).GetType();
                         fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
                         var methodInfo = memberInfo.MemberType.GetMethod("GetValueOrDefault", Type.EmptyTypes);
                         memberExpression = Expression.Call(memberExpression, methodInfo);
                         parameterExpressions = new List<Expression> {writerParameter, memberExpression};
                     }
 
-                    serializeMethodInfo = formatterType.GetMethod("Serialize", BindingFlags.Public | BindingFlags.Instance);
+                    serializeMethodInfo = FindPublicInstanceMethod(formatterType, "Serialize", writerParameter.Type.MakeByRefType(),
+                        underlyingType ?? memberInfo.MemberType, typeof(int));
                     serializerInstance = Expression.Field(null, fieldInfo);
                 }
                 else
@@ -231,6 +232,7 @@ namespace SpanJson.Formatters
             {
                 throw new NotSupportedException();
             }
+
             // We need to decide during generation if we handle constructors or normal member assignment, the difference is done in the functor below
             Func<JsonMemberInfo, Expression> matchExpressionFunctor;
             Expression[] constructorParameterExpresssions = null;
@@ -246,11 +248,12 @@ namespace SpanJson.Formatters
                 matchExpressionFunctor = memberInfo =>
                 {
                     var element = dict[memberInfo.MemberName];
-                    var formatter = resolver.GetFormatter(memberInfo.MemberType);
+                    var formatter = resolver.GetFormatter(memberInfo);
                     var formatterType = formatter.GetType();
                     var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
                     return Expression.Assign(constructorParameterExpresssions[element.Index],
-                        Expression.Call(Expression.Field(null, fieldInfo), formatter.GetType().GetMethod("Deserialize"), readerParameter));
+                        Expression.Call(Expression.Field(null, fieldInfo), FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()),
+                            readerParameter));
                 };
             }
             else
@@ -258,11 +261,12 @@ namespace SpanJson.Formatters
                 // The normal assign to member type
                 matchExpressionFunctor = memberInfo =>
                 {
-                    var formatter = resolver.GetFormatter(memberInfo.MemberType);
+                    var formatter = resolver.GetFormatter(memberInfo);
                     var formatterType = formatter.GetType();
                     var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
                     return Expression.Assign(Expression.PropertyOrField(returnValue, memberInfo.MemberName),
-                        Expression.Call(Expression.Field(null, fieldInfo), formatter.GetType().GetMethod("Deserialize"), readerParameter));
+                        Expression.Call(Expression.Field(null, fieldInfo), FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()),
+                            readerParameter));
                 };
             }
 
@@ -273,7 +277,7 @@ namespace SpanJson.Formatters
             var assignNameSpan = Expression.Assign(nameSpan, nameSpanExpression);
             var lengthExpression = Expression.Assign(lengthParameter, Expression.PropertyOrField(nameSpan, "Length"));
             var byteNameSpan = Expression.Variable(typeof(ReadOnlySpan<byte>), "byteNameSpan");
-            var parameters = new List<ParameterExpression>{nameSpan, lengthParameter};
+            var parameters = new List<ParameterExpression> {nameSpan, lengthParameter};
             if (typeof(TSymbol) == typeof(char))
             {
                 Expression<Action> functor = () => MemoryMarshal.AsBytes(new ReadOnlySpan<char>());
@@ -286,6 +290,7 @@ namespace SpanJson.Formatters
             {
                 byteNameSpan = nameSpan;
             }
+
             MethodInfo skipNextMethodInfo;
             if (typeof(TSymbol) == typeof(char))
             {
@@ -299,6 +304,7 @@ namespace SpanJson.Formatters
             {
                 throw new NotSupportedException();
             }
+
             var expressions = new List<Expression>
             {
                 assignNameSpan,
@@ -356,7 +362,7 @@ namespace SpanJson.Formatters
 
         protected delegate void SerializeDelegate<in T, TSymbol>(ref JsonWriter<TSymbol> writer, T value, int nestingLimit) where TSymbol : struct;
 
- 
+
 
     }
 }

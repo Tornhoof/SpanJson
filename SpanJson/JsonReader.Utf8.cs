@@ -328,7 +328,7 @@ namespace SpanJson
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
 
-            return escapedCharsSize == 0 ? span.ToString() : UnescapeUtf8(span, escapedCharsSize);
+            return escapedCharsSize == 0 ? ConvertToString(span) : UnescapeUtf8(span, escapedCharsSize);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
