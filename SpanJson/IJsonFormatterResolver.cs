@@ -7,6 +7,7 @@ namespace SpanJson
     public interface IJsonFormatterResolver
     {
         IJsonFormatter GetFormatter(Type type);
+        IJsonFormatter GetFormatter(JsonMemberInfo info, Type overrideMemberType = null);
     }
 
     public interface IJsonFormatterResolver<TSymbol, in TResolver> : IJsonFormatterResolver

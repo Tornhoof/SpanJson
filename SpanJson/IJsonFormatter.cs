@@ -3,6 +3,10 @@
     public interface IJsonFormatter
     {
     }
+    public interface ICustomJsonFormatter<T> : IJsonFormatter<T, byte>, IJsonFormatter<T, char>
+    {
+
+    }
 
     public interface IJsonFormatter<T, TSymbol> : IJsonFormatter where TSymbol : struct
     {
