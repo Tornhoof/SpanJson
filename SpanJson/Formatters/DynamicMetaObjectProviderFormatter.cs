@@ -139,7 +139,7 @@ namespace SpanJson.Formatters
                     var formatterType = resolver.GetFormatter(memberInfo).GetType();
                     var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
                     var assignExpression = Expression.Assign(Expression.PropertyOrField(inputParameter, memberInfo.MemberName),
-                        Expression.Call(Expression.Field(null, fieldInfo), formatterType.GetMethod("Deserialize"), readerParameter));
+                        Expression.Call(Expression.Field(null, fieldInfo), FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()), readerParameter));
                     var lambda = Expression.Lambda<DeserializeDelegate>(assignExpression, inputParameter, readerParameter).Compile();
                     result.Add(memberInfo.Name, lambda);
                 }

@@ -52,7 +52,7 @@ namespace SpanJson.Tests
         }
 
         [Fact]
-        public void SerializeDeserializeDictionary()
+        public void SerializeDeserializeDictionaryUtf16()
         {
             var dictionary = new Dictionary<string, DictionaryValue>
             {
@@ -63,6 +63,23 @@ namespace SpanJson.Tests
             var serialized = JsonSerializer.Generic.Utf16.Serialize(dictionary);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Dictionary<string, DictionaryValue>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(dictionary, deserialized);
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeDictionaryUtf8()
+        {
+            var dictionary = new Dictionary<string, DictionaryValue>
+            {
+                {"Alice1", new DictionaryValue {Name = "Bob1"}},
+                {"Alice2", new DictionaryValue {Name = "Bob2"}},
+                {"Alice3", new DictionaryValue {Name = "Bob3"}}
+            };
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(dictionary);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<Dictionary<string, DictionaryValue>>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(dictionary, deserialized);
         }

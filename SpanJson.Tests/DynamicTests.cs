@@ -78,6 +78,38 @@ namespace SpanJson.Tests
             }
         }
 
+        public class DynamicObjectWithKnownMembers : DynamicObject
+        {
+            private readonly Dictionary<string, object> _dictionary = new Dictionary<string, object>();
+
+            public override IEnumerable<string> GetDynamicMemberNames()
+            {
+                return _dictionary.Keys;
+            }
+
+            public override bool TryGetMember(GetMemberBinder binder, out object result)
+            {
+                if (_dictionary.TryGetValue(binder.Name, out result))
+                {
+                    return true;
+                }
+
+                return base.TryGetMember(binder, out result);
+            }
+
+            public override bool TrySetMember(SetMemberBinder binder, object value)
+            {
+                _dictionary[binder.Name] = value;
+                return true;
+            }
+
+            public int Value { get; set; }
+
+            public int ReadOnly { get; } = 8;
+
+            public IList<string> NotSupported { get; set; }
+        }
+
         [Fact]
         public void DeserializeDynamic()
         {
@@ -106,7 +138,35 @@ namespace SpanJson.Tests
         }
 
         [Fact]
-        public void DynamicObjectTestOneProperty()
+        public void DynamicObjectWithKnownMembersUtf16()
+        {
+            dynamic dynamicObject = new DynamicObjectWithKnownMembers();
+            dynamicObject.Value = 5;
+
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(dynamicObject);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(5, (int) dynamicObject.Value);
+        }
+
+
+        [Fact]
+        public void DynamicObjectWithKnownMembersUtf8()
+        {
+            dynamic dynamicObject = new DynamicObjectWithKnownMembers();
+            dynamicObject.Value = 5;
+
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(dynamicObject);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(5, (int) dynamicObject.Value);
+        }
+
+
+        [Fact]
+        public void DynamicObjectTestOnePropertyUtf16()
         {
             dynamic dynamicObject = new MyDynamicObject();
             dynamicObject.Text = "Hello World";
@@ -116,6 +176,20 @@ namespace SpanJson.Tests
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal("Hello World", (string) dynamicObject.Text);
+        }
+
+
+        [Fact]
+        public void DynamicObjectTestOnePropertyUtf8()
+        {
+            dynamic dynamicObject = new MyDynamicObject();
+            dynamicObject.Text = "Hello World";
+
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(dynamicObject);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal("Hello World", (string)dynamicObject.Text);
         }
 
 
@@ -252,7 +326,7 @@ namespace SpanJson.Tests
         }
 
         [Fact]
-        public void SerializeDeserializeDynamicChild()
+        public void SerializeDeserializeDynamicChildUtf16()
         {
             var parent = new NonDynamicParent();
             var child1 = new NonDynamicParent.DynamicChild {Fixed = Guid.NewGuid()};
@@ -272,6 +346,30 @@ namespace SpanJson.Tests
             dynamic deserializedDynamic = deserialized;
             Assert.Equal(dynamicChild1.Id, (Guid) deserializedDynamic.Children[0].Id);
             Assert.Equal(dynamicChild2.Name, (string) deserializedDynamic.Children[1].Name);
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeDynamicChildUtf8()
+        {
+            var parent = new NonDynamicParent();
+            var child1 = new NonDynamicParent.DynamicChild { Fixed = Guid.NewGuid() };
+            child1.Add("Id", Guid.NewGuid());
+            parent.Children.Add(child1);
+            var child2 = new NonDynamicParent.DynamicChild { Fixed = Guid.NewGuid() };
+            child2.Add("Name", "Hello World");
+            parent.Children.Add(child2);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(parent);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<NonDynamicParent>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(parent.Children[0].Fixed, deserialized.Children[0].Fixed);
+            Assert.Equal(parent.Children[1].Fixed, deserialized.Children[1].Fixed);
+            dynamic dynamicChild1 = parent.Children[0];
+            dynamic dynamicChild2 = parent.Children[1];
+            dynamic deserializedDynamic = deserialized;
+            Assert.Equal(dynamicChild1.Id, (Guid)deserializedDynamic.Children[0].Id);
+            Assert.Equal(dynamicChild2.Name, (string)deserializedDynamic.Children[1].Name);
         }
 
         [Fact]
