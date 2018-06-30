@@ -64,7 +64,7 @@ namespace SpanJson.Benchmarks
 	{
 #>  
 	[Benchmark]
-	public void Write<#= model.Name #><#= symbol.Name #>()
+	public void Write<#= symbol.Name #><#= model.Name #>()
 	{
 	    var writer = new JsonWriter<<#=symbol.SymbolType.Name #>>();
 		writer.Write<#= symbol.Name #><#= model.Name #>(<#= model.Name #>Input);
