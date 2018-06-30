@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SpanJson.Benchmarks.Fixture;
-using SpanJson.Benchmarks.Models;
+using SpanJson.Shared.Fixture;
+using SpanJson.Shared.Models;
 
 namespace SpanJson.WebBenchmark.Controllers
 {

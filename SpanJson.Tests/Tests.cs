@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jil;
-using SpanJson.Benchmarks.Fixture;
-using SpanJson.Benchmarks.Models;
-using SpanJson.Resolvers;
+using SpanJson.Shared.Fixture;
+using SpanJson.Shared.Models;
 using Utf8Json.Resolvers;
 using Xunit;
 

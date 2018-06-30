@@ -1,7 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
-using SpanJson.Benchmarks.Fixture;
-using SpanJson.Benchmarks.Models;
 using SpanJson.Benchmarks.Serializers;
+using SpanJson.Shared.Fixture;
+using SpanJson.Shared.Models;
 
 namespace SpanJson.Benchmarks
 {

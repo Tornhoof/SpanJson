@@ -5,10 +5,10 @@ using System.Dynamic;
 using System.Linq;
 using System.Text;
 using Jil;
-using SpanJson.Benchmarks.Fixture;
-using SpanJson.Benchmarks.Models;
 using SpanJson.Formatters.Dynamic;
 using SpanJson.Resolvers;
+using SpanJson.Shared.Fixture;
+using SpanJson.Shared.Models;
 using Xunit;
 
 namespace SpanJson.Tests
