@@ -39,12 +39,21 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>BclBenchmark.tt</DependentUpon>
     </Compile>
+    <Compile Update="ModelBenchmark.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ModelBenchmark.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <None Update="BclBenchmark.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BclBenchmark.cs</LastGenOutput>
+    </None>
+    <None Update="ModelBenchmark.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ModelBenchmark.cs</LastGenOutput>
     </None>
   </ItemGroup>
 
