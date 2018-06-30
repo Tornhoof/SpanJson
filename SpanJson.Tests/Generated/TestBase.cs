@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SpanJson.Benchmarks.Fixture;
+using SpanJson.Shared.Fixture;
 using Xunit;
 
 namespace SpanJson.Tests.Generated

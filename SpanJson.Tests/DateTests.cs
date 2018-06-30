@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Globalization;
 using System.Text;
-using Jil;
-using SpanJson.Benchmarks.Fixture;
 using SpanJson.Helpers;
+using SpanJson.Shared.Fixture;
 using Xunit;
 
 namespace SpanJson.Tests

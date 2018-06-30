@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SpanJson.Benchmarks\SpanJson.Benchmarks.csproj" />
+    <ProjectReference Include="..\SpanJson.Shared\SpanJson.Shared.csproj" />
     <ProjectReference Include="..\SpanJson\SpanJson.csproj" />
   </ItemGroup>
 
