@@ -10,7 +10,7 @@ using Xunit;
 
 namespace SpanJson.Tests
 {
-    public class Tests
+    public class Tests : ModelTestBase
     {
         [Theory]
         [MemberData(nameof(GetModels))]
@@ -131,15 +131,6 @@ namespace SpanJson.Tests
             Assert.NotNull(deserialized);
             Assert.IsType(modelType, deserialized);
             Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
-        }
-        public static IEnumerable<object[]> GetModels()
-        {
-            var models = typeof(AccessToken).Assembly
-                .GetTypes()
-                .Where(t => t.Namespace == typeof(AccessToken).Namespace && !t.IsEnum && !t.IsInterface &&
-                            !t.IsAbstract)
-                .ToList();
-            return models.Select(a => new object[] {a});
         }
 
         [Theory]

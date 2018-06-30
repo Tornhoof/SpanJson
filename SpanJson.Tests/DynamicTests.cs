@@ -13,7 +13,7 @@ using Xunit;
 
 namespace SpanJson.Tests
 {
-    public class DynamicTests
+    public class DynamicTests : ModelTestBase
     {
         [Theory]
         [MemberData(nameof(GetModels))]
@@ -42,15 +42,7 @@ namespace SpanJson.Tests
             Assert.Equal(model, deserialized, DynamicEqualityComparer.Default);
         }
 
-        public static IEnumerable<object[]> GetModels()
-        {
-            var models = typeof(AccessToken).Assembly
-                .GetTypes()
-                .Where(t => t.Namespace == typeof(AccessToken).Namespace && !t.IsEnum && !t.IsInterface &&
-                            !t.IsAbstract)
-                .ToList();
-            return models.Select(a => new object[] {a});
-        }
+
 
         public class MyDynamicObject : DynamicObject
         {
