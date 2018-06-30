@@ -7,6 +7,7 @@ using System.Text;
 using Jil;
 using SpanJson.Formatters.Dynamic;
 using SpanJson.Resolvers;
+using SpanJson.Shared;
 using SpanJson.Shared.Fixture;
 using SpanJson.Shared.Models;
 using Xunit;

@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.0.0</Version>
+    <Authors>SpanJson Contributors</Authors>
+    <Company />
+    <Description>SpanJson ASP.NET Core Formatter is the ASP.NET Core formatter package for SpanJson for ASP.NET Core 2.1+</Description>
+    <Copyright>SpanJson Contributors</Copyright>
+    <PackageLicenseUrl>https://github.com/Tornhoof/SpanJson/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Tornhoof/SpanJson</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Tornhoof/SpanJson</RepositoryUrl>
+    <RepositoryType>GitHub</RepositoryType>
+    <PackageTags>JSON;aspnetcore</PackageTags>
+    <PackageReleaseNotes>Bugfixes and improvements</PackageReleaseNotes>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1701;1702;1591</NoWarn>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <SourceLinkCreate>true</SourceLinkCreate>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netcoreapp2.1\SpanJson.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netcoreapp2.1\SpanJson.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.0" />
+    <PackageReference Include="SpanJson" Version="0.4.0" />
+  </ItemGroup>
+
+</Project>

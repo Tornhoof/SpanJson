@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace SpanJson.Tests
+namespace SpanJson.Shared
 {
     public sealed class GenericEqualityComparer : IEqualityComparer<object>
     {
