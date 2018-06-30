@@ -155,33 +155,30 @@ namespace SpanJson
 
         public void WriteUtf8Boolean(bool value)
         {
-            ref var pos = ref _pos;
+            const int trueLength = 4;
+            const int falseLength = 5;
+            if (_pos > _bytes.Length - falseLength)
+            {
+                Grow(falseLength);
+            }
+
+            var span = _bytes.Slice(_pos);
             if (value)
             {
-                const int trueLength = 4;
-                if (pos > _bytes.Length - trueLength)
-                {
-                    Grow(trueLength);
-                }
-
-                _bytes[pos++] = JsonUtf8Constant.True;
-                _bytes[pos++] = (byte) 'r';
-                _bytes[pos++] = (byte) 'u';
-                _bytes[pos++] = (byte) 'e';
+                span[3] = (byte) 'e';
+                span[2] = (byte) 'u';
+                span[1] = (byte) 'r';
+                span[0] = JsonUtf8Constant.True;
+                _pos += trueLength;
             }
             else
             {
-                const int falseLength = 5;
-                if (pos > _bytes.Length - falseLength)
-                {
-                    Grow(falseLength);
-                }
-
-                _bytes[pos++] = JsonUtf8Constant.False;
-                _bytes[pos++] = (byte) 'a';
-                _bytes[pos++] = (byte) 'l';
-                _bytes[pos++] = (byte) 's';
-                _bytes[pos++] = (byte) 'e';
+                span[4] = (byte) 'e';
+                span[3] = (byte) 's';
+                span[2] = (byte) 'l';
+                span[1] = (byte) 'a';
+                span[0] = JsonUtf8Constant.False;
+                _pos += falseLength;
             }
         }
 
