@@ -44,9 +44,27 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>ModelBenchmark.tt</DependentUpon>
     </Compile>
+    <Compile Update="WriterBenchmark.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>WriterBenchmark.tt</DependentUpon>
+    </Compile>
+    <Compile Update="ReaderBenchmark.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ReaderBenchmark.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="ReaderBenchmark.tt">
+      <LastGenOutput>ReaderBenchmark.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="WriterBenchmark.tt">
+      <LastGenOutput>WriterBenchmark.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
     <None Update="BclBenchmark.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BclBenchmark.cs</LastGenOutput>

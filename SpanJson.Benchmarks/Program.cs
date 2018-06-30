@@ -6,7 +6,8 @@ namespace SpanJson.Benchmarks
     {
         private static void Main(string[] args)
         {
-            BenchmarkRunner.Run<SelectedBenchmarks>();
+            var switcher = new BenchmarkSwitcher(typeof(Program).Assembly);
+            switcher.Run(args);
         }
     }
 }
