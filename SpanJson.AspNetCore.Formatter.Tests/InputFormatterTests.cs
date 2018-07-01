@@ -48,6 +48,13 @@ namespace SpanJson.AspNetCore.Formatter.Tests
             return TestInputFormatter<ExcludeNullsCamelCaseResolver<byte>>(modelType);
         }
 
+        [Theory]
+        [MemberData(nameof(GetModels))]
+        public Task CustomFormatter(Type modelType) // todo readd test
+        {
+            return TestInputFormatter<ExcludeNullsCamelCaseResolver<byte>>(modelType);
+        }
+
         private async Task TestInputFormatter<TResolver>(Type modelType) where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
         {
             var httpContext = new DefaultHttpContext();

@@ -2,7 +2,7 @@
 {
     public enum NullOptions
     {
-        IncludeNulls,
-        ExcludeNulls
+        ExcludeNulls = 0,
+        IncludeNulls = 1,
     }
 }

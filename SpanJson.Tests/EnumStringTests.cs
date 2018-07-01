@@ -6,7 +6,7 @@ using Xunit;
 
 namespace SpanJson.Tests
 {
-    public class EnumTests
+    public class EnumStringTests
     {
         public enum TestEnum
         {
