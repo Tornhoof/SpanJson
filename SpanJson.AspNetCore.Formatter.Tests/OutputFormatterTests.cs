@@ -52,7 +52,7 @@ namespace SpanJson.AspNetCore.Formatter.Tests
         [MemberData(nameof(GetModels))]
         public Task CustomFormatter(Type modelType)
         {
-            return TestOutputFormatter<ExcludeNullsCamelCaseResolver<byte>>(modelType);
+            return TestOutputFormatter<CustomResolver<byte>>(modelType);
         }
 
         private async Task TestOutputFormatter<TResolver>(Type modelType) where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
