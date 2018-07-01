@@ -2,7 +2,7 @@
 {
     public enum NamingConventions
     {
-        OriginalCase,
-        CamelCase
+        OriginalCase = 0,
+        CamelCase = 1,
     }
 }

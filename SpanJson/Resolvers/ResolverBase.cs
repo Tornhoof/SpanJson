@@ -59,23 +59,18 @@ namespace SpanJson.Resolvers
     public abstract class ResolverBase<TSymbol, TResolver> : ResolverBase, IJsonFormatterResolver<TSymbol, TResolver>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
-        private readonly NamingConventions _namingConventions;
-        private readonly NullOptions _nullOptions;
 
+        private readonly SpanJsonOptions _spanJsonOptions;
 
         // ReSharper disable StaticMemberInGenericType
         private static readonly ConcurrentDictionary<Type, IJsonFormatter> Formatters =
             new ConcurrentDictionary<Type, IJsonFormatter>();
-
-        private static readonly ConcurrentDictionary<Type, JsonObjectDescription> Members =
-            new ConcurrentDictionary<Type, JsonObjectDescription>();
         // ReSharper restore StaticMemberInGenericType
 
 
-        protected ResolverBase(NullOptions nullOptions, NamingConventions namingConventions)
+        protected ResolverBase(SpanJsonOptions spanJsonOptions)
         {
-            _nullOptions = nullOptions;
-            _namingConventions = namingConventions;
+            _spanJsonOptions = spanJsonOptions;
         }
 
         public IJsonFormatter GetFormatter(Type type)
@@ -105,13 +100,13 @@ namespace SpanJson.Resolvers
             foreach (var memberInfoName in members)
             {
                 var name = Escape(memberInfoName);
-                if (_namingConventions == NamingConventions.CamelCase)
+                if (_spanJsonOptions.NamingConvention == NamingConventions.CamelCase)
                 {
                     name = MakeCamelCase(name);
                 }
 
                 result.Add(new JsonMemberInfo(memberInfoName, typeof(object), null, name,
-                    _nullOptions == NullOptions.ExcludeNulls, true, true, null));
+                    _spanJsonOptions.NullOption == NullOptions.ExcludeNulls, true, true, null));
             }
 
             return new JsonObjectDescription(null, null, result.ToArray());
@@ -124,9 +119,7 @@ namespace SpanJson.Resolvers
 
         public JsonObjectDescription GetObjectDescription<T>()
         {
-            // ReSharper disable ConvertClosureToMethodGroup
-            return Members.GetOrAdd(typeof(T), x => BuildMembers(x));
-            // ReSharper restore ConvertClosureToMethodGroup
+            return BuildMembers(typeof(T)); // no need to cache that
         }
 
         public static string MakeCamelCase(string name)
@@ -158,7 +151,7 @@ namespace SpanJson.Resolvers
                     }
 
                     var name = Escape(GetAttributeName(memberInfo) ?? memberInfo.Name);
-                    if (_namingConventions == NamingConventions.CamelCase)
+                    if (_spanJsonOptions.NamingConvention == NamingConventions.CamelCase)
                     {
                         name = MakeCamelCase(name);
                     }
@@ -169,7 +162,7 @@ namespace SpanJson.Resolvers
                     var memberType = memberInfo is FieldInfo fi ? fi.FieldType :
                         memberInfo is PropertyInfo pi ? pi.PropertyType : null;
                     result.Add(new JsonMemberInfo(memberInfo.Name, memberType, shouldSerialize, name,
-                        _nullOptions == NullOptions.ExcludeNulls, canRead, canWrite, customSerializer));
+                        _spanJsonOptions.NullOption == NullOptions.ExcludeNulls, canRead, canWrite, customSerializer));
                 }
             }
 
@@ -220,7 +213,7 @@ namespace SpanJson.Resolvers
                                         ?.GetValue(null) ?? Activator.CreateInstance(type)); // leave the createinstance here, this helps with recursive types
         }
 
-        private static IJsonFormatter BuildFormatter(Type type)
+        private IJsonFormatter BuildFormatter(Type type)
         {
             var integrated = GetIntegrated(type);
             if (integrated != null)
@@ -241,7 +234,13 @@ namespace SpanJson.Resolvers
 
             if (type.IsEnum)
             {
-                return GetDefaultOrCreate(typeof(EnumFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
+                switch (_spanJsonOptions.EnumOption)
+                {
+                    case EnumOptions.String:
+                        return GetDefaultOrCreate(typeof(EnumStringFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
+                    case EnumOptions.Integer:
+                        return GetDefaultOrCreate(typeof(EnumIntegerFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
+                }
             }
 
             if (type.TryGetTypeOfGenericInterface(typeof(IDictionary<,>), out var dictArgumentTypes))

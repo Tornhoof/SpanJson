@@ -48,6 +48,13 @@ namespace SpanJson.AspNetCore.Formatter.Tests
             return TestOutputFormatter<ExcludeNullsCamelCaseResolver<byte>>(modelType);
         }
 
+        [Theory]
+        [MemberData(nameof(GetModels))]
+        public Task CustomFormatter(Type modelType)
+        {
+            return TestOutputFormatter<ExcludeNullsCamelCaseResolver<byte>>(modelType);
+        }
+
         private async Task TestOutputFormatter<TResolver>(Type modelType) where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
         {
             var model = _fixture.Create(modelType);
