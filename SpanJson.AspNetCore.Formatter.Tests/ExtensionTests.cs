@@ -70,19 +70,15 @@ namespace SpanJson.AspNetCore.Formatter.Tests
         [Fact]
         public void Builder()
         {
-            TestCoreBuilderInternal<ExcludeNullsOriginalCaseResolver<byte>>(a => a.AddSpanJsonExcludeNullsOriginalCase());
-            TestCoreBuilderInternal<IncludeNullsOriginalCaseResolver<byte>>(a => a.AddSpanJsonIncludeNullsOriginalCase());
-            TestCoreBuilderInternal<ExcludeNullsCamelCaseResolver<byte>>(a => a.AddSpanJsonExcludeNullsCamelCase());
-            TestCoreBuilderInternal<IncludeNullsCamelCaseResolver<byte>>(a => a.AddSpanJsonIncludeNullsCamelCase());
+            TestBuilderInternal<CustomResolver<byte>>(a => a.AddSpanJsonCustom<CustomResolver<byte>>());
+            TestBuilderInternal<AspNetCoreDefaultResolver<byte>>(a => a.AddSpanJsonCustom<AspNetCoreDefaultResolver<byte>>());
         }
 
         [Fact]
         public void CoreBuilder()
         {
-            TestCoreBuilderInternal<ExcludeNullsOriginalCaseResolver<byte>>(a => a.AddSpanJsonExcludeNullsOriginalCase());
-            TestCoreBuilderInternal<IncludeNullsOriginalCaseResolver<byte>>(a => a.AddSpanJsonIncludeNullsOriginalCase());
-            TestCoreBuilderInternal<ExcludeNullsCamelCaseResolver<byte>>(a => a.AddSpanJsonExcludeNullsCamelCase());
-            TestCoreBuilderInternal<IncludeNullsCamelCaseResolver<byte>>(a => a.AddSpanJsonIncludeNullsCamelCase());
+            TestCoreBuilderInternal<CustomResolver<byte>>(a => a.AddSpanJsonCustom<CustomResolver<byte>>());
+            TestCoreBuilderInternal<AspNetCoreDefaultResolver<byte>>(a => a.AddSpanJsonCustom<AspNetCoreDefaultResolver<byte>>());
         }
     }
 }

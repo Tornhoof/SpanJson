@@ -11,78 +11,6 @@ namespace SpanJson.AspNetCore.Formatter
     public static class SpanJsonFormatterExtensions
     {
         /// <summary>
-        /// Uses SpanJson in UTF8 mode to format with original case and excluding null members
-        /// </summary>
-        public static IMvcCoreBuilder AddSpanJsonExcludeNullsOriginalCase(this IMvcCoreBuilder mvcCoreBuilder)
-        {
-            Configure<ExcludeNullsOriginalCaseResolver<byte>>(mvcCoreBuilder.Services);
-            return mvcCoreBuilder;
-        }
-
-        /// <summary>
-        /// Uses SpanJson in UTF8 mode to format with original case and excluding null members
-        /// </summary>
-        public static IMvcBuilder AddSpanJsonExcludeNullsOriginalCase(this IMvcBuilder mvcBuilder)
-        {
-            Configure<ExcludeNullsOriginalCaseResolver<byte>>(mvcBuilder.Services);
-            return mvcBuilder;
-        }
-
-        /// <summary>
-        /// Uses SpanJson in UTF8 mode to format with original case and including null members
-        /// </summary>
-        public static IMvcCoreBuilder AddSpanJsonIncludeNullsOriginalCase(this IMvcCoreBuilder mvcCoreBuilder)
-        {
-            Configure<IncludeNullsOriginalCaseResolver<byte>>(mvcCoreBuilder.Services);
-            return mvcCoreBuilder;
-        }
-
-        /// <summary>
-        /// Uses SpanJson in UTF8 mode to format with original case and including null members
-        /// </summary>
-        public static IMvcBuilder AddSpanJsonIncludeNullsOriginalCase(this IMvcBuilder mvcBuilder)
-        {
-            Configure<IncludeNullsOriginalCaseResolver<byte>>(mvcBuilder.Services);
-            return mvcBuilder;
-        }
-
-        /// <summary>
-        /// Uses SpanJson in UTF8 mode to format with Camel case and excluding null members
-        /// </summary>
-        public static IMvcCoreBuilder AddSpanJsonExcludeNullsCamelCase(this IMvcCoreBuilder mvcCoreBuilder)
-        {
-            Configure<ExcludeNullsCamelCaseResolver<byte>>(mvcCoreBuilder.Services);
-            return mvcCoreBuilder;
-        }
-
-        /// <summary>
-        /// Uses SpanJson in UTF8 mode to format with Camel case and excluding null members
-        /// </summary>
-        public static IMvcBuilder AddSpanJsonExcludeNullsCamelCase(this IMvcBuilder mvcBuilder)
-        {
-            Configure<ExcludeNullsCamelCaseResolver<byte>>(mvcBuilder.Services);
-            return mvcBuilder;
-        }
-
-        /// <summary>
-        /// Uses SpanJson in UTF8 mode to format with Camel case and including null members
-        /// </summary>
-        public static IMvcCoreBuilder AddSpanJsonIncludeNullsCamelCase(this IMvcCoreBuilder mvcCoreBuilder)
-        {
-            Configure<IncludeNullsCamelCaseResolver<byte>>(mvcCoreBuilder.Services);
-            return mvcCoreBuilder;
-        }
-
-        /// <summary>
-        /// Uses SpanJson in UTF8 mode to format with Camel case and including null members
-        /// </summary>
-        public static IMvcBuilder AddSpanJsonIncludeNullsCamelCase(this IMvcBuilder mvcBuilder)
-        {
-            Configure<IncludeNullsCamelCaseResolver<byte>>(mvcBuilder.Services);
-            return mvcBuilder;
-        }
-
-        /// <summary>
         /// Uses SpanJson in UTF8 mode with custom formatter resolver
         /// </summary>
         public static IMvcCoreBuilder AddSpanJsonCustom<TResolver>(this IMvcCoreBuilder mvcCoreBuilder) where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
@@ -99,6 +27,25 @@ namespace SpanJson.AspNetCore.Formatter
             Configure<TResolver>(mvcBuilder.Services);
             return mvcBuilder;
         }
+
+        /// <summary>
+        /// Uses SpanJson in UTF8 mode with ASP.NET Core 2.1 defaults (IncludeNull, CamelCase, Enum as Ints)
+        /// </summary>
+        public static IMvcCoreBuilder AddSpanJson(this IMvcCoreBuilder mvcBuilder)
+        {
+            Configure<AspNetCoreDefaultResolver<byte>>(mvcBuilder.Services);
+            return mvcBuilder;
+        }
+
+        /// <summary>
+        /// Uses SpanJson in UTF8 mode with ASP.NET Core 2.1 defaults (IncludeNull, CamelCase, Enum as Ints)
+        /// </summary>
+        public static IMvcBuilder AddSpanJson(this IMvcBuilder mvcBuilder)
+        {
+            Configure<AspNetCoreDefaultResolver<byte>>(mvcBuilder.Services);
+            return mvcBuilder;
+        }
+
 
         private static void Configure<TResolver>(IServiceCollection serviceCollection) where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
         {
