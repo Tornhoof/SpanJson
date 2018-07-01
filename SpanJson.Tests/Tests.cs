@@ -41,6 +41,21 @@ namespace SpanJson.Tests
             Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
         }
 
+
+        [Theory]
+        [MemberData(nameof(GetModels))]
+        public void CanSerializeDeserializeAllUtf8IntegerEnum(Type modelType)
+        {
+            var fixture = new ExpressionTreeFixture();
+            var model = fixture.Create(modelType);
+            var serialized = JsonSerializer.NonGeneric.Utf8.Serialize<ExcludeNullCamelCaseIntegerEnumResolver<byte>>(model);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.NonGeneric.Utf8.Deserialize<ExcludeNullCamelCaseIntegerEnumResolver<byte>>(serialized, modelType);
+            Assert.NotNull(deserialized);
+            Assert.IsType(modelType, deserialized);
+            Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
+        }
+
         [Theory]
         [MemberData(nameof(GetModels))]
         public void CanSerializeDeserializeAllMixed(Type modelType)

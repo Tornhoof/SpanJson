@@ -287,7 +287,7 @@ namespace SpanJson.Resolvers
 
         private static IJsonFormatter GetIntegrated(Type type)
         {
-            var allTypes = typeof(TResolver).Assembly.GetTypes();
+            var allTypes = typeof(ResolverBase).Assembly.GetTypes();
             foreach (var candidate in allTypes.Where(a => a.IsPublic))
             {
                 if (candidate.TryGetTypeOfGenericInterface(typeof(ICustomJsonFormatter<>), out _))
