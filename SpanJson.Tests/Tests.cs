@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Jil;
+using SpanJson.Shared;
 using SpanJson.Shared.Fixture;
 using SpanJson.Shared.Models;
 using Utf8Json.Resolvers;
