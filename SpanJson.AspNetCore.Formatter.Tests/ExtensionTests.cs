@@ -70,19 +70,19 @@ namespace SpanJson.AspNetCore.Formatter.Tests
         [Fact]
         public void Builder()
         {
-            TestCoreBuilderInternal<ExcludeNullsOriginalCaseResolver<byte>>(a => a.UseSpanJsonExcludeNullsOriginalCase());
-            TestCoreBuilderInternal<IncludeNullsOriginalCaseResolver<byte>>(a => a.UseSpanJsonIncludeNullsOriginalCase());
-            TestCoreBuilderInternal<ExcludeNullsCamelCaseResolver<byte>>(a => a.UseSpanJsonExcludeNullsCamelCase());
-            TestCoreBuilderInternal<IncludeNullsCamelCaseResolver<byte>>(a => a.UseSpanJsonIncludeNullsCamelCase());
+            TestCoreBuilderInternal<ExcludeNullsOriginalCaseResolver<byte>>(a => a.AddSpanJsonExcludeNullsOriginalCase());
+            TestCoreBuilderInternal<IncludeNullsOriginalCaseResolver<byte>>(a => a.AddSpanJsonIncludeNullsOriginalCase());
+            TestCoreBuilderInternal<ExcludeNullsCamelCaseResolver<byte>>(a => a.AddSpanJsonExcludeNullsCamelCase());
+            TestCoreBuilderInternal<IncludeNullsCamelCaseResolver<byte>>(a => a.AddSpanJsonIncludeNullsCamelCase());
         }
 
         [Fact]
         public void CoreBuilder()
         {
-            TestCoreBuilderInternal<ExcludeNullsOriginalCaseResolver<byte>>(a => a.UseSpanJsonExcludeNullsOriginalCase());
-            TestCoreBuilderInternal<IncludeNullsOriginalCaseResolver<byte>>(a => a.UseSpanJsonIncludeNullsOriginalCase());
-            TestCoreBuilderInternal<ExcludeNullsCamelCaseResolver<byte>>(a => a.UseSpanJsonExcludeNullsCamelCase());
-            TestCoreBuilderInternal<IncludeNullsCamelCaseResolver<byte>>(a => a.UseSpanJsonIncludeNullsCamelCase());
+            TestCoreBuilderInternal<ExcludeNullsOriginalCaseResolver<byte>>(a => a.AddSpanJsonExcludeNullsOriginalCase());
+            TestCoreBuilderInternal<IncludeNullsOriginalCaseResolver<byte>>(a => a.AddSpanJsonIncludeNullsOriginalCase());
+            TestCoreBuilderInternal<ExcludeNullsCamelCaseResolver<byte>>(a => a.AddSpanJsonExcludeNullsCamelCase());
+            TestCoreBuilderInternal<IncludeNullsCamelCaseResolver<byte>>(a => a.AddSpanJsonIncludeNullsCamelCase());
         }
     }
 }

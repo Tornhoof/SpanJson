@@ -180,5 +180,24 @@ public sealed class LongAsStringFormatter : ICustomJsonFormatter<long>
 }
 ```
 
+## ASP.NET Core 2.1 Formatter ##
+You can enable SpanJson as the default JSON formatter in ASP.NET Core 2.1 by using the Nuget package [SpanJson.AspNetCore.Formatter]((https://www.nuget.org/packages/SpanJson.AspNetCore.Formatter)
+To enable it, add one of the following extension methods to the ``AddMvc()`` call in ``ConfigureServices``
+* AddSpanJsonExcludeNullsOriginalCase
+* AddSpanJsonIncludeNullsOriginalCase
+* AddSpanJsonExcludeNullsCamelCase
+* AddSpanJsonIncludeNullsCamelCase
+
+```csharp
+// This method gets called by the runtime. Use this method to add services to the container.
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddMvc().AddSpanJsonIncludeNullsCamelCase().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+}
+```
+
+``AddSpanJsonIncludeNullsCamelCase`` is the closest in behaviour compared to the default JSON.NET formatter, for performance reasons I would recommend AddSpanJsonExcludeNullsCamelCase
+Note: This clears the Formatter list, if you have other formatters, e.g. JSON Patch or XML, you need to re-add them.
+
 ## TODO ##
-- Optimize UTF8 Performance, especially Deserialization (string-heavy JSONs are ~20% slower with UTF8 than UTF16)
+- Improve async deserialization/serialization: Find a way to do it streaming instead of buffering.
