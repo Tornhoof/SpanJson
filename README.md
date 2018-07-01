@@ -16,7 +16,7 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 - Public Properties and Fields are considered for serialization/deserialization
 - DateTime{Offset} is in ISO8601 mode  
 - Dynamics
-- Enums
+- Enums (string and integer, for integer see section Custom Resolver)
 - Anonymous types
 - Dictionary<,> with string as key
 - Serialization of Enumerables
@@ -30,10 +30,12 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 - Support for custom serializes with ``[JsonCustomSerializer]`` to use that one instead of the normal formatter, see example below
 
 - Different 'Resolvers' to control general behaviour:
-  - Exclude Nulls with Camel Case: ``ExcludeNullCamelCaseResolver``
-  - Exclude Nulls with Original Case (default): ``ExcludeNullOriginalCaseResolver``
-  - Include Nulls with Camel Case: ``IncludeNullCamelCaseResolver``
-  - Include Nulls with Original Case: ``IncludeNullOriginalCaseResolver``
+  - Exclude Nulls with Camel Case: ``ExcludeNullsCamelCaseResolver``
+  - Exclude Nulls with Original Case (default): ``ExcludeNullsOriginalCaseResolver``
+  - Include Nulls with Camel Case: ``IncludeNullsCamelCaseResolver``
+  - Include Nulls with Original Case: ``IncludeNullsOriginalCaseResolver``
+  
+- Custom Resolvers to control behaviour much more detailed.
  
  
 ## How to use it ##
@@ -187,6 +189,7 @@ To enable it, add one of the following extension methods to the ``AddMvc()`` cal
 * AddSpanJsonIncludeNullsOriginalCase
 * AddSpanJsonExcludeNullsCamelCase
 * AddSpanJsonIncludeNullsCamelCase
+* AddSpanJsonCustom for a custom resolver
 
 ```csharp
 // This method gets called by the runtime. Use this method to add services to the container.
@@ -198,6 +201,24 @@ public void ConfigureServices(IServiceCollection services)
 
 ``AddSpanJsonIncludeNullsCamelCase`` is the closest in behaviour compared to the default JSON.NET formatter, for performance reasons I would recommend AddSpanJsonExcludeNullsCamelCase
 Note: This clears the Formatter list, if you have other formatters, e.g. JSON Patch or XML, you need to re-add them.
+
+## Custom Resolver ##
+As each option is a concrete class it is infeasible to supply concrete classes for each possible option combination
+To support a custom combination implement your own custom formatter resolvers
+```csharp
+public sealed class CustomResolver<TSymbol> : ResolverBase<TSymbol, CustomResolver<TSymbol>> where TSymbol : struct
+{
+    public CustomResolver() : base(new SpanJsonOptions
+    {
+        NullOption = NullOptions.ExcludeNulls,
+        NamingConvention = NamingConventions.CamelCase,
+        EnumOption = EnumOptions.Integer
+    })
+    {
+    }
+}
+```
+and pass this type just the same as e.g. ``ExcludeNullsCamelCaseResolver``
 
 ## TODO ##
 - Improve async deserialization/serialization: Find a way to do it streaming instead of buffering.
