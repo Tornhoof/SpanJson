@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using SpanJson.Resolvers;
+﻿using SpanJson.Resolvers;
 
 namespace SpanJson.AspNetCore.Formatter
 {
