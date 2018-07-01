@@ -31,7 +31,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.0" />
-    <PackageReference Include="SpanJson" Version="0.4.0" />
+    <PackageReference Include="SpanJson" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
