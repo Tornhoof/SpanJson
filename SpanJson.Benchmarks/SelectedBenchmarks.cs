@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Text;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Toolchains.InProcess;
 using SpanJson.Benchmarks.Serializers;
+using SpanJson.Resolvers;
 using SpanJson.Shared.Fixture;
 using SpanJson.Shared.Models;
 
@@ -534,48 +536,29 @@ namespace SpanJson.Benchmarks
         //    return reader.ReadUtf16Boolean();
         //}
 
-        private static readonly Guid GuidInput = ExpressionTreeFixture.Create<Guid>();
-
-        private static readonly String GuidOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(GuidInput);
         [Benchmark]
-        public System.Guid DeserializeGuidWithSpanJsonSerializer()
+        public void SerializeAnswerUtf8()
         {
-            return SpanJsonSerializer.Deserialize<System.Guid>(GuidOutputOfSpanJsonSerializer);
+            SpanJsonUtf8Serializer.Serialize(Answer);
         }
 
-        private static readonly Byte[] GuidOutputOfSpanJsonUtf8Serializer = SpanJsonUtf8Serializer.Serialize(GuidInput);
         [Benchmark]
-        public System.Guid DeserializeGuidWithSpanJsonUtf8Serializer()
+        public void SerializeAnswerUtf8Integer()
         {
-            return SpanJsonUtf8Serializer.Deserialize<System.Guid>(GuidOutputOfSpanJsonUtf8Serializer);
-        }
-
-        private static readonly TimeSpan TimeSpanInput = ExpressionTreeFixture.Create<TimeSpan>();
-        [Benchmark]
-        public System.String SerializeTimeSpanWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(TimeSpanInput);
-        }
-
-
-        [Benchmark]
-        public System.Byte[] SerializeTimeSpanWithSpanJsonUtf8Serializer()
-        {
-            return SpanJsonUtf8Serializer.Serialize(TimeSpanInput);
-        }
-
-        private static readonly String TimeSpanOutputOfSpanJsonSerializer = SpanJsonSerializer.Serialize(TimeSpanInput);
-        [Benchmark]
-        public System.TimeSpan DeserializeTimeSpanWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<System.TimeSpan>(TimeSpanOutputOfSpanJsonSerializer);
-        }
-
-        private static readonly Byte[] TimeSpanOutputOfSpanJsonUtf8Serializer = SpanJsonUtf8Serializer.Serialize(TimeSpanInput);
-        [Benchmark]
-        public System.TimeSpan DeserializeTimeSpanWithSpanJsonUtf8Serializer()
-        {
-            return SpanJsonUtf8Serializer.Deserialize<System.TimeSpan>(TimeSpanOutputOfSpanJsonUtf8Serializer);
+            JsonSerializer.Generic.Utf8.Serialize<Answer, CustomResolver<byte>>(Answer);
         }
     }
+
+    public sealed class CustomResolver<TSymbol> : ResolverBase<TSymbol, CustomResolver<TSymbol>> where TSymbol : struct
+    {
+        public CustomResolver() : base(new SpanJsonOptions
+        {
+            NullOption = NullOptions.ExcludeNulls,
+            NamingConvention = NamingConventions.CamelCase,
+            EnumOption = EnumOptions.Integer
+        })
+        {
+        }
+    }
+
 }
