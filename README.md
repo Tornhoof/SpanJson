@@ -181,7 +181,7 @@ public sealed class LongAsStringFormatter : ICustomJsonFormatter<long>
 ```
 
 ## ASP.NET Core 2.1 Formatter ##
-You can enable SpanJson as the default JSON formatter in ASP.NET Core 2.1 by using the Nuget package [SpanJson.AspNetCore.Formatter]((https://www.nuget.org/packages/SpanJson.AspNetCore.Formatter)
+You can enable SpanJson as the default JSON formatter in ASP.NET Core 2.1 by using the Nuget package [SpanJson.AspNetCore.Formatter](https://www.nuget.org/packages/SpanJson.AspNetCore.Formatter)
 To enable it, add one of the following extension methods to the ``AddMvc()`` call in ``ConfigureServices``
 * AddSpanJsonExcludeNullsOriginalCase
 * AddSpanJsonIncludeNullsOriginalCase
