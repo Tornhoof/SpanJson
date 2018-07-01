@@ -185,11 +185,8 @@ public sealed class LongAsStringFormatter : ICustomJsonFormatter<long>
 ## ASP.NET Core 2.1 Formatter ##
 You can enable SpanJson as the default JSON formatter in ASP.NET Core 2.1 by using the Nuget package [SpanJson.AspNetCore.Formatter](https://www.nuget.org/packages/SpanJson.AspNetCore.Formatter).
 To enable it, add one of the following extension methods to the ``AddMvc()`` call in ``ConfigureServices``
-* AddSpanJsonExcludeNullsOriginalCase
-* AddSpanJsonIncludeNullsOriginalCase
-* AddSpanJsonExcludeNullsCamelCase
-* AddSpanJsonIncludeNullsCamelCase
-* AddSpanJsonCustom for a custom resolver
+* AddSpanJson for a resolver with ASP.NET Core 2.1 defaults: IncludeNull, CamelCase, Integer Enums
+* AddSpanJsonCustom for a custom resolver (one of the default resolvers or custom)
 
 ```csharp
 // This method gets called by the runtime. Use this method to add services to the container.
@@ -199,7 +196,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-``AddSpanJsonIncludeNullsCamelCase`` is the closest in behaviour compared to the default JSON.NET formatter, for performance reasons I would recommend AddSpanJsonExcludeNullsCamelCase
+``AddSpanJson`` is the closest in behaviour compared to the default JSON.NET formatter, this used the AspNetCoreDefaultResolver type.
 Note: This clears the Formatter list, if you have other formatters, e.g. JSON Patch or XML, you need to re-add them.
 
 ## Custom Resolver ##
