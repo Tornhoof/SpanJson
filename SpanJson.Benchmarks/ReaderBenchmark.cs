@@ -100,280 +100,280 @@ namespace SpanJson.Benchmarks
 	private static readonly string UriInputUtf16 = JsonSerializer.Generic.Utf16.Serialize(UriInput);
   
 	[Benchmark]
-	public void ReadSByteUtf8()
+	public void ReadUtf8SByte()
 	{
 	    var reader = new JsonReader<Byte>(SByteInputUtf8);
 		reader.ReadUtf8SByte();
 	}
   
 	[Benchmark]
-	public void ReadSByteUtf16()
+	public void ReadUtf16SByte()
 	{
 	    var reader = new JsonReader<Char>(SByteInputUtf16);
 		reader.ReadUtf16SByte();
 	}
   
 	[Benchmark]
-	public void ReadInt16Utf8()
+	public void ReadUtf8Int16()
 	{
 	    var reader = new JsonReader<Byte>(Int16InputUtf8);
 		reader.ReadUtf8Int16();
 	}
   
 	[Benchmark]
-	public void ReadInt16Utf16()
+	public void ReadUtf16Int16()
 	{
 	    var reader = new JsonReader<Char>(Int16InputUtf16);
 		reader.ReadUtf16Int16();
 	}
   
 	[Benchmark]
-	public void ReadInt32Utf8()
+	public void ReadUtf8Int32()
 	{
 	    var reader = new JsonReader<Byte>(Int32InputUtf8);
 		reader.ReadUtf8Int32();
 	}
   
 	[Benchmark]
-	public void ReadInt32Utf16()
+	public void ReadUtf16Int32()
 	{
 	    var reader = new JsonReader<Char>(Int32InputUtf16);
 		reader.ReadUtf16Int32();
 	}
   
 	[Benchmark]
-	public void ReadInt64Utf8()
+	public void ReadUtf8Int64()
 	{
 	    var reader = new JsonReader<Byte>(Int64InputUtf8);
 		reader.ReadUtf8Int64();
 	}
   
 	[Benchmark]
-	public void ReadInt64Utf16()
+	public void ReadUtf16Int64()
 	{
 	    var reader = new JsonReader<Char>(Int64InputUtf16);
 		reader.ReadUtf16Int64();
 	}
   
 	[Benchmark]
-	public void ReadByteUtf8()
+	public void ReadUtf8Byte()
 	{
 	    var reader = new JsonReader<Byte>(ByteInputUtf8);
 		reader.ReadUtf8Byte();
 	}
   
 	[Benchmark]
-	public void ReadByteUtf16()
+	public void ReadUtf16Byte()
 	{
 	    var reader = new JsonReader<Char>(ByteInputUtf16);
 		reader.ReadUtf16Byte();
 	}
   
 	[Benchmark]
-	public void ReadUInt16Utf8()
+	public void ReadUtf8UInt16()
 	{
 	    var reader = new JsonReader<Byte>(UInt16InputUtf8);
 		reader.ReadUtf8UInt16();
 	}
   
 	[Benchmark]
-	public void ReadUInt16Utf16()
+	public void ReadUtf16UInt16()
 	{
 	    var reader = new JsonReader<Char>(UInt16InputUtf16);
 		reader.ReadUtf16UInt16();
 	}
   
 	[Benchmark]
-	public void ReadUInt32Utf8()
+	public void ReadUtf8UInt32()
 	{
 	    var reader = new JsonReader<Byte>(UInt32InputUtf8);
 		reader.ReadUtf8UInt32();
 	}
   
 	[Benchmark]
-	public void ReadUInt32Utf16()
+	public void ReadUtf16UInt32()
 	{
 	    var reader = new JsonReader<Char>(UInt32InputUtf16);
 		reader.ReadUtf16UInt32();
 	}
   
 	[Benchmark]
-	public void ReadUInt64Utf8()
+	public void ReadUtf8UInt64()
 	{
 	    var reader = new JsonReader<Byte>(UInt64InputUtf8);
 		reader.ReadUtf8UInt64();
 	}
   
 	[Benchmark]
-	public void ReadUInt64Utf16()
+	public void ReadUtf16UInt64()
 	{
 	    var reader = new JsonReader<Char>(UInt64InputUtf16);
 		reader.ReadUtf16UInt64();
 	}
   
 	[Benchmark]
-	public void ReadSingleUtf8()
+	public void ReadUtf8Single()
 	{
 	    var reader = new JsonReader<Byte>(SingleInputUtf8);
 		reader.ReadUtf8Single();
 	}
   
 	[Benchmark]
-	public void ReadSingleUtf16()
+	public void ReadUtf16Single()
 	{
 	    var reader = new JsonReader<Char>(SingleInputUtf16);
 		reader.ReadUtf16Single();
 	}
   
 	[Benchmark]
-	public void ReadDoubleUtf8()
+	public void ReadUtf8Double()
 	{
 	    var reader = new JsonReader<Byte>(DoubleInputUtf8);
 		reader.ReadUtf8Double();
 	}
   
 	[Benchmark]
-	public void ReadDoubleUtf16()
+	public void ReadUtf16Double()
 	{
 	    var reader = new JsonReader<Char>(DoubleInputUtf16);
 		reader.ReadUtf16Double();
 	}
   
 	[Benchmark]
-	public void ReadBooleanUtf8()
+	public void ReadUtf8Boolean()
 	{
 	    var reader = new JsonReader<Byte>(BooleanInputUtf8);
 		reader.ReadUtf8Boolean();
 	}
   
 	[Benchmark]
-	public void ReadBooleanUtf16()
+	public void ReadUtf16Boolean()
 	{
 	    var reader = new JsonReader<Char>(BooleanInputUtf16);
 		reader.ReadUtf16Boolean();
 	}
   
 	[Benchmark]
-	public void ReadCharUtf8()
+	public void ReadUtf8Char()
 	{
 	    var reader = new JsonReader<Byte>(CharInputUtf8);
 		reader.ReadUtf8Char();
 	}
   
 	[Benchmark]
-	public void ReadCharUtf16()
+	public void ReadUtf16Char()
 	{
 	    var reader = new JsonReader<Char>(CharInputUtf16);
 		reader.ReadUtf16Char();
 	}
   
 	[Benchmark]
-	public void ReadDateTimeUtf8()
+	public void ReadUtf8DateTime()
 	{
 	    var reader = new JsonReader<Byte>(DateTimeInputUtf8);
 		reader.ReadUtf8DateTime();
 	}
   
 	[Benchmark]
-	public void ReadDateTimeUtf16()
+	public void ReadUtf16DateTime()
 	{
 	    var reader = new JsonReader<Char>(DateTimeInputUtf16);
 		reader.ReadUtf16DateTime();
 	}
   
 	[Benchmark]
-	public void ReadDateTimeOffsetUtf8()
+	public void ReadUtf8DateTimeOffset()
 	{
 	    var reader = new JsonReader<Byte>(DateTimeOffsetInputUtf8);
 		reader.ReadUtf8DateTimeOffset();
 	}
   
 	[Benchmark]
-	public void ReadDateTimeOffsetUtf16()
+	public void ReadUtf16DateTimeOffset()
 	{
 	    var reader = new JsonReader<Char>(DateTimeOffsetInputUtf16);
 		reader.ReadUtf16DateTimeOffset();
 	}
   
 	[Benchmark]
-	public void ReadTimeSpanUtf8()
+	public void ReadUtf8TimeSpan()
 	{
 	    var reader = new JsonReader<Byte>(TimeSpanInputUtf8);
 		reader.ReadUtf8TimeSpan();
 	}
   
 	[Benchmark]
-	public void ReadTimeSpanUtf16()
+	public void ReadUtf16TimeSpan()
 	{
 	    var reader = new JsonReader<Char>(TimeSpanInputUtf16);
 		reader.ReadUtf16TimeSpan();
 	}
   
 	[Benchmark]
-	public void ReadGuidUtf8()
+	public void ReadUtf8Guid()
 	{
 	    var reader = new JsonReader<Byte>(GuidInputUtf8);
 		reader.ReadUtf8Guid();
 	}
   
 	[Benchmark]
-	public void ReadGuidUtf16()
+	public void ReadUtf16Guid()
 	{
 	    var reader = new JsonReader<Char>(GuidInputUtf16);
 		reader.ReadUtf16Guid();
 	}
   
 	[Benchmark]
-	public void ReadStringUtf8()
+	public void ReadUtf8String()
 	{
 	    var reader = new JsonReader<Byte>(StringInputUtf8);
 		reader.ReadUtf8String();
 	}
   
 	[Benchmark]
-	public void ReadStringUtf16()
+	public void ReadUtf16String()
 	{
 	    var reader = new JsonReader<Char>(StringInputUtf16);
 		reader.ReadUtf16String();
 	}
   
 	[Benchmark]
-	public void ReadDecimalUtf8()
+	public void ReadUtf8Decimal()
 	{
 	    var reader = new JsonReader<Byte>(DecimalInputUtf8);
 		reader.ReadUtf8Decimal();
 	}
   
 	[Benchmark]
-	public void ReadDecimalUtf16()
+	public void ReadUtf16Decimal()
 	{
 	    var reader = new JsonReader<Char>(DecimalInputUtf16);
 		reader.ReadUtf16Decimal();
 	}
   
 	[Benchmark]
-	public void ReadVersionUtf8()
+	public void ReadUtf8Version()
 	{
 	    var reader = new JsonReader<Byte>(VersionInputUtf8);
 		reader.ReadUtf8Version();
 	}
   
 	[Benchmark]
-	public void ReadVersionUtf16()
+	public void ReadUtf16Version()
 	{
 	    var reader = new JsonReader<Char>(VersionInputUtf16);
 		reader.ReadUtf16Version();
 	}
   
 	[Benchmark]
-	public void ReadUriUtf8()
+	public void ReadUtf8Uri()
 	{
 	    var reader = new JsonReader<Byte>(UriInputUtf8);
 		reader.ReadUtf8Uri();
 	}
   
 	[Benchmark]
-	public void ReadUriUtf16()
+	public void ReadUtf16Uri()
 	{
 	    var reader = new JsonReader<Char>(UriInputUtf16);
 		reader.ReadUtf16Uri();

@@ -215,16 +215,14 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private char ReadUtf8CharInternal(in ReadOnlySpan<byte> span)
         {
-            var pos = 0;
             if (span.Length == 1)
             {
-                return (char) span[pos];
+                return (char) span[0];
             }
 
-            if (span[pos] == JsonUtf8Constant.ReverseSolidus)
+            if (span[0] == JsonUtf8Constant.ReverseSolidus)
             {
-                pos++;
-                switch (span[pos])
+                switch (span[1])
                 {
                     case JsonUtf8Constant.DoubleQuote:
                         return JsonUtf16Constant.DoubleQuote;
