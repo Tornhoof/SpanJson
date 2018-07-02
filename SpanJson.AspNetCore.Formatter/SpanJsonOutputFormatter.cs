@@ -12,12 +12,14 @@ namespace SpanJson.AspNetCore.Formatter
             SupportedMediaTypes.Add("application/*+json");
         }
 
-        public override async Task WriteResponseBodyAsync(OutputFormatterWriteContext context)
+        public override Task WriteResponseBodyAsync(OutputFormatterWriteContext context)
         {
             if (context.Object != null)
             {
-                await JsonSerializer.NonGeneric.Utf8.SerializeAsync<TResolver>(context.Object, context.HttpContext.Response.Body).ConfigureAwait(false);
+                return JsonSerializer.NonGeneric.Utf8.SerializeAsync<TResolver>(context.Object, context.HttpContext.Response.Body).AsTask();
             }
+
+            return Task.CompletedTask;
         }
     }
 }

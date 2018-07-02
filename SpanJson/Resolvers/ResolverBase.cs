@@ -80,6 +80,19 @@ namespace SpanJson.Resolvers
             // ReSharper restore ConvertClosureToMethodGroup
         }
 
+        /// <summary>
+        /// Override a formatter on global scale
+        /// </summary>
+        protected void RegisterGlobalCustomFormatter<T, TFormatter>() where TFormatter : ICustomJsonFormatter<T>
+        {
+            var staticDefaultField = typeof(TFormatter).GetField("Default", BindingFlags.Static | BindingFlags.Public);
+            if(staticDefaultField == null)
+            {
+                throw new InvalidOperationException($"{typeof(TFormatter).FullName} must have a public static field 'Default' returning an instance of it.");
+            }
+            Formatters.AddOrUpdate(typeof(T), GetDefaultOrCreate(typeof(TFormatter)), (type, formatter) => GetDefaultOrCreate(typeof(TFormatter)));
+        }
+
         public IJsonFormatter GetFormatter(JsonMemberInfo memberInfo, Type overrideMemberType = null)
         {
             // ReSharper disable ConvertClosureToMethodGroup
