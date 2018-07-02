@@ -9,7 +9,14 @@
 
         private static class Inner<TSymbol, TResolver> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
-            public static readonly TResolver Default = new TResolver();
+            public static readonly TResolver Default = CreateResolver();
+
+            private static TResolver CreateResolver()
+            {
+                var result = new TResolver();
+
+                return result;
+            }
         }
     }
 }

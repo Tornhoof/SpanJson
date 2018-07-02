@@ -153,16 +153,16 @@ namespace SpanJson.Shared.Fixture
                 return true;
             }
 
-            if (parentType.IsTypedList())
-            {
-                var childType = parentType.GetGenericArguments()[0];
-                return IsRecursion(type, childType);
-            }
-
             if (parentType.IsArray)
             {
                 var elementType = parentType.GetElementType();
                 return IsRecursion(type, elementType);
+            }
+
+            if (parentType.IsTypedList())
+            {
+                var childType = parentType.GetGenericArguments()[0];
+                return IsRecursion(type, childType);
             }
 
             if (Nullable.GetUnderlyingType(parentType) != null)

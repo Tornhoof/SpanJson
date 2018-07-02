@@ -3,7 +3,12 @@
     public interface IJsonFormatter
     {
     }
-    public interface ICustomJsonFormatter<T> : IJsonFormatter<T, byte>, IJsonFormatter<T, char>
+
+    public interface ICustomJsonFormatter
+    {
+
+    }
+    public interface ICustomJsonFormatter<T> : IJsonFormatter<T, byte>, IJsonFormatter<T, char>, ICustomJsonFormatter
     {
 
     }

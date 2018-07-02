@@ -80,6 +80,23 @@ namespace SpanJson.Resolvers
             // ReSharper restore ConvertClosureToMethodGroup
         }
 
+        /// <summary>
+        /// Override a formatter on global scale, additionally we might need to register array versions etc
+        /// Only register primitive types here, no arrays etc. this create weird problems.
+        /// </summary>
+        protected void RegisterGlobalCustomFormatter<T, TFormatter>() where TFormatter : ICustomJsonFormatter<T>
+        {
+            var type = typeof(T);
+            var formatterType = typeof(TFormatter);
+            var staticDefaultField = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+            if (staticDefaultField == null)
+            {
+                throw new InvalidOperationException($"{formatterType.FullName} must have a public static field 'Default' returning an instance of it.");
+            }
+
+            Formatters.AddOrUpdate(type, GetDefaultOrCreate(formatterType), (t, formatter) => GetDefaultOrCreate(formatterType));
+        }
+
         public IJsonFormatter GetFormatter(JsonMemberInfo memberInfo, Type overrideMemberType = null)
         {
             // ReSharper disable ConvertClosureToMethodGroup
@@ -298,12 +315,47 @@ namespace SpanJson.Resolvers
                 {
                     if (argumentTypes[0] == type && argumentTypes[1] == typeof(TSymbol))
                     {
+                        // if it has a custom formatter for a base type (i.e. nullable base type, array element, list element)
+                        // we need to ignore the integrated types for this
+                        if (HasCustomFormatterForRelatedType(type))
+                        {
+                            continue;
+                        }
                         return GetDefaultOrCreate(candidate);
                     }
                 }
             }
 
             return null;
+        }
+
+        private static bool HasCustomFormatterForRelatedType(Type type)
+        {
+            Type relatedType = Nullable.GetUnderlyingType(type);
+            if (relatedType == null && type.IsArray)
+            {
+                relatedType = type.GetElementType();
+            }
+
+            if (relatedType == null && type.TryGetTypeOfGenericInterface(typeof(IList<>), out var argumentTypes) && argumentTypes.Length == 1)
+            {
+                relatedType = argumentTypes.Single();
+            }
+
+            if (relatedType != null)
+            {
+                if (Formatters.TryGetValue(relatedType, out var formatter) && formatter is ICustomJsonFormatter)
+                {
+                    return true;
+                }
+
+                if (Nullable.GetUnderlyingType(relatedType) != null)
+                {
+                    return HasCustomFormatterForRelatedType(relatedType); // we need to recurse if the related type is again nullable
+                }
+            }
+
+            return false;
         }
     }
 }
