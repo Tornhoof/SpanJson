@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using SpanJson.Formatters;
 using SpanJson.Resolvers;
 using SpanJson.Shared.Fixture;
 using Xunit;
@@ -12,12 +15,17 @@ namespace SpanJson.Tests
         {
             public string Value { get; set; }
             public DateTime Date { get; set; }
+            public DateTime? NullableDate { get; set; }
+            public DateTime?[] NullableDateArray { get; set; }
+            public DateTime[] DateArray { get; set; }
+            public List<DateTime> DateList { get; set; }
 
             public bool Equals(TestDTO other)
             {
                 if (ReferenceEquals(null, other)) return false;
                 if (ReferenceEquals(this, other)) return true;
-                return string.Equals(Value, other.Value) && Date.Equals(other.Date);
+                return string.Equals(Value, other.Value) && Date.Equals(other.Date) &&
+                       NullableDate.Equals(other.NullableDate) && NullableDateArray.SequenceEqual(other.NullableDateArray) && DateArray.SequenceEqual(other.DateArray) && DateList.SequenceEqual(other.DateList);
             }
 
             public override bool Equals(object obj)
@@ -32,7 +40,13 @@ namespace SpanJson.Tests
             {
                 unchecked
                 {
-                    return ((Value != null ? Value.GetHashCode() : 0) * 397) ^ Date.GetHashCode();
+                    var hashCode = (Value != null ? Value.GetHashCode() : 0);
+                    hashCode = (hashCode * 397) ^ Date.GetHashCode();
+                    hashCode = (hashCode * 397) ^ NullableDate.GetHashCode();
+                    hashCode = (hashCode * 397) ^ (DateArray != null ? DateArray.GetHashCode() : 0);
+                    hashCode = (hashCode * 397) ^ (NullableDateArray != null ? NullableDateArray.GetHashCode() : 0);
+                    hashCode = (hashCode * 397) ^ (DateList != null ? DateList.GetHashCode() : 0);
+                    return hashCode;
                 }
             }
         }
@@ -85,9 +99,17 @@ namespace SpanJson.Tests
         {
             var model = _fixture.Create<TestDTO>();
             model.Date = DateTime.Today;
+            model.DateArray[0] = model.Date;
+            model.NullableDateArray[0] = model.Date;
+            model.DateList[0] = model.Date;
+            model.NullableDate = model.Date;
             var serialized = JsonSerializer.Generic.Utf8.Serialize<TestDTO, CustomResolver<byte>>(model);
             Assert.NotNull(serialized);
             Assert.Contains("\"Date\":1", Encoding.UTF8.GetString(serialized));
+            Assert.Contains("\"DateArray\":[1", Encoding.UTF8.GetString(serialized));
+            Assert.Contains("\"NullableDateArray\":[1", Encoding.UTF8.GetString(serialized));
+            Assert.Contains("\"DateList\":[1", Encoding.UTF8.GetString(serialized));
+            Assert.Contains("\"NullableDate\":1", Encoding.UTF8.GetString(serialized));
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<TestDTO, CustomResolver<byte>>(serialized);
             Assert.Equal(model, deserialized);
         }
@@ -97,9 +119,17 @@ namespace SpanJson.Tests
         {
             var model = _fixture.Create<TestDTO>();
             model.Date = DateTime.Today;
+            model.DateArray[0] = model.Date;
+            model.NullableDateArray[0] = model.Date;
+            model.DateList[0] = model.Date;
+            model.NullableDate = model.Date;
             var serialized = JsonSerializer.Generic.Utf16.Serialize<TestDTO, CustomResolver<char>>(model);
             Assert.NotNull(serialized);
             Assert.Contains("\"Date\":1", serialized);
+            Assert.Contains("\"DateArray\":[1", serialized);
+            Assert.Contains("\"NullableDateArray\":[1", serialized);
+            Assert.Contains("\"DateList\":[1", serialized);
+            Assert.Contains("\"NullableDate\":1", serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<TestDTO, CustomResolver<char>>(serialized);
             Assert.Equal(model, deserialized);
         }
