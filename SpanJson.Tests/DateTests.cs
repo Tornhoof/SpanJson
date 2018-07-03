@@ -36,7 +36,7 @@ namespace SpanJson.Tests
             Assert.True(DateTimeParser.TryParseDateTime(input.AsSpan(), out var dtValue, out var dtConsumed));
             Assert.Equal(length, dtConsumed);
             AssertDateTime(dtoValue.DateTime, year, month, day, hour, minute, second, fraction);
-            var offset = new TimeSpan(negative ? -offsethours : offsethours, offsetminutes, 0);
+            var offset = new TimeSpan(offsethours, offsetminutes, 0) * (negative ? -1 : 1);
             switch (kind)
             {
                 case DateTimeKind.Local:

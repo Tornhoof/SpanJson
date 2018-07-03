@@ -341,7 +341,11 @@ namespace SpanJson.Helpers
 
                 offsetMinutes = (int) (digit1 * 10 + digit2);
             }
-            offsetHours = offsetChar == '-' ? -offsetHours : offsetHours;
+            if (offsetChar == '-')
+            { 
+                offsetHours = -offsetHours;
+                offsetMinutes = -offsetMinutes;
+            }
             var timeSpan = new TimeSpan(offsetHours, offsetMinutes, 0);
             value = timeSpan == TimeSpan.Zero
                 ? new Date(year, month, day, hour, minute, second, fraction, DateTimeKind.Utc, timeSpan)
