@@ -1,18 +1,20 @@
-﻿using System.Threading.Tasks;
+﻿using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace SpanJson.AspNetCore.Formatter
 {
-    public class SpanJsonOutputFormatter<TResolver> : OutputFormatter where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
+    public class SpanJsonOutputFormatter<TResolver> : TextOutputFormatter where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
     {
         public SpanJsonOutputFormatter()
         {
             SupportedMediaTypes.Add("application/json");
             SupportedMediaTypes.Add("text/json");
             SupportedMediaTypes.Add("application/*+json");
+            SupportedEncodings.Add(Encoding.UTF8);
         }
 
-        public override Task WriteResponseBodyAsync(OutputFormatterWriteContext context)
+        public override Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding encoding)
         {
             if (context.Object != null)
             {
