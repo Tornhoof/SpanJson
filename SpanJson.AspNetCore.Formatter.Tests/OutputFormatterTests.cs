@@ -61,7 +61,7 @@ namespace SpanJson.AspNetCore.Formatter.Tests
             var outputFormatterContext = GetOutputFormatterContext(model, modelType);
             var jsonFormatter = new SpanJsonOutputFormatter<TResolver>();
 
-            await jsonFormatter.WriteResponseBodyAsync(outputFormatterContext).ConfigureAwait(false);
+            await jsonFormatter.WriteAsync(outputFormatterContext).ConfigureAwait(false);
 
             using (var body = outputFormatterContext.HttpContext.Response.Body)
             {
