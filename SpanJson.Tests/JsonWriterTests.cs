@@ -75,5 +75,39 @@ namespace SpanJson.Tests
             var output = writer.ToString();
             Assert.Equal(comparison, output);
         }
+
+        /// <summary>
+        /// This hits the resizing, otherwise the ascii case would hit array bounds
+        /// </summary>
+        [Theory]
+        [InlineData("칱칳칶칹칼캠츧", "{\"칱칳칶칹칼캠츧\":0}")]
+        [InlineData("Привет мир!0", "{\"Привет мир!0\":0}")]
+        public void WriteMultiCharNameUtf8Resizing(string name, string comparison)
+        {
+            var writer = new JsonWriter<byte>(16);
+            writer.WriteUtf8BeginObject();
+            writer.WriteUtf8Name(name);
+            writer.WriteUtf8Int32(0);
+            writer.WriteUtf8EndObject();
+            var output = writer.ToByteArray();
+            Assert.Equal(comparison, Encoding.UTF8.GetString(output));
+        }
+
+        /// <summary>
+        /// This hits the resizing, otherwise the ascii case would hit array bounds
+        /// </summary>
+        [Theory]
+        [InlineData("칱칳칶칹칼캠츧", "{\"칱칳칶칹칼캠츧\":0}")]
+        [InlineData("Привет мир!0", "{\"Привет мир!0\":0}")]
+        public void WriteMultiCharNameUtf16(string name, string comparison)
+        {
+            var writer = new JsonWriter<char>(32);
+            writer.WriteUtf16BeginObject();
+            writer.WriteUtf16Name(name);
+            writer.WriteUtf16Int32(0);
+            writer.WriteUtf16EndObject();
+            var output = writer.ToString();
+            Assert.Equal(comparison, output);
+        }
     }
 }

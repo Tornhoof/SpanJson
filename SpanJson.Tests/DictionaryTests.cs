@@ -100,5 +100,58 @@ namespace SpanJson.Tests
             Assert.NotNull(deserialized);
             Assert.Equal(dictionary, deserialized);
         }
+
+
+        [Fact]
+        public void SerializeDeserializeMultiByteKeyDictionaryUtf16()
+        {
+            var dictionary = new Dictionary<string, int>
+            {
+                {"Привет мир!0",0},
+                {"Привет мир!1",1},
+                {"Привет мир!2",2},
+                {"Привет мир!3",3},
+                {"Привет мир!4",4},
+                {"Привет мир!5",5},
+                {"Привет мир!6",6},
+                {"Привет мир!7",7},
+                {"Привет мир!8",8},
+                {"Привет мир!9",9},
+                {"Привет мир!10",10},
+                {"Привет мир!11",11},
+            };
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(dictionary);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Dictionary<string, int>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(dictionary, deserialized);
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeMultiByteKeyDictionaryUtf8()
+        {
+            var dictionary = new Dictionary<string, int>
+            {
+                {"Привет мир!0",0},
+                {"Привет мир!1",1},
+                {"Привет мир!2",2},
+                {"Привет мир!3",3},
+                {"Привет мир!4",4},
+                {"Привет мир!5",5},
+                {"Привет мир!6",6},
+                {"Привет мир!7",7},
+                {"Привет мир!8",8},
+                {"Привет мир!9",9},
+                {"Привет мир!10",10},
+                {"Привет мир!11",11},
+            };
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(dictionary);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<Dictionary<string, int>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(dictionary, deserialized);
+        }
+
     }
 }

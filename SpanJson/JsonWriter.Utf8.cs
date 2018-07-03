@@ -471,7 +471,7 @@ namespace SpanJson
         public void WriteUtf8Name(in ReadOnlySpan<char> value)
         {
             ref var pos = ref _pos;
-            var sLength = value.Length + 3;
+            var sLength = Encoding.UTF8.GetMaxByteCount(value.Length) + 3;
             if (pos > _bytes.Length - sLength)
             {
                 Grow(sLength);
