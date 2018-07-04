@@ -58,6 +58,62 @@ namespace SpanJson.Formatters
             return result;
         }
 
+        public void Serialize(ref StreamingJsonWriter<TSymbol> writer, T value, int nestingLimit)
+        {
+            if (value == null)
+            {
+                writer.WriteNull();
+                return;
+            }
+
+            // if we serialize our dynamic value again we simply write the symbols directly if it is the same type
+            if (value is ISpanJsonDynamicValue<TSymbol> dynamicValue)
+            {
+                writer.WriteVerbatim(dynamicValue.Symbols);
+            }
+            else if (value is ISpanJsonDynamicValue<byte> bValue)
+            {
+                var chars = Encoding.UTF8.GetChars(bValue.Symbols);
+                writer.WriteUtf16Verbatim(chars);
+            }
+            else if (value is ISpanJsonDynamicValue<char> cValue)
+            {
+                var bytes = Encoding.UTF8.GetBytes(cValue.Symbols);
+                writer.WriteUtf8Verbatim(bytes);
+            }
+            else
+            {
+                var memberInfos = Resolver.GetDynamicObjectDescription(value);
+                var counter = 0;
+                writer.WriteBeginObject();
+                foreach (var memberInfo in memberInfos)
+                {
+                    var getter = GetOrAddGetMember(memberInfo.MemberName);
+                    var child = getter(value);
+                    if (memberInfo.ExcludeNull && child == null)
+                    {
+                        continue;
+                    }
+
+                    if (counter++ > 0)
+                    {
+                        writer.WriteValueSeparator();
+                    }
+
+                    var nextNestingLimit = RecursionCandidate.LookupRecursionCandidate(memberInfo.MemberType) ? nestingLimit + 1 : nestingLimit;
+                    writer.WriteName(memberInfo.Name);
+                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child, nextNestingLimit);
+                }
+
+                writer.WriteEndObject();
+            }
+        }
+
+        public T Deserialize(ref StreamingJsonReader<TSymbol> reader)
+        {
+            throw new NotSupportedException(); // TODO
+        }
+
         public void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
         {
             if (value == null)

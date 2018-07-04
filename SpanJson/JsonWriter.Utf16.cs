@@ -377,17 +377,16 @@ namespace SpanJson
             WriteUtf16DoubleQuote();
         }
 
-        public void WriteUtf16String(string value)
+        public void WriteUtf16String(in ReadOnlySpan<char> span)
         {
             ref var pos = ref _pos;
-            var sLength = value.Length + 7; // assume that a fully escaped char fits too
+            var sLength = span.Length + 7; // assume that a fully escaped char fits too
             if (pos > _chars.Length - sLength)
             {
                 Grow(sLength);
             }
 
             WriteUtf16DoubleQuote();
-            var span = value.AsSpan();
             for (var i = 0; i < span.Length; i++)
             {
                 ref readonly var c = ref span[i];
@@ -546,7 +545,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void WriteUtf16DoubleQuote()
+        public void WriteUtf16DoubleQuote()
         {
             _chars[_pos++] = JsonUtf16Constant.String;
         }

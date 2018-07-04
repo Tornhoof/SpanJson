@@ -19,6 +19,22 @@ namespace SpanJson.Formatters
             return reader.ReadDynamic();
         }
 
+        public void Serialize(ref StreamingJsonWriter<TSymbol> writer, object value, int nestingLimit)
+        {
+            if (value == null)
+            {
+                writer.WriteNull();
+                return;
+            }
+
+            throw new NotSupportedException();
+        }
+
+        public object Deserialize(ref StreamingJsonReader<TSymbol> reader)
+        {
+            return reader.ReadDynamic();
+        }
+
         public void Serialize(ref JsonWriter<TSymbol> writer, object value, int nestingLimit)
         {
             if (value == null)

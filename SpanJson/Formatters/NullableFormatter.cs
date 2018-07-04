@@ -23,6 +23,27 @@ namespace SpanJson.Formatters
             return ElementFormatter.Deserialize(ref reader);
         }
 
+        public void Serialize(ref StreamingJsonWriter<TSymbol> writer, T? value, int nestingLimit)
+        {
+            if (value == null)
+            {
+                writer.WriteNull();
+                return;
+            }
+
+            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+        }
+
+        public T? Deserialize(ref StreamingJsonReader<TSymbol> reader)
+        {
+            if (reader.ReadIsNull())
+            {
+                return null;
+            }
+
+            return ElementFormatter.Deserialize(ref reader);
+        }
+
         public void Serialize(ref JsonWriter<TSymbol> writer, T? value, int nestingLimit)
         {
             if (value == null)

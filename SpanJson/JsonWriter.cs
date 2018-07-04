@@ -11,12 +11,14 @@ namespace SpanJson
         private Span<char> _chars;
         private Span<byte> _bytes;
         private int _pos;
+        private readonly bool _isFixedBuffer;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public JsonWriter(int initialSize)
         {
             Data = ArrayPool<TSymbol>.Shared.Rent(initialSize);
             _pos = 0;
+            _isFixedBuffer = false;
             if (typeof(TSymbol) == typeof(char))
             {
                 _chars = MemoryMarshal.Cast<TSymbol, char>(Data);
@@ -33,6 +35,30 @@ namespace SpanJson
                 _chars = null;
                 _bytes = null;
 
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public JsonWriter(TSymbol[] data)
+        {
+            Data = data;
+            _pos = 0;
+            _isFixedBuffer = true;
+            if (typeof(TSymbol) == typeof(char))
+            {
+                _chars = MemoryMarshal.Cast<TSymbol, char>(Data);
+                _bytes = null;
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                _bytes = MemoryMarshal.Cast<TSymbol, byte>(Data);
+                _chars = null;
+            }
+            else
+            {
+                ThrowNotSupportedException();
+                _chars = null;
+                _bytes = null;
             }
         }
 
@@ -57,6 +83,11 @@ namespace SpanJson
         private void Grow(int requiredAdditionalCapacity)
         {
             Debug.Assert(requiredAdditionalCapacity > 0);
+
+            if (_isFixedBuffer)
+            {
+                ThrowNotSupportedException();
+            }
 
             var toReturn = Data;
             if (typeof(TSymbol) == typeof(char))
@@ -83,6 +114,11 @@ namespace SpanJson
             {
                 ArrayPool<TSymbol>.Shared.Return(toReturn);
             }
+        }
+
+        public void Reset()
+        {
+            _pos = 0;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -348,6 +384,23 @@ namespace SpanJson
                 WriteUtf8Verbatim(MemoryMarshal.Cast<TSymbol, byte>(values));
                 WriteUtf8DoubleQuote();
                 _bytes[_pos++] = JsonUtf8Constant.NameSeparator;
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteString(in ReadOnlySpan<char> value)
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                WriteUtf16String(value);
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                WriteUtf8String(value);
             }
             else
             {

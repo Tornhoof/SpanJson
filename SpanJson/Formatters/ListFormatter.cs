@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
@@ -57,6 +58,58 @@ namespace SpanJson.Formatters
             }
 
             writer.WriteEndArray();
+        }
+
+        public void Serialize(ref StreamingJsonWriter<TSymbol> writer, TList value, int nestingLimit)
+        {
+            if (value == null)
+            {
+                writer.WriteNull();
+                return;
+            }
+
+            var nextNestingLimit = RecursionCandidate<T>.IsRecursionCandidate ? nestingLimit + 1 : nestingLimit;
+            var valueLength = value.Count;
+            writer.WriteBeginArray();
+            if (valueLength > 0)
+            {
+                SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0], ElementFormatter, nextNestingLimit);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteValueSeparator();
+                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i], ElementFormatter, nextNestingLimit);
+                }
+            }
+
+            writer.WriteEndArray();
+        }
+
+        public TList Deserialize(ref StreamingJsonReader<TSymbol> reader)
+        {
+            if (reader.ReadIsNull())
+            {
+                return null;
+            }
+
+            reader.ReadBeginArrayOrThrow();
+            var list = CreateFunctor();
+            var count = 0;
+            while (!reader.TryReadIsEndArrayOrValueSeparator(ref count))
+            {
+                T value;
+                if (typeof(T) == typeof(string))
+                {
+                    var temp = reader.ReadString();
+                    value = Unsafe.As<string, T>(ref temp);
+                }
+                else
+                {
+                    value = default;
+                }
+                list.Add(value);
+            }
+
+            return list;
         }
     }
 }

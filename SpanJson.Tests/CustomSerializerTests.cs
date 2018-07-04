@@ -96,6 +96,16 @@ namespace SpanJson.Tests
                 throw new InvalidOperationException("Invalid value.");
             }
 
+            public void Serialize(ref StreamingJsonWriter<char> writer, long value, int nestingLimit)
+            {
+                throw new NotImplementedException();
+            }
+
+            public long Deserialize(ref StreamingJsonReader<char> reader)
+            {
+                throw new NotImplementedException();
+            }
+
             public void Serialize(ref JsonWriter<byte> writer, long value, int nestingLimit)
             {
                 StringUtf8Formatter.Default.Serialize(ref writer, value.ToString(CultureInfo.InvariantCulture), nestingLimit);
@@ -110,6 +120,16 @@ namespace SpanJson.Tests
                 }
 
                 throw new InvalidOperationException("Invalid value.");
+            }
+
+            public void Serialize(ref StreamingJsonWriter<byte> writer, long value, int nestingLimit)
+            {
+                throw new NotImplementedException();
+            }
+
+            public long Deserialize(ref StreamingJsonReader<byte> reader)
+            {
+                throw new NotImplementedException();
             }
         }
 
@@ -127,6 +147,16 @@ namespace SpanJson.Tests
                 return (TestDTO.TestEnum) Int32Utf16Formatter.Default.Deserialize(ref reader);
             }
 
+            public void Serialize(ref StreamingJsonWriter<char> writer, TestDTO.TestEnum value, int nestingLimit)
+            {
+                throw new NotImplementedException();
+            }
+
+            public TestDTO.TestEnum Deserialize(ref StreamingJsonReader<char> reader)
+            {
+                throw new NotImplementedException();
+            }
+
             public void Serialize(ref JsonWriter<byte> writer, TestDTO.TestEnum value, int nestingLimit)
             {
                 Int32Utf8Formatter.Default.Serialize(ref writer, (int) value, nestingLimit);
@@ -135,6 +165,16 @@ namespace SpanJson.Tests
             public TestDTO.TestEnum Deserialize(ref JsonReader<byte> reader)
             {
                 return (TestDTO.TestEnum) Int32Utf8Formatter.Default.Deserialize(ref reader);
+            }
+
+            public void Serialize(ref StreamingJsonWriter<byte> writer, TestDTO.TestEnum value, int nestingLimit)
+            {
+                throw new NotImplementedException();
+            }
+
+            public TestDTO.TestEnum Deserialize(ref StreamingJsonReader<byte> reader)
+            {
+                throw new NotImplementedException();
             }
         }
     }

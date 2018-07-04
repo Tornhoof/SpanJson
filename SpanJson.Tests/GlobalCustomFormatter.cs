@@ -73,9 +73,29 @@ namespace SpanJson.Tests
                 return DateTimeOffset.FromUnixTimeSeconds(reader.ReadUtf8Int64()).DateTime;
             }
 
+            public void Serialize(ref StreamingJsonWriter<byte> writer, DateTime value, int nestingLimit)
+            {
+                throw new NotImplementedException();
+            }
+
+            public DateTime Deserialize(ref StreamingJsonReader<byte> reader)
+            {
+                throw new NotImplementedException();
+            }
+
             public DateTime Deserialize(ref JsonReader<char> reader)
             {
                 return DateTimeOffset.FromUnixTimeSeconds(reader.ReadUtf16Int64()).DateTime;
+            }
+
+            public void Serialize(ref StreamingJsonWriter<char> writer, DateTime value, int nestingLimit)
+            {
+                throw new NotImplementedException();
+            }
+
+            public DateTime Deserialize(ref StreamingJsonReader<char> reader)
+            {
+                throw new NotImplementedException();
             }
 
             public void Serialize(ref JsonWriter<byte> writer, DateTime value, int nestingLimit)

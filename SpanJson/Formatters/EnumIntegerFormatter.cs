@@ -21,6 +21,16 @@ namespace SpanJson.Formatters
             return Deserializer(ref reader);
         }
 
+        public void Serialize(ref StreamingJsonWriter<TSymbol> writer, T value, int nestingLimit)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T Deserialize(ref StreamingJsonReader<TSymbol> reader)
+        {
+            throw new NotImplementedException();
+        }
+
 
         private static SerializeDelegate BuildSerializeDelegate()
         {

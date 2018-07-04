@@ -17,5 +17,8 @@
     {
         void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit);
         T Deserialize(ref JsonReader<TSymbol> reader);
+
+        void Serialize(ref StreamingJsonWriter<TSymbol> writer, T value, int nestingLimit);
+        T Deserialize(ref StreamingJsonReader<TSymbol> reader);
     }
 }

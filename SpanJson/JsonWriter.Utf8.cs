@@ -263,18 +263,17 @@ namespace SpanJson
         ///     For UTF8 encoded bytes we make sure that the 5 for the fully escaped value and 4 for the utf fit
         ///     That's all done to make sure we don't have resizing in the fast path (the ascii case)
         /// </summary>
-        /// <param name="value"></param>
-        public void WriteUtf8String(string value)
+        /// <param name="span"></param>
+        public void WriteUtf8String(in ReadOnlySpan<char> span)
         {
             ref var pos = ref _pos;
-            var sLength = Encoding.UTF8.GetMaxByteCount(value.Length) + 7; // assume that a fully escaped char fits too + 2 double quotes
+            var sLength = Encoding.UTF8.GetMaxByteCount(span.Length) + 7; // assume that a fully escaped char fits too + 2 double quotes
             if (pos > _bytes.Length - sLength)
             {
                 Grow(sLength);
             }
 
             WriteUtf8DoubleQuote();
-            var span = value.AsSpan();
             var index = 0;
             var from = 0;
             while (index < span.Length)
@@ -581,7 +580,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void WriteUtf8DoubleQuote()
+        public void WriteUtf8DoubleQuote()
         {
             _bytes[_pos++] = JsonUtf8Constant.String;
         }

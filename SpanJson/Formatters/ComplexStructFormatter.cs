@@ -15,6 +15,16 @@
             return Deserializer(ref reader);
         }
 
+        public void Serialize(ref StreamingJsonWriter<TSymbol> writer, T value, int nestingLimit)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public T Deserialize(ref StreamingJsonReader<TSymbol> reader)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
         {
             Serializer(ref writer, value, nestingLimit);

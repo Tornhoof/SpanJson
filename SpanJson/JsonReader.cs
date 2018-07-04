@@ -36,6 +36,11 @@ namespace SpanJson
             }
         }
 
+        public void Reset()
+        {
+            _pos = 0;
+        }
+
         public int Position => _pos;
 
         [MethodImpl(MethodImplOptions.NoInlining)]

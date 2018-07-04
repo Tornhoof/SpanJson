@@ -179,6 +179,23 @@ namespace SpanJson.Formatters
         {
             return reader.Read<#= utfName #><#= t.Name #>();
         }
+
+	    public void Serialize(ref StreamingJsonWriter<<#= symbol.Name #>> writer, <#= t.Name #> value, int nestingLimit)
+        {
+<# if(!t.IsValueType) { #>
+            if(value == null)
+            {
+                writer.Write<#= utfName #>Null();
+                return;
+            }
+<# } #>
+            writer.Write<#= utfName #><#= t.Name #>(value);
+        }
+
+        public <#= t.Name #> Deserialize(ref StreamingJsonReader<<#= symbol.Name #>> reader)
+        {
+            return reader.Read<#= utfName #><#= t.Name #>();
+        }
     }
 <# if(t.IsValueType) { #>
     public sealed class Nullable<#= t.Name #><#= utfName #>Formatter : IJsonFormatter<<#= t.Name #>?, <#= symbol.Name #>> 
@@ -205,6 +222,27 @@ namespace SpanJson.Formatters
 
             return ElementFormatter.Deserialize(ref reader);
         }
+
+		public void Serialize(ref StreamingJsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>? value, int nestingLimit)
+        {
+            if (value == null)
+            {
+                writer.Write<#= utfName #>Null();
+                return;
+            }
+
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
+        }
+
+        public <#= t.Name #>? Deserialize(ref StreamingJsonReader<<#= symbol.Name #>> reader)
+        {
+            if (reader.Read<#= utfName #>IsNull())
+            {
+                return null;
+            }
+
+            return ElementFormatter.Deserialize(ref reader);
+        }
     }
     public sealed class Nullable<#= t.Name #><#= utfName #>ArrayFormatter : IJsonFormatter<<#= t.Name #>?[], <#= symbol.Name #>> 
     {
@@ -218,6 +256,20 @@ namespace SpanJson.Formatters
         }
 
         public <#= t.Name #>?[] Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
+        {
+<#
+            GenerateArrayDeserializeCode(t.Name+"?", utfName);
+#>
+        }
+
+        public void Serialize(ref StreamingJsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>?[] value, int nestingLimit)
+        {
+<#
+            GenerateArraySerializeCode(t.Name+"?", utfName);
+#>
+        }
+
+        public <#= t.Name #>?[] Deserialize(ref StreamingJsonReader<<#= symbol.Name #>> reader)
         {
 <#
             GenerateArrayDeserializeCode(t.Name+"?", utfName);
@@ -243,6 +295,20 @@ namespace SpanJson.Formatters
             GenerateListDeserializeCode(t.Name+"?", utfName);
 #>
         }
+
+		public void Serialize(ref StreamingJsonWriter<<#= symbol.Name #>> writer, List<<#= t.Name #>?> value, int nestingLimit)
+        {
+<#
+            GenerateListSerializeCode(t.Name+"?", utfName);
+#>
+        }
+
+        public List<<#= t.Name #>?> Deserialize(ref StreamingJsonReader<<#= symbol.Name #>> reader)
+        {
+<#
+            GenerateListDeserializeCode(t.Name+"?", utfName);
+#>
+        }
     }
 <# } #>
 
@@ -263,6 +329,20 @@ namespace SpanJson.Formatters
             GenerateArrayDeserializeCode(t.Name, utfName);
 #>
         }
+
+		public void Serialize(ref StreamingJsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>[] value, int nestingLimit)
+        {
+<#
+            GenerateArraySerializeCode(t.Name, utfName);
+#>
+        }
+
+        public <#= t.Name #>[] Deserialize(ref StreamingJsonReader<<#= symbol.Name #>> reader)
+        {
+<#
+            GenerateArrayDeserializeCode(t.Name, utfName);
+#>
+        }
     }
 
     public sealed class <#= t.Name #><#= utfName #>ListFormatter : IJsonFormatter<List<<#= t.Name #>>, <#= symbol.Name #>> 
@@ -278,6 +358,20 @@ namespace SpanJson.Formatters
         }
 
         public List<<#= t.Name #>> Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
+        {
+<#
+            GenerateListDeserializeCode(t.Name, utfName);
+#>
+        }
+
+        public void Serialize(ref StreamingJsonWriter<<#= symbol.Name #>> writer, List<<#= t.Name #>> value, int nestingLimit)
+        {
+<#
+            GenerateListSerializeCode(t.Name, utfName);
+#>
+        }
+
+        public List<<#= t.Name #>> Deserialize(ref StreamingJsonReader<<#= symbol.Name #>> reader)
         {
 <#
             GenerateListDeserializeCode(t.Name, utfName);
