@@ -29,6 +29,7 @@ namespace SpanJson.Formatters
         {
             return args?.Length > 0 ? type.GetMethod(name, args) : type.GetMethod(name);
         }
+
         protected static ConstantExpression GetConstantExpressionOfString<TSymbol>(string input)
         {
             if (typeof(TSymbol) == typeof(char))
@@ -91,7 +92,7 @@ namespace SpanJson.Formatters
 
         protected static Type GetReaderWriterTypeFromDelegate(Type delegateType)
         {
-            var invokeMember = delegateType.GetMethod("InvokeMember");
+            var invokeMember = delegateType.GetMethod("Invoke");
             return invokeMember.GetParameters().First().ParameterType; // it's always the first one anyway
         }
     }

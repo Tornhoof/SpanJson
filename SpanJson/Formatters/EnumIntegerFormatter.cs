@@ -39,7 +39,7 @@ namespace SpanJson.Formatters
         {
             var underlyingType = Enum.GetUnderlyingType(typeof(T));
             var writerType = GetReaderWriterTypeFromDelegate<TDelegate>();
-            var writerParameter = Expression.Parameter(writerType.MakeByRefType(), "writer");
+            var writerParameter = Expression.Parameter(writerType, "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
             string methodName;
             if (typeof(TSymbol) == typeof(char))
@@ -66,7 +66,7 @@ namespace SpanJson.Formatters
         {
             var underlyingType = Enum.GetUnderlyingType(typeof(T));
             var readerType = GetReaderWriterTypeFromDelegate<TDelegate>();
-            var readerParameter = Expression.Parameter(readerType.MakeByRefType(), "reader");
+            var readerParameter = Expression.Parameter(readerType, "reader");
             string methodName;
             if (typeof(TSymbol) == typeof(char))
             {

@@ -73,7 +73,7 @@ namespace SpanJson.Formatters
         private static TDelegate BuildSerializeDelegate<TDelegate>(Type type) where TDelegate : Delegate
         {
             var writerType = GetReaderWriterTypeFromDelegate<TDelegate>();
-            var writerParameter = Expression.Parameter(writerType.MakeByRefType(), "writer");
+            var writerParameter = Expression.Parameter(writerType, "writer");
             var valueParameter = Expression.Parameter(typeof(object), "value");
             var nestingLimitParameter = Expression.Parameter(typeof(int), "nestingLimit");
             Expression lambdaBody;
@@ -88,7 +88,7 @@ namespace SpanJson.Formatters
             {
                 var formatterType = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter(type).GetType();
                 var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
-                var serializeMethodInfo = formatterType.GetMethod("Serialize");
+                var serializeMethodInfo = FindPublicInstanceMethod(formatterType, "Serialize", writerType);
                 lambdaBody = Expression.Call(Expression.Field(null, fieldInfo), serializeMethodInfo, writerParameter,
                     Expression.Convert(valueParameter, type), nestingLimitParameter);
             }

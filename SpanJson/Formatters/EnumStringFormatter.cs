@@ -50,7 +50,7 @@ namespace SpanJson.Formatters
         private static TDelegate BuildDeserializeDelegate<TDelegate>() where TDelegate : Delegate
         {
             var readerType = GetReaderWriterTypeFromDelegate<TDelegate>();
-            var readerParameter = Expression.Parameter(readerType.MakeByRefType(), "reader");
+            var readerParameter = Expression.Parameter(readerType, "reader");
             MethodInfo nameSpanMethodInfo;
             if (typeof(TSymbol) == typeof(char))
             {
@@ -120,7 +120,8 @@ namespace SpanJson.Formatters
 
         private static TDelegate BuildSerializeDelegate<TDelegate>() where TDelegate : Delegate
         {
-            var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
+            var writerType = GetReaderWriterTypeFromDelegate<TDelegate>();
+            var writerParameter = Expression.Parameter(writerType, "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
             MethodInfo writerMethodInfo;
             if (typeof(TSymbol) == typeof(char))

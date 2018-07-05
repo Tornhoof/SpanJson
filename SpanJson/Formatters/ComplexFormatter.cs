@@ -19,7 +19,7 @@ namespace SpanJson.Formatters
             var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
             var memberInfos = resolver.GetObjectDescription<T>().Where(a => a.CanRead).ToList();
             var writerType = GetReaderWriterTypeFromDelegate<TDelegate>();
-            var writerParameter = Expression.Parameter(writerType.MakeByRefType(), "writer");
+            var writerParameter = Expression.Parameter(writerType, "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
             var nestingLimitParameter = Expression.Parameter(typeof(int), "nestingLimit");
             var expressions = new List<Expression>();
@@ -86,9 +86,12 @@ namespace SpanJson.Formatters
                 }
                 else
                 {
-                    serializeMethodInfo = typeof(BaseFormatter)
-                        .GetMethod(nameof(SerializeRuntimeDecisionInternal), BindingFlags.NonPublic | BindingFlags.Static)
-                        .MakeGenericMethod(memberInfo.MemberType, typeof(TSymbol), typeof(TResolver));
+                    // TODO find a way to get the propery methodInfo 
+                    bool isStreaming = writerType.Name.Contains("StreamingJsonWriter");
+                    serializeMethodInfo = typeof(BaseFormatter).GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
+                        .First(a => a.Name == nameof(SerializeRuntimeDecisionInternal) && a.GetParameters().Any(b =>
+                                        isStreaming ? b.ParameterType.Name.StartsWith("StreamingJsonWriter") : b.ParameterType.Name.StartsWith("JsonWriter")));
+                    serializeMethodInfo = serializeMethodInfo.MakeGenericMethod(memberInfo.MemberType, typeof(TSymbol), typeof(TResolver));
                     parameterExpressions.Add(Expression.Field(null, fieldInfo));
                 }
 

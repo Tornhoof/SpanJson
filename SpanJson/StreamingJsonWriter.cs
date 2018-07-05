@@ -203,6 +203,18 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteUtf16Verbatim(string value)
+        {
+            _jsonWriter.WriteUtf16Verbatim(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteUtf8Verbatim(byte[] value)
+        {
+            _jsonWriter.WriteUtf8Verbatim(value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf16Verbatim(in ReadOnlySpan<char> value)
         {
             _jsonWriter.WriteUtf16Verbatim(value);

@@ -192,6 +192,30 @@ namespace SpanJson
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<byte> ReadUtf8NameSpan()
+        {
+            return _jsonReader.ReadUtf8NameSpan();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<char> ReadUtf16NameSpan()
+        {
+            return _jsonReader.ReadUtf16NameSpan();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<byte> ReadUtf8StringSpan()
+        {
+            return _jsonReader.ReadUtf8StringSpan();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<char> ReadUtf16StringSpan()
+        {
+            return _jsonReader.ReadUtf16StringSpan();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public object ReadDynamic()
         {
             throw new NotImplementedException();
@@ -199,6 +223,18 @@ namespace SpanJson
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SkipNextSegment()
+        {
+            throw new NotImplementedException();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SkipNextUtf8Segment()
+        {
+            throw new NotImplementedException();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SkipNextUtf16Segment()
         {
             throw new NotImplementedException();
         }

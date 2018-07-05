@@ -219,7 +219,7 @@ namespace SpanJson.Formatters
                 {
                     var delegateType = delegateTypes[i];
                     var readerType = GetReaderWriterTypeFromDelegate(delegateType);
-                    var readerParameter = Expression.Parameter(readerType.MakeByRefType(), "reader");
+                    var readerParameter = Expression.Parameter(readerType, "reader");
 
 
                     if (!memberInfo.CanWrite)
