@@ -1,88 +1,37 @@
 ﻿using System;
 using System.Buffers;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using SpanJson.Buffers;
 
 namespace SpanJson
 {
     public ref partial struct JsonWriter<TSymbol> where TSymbol : struct
     {
-        private Span<char> _chars;
-        private Span<byte> _bytes;
-        private int _pos;
+        private WriteBuffer<TSymbol> _buffer;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public JsonWriter(int initialSize)
         {
-            Data = ArrayPool<TSymbol>.Shared.Rent(initialSize);
-            _pos = 0;
-            if (typeof(TSymbol) == typeof(char))
-            {
-                _chars = MemoryMarshal.Cast<TSymbol, char>(Data);
-                _bytes = null;
-            }
-            else if (typeof(TSymbol) == typeof(byte))
-            {
-                _bytes = MemoryMarshal.Cast<TSymbol, byte>(Data);
-                _chars = null;
-            }
-            else
-            {
-                ThrowNotSupportedException();
-                _chars = null;
-                _bytes = null;
-
-            }
+            _buffer = new WriteBuffer<TSymbol>(initialSize);
         }
 
-        public int Position => _pos;
+        public int Position => _buffer.Pos;
 
-        public TSymbol[] Data { get; private set; }
+        public TSymbol[] Data => _buffer.Data;
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void Dispose()
         {
-            var toReturn = Data;
-            this = default; // for safety, to avoid using pooled array if this instance is erroneously appended to again
-            if (toReturn != null)
-            {
-                ArrayPool<TSymbol>.Shared.Return(toReturn);
-            }
+            _buffer.Dispose();
         }
 
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void Grow(int requiredAdditionalCapacity)
         {
-            Debug.Assert(requiredAdditionalCapacity > 0);
-
-            var toReturn = Data;
-            if (typeof(TSymbol) == typeof(char))
-            {
-                var poolArray =
-                    ArrayPool<TSymbol>.Shared.Rent(Math.Max(_pos + requiredAdditionalCapacity, _chars.Length * 2));
-                var converted = MemoryMarshal.Cast<TSymbol, char>(poolArray);
-                _chars.CopyTo(converted);
-                _chars = converted;
-                Data = poolArray;
-            }
-            else if (typeof(TSymbol) == typeof(byte))
-            {
-                var poolArray =
-                    ArrayPool<TSymbol>.Shared.Rent(Math.Max(_pos + requiredAdditionalCapacity, _bytes.Length * 2));
-                var converted = MemoryMarshal.Cast<TSymbol, byte>(poolArray);
-                _bytes.CopyTo(converted);
-                _bytes = converted;
-                Data = poolArray;
-            }
-
-
-            if (toReturn != null)
-            {
-                ArrayPool<TSymbol>.Shared.Return(toReturn);
-            }
+            _buffer.Grow(requiredAdditionalCapacity);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -266,26 +215,26 @@ namespace SpanJson
         {
             if (typeof(TSymbol) == typeof(char))
             {
-                if (_pos > _chars.Length - count)
+                if (_buffer.Pos > _buffer.Chars.Length - count)
                 {
                     Grow(count);
                 }
 
                 for (var i = 0; i < count; i++)
                 {
-                    _chars[_pos++] = ' ';
+                    _buffer.Chars[_buffer.Pos++] = ' ';
                 }
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                if (_pos > _bytes.Length - count)
+                if (_buffer.Pos > _buffer.Bytes.Length - count)
                 {
                     Grow(count);
                 }
 
                 for (var i = 0; i < count; i++)
                 {
-                    _bytes[_pos++] = (byte) ' ';
+                    _buffer.Bytes[_buffer.Pos++] = (byte) ' ';
                 }
             }
             else
@@ -299,7 +248,7 @@ namespace SpanJson
         {
             if (typeof(TSymbol) == typeof(char))
             {
-                if (_pos > _chars.Length - 1)
+                if (_buffer.Pos > _buffer.Chars.Length - 1)
                 {
                     Grow(1);
                 }
@@ -308,7 +257,7 @@ namespace SpanJson
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                if (_pos > _bytes.Length - 1)
+                if (_buffer.Pos > _buffer.Bytes.Length - 1)
                 {
                     Grow(1);
                 }
@@ -327,7 +276,7 @@ namespace SpanJson
             var remaining = values.Length + 3;
             if (typeof(TSymbol) == typeof(char))
             {
-                if (_pos > _chars.Length - remaining)
+                if (_buffer.Pos > _buffer.Chars.Length - remaining)
                 {
                     Grow(remaining);
                 }
@@ -335,11 +284,11 @@ namespace SpanJson
                 WriteUtf16DoubleQuote();
                 WriteUtf16Verbatim(MemoryMarshal.Cast<TSymbol, char>(values));
                 WriteUtf16DoubleQuote();
-                _chars[_pos++] = JsonUtf16Constant.NameSeparator;
+                _buffer.Chars[_buffer.Pos++] = JsonUtf16Constant.NameSeparator;
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                if (_pos > _bytes.Length - remaining)
+                if (_buffer.Pos > _buffer.Bytes.Length - remaining)
                 {
                     Grow(remaining);
                 }
@@ -347,7 +296,7 @@ namespace SpanJson
                 WriteUtf8DoubleQuote();
                 WriteUtf8Verbatim(MemoryMarshal.Cast<TSymbol, byte>(values));
                 WriteUtf8DoubleQuote();
-                _bytes[_pos++] = JsonUtf8Constant.NameSeparator;
+                _buffer.Bytes[_buffer.Pos++] = JsonUtf8Constant.NameSeparator;
             }
             else
             {
