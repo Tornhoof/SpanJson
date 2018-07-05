@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -85,12 +86,13 @@ namespace SpanJson.Formatters
 
         protected static Type GetReaderWriterTypeFromDelegate<TDelegate>() where TDelegate : Delegate
         {
-
+            return GetReaderWriterTypeFromDelegate(typeof(TDelegate));
         }
 
         protected static Type GetReaderWriterTypeFromDelegate(Type delegateType)
         {
-
+            var invokeMember = delegateType.GetMethod("InvokeMember");
+            return invokeMember.GetParameters().First().ParameterType; // it's always the first one anyway
         }
     }
 }

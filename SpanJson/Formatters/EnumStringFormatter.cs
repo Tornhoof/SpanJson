@@ -50,7 +50,7 @@ namespace SpanJson.Formatters
         private static TDelegate BuildDeserializeDelegate<TDelegate>() where TDelegate : Delegate
         {
             var readerType = GetReaderWriterTypeFromDelegate<TDelegate>();
-            var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
+            var readerParameter = Expression.Parameter(readerType.MakeByRefType(), "reader");
             MethodInfo nameSpanMethodInfo;
             if (typeof(TSymbol) == typeof(char))
             {
