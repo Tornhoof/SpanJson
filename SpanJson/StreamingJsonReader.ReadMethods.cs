@@ -10,19 +10,22 @@ namespace SpanJson
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public SByte ReadUtf8SByte()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8SByte();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public SByte ReadUtf16SByte()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16SByte();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public SByte ReadSByte()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16SByte();
@@ -38,19 +41,22 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Int16 ReadUtf8Int16()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8Int16();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Int16 ReadUtf16Int16()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16Int16();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Int16 ReadInt16()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16Int16();
@@ -66,19 +72,22 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Int32 ReadUtf8Int32()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8Int32();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Int32 ReadUtf16Int32()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16Int32();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Int32 ReadInt32()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16Int32();
@@ -94,19 +103,22 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Int64 ReadUtf8Int64()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8Int64();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Int64 ReadUtf16Int64()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16Int64();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Int64 ReadInt64()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16Int64();
@@ -122,19 +134,22 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Byte ReadUtf8Byte()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8Byte();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Byte ReadUtf16Byte()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16Byte();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Byte ReadByte()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16Byte();
@@ -150,19 +165,22 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public UInt16 ReadUtf8UInt16()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8UInt16();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public UInt16 ReadUtf16UInt16()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16UInt16();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public UInt16 ReadUInt16()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16UInt16();
@@ -178,19 +196,22 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public UInt32 ReadUtf8UInt32()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8UInt32();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public UInt32 ReadUtf16UInt32()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16UInt32();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public UInt32 ReadUInt32()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16UInt32();
@@ -206,19 +227,22 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public UInt64 ReadUtf8UInt64()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8UInt64();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public UInt64 ReadUtf16UInt64()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16UInt64();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public UInt64 ReadUInt64()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16UInt64();
@@ -234,19 +258,22 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Single ReadUtf8Single()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8Single();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Single ReadUtf16Single()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16Single();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Single ReadSingle()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16Single();
@@ -262,19 +289,22 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Double ReadUtf8Double()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8Double();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Double ReadUtf16Double()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16Double();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Double ReadDouble()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16Double();
@@ -290,19 +320,22 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Decimal ReadUtf8Decimal()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8Decimal();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Decimal ReadUtf16Decimal()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16Decimal();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Decimal ReadDecimal()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16Decimal();
@@ -318,19 +351,22 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Boolean ReadUtf8Boolean()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8Boolean();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Boolean ReadUtf16Boolean()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16Boolean();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Boolean ReadBoolean()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16Boolean();
@@ -346,19 +382,22 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Char ReadUtf8Char()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8Char();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Char ReadUtf16Char()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16Char();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Char ReadChar()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16Char();
@@ -374,19 +413,22 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public DateTime ReadUtf8DateTime()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8DateTime();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public DateTime ReadUtf16DateTime()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16DateTime();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public DateTime ReadDateTime()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16DateTime();
@@ -402,19 +444,22 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public DateTimeOffset ReadUtf8DateTimeOffset()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8DateTimeOffset();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public DateTimeOffset ReadUtf16DateTimeOffset()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16DateTimeOffset();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public DateTimeOffset ReadDateTimeOffset()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16DateTimeOffset();
@@ -430,19 +475,22 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public TimeSpan ReadUtf8TimeSpan()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8TimeSpan();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public TimeSpan ReadUtf16TimeSpan()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16TimeSpan();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public TimeSpan ReadTimeSpan()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16TimeSpan();
@@ -458,19 +506,22 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Guid ReadUtf8Guid()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8Guid();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Guid ReadUtf16Guid()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16Guid();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Guid ReadGuid()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16Guid();
@@ -486,19 +537,22 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Version ReadUtf8Version()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8Version();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Version ReadUtf16Version()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16Version();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Version ReadVersion()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16Version();
@@ -514,19 +568,22 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Uri ReadUtf8Uri()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf8Uri();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Uri ReadUtf16Uri()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.ReadUtf16Uri();
       }
 
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public Uri ReadUri()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16Uri();
@@ -542,17 +599,20 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public void ReadUtf8BeginObjectOrThrow(  )
-      {	       
+      {	      
+	      SlideWindow(); 
 		   _jsonReader.ReadUtf8BeginObjectOrThrow( );
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public void ReadUtf16BeginObjectOrThrow(  )
-      {	       
+      {	      
+	      SlideWindow(); 
 		   _jsonReader.ReadUtf16BeginObjectOrThrow( );
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public void ReadBeginObjectOrThrow(  )
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
 		       _jsonReader.ReadUtf16BeginObjectOrThrow( );
@@ -568,17 +628,20 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public void ReadUtf8BeginArrayOrThrow(  )
-      {	       
+      {	      
+	      SlideWindow(); 
 		   _jsonReader.ReadUtf8BeginArrayOrThrow( );
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public void ReadUtf16BeginArrayOrThrow(  )
-      {	       
+      {	      
+	      SlideWindow(); 
 		   _jsonReader.ReadUtf16BeginArrayOrThrow( );
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public void ReadBeginArrayOrThrow(  )
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
 		       _jsonReader.ReadUtf16BeginArrayOrThrow( );
@@ -594,17 +657,20 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public bool ReadUtf8IsNull(  )
-      {	       
+      {	      
+	      SlideWindow(); 
 		  return _jsonReader.ReadUtf8IsNull( );
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public bool ReadUtf16IsNull(  )
-      {	       
+      {	      
+	      SlideWindow(); 
 		  return _jsonReader.ReadUtf16IsNull( );
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public bool ReadIsNull(  )
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
 		      return _jsonReader.ReadUtf16IsNull( );
@@ -620,17 +686,20 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public bool TryReadUtf8IsEndArrayOrValueSeparator(ref int count)
-      {	       
+      {	      
+	      SlideWindow(); 
 		  return _jsonReader.TryReadUtf8IsEndArrayOrValueSeparator(ref count);
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public bool TryReadUtf16IsEndArrayOrValueSeparator(ref int count)
-      {	       
+      {	      
+	      SlideWindow(); 
 		  return _jsonReader.TryReadUtf16IsEndArrayOrValueSeparator(ref count);
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public bool TryReadIsEndArrayOrValueSeparator(ref int count)
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
 		      return _jsonReader.TryReadUtf16IsEndArrayOrValueSeparator(ref count);
@@ -646,17 +715,20 @@ namespace SpanJson
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public bool TryReadUtf8IsEndObjectOrValueSeparator(ref int count)
-      {	       
+      {	      
+	      SlideWindow(); 
 		  return _jsonReader.TryReadUtf8IsEndObjectOrValueSeparator(ref count);
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public bool TryReadUtf16IsEndObjectOrValueSeparator(ref int count)
-      {	       
+      {	      
+	      SlideWindow(); 
 		  return _jsonReader.TryReadUtf16IsEndObjectOrValueSeparator(ref count);
       }
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public bool TryReadIsEndObjectOrValueSeparator(ref int count)
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
 		      return _jsonReader.TryReadUtf16IsEndObjectOrValueSeparator(ref count);

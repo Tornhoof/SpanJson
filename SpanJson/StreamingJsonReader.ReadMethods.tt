@@ -57,7 +57,8 @@ namespace SpanJson
 #>
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public <#=t.Name#> Read<#=symbol#><#=t.Name #>()
-      {	       
+      {	  
+	      SlideWindow();
 		  return _jsonReader.Read<#=symbol#><#=t.Name #>();
       }
 
@@ -65,6 +66,7 @@ namespace SpanJson
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public <#=t.Name#> Read<#=t.Name #>()
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
               return _jsonReader.ReadUtf16<#=t.Name #>();
@@ -86,13 +88,15 @@ namespace SpanJson
 #>
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public <#=t.ReturnType#> <#=methodName#>(<#=t.ArgumentModifier#> <#=t.ArgumentType#> <#=t.Argument#>)
-      {	       
+      {	      
+	      SlideWindow(); 
 		  <#=returnValue#> _jsonReader.<#=methodName#>(<#=t.ArgumentModifier#> <#=t.Argument#>);
       }
 <# } #>
       [MethodImpl(MethodImplOptions.AggressiveInlining)]
       public <#=t.ReturnType#> <#=t.Name#>(<#=t.ArgumentModifier#> <#=t.ArgumentType#> <#=t.Argument#>)
       {
+	      SlideWindow();
           if (typeof(TSymbol) == typeof(char))
           {
 		      <#=returnValue#> _jsonReader.<#=t.Name.Replace("Read","ReadUtf16")#>(<#=t.ArgumentModifier#> <#=t.Argument#>);

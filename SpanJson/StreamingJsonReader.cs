@@ -62,12 +62,12 @@ namespace SpanJson
         /// i.e. copy the remaining bytes to the front and fill the remainder with new data
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ReFrameBuffer()
+        public void SlideWindow()
         {
-            if (_jsonReader.Position >= _length - JsonSharedConstant.MaxFormattedValueLength)
+            // We assume that the window starts at the beginning
+            int remaining = _length - _jsonReader.Position;
+            if (remaining < JsonSharedConstant.MaxFormattedValueLength)
             {
-                // We assume that the window starts at the beginning
-                int remaining = _length - _jsonReader.Position;
                 if (typeof(TSymbol) == typeof(byte))
                 {
                     var temp = _buffer;
@@ -111,7 +111,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ReadString()
         {
-            ReFrameBuffer();
+            SlideWindow();
             if (typeof(TSymbol) == typeof(char))
             {
                 return _jsonReader.ReadUtf16String();

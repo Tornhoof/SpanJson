@@ -79,7 +79,6 @@ namespace SpanJson.Formatters
                 var value = ElementFormatter.Deserialize(ref reader);
                 result[key] = value;
             }
-
             return result;
         }
 

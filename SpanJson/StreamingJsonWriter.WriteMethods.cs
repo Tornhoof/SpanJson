@@ -11,228 +11,266 @@ namespace SpanJson
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8SByte(SByte input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8SByte(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16SByte(SByte input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16SByte(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8Int16(Int16 input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8Int16(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16Int16(Int16 input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16Int16(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8Int32(Int32 input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8Int32(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16Int32(Int32 input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16Int32(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8Int64(Int64 input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8Int64(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16Int64(Int64 input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16Int64(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8Byte(Byte input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8Byte(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16Byte(Byte input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16Byte(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8UInt16(UInt16 input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8UInt16(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16UInt16(UInt16 input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16UInt16(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8UInt32(UInt32 input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8UInt32(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16UInt32(UInt32 input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16UInt32(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8UInt64(UInt64 input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8UInt64(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16UInt64(UInt64 input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16UInt64(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8Single(Single input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8Single(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16Single(Single input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16Single(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8Double(Double input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8Double(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16Double(Double input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16Double(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8Decimal(Decimal input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8Decimal(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16Decimal(Decimal input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16Decimal(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8Boolean(Boolean input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8Boolean(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16Boolean(Boolean input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16Boolean(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8Char(Char input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8Char(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16Char(Char input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16Char(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8DateTime(DateTime input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8DateTime(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16DateTime(DateTime input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16DateTime(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8DateTimeOffset(DateTimeOffset input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8DateTimeOffset(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16DateTimeOffset(DateTimeOffset input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16DateTimeOffset(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8TimeSpan(TimeSpan input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8TimeSpan(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16TimeSpan(TimeSpan input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16TimeSpan(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8Guid(Guid input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8Guid(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16Guid(Guid input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16Guid(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8Version(Version input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8Version(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16Version(Version input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16Version(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8Uri(Uri input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf8Uri(input);		  
        }
 
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16Uri(Uri input)
        {
+	      Flush();
 	      _jsonWriter.WriteUtf16Uri(input);		  
        }
 
@@ -240,17 +278,20 @@ namespace SpanJson
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8BeginArray()
        {
+	      Flush();
 		   _jsonWriter.WriteUtf8BeginArray();
        }
        
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16BeginArray()
        {
+	      Flush();
 		   _jsonWriter.WriteUtf16BeginArray();
        }
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteBeginArray()
        {
+	      Flush();
           if (typeof(TSymbol) == typeof(char))
           {
               _jsonWriter.WriteUtf16BeginArray();
@@ -269,17 +310,20 @@ namespace SpanJson
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8EndArray()
        {
+	      Flush();
 		   _jsonWriter.WriteUtf8EndArray();
        }
        
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16EndArray()
        {
+	      Flush();
 		   _jsonWriter.WriteUtf16EndArray();
        }
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteEndArray()
        {
+	      Flush();
           if (typeof(TSymbol) == typeof(char))
           {
               _jsonWriter.WriteUtf16EndArray();
@@ -298,17 +342,20 @@ namespace SpanJson
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8BeginObject()
        {
+	      Flush();
 		   _jsonWriter.WriteUtf8BeginObject();
        }
        
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16BeginObject()
        {
+	      Flush();
 		   _jsonWriter.WriteUtf16BeginObject();
        }
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteBeginObject()
        {
+	      Flush();
           if (typeof(TSymbol) == typeof(char))
           {
               _jsonWriter.WriteUtf16BeginObject();
@@ -327,17 +374,20 @@ namespace SpanJson
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8EndObject()
        {
+	      Flush();
 		   _jsonWriter.WriteUtf8EndObject();
        }
        
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16EndObject()
        {
+	      Flush();
 		   _jsonWriter.WriteUtf16EndObject();
        }
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteEndObject()
        {
+	      Flush();
           if (typeof(TSymbol) == typeof(char))
           {
               _jsonWriter.WriteUtf16EndObject();
@@ -356,17 +406,20 @@ namespace SpanJson
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8DoubleQuote()
        {
+	      Flush();
 		   _jsonWriter.WriteUtf8DoubleQuote();
        }
        
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16DoubleQuote()
        {
+	      Flush();
 		   _jsonWriter.WriteUtf16DoubleQuote();
        }
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteDoubleQuote()
        {
+	      Flush();
           if (typeof(TSymbol) == typeof(char))
           {
               _jsonWriter.WriteUtf16DoubleQuote();
@@ -385,17 +438,20 @@ namespace SpanJson
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8Null()
        {
+	      Flush();
 		   _jsonWriter.WriteUtf8Null();
        }
        
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16Null()
        {
+	      Flush();
 		   _jsonWriter.WriteUtf16Null();
        }
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteNull()
        {
+	      Flush();
           if (typeof(TSymbol) == typeof(char))
           {
               _jsonWriter.WriteUtf16Null();
@@ -414,17 +470,20 @@ namespace SpanJson
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf8ValueSeparator()
        {
+	      Flush();
 		   _jsonWriter.WriteUtf8ValueSeparator();
        }
        
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteUtf16ValueSeparator()
        {
+	      Flush();
 		   _jsonWriter.WriteUtf16ValueSeparator();
        }
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void WriteValueSeparator()
        {
+	      Flush();
           if (typeof(TSymbol) == typeof(char))
           {
               _jsonWriter.WriteUtf16ValueSeparator();

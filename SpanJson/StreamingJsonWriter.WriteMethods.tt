@@ -59,6 +59,7 @@ namespace SpanJson
        [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void Write<#=symbol#><#=t.Name #>(<#=t.Name#> input)
        {
+	      Flush();
 	      _jsonWriter.Write<#=symbol#><#=t.Name #>(input);		  
        }
 
@@ -70,12 +71,14 @@ namespace SpanJson
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void Write<#=symbol#><#=method#>()
        {
+	      Flush();
 		   _jsonWriter.Write<#=symbol#><#=method#>();
        }
 <# } #>
 	   [MethodImpl(MethodImplOptions.AggressiveInlining)]
        public void Write<#=method#>()
        {
+	      Flush();
           if (typeof(TSymbol) == typeof(char))
           {
               _jsonWriter.WriteUtf16<#=method #>();

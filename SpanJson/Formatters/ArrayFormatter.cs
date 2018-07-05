@@ -52,7 +52,6 @@ namespace SpanJson.Formatters
                     ArrayPool<T>.Shared.Return(temp);
                 }
             }
-
             return result;
         }
 
@@ -116,7 +115,6 @@ namespace SpanJson.Formatters
                     ArrayPool<T>.Shared.Return(temp);
                 }
             }
-
             return result;
         }
 

@@ -13,8 +13,8 @@ namespace SpanJson.Formatters
     {
         private const int NestingLimit = 256;
 
-        protected static SerializeDelegate<T, TSymbol> BuildSerializeDelegate<T, TSymbol, TResolver>()
-            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+        protected static TDelegate BuildSerializeDelegate<T, TSymbol, TResolver, TDelegate>(bool isStreaming)
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDelegate : Delegate
         {
             var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
             var memberInfos = resolver.GetObjectDescription<T>().Where(a => a.CanRead).ToList();
@@ -163,12 +163,12 @@ namespace SpanJson.Formatters
             expressions.Add(Expression.Call(writerParameter, writeEndObjectMethodInfo));
             var blockExpression = Expression.Block(new[] {writeSeperator}, expressions);
             var lambda =
-                Expression.Lambda<SerializeDelegate<T, TSymbol>>(blockExpression, writerParameter, valueParameter, nestingLimitParameter);
+                Expression.Lambda<TDelegate>(blockExpression, writerParameter, valueParameter, nestingLimitParameter);
             return lambda.Compile();
         }
 
-        protected static DeserializeDelegate<T, TSymbol> BuildDeserializeDelegate<T, TSymbol, TResolver>()
-            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+        protected static TDelegate BuildDeserializeDelegate<T, TSymbol, TResolver, TDelegate>(bool isStreaming)
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDelegate : Delegate
         {
             var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
             var objectDescription = resolver.GetObjectDescription<T>();
@@ -178,7 +178,7 @@ namespace SpanJson.Formatters
             if (memberInfos.Any(a => a.MemberType.IsAbstract || a.MemberType.IsInterface))
             {
                 return Expression
-                    .Lambda<DeserializeDelegate<T, TSymbol>>(Expression.Block(
+                    .Lambda<TDelegate>(Expression.Block(
                             Expression.Throw(Expression.Constant(new NotSupportedException($"{typeof(T).Name} contains abstract or interface members."))),
                             Expression.Default(typeof(T))),
                         readerParameter).Compile();
@@ -186,7 +186,7 @@ namespace SpanJson.Formatters
 
             if (typeof(T).IsAbstract)
             {
-                return Expression.Lambda<DeserializeDelegate<T, TSymbol>>(Expression.Default(typeof(T)), readerParameter).Compile();
+                return Expression.Lambda<TDelegate>(Expression.Default(typeof(T)), readerParameter).Compile();
             }
 
             if (memberInfos.Count == 0)
@@ -206,7 +206,7 @@ namespace SpanJson.Formatters
                     createExpression = Expression.Default(typeof(T));
                 }
 
-                return Expression.Lambda<DeserializeDelegate<T, TSymbol>>(createExpression, readerParameter).Compile();
+                return Expression.Lambda<TDelegate>(createExpression, readerParameter).Compile();
             }
 
             var returnValue = Expression.Variable(typeof(T), "result");
@@ -346,7 +346,7 @@ namespace SpanJson.Formatters
                 );
             }
 
-            var lambda = Expression.Lambda<DeserializeDelegate<T, TSymbol>>(block, readerParameter);
+            var lambda = Expression.Lambda<TDelegate>(block, readerParameter);
             return lambda.Compile();
         }
 
@@ -357,9 +357,11 @@ namespace SpanJson.Formatters
 
         protected delegate T DeserializeDelegate<out T, TSymbol>(ref JsonReader<TSymbol> reader) where TSymbol : struct;
 
-
         protected delegate void SerializeDelegate<in T, TSymbol>(ref JsonWriter<TSymbol> writer, T value, int nestingLimit) where TSymbol : struct;
 
+        protected delegate T StreamingDeserializeDelegate<out T, TSymbol>(ref StreamingJsonReader<TSymbol> reader) where TSymbol : struct;
+
+        protected delegate void StreamingSerializeDelegate<in T, TSymbol>(ref StreamingJsonWriter<TSymbol> writer, T value, int nestingLimit) where TSymbol : struct;
 
 
     }

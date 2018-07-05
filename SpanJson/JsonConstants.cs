@@ -7,6 +7,7 @@ namespace SpanJson
         public const int MaxNumberBufferSize = 32;
         public const int MaxVersionLength = 45; // 4 * int + 3 . + 2 double quote
         public const int MaxFormattedValueLength = 45; // If we ever add something longer than MaxVersionLength; we need to correct this
+        public const int StreamingBufferSize = 4096;
     }
 
     public static class JsonUtf8Constant
