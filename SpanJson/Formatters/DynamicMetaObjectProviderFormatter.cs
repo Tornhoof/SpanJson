@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -22,10 +23,24 @@ namespace SpanJson.Formatters
     {
         private static readonly Func<T> CreateFunctor = BuildCreateFunctor<T>(null);
 
+        private readonly struct Delegates
+        {
+            public DeserializeDelegate Deserializer { get; }
+            public StreamingDeserializeDelegate StreamingDeserializer { get; }
+
+            public Delegates(params Delegate[] delegates)
+            {
+                Debug.Assert(delegates.Length != 2);
+                Deserializer = (DeserializeDelegate)delegates[0];
+                StreamingDeserializer = (StreamingDeserializeDelegate) delegates[1];
+            }
+        }
+
+
         public static readonly DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver> Default = new DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver>();
 
         private static readonly IJsonFormatterResolver<TSymbol, TResolver> Resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
-        private static readonly Dictionary<string, DeserializeDelegate> KnownMembersDictionary = BuildKnownMembers();
+        private static readonly Dictionary<string, Delegates> KnownMembersDictionary = BuildKnownMembers();
         private static readonly ConcurrentDictionary<string, Func<T, object>> GetMemberCache = new ConcurrentDictionary<string, Func<T, object>>();
 
 
@@ -46,7 +61,7 @@ namespace SpanJson.Formatters
                 var name = reader.ReadEscapedName();
                 if (KnownMembersDictionary.TryGetValue(name, out var action))
                 {
-                    action(result, ref reader); // if we have known members we try to assign them directly without dynamic
+                    action.Deserializer(result, ref reader); // if we have known members we try to assign them directly without dynamic
                 }
                 else
                 {
@@ -111,7 +126,29 @@ namespace SpanJson.Formatters
 
         public T Deserialize(ref StreamingJsonReader<TSymbol> reader)
         {
-            throw new NotSupportedException(); // TODO
+            if (reader.ReadIsNull())
+            {
+                return default;
+            }
+
+            reader.ReadBeginObjectOrThrow();
+            var result = CreateFunctor();
+            var count = 0;
+            while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
+            {
+                var name = reader.ReadEscapedName();
+                if (KnownMembersDictionary.TryGetValue(name, out var action))
+                {
+                    action.StreamingDeserializer(result, ref reader); // if we have known members we try to assign them directly without dynamic
+                }
+                else
+                {
+                    var setter = GetOrAddSetMember(name);
+                    setter(result, reader.ReadDynamic());
+                }
+            }
+
+            return result;
         }
 
         public void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
@@ -165,40 +202,53 @@ namespace SpanJson.Formatters
             }
         }
 
-        private static Dictionary<string, DeserializeDelegate> BuildKnownMembers()
+        private static Dictionary<string, Delegates> BuildKnownMembers()
         {
             var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
             var memberInfos = resolver.GetObjectDescription<T>().ToList();
             var inputParameter = Expression.Parameter(typeof(T), "input");
-            var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
-            var result = new Dictionary<string, DeserializeDelegate>(StringComparer.InvariantCulture);
-            // can't deserialize abstract or interface
+            var result = new Dictionary<string, Delegates>(StringComparer.InvariantCulture);
+
+            var delegateTypes = new Type[] {typeof(DeserializeDelegate), typeof(StreamingDeserializeDelegate)};
+
+                // can't deserialize abstract or interface
             foreach (var memberInfo in memberInfos)
             {
-                if (!memberInfo.CanWrite)
+                var delegates = new Delegate[delegateTypes.Length];
+                for (int i = 0; i < delegateTypes.Length; i++)
                 {
-                    var skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextSegment));
-                    var skipExpression = Expression
-                        .Lambda<DeserializeDelegate>(Expression.Call(readerParameter, skipNextMethodInfo), inputParameter, readerParameter).Compile();
-                    result.Add(memberInfo.Name, skipExpression);
+                    var delegateType = delegateTypes[i];
+                    var readerType = GetReaderWriterTypeFromDelegate(delegateType);
+                    var readerParameter = Expression.Parameter(readerType.MakeByRefType(), "reader");
+
+
+                    if (!memberInfo.CanWrite)
+                    {
+                        var skipNextMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.SkipNextSegment));
+                        var skipExpression = Expression
+                            .Lambda(Expression.Call(readerParameter, skipNextMethodInfo), inputParameter, readerParameter).Compile();
+                        delegates[i] = skipExpression;
+                    }
+                    else if (memberInfo.MemberType.IsAbstract || memberInfo.MemberType.IsInterface)
+                    {
+                        var throwExpression = Expression.Lambda(delegateType, Expression.Block(
+                                Expression.Throw(Expression.Constant(new NotSupportedException($"{typeof(T).Name} contains abstract or interface members."))),
+                                Expression.Default(typeof(T))),
+                            inputParameter, readerParameter).Compile();
+                        delegates[i] = throwExpression;
+                    }
+                    else
+                    {
+                        var formatterType = resolver.GetFormatter(memberInfo).GetType();
+                        var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+                        var assignExpression = Expression.Assign(Expression.PropertyOrField(inputParameter, memberInfo.MemberName),
+                            Expression.Call(Expression.Field(null, fieldInfo),
+                                FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()), readerParameter));
+                        var lambda = Expression.Lambda(delegateType, assignExpression, inputParameter, readerParameter).Compile();
+                        delegates[i] = lambda;
+                    }
                 }
-                else if (memberInfo.MemberType.IsAbstract || memberInfo.MemberType.IsInterface)
-                {
-                    var throwExpression = Expression.Lambda<DeserializeDelegate>(Expression.Block(
-                            Expression.Throw(Expression.Constant(new NotSupportedException($"{typeof(T).Name} contains abstract or interface members."))),
-                            Expression.Default(typeof(T))),
-                        inputParameter, readerParameter).Compile();
-                    result.Add(memberInfo.Name, throwExpression);
-                }
-                else
-                {
-                    var formatterType = resolver.GetFormatter(memberInfo).GetType();
-                    var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
-                    var assignExpression = Expression.Assign(Expression.PropertyOrField(inputParameter, memberInfo.MemberName),
-                        Expression.Call(Expression.Field(null, fieldInfo), FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()), readerParameter));
-                    var lambda = Expression.Lambda<DeserializeDelegate>(assignExpression, inputParameter, readerParameter).Compile();
-                    result.Add(memberInfo.Name, lambda);
-                }
+                result.Add(memberInfo.Name, new Delegates(delegates));
             }
 
             return result;
@@ -232,5 +282,6 @@ namespace SpanJson.Formatters
         }
 
         protected delegate void DeserializeDelegate(T input, ref JsonReader<TSymbol> reader);
+        protected delegate void StreamingDeserializeDelegate(T input, ref StreamingJsonReader<TSymbol> reader);
     }
 }

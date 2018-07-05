@@ -82,5 +82,15 @@ namespace SpanJson.Formatters
                 RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, value, nextNestingLimit);
             }
         }
+
+        protected static Type GetReaderWriterTypeFromDelegate<TDelegate>() where TDelegate : Delegate
+        {
+
+        }
+
+        protected static Type GetReaderWriterTypeFromDelegate(Type delegateType)
+        {
+
+        }
     }
 }

@@ -13,12 +13,13 @@ namespace SpanJson.Formatters
     {
         private const int NestingLimit = 256;
 
-        protected static TDelegate BuildSerializeDelegate<T, TSymbol, TResolver, TDelegate>(bool isStreaming)
+        protected static TDelegate BuildSerializeDelegate<T, TSymbol, TResolver, TDelegate>()
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDelegate : Delegate
         {
             var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
             var memberInfos = resolver.GetObjectDescription<T>().Where(a => a.CanRead).ToList();
-            var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
+            var writerType = GetReaderWriterTypeFromDelegate<TDelegate>();
+            var writerParameter = Expression.Parameter(writerType.MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
             var nestingLimitParameter = Expression.Parameter(typeof(int), "nestingLimit");
             var expressions = new List<Expression>();
@@ -167,13 +168,14 @@ namespace SpanJson.Formatters
             return lambda.Compile();
         }
 
-        protected static TDelegate BuildDeserializeDelegate<T, TSymbol, TResolver, TDelegate>(bool isStreaming)
+        protected static TDelegate BuildDeserializeDelegate<T, TSymbol, TResolver, TDelegate>()
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDelegate : Delegate
         {
             var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
             var objectDescription = resolver.GetObjectDescription<T>();
             var memberInfos = objectDescription.Where(a => a.CanWrite).ToList();
-            var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
+            var readerType = GetReaderWriterTypeFromDelegate<TDelegate>();
+            var readerParameter = Expression.Parameter(readerType, "reader");
             // can't deserialize abstract or interface
             if (memberInfos.Any(a => a.MemberType.IsAbstract || a.MemberType.IsInterface))
             {

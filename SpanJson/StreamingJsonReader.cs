@@ -196,5 +196,11 @@ namespace SpanJson
         {
             throw new NotImplementedException();
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SkipNextSegment()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

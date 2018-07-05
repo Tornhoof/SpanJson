@@ -11,12 +11,16 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public sealed class EnumStringFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T, TSymbol> where T : Enum
+    public sealed class EnumStringFormatter<T, TSymbol, TResolver> : BaseEnumFormatter<T, TSymbol>, IJsonFormatter<T, TSymbol> where T : Enum
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
         where TSymbol : struct
     {
-        private static readonly SerializeDelegate Serializer = BuildSerializeDelegate();
-        private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
+        private static readonly SerializeDelegate Serializer = BuildSerializeDelegate<SerializeDelegate>();
+        private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate<DeserializeDelegate>();
+
+        private static readonly StreamingSerializeDelegate StreamingSerializer = BuildSerializeDelegate<StreamingSerializeDelegate>();
+        private static readonly StreamingDeserializeDelegate StreamingDeserializer = BuildDeserializeDelegate<StreamingDeserializeDelegate>();
+
         public static readonly EnumStringFormatter<T, TSymbol, TResolver> Default = new EnumStringFormatter<T, TSymbol, TResolver>();
 
 
@@ -27,12 +31,12 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref StreamingJsonWriter<TSymbol> writer, T value, int nestingLimit)
         {
-            throw new NotImplementedException();
+             StreamingSerializer(ref writer, value);
         }
 
         public T Deserialize(ref StreamingJsonReader<TSymbol> reader)
         {
-            throw new NotImplementedException();
+            return StreamingDeserializer(ref reader);
         }
 
         public void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
@@ -43,8 +47,9 @@ namespace SpanJson.Formatters
         /// <summary>
         ///     Not sure if it's useful to build something like the automaton from the compelxformatter here
         /// </summary>
-        private static DeserializeDelegate BuildDeserializeDelegate()
+        private static TDelegate BuildDeserializeDelegate<TDelegate>() where TDelegate : Delegate
         {
+            var readerType = GetReaderWriterTypeFromDelegate<TDelegate>();
             var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
             MethodInfo nameSpanMethodInfo;
             if (typeof(TSymbol) == typeof(char))
@@ -109,11 +114,11 @@ namespace SpanJson.Formatters
             };
             var blockExpression = Expression.Block(parameters, expressions);
             var lambdaExpression =
-                Expression.Lambda<DeserializeDelegate>(blockExpression, readerParameter);
+                Expression.Lambda<TDelegate>(blockExpression, readerParameter);
             return lambdaExpression.Compile();
         }
 
-        private static SerializeDelegate BuildSerializeDelegate()
+        private static TDelegate BuildSerializeDelegate<TDelegate>() where TDelegate : Delegate
         {
             var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
@@ -157,7 +162,7 @@ namespace SpanJson.Formatters
                 Expression.Throw(Expression.Constant(new InvalidOperationException())), cases.ToArray());
 
             var lambdaExpression =
-                Expression.Lambda<SerializeDelegate>(switchExpression, writerParameter, valueParameter);
+                Expression.Lambda<TDelegate>(switchExpression, writerParameter, valueParameter);
             return lambdaExpression.Compile();
         }
 
@@ -166,9 +171,5 @@ namespace SpanJson.Formatters
             var name = enumValue.ToString();
             return typeof(T).GetMember(name)?.FirstOrDefault()?.GetCustomAttribute<EnumMemberAttribute>()?.Value ?? name;
         }
-
-        private delegate T DeserializeDelegate(ref JsonReader<TSymbol> reader);
-
-        private delegate void SerializeDelegate(ref JsonWriter<TSymbol> writer, T value);
     }
 }

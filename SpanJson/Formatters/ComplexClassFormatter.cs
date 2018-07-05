@@ -7,15 +7,15 @@
         where T : class where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
         private static readonly DeserializeDelegate<T, TSymbol> Deserializer =
-            BuildDeserializeDelegate<T, TSymbol, TResolver, DeserializeDelegate<T, TSymbol>>(false);
+            BuildDeserializeDelegate<T, TSymbol, TResolver, DeserializeDelegate<T, TSymbol>>();
 
-        private static readonly SerializeDelegate<T, TSymbol> Serializer = BuildSerializeDelegate<T, TSymbol, TResolver, SerializeDelegate<T, TSymbol>>(false);
+        private static readonly SerializeDelegate<T, TSymbol> Serializer = BuildSerializeDelegate<T, TSymbol, TResolver, SerializeDelegate<T, TSymbol>>();
 
         private static readonly StreamingDeserializeDelegate<T, TSymbol> StreamingDeserializer =
-            BuildDeserializeDelegate<T, TSymbol, TResolver, StreamingDeserializeDelegate<T, TSymbol>>(true);
+            BuildDeserializeDelegate<T, TSymbol, TResolver, StreamingDeserializeDelegate<T, TSymbol>>();
 
         private static readonly StreamingSerializeDelegate<T, TSymbol> StreamingSerializer =
-            BuildSerializeDelegate<T, TSymbol, TResolver, StreamingSerializeDelegate<T, TSymbol>>(true);
+            BuildSerializeDelegate<T, TSymbol, TResolver, StreamingSerializeDelegate<T, TSymbol>>();
 
         public static readonly ComplexClassFormatter<T, TSymbol, TResolver> Default = new ComplexClassFormatter<T, TSymbol, TResolver>();
 

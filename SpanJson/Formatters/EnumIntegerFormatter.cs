@@ -3,13 +3,16 @@ using System.Linq.Expressions;
 
 namespace SpanJson.Formatters
 {
-    public sealed class EnumIntegerFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T, TSymbol> where T : Enum
+    public sealed class EnumIntegerFormatter<T, TSymbol, TResolver> : BaseEnumFormatter<T, TSymbol>, IJsonFormatter<T, TSymbol> where T : Enum
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
         where TSymbol : struct
     {
-        private static readonly SerializeDelegate Serializer = BuildSerializeDelegate();
+        private static readonly SerializeDelegate Serializer = BuildSerializeDelegate<SerializeDelegate>();
+        private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate<DeserializeDelegate>();
 
-        private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
+        private static readonly StreamingSerializeDelegate StreamingSerializer = BuildSerializeDelegate<StreamingSerializeDelegate>();
+        private static readonly StreamingDeserializeDelegate StreamingDeserializer = BuildDeserializeDelegate<StreamingDeserializeDelegate>();
+
         public static readonly EnumIntegerFormatter<T, TSymbol, TResolver> Default = new EnumIntegerFormatter<T, TSymbol, TResolver>();
         public void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
         {
@@ -23,19 +26,20 @@ namespace SpanJson.Formatters
 
         public void Serialize(ref StreamingJsonWriter<TSymbol> writer, T value, int nestingLimit)
         {
-            throw new NotImplementedException();
+            StreamingSerializer(ref writer, value);
         }
 
         public T Deserialize(ref StreamingJsonReader<TSymbol> reader)
         {
-            throw new NotImplementedException();
+            return StreamingDeserializer(ref reader);
         }
 
 
-        private static SerializeDelegate BuildSerializeDelegate()
+        private static TDelegate BuildSerializeDelegate<TDelegate>() where TDelegate : Delegate
         {
             var underlyingType = Enum.GetUnderlyingType(typeof(T));
-            var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
+            var writerType = GetReaderWriterTypeFromDelegate<TDelegate>();
+            var writerParameter = Expression.Parameter(writerType.MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
             string methodName;
             if (typeof(TSymbol) == typeof(char))
@@ -52,16 +56,17 @@ namespace SpanJson.Formatters
             }
 
             var writerMethodInfo = FindPublicInstanceMethod(writerParameter.Type, methodName, underlyingType);
-            var lambda = Expression.Lambda<SerializeDelegate>(Expression.Call(writerParameter, writerMethodInfo,
+            var lambda = Expression.Lambda<TDelegate>(Expression.Call(writerParameter, writerMethodInfo,
                 Expression.Convert(valueParameter, underlyingType)), writerParameter, valueParameter);
             return lambda.Compile();
         }
 
 
-        private static DeserializeDelegate BuildDeserializeDelegate()
+        private static TDelegate BuildDeserializeDelegate<TDelegate>() where TDelegate : Delegate 
         {
             var underlyingType = Enum.GetUnderlyingType(typeof(T));
-            var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
+            var readerType = GetReaderWriterTypeFromDelegate<TDelegate>();
+            var readerParameter = Expression.Parameter(readerType.MakeByRefType(), "reader");
             string methodName;
             if (typeof(TSymbol) == typeof(char))
             {
@@ -77,13 +82,8 @@ namespace SpanJson.Formatters
             }
 
             var readerMethodInfo = FindPublicInstanceMethod(readerParameter.Type, methodName);
-            var lambda = Expression.Lambda<DeserializeDelegate>(Expression.Convert(Expression.Call(readerParameter, readerMethodInfo), typeof(T)), readerParameter);
+            var lambda = Expression.Lambda<TDelegate>(Expression.Convert(Expression.Call(readerParameter, readerMethodInfo), typeof(T)), readerParameter);
             return lambda.Compile();
         }
-
-
-        private delegate T DeserializeDelegate(ref JsonReader<TSymbol> reader);
-
-        private delegate void SerializeDelegate(ref JsonWriter<TSymbol> writer, T value);
     }
 }
