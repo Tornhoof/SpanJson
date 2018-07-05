@@ -182,6 +182,11 @@ namespace SpanJson.Buffers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Dispose()
         {
+            if (_isFixedSize)
+            {
+                FlushAll();
+            }
+
             var toReturn = Data;
             this = default; // for safety, to avoid using pooled array if this instance is erroneously appended to again
             if (toReturn != null)

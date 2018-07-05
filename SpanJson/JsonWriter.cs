@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SpanJson.Buffers;
@@ -14,6 +15,18 @@ namespace SpanJson
         public JsonWriter(int initialSize)
         {
             _buffer = new WriteBuffer<TSymbol>(initialSize);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public JsonWriter(TextWriter writer)
+        {
+            _buffer = new WriteBuffer<TSymbol>(writer);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public JsonWriter(Stream writer)
+        {
+            _buffer = new WriteBuffer<TSymbol>(writer);
         }
 
         public int Position => _buffer.Pos;
