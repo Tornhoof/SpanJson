@@ -9,9 +9,10 @@ namespace SpanJson.Buffers
 {
     public ref struct WriteBuffer<TSymbol> where TSymbol : struct
     {
-        private readonly bool _isFixedSize;
+        private readonly bool _isStreaming;
         private readonly TextWriter _writer;
         private readonly Stream _stream;
+        private int _totalSize;
         public Span<char> Chars;
         public Span<byte> Bytes;
         public int Pos;
@@ -21,9 +22,10 @@ namespace SpanJson.Buffers
         {
             Data = ArrayPool<TSymbol>.Shared.Rent(initialSize);
             Pos = 0;
-            _isFixedSize = false;
+            _isStreaming = false;
             _stream = default;
             _writer = default;
+            _totalSize = 0;
             if (typeof(TSymbol) == typeof(char))
             {
                 Chars = MemoryMarshal.Cast<TSymbol, char>(Data);
@@ -42,42 +44,14 @@ namespace SpanJson.Buffers
             }
         }
 
-
-        /// <summary>
-        /// Calls flush is the buffer is getting full
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Flush()
-        {
-            if (typeof(TSymbol) == typeof(char))
-            {
-                if ((uint) Chars.Length < Pos + JsonSharedConstant.MaxVersionLength)
-                {
-                    FlushAll();
-                }
-            }
-            else if (typeof(TSymbol) == typeof(byte))
-            {
-                if ((uint) Bytes.Length < Pos + JsonSharedConstant.MaxVersionLength)
-                {
-                    FlushAll();
-                }
-            }
-            else
-            {
-                ThrowNotSupportedException();
-                Chars = null;
-                Bytes = null;
-            }
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public WriteBuffer(Stream stream)
         {
             _stream = stream;
             _writer = default;
-            _isFixedSize = true;
-            Data = ArrayPool<TSymbol>.Shared.Rent(4096);
+            _isStreaming = true;
+            _totalSize = 0;
+            Data = ArrayPool<TSymbol>.Shared.Rent(BufferConstants.WriteBufferSize);
             Pos = 0;
             if (typeof(TSymbol) == typeof(byte))
             {
@@ -97,8 +71,9 @@ namespace SpanJson.Buffers
         {
             _writer = writer;
             _stream = default;
-            _isFixedSize = true;
-            Data = ArrayPool<TSymbol>.Shared.Rent(4096);
+            _isStreaming = true;
+            _totalSize = 0;
+            Data = ArrayPool<TSymbol>.Shared.Rent(BufferConstants.WriteBufferSize);
             Pos = 0;
             if (typeof(TSymbol) == typeof(char))
             {
@@ -117,8 +92,9 @@ namespace SpanJson.Buffers
         /// This is called outside of the writer, after flush the same buffer can be reused
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void FlushAll()
+        private void Flush()
         {
+            _totalSize += Pos;
             if (typeof(TSymbol) == typeof(char))
             {
                 _writer.Write(Chars.Slice(0, Pos));
@@ -142,56 +118,80 @@ namespace SpanJson.Buffers
             throw new NotSupportedException();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Grow(int requiredAdditionalCapacity)
         {
             Debug.Assert(requiredAdditionalCapacity > 0);
-
-            if (_isFixedSize)
+            if (_isStreaming)
             {
-                Flush();
+                if (requiredAdditionalCapacity < Data.Length)
+                {
+                    Flush();
+                }
+                else
+                {
+                    Resize(requiredAdditionalCapacity);
+                }
             }
             else
             {
-                var toReturn = Data;
-                if (typeof(TSymbol) == typeof(char))
-                {
-                    var poolArray =
-                        ArrayPool<TSymbol>.Shared.Rent(Math.Max(Pos + requiredAdditionalCapacity, Chars.Length * 2));
-                    var converted = MemoryMarshal.Cast<TSymbol, char>(poolArray);
-                    Chars.CopyTo(converted);
-                    Chars = converted;
-                    Data = poolArray;
-                }
-                else if (typeof(TSymbol) == typeof(byte))
-                {
-                    var poolArray =
-                        ArrayPool<TSymbol>.Shared.Rent(Math.Max(Pos + requiredAdditionalCapacity, Bytes.Length * 2));
-                    var converted = MemoryMarshal.Cast<TSymbol, byte>(poolArray);
-                    Bytes.CopyTo(converted);
-                    Bytes = converted;
-                    Data = poolArray;
-                }
+                Resize(requiredAdditionalCapacity);
+            }
+        }
 
-                if (toReturn != null)
-                {
-                    ArrayPool<TSymbol>.Shared.Return(toReturn);
-                }
+        private void Resize(int requiredAdditionalCapacity)
+        {
+            var toReturn = Data;
+            if (typeof(TSymbol) == typeof(char))
+            {
+                var poolArray =
+                    ArrayPool<TSymbol>.Shared.Rent(Math.Max(Pos + requiredAdditionalCapacity, Chars.Length * 2));
+                var converted = MemoryMarshal.Cast<TSymbol, char>(poolArray);
+                Chars.CopyTo(converted);
+                Chars = converted;
+                Data = poolArray;
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                var poolArray =
+                    ArrayPool<TSymbol>.Shared.Rent(Math.Max(Pos + requiredAdditionalCapacity, Bytes.Length * 2));
+                var converted = MemoryMarshal.Cast<TSymbol, byte>(poolArray);
+                Bytes.CopyTo(converted);
+                Bytes = converted;
+                Data = poolArray;
+            }
+
+            if (toReturn != null)
+            {
+                ArrayPool<TSymbol>.Shared.Return(toReturn);
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Dispose()
         {
-            if (_isFixedSize)
+            if (_isStreaming)
             {
-                FlushAll();
+                Flush();
             }
-
             var toReturn = Data;
             this = default; // for safety, to avoid using pooled array if this instance is erroneously appended to again
             if (toReturn != null)
             {
                 ArrayPool<TSymbol>.Shared.Return(toReturn);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int GetTotalSize()
+        {
+            if (_isStreaming)
+            {
+                return _totalSize;
+            }
+            else
+            {
+                return Pos;
             }
         }
 

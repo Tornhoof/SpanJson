@@ -33,11 +33,13 @@ namespace SpanJson
             {
                 private static readonly IJsonFormatter<T, TSymbol> Formatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
 
+                private const int MaxBufferSize = 1 << 16;
+
                 public static string InnerSerializeToString(T input)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSize);
                     Formatter.Serialize(ref jsonWriter, input, 0);
-                    _lastSerializationSize = jsonWriter.Position;
+                    _lastSerializationSize = jsonWriter.TotalSize;
                     var result = jsonWriter.ToString(); // includes Dispose
                     return result;
                 }
@@ -46,16 +48,28 @@ namespace SpanJson
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSize);
                     Formatter.Serialize(ref jsonWriter, input, 0);
-                    _lastSerializationSize = jsonWriter.Position;
+                    _lastSerializationSize = jsonWriter.TotalSize;
                     var result = jsonWriter.ToByteArray();
                     return result;
                 }
 
                 public static ValueTask InnerSerializeAsync(T input, TextWriter writer, CancellationToken cancellationToken = default)
                 {
+                    if (_lastSerializationSize < MaxBufferSize)
+                    {
+                        return WriteFixedSizeAsync(input, writer, cancellationToken);
+                    }
+                    else
+                    {
+                        return WriteStreamingAsync(input, writer, cancellationToken);
+                    }
+                }
+
+                private static ValueTask WriteFixedSizeAsync(T input, TextWriter writer, CancellationToken cancellationToken = default)
+                {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSize);
                     Formatter.Serialize(ref jsonWriter, input, 0);
-                    var newSize = jsonWriter.Position;
+                    var newSize = jsonWriter.TotalSize;
                     _lastSerializationSize = newSize;
                     var temp = jsonWriter.Data;
                     var data = Unsafe.As<TSymbol[], char[]>(ref temp);
@@ -70,13 +84,46 @@ namespace SpanJson
                     return AwaitSerializeAsync(result, data);
                 }
 
+
+                private static ValueTask WriteStreamingAsync(T input, TextWriter writer, CancellationToken cancellationToken = default)
+                {
+                    var jsonWriter = new JsonWriter<TSymbol>(writer);
+                    Formatter.Serialize(ref jsonWriter, input, 0);
+                    var newSize = jsonWriter.TotalSize;
+                    _lastSerializationSize = newSize;
+                    jsonWriter.Dispose();
+                    return new ValueTask();
+                }
+
                 public static ValueTask InnerSerializeAsync(T input, Stream stream, CancellationToken cancellationToken = default)
+                {
+                    if (_lastSerializationSize < MaxBufferSize)
+                    {
+                        return WriteFixedSizeAsync(input, stream, cancellationToken);
+                    }
+                    else
+                    {
+                        return WriteStreamingAsync(input, stream, cancellationToken);
+                    }
+                }
+
+                private static ValueTask WriteStreamingAsync(T input, Stream stream, CancellationToken cancellationToken = default)
+                {
+                    var jsonWriter = new JsonWriter<TSymbol>(stream);
+                    Formatter.Serialize(ref jsonWriter, input, 0);
+                    var newSize = jsonWriter.TotalSize;
+                    _lastSerializationSize = newSize;
+                    jsonWriter.Dispose();
+                    return new ValueTask();
+                }
+
+                private static ValueTask WriteFixedSizeAsync(T input, Stream stream, CancellationToken cancellationToken = default)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSize);
                     Formatter.Serialize(ref jsonWriter, input, 0);
-                    var newSize = jsonWriter.Position;
-                    _lastSerializationSize = newSize;
                     var temp = jsonWriter.Data;
+                    var newSize = jsonWriter.TotalSize;
+                    _lastSerializationSize = newSize;
                     var data = Unsafe.As<TSymbol[], byte[]>(ref temp);
                     var result = stream.WriteAsync(data, 0, newSize, cancellationToken);
                     if (result.IsCompletedSuccessfully)

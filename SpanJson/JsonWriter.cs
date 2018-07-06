@@ -29,13 +29,13 @@ namespace SpanJson
             _buffer = new WriteBuffer<TSymbol>(writer);
         }
 
-        public int Position => _buffer.Pos;
+        public int TotalSize => _buffer.GetTotalSize();
 
         public TSymbol[] Data => _buffer.Data;
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void Dispose()
+        public void Dispose()
         {
             _buffer.Dispose();
         }

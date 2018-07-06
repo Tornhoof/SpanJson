@@ -12,7 +12,7 @@ namespace SpanJson.Benchmarks
     [Config(typeof(MyConfig))]
     public class StringListBenchmark
     {
-        [Params(1000, 10000)] public int Count;
+        [Params(1000, 2000)] public int Count;
 
         [GlobalSetup]
         public void Setup()
