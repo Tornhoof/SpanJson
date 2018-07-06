@@ -74,6 +74,10 @@ namespace SpanJson
                 return result;
             }
 
+            if (_buffer.TrySlideOrResize())
+            {
+                return ReadUtf16NumberInternal();
+            }
             ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
             return null;
         }
@@ -85,6 +89,10 @@ namespace SpanJson
             SkipWhitespaceUtf16();
             if (_buffer.Pos >= _buffer.Length)
             {
+                if (_buffer.TrySlideOrResize())
+                {
+                    return ReadUtf16NumberInt64();
+                }
                 ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
                 return default;
             }
@@ -98,6 +106,10 @@ namespace SpanJson
 
                 if (_buffer.Pos >= _buffer.Length) // we still need one digit
                 {
+                    if (_buffer.TrySlideOrResize())
+                    {
+                        return ReadUtf16NumberInt64();
+                    }
                     ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
                     return default;
                 }
@@ -135,6 +147,10 @@ namespace SpanJson
             SkipWhitespaceUtf16();
             if (_buffer.Pos >= _buffer.Length)
             {
+                if (_buffer.TrySlideOrResize())
+                {
+                    return ReadUtf16NumberUInt64();
+                }
                 ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
                 return default;
             }
@@ -191,7 +207,10 @@ namespace SpanJson
                     return false;
                 }
             }
-
+            if (_buffer.TrySlideOrResize())
+            {
+                return ReadUtf16Boolean();
+            }
             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(bool));
             return false;
         }
@@ -467,22 +486,30 @@ namespace SpanJson
             if (pos <= _buffer.Length - 2)
             {
                 ref var c = ref MemoryMarshal.GetReference(_buffer.Chars);
-                ref var stringStart = ref Unsafe.Add(ref c, pos++);
+                ref var stringStart = ref Unsafe.Add(ref c, pos);
                 if (stringStart != JsonUtf16Constant.String)
                 {
+                    if (_buffer.TrySlideOrResize())
+                    {
+                        return ReadUtf16StringSpanInternal(out escapedCharsSize);
+                    }
+
                     ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
                 }
-
                 var stringLength = 0;
                 // We should also get info about how many escaped chars exist from here
-                if (TryFindEndOfUtf16String(ref stringStart, _buffer.Length - pos, ref stringLength, out escapedCharsSize))
+                if (TryFindEndOfUtf16String(ref stringStart, _buffer.Length - pos - 1, ref stringLength, out escapedCharsSize))
                 {
                     var result = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref stringStart, 1), stringLength - 1);
-                    pos += stringLength; // skip the doublequote too
+                    pos += stringLength + 1; // skip the doublequote too
                     return result;
                 }
             }
 
+            if (_buffer.TrySlideOrResize())
+            {
+                return ReadUtf16StringSpanInternal(out escapedCharsSize);
+            }
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             escapedCharsSize = default;
             return null;
@@ -497,22 +524,30 @@ namespace SpanJson
             if (pos <= _buffer.Length - 2)
             {
                 ref var c = ref MemoryMarshal.GetReference(_buffer.Chars);
-                ref var stringStart = ref Unsafe.Add(ref c, pos++);
+                ref var stringStart = ref Unsafe.Add(ref c, pos);
                 if (stringStart != JsonUtf16Constant.String)
                 {
+                    if (_buffer.TrySlideOrResize())
+                    {
+                        return ReadUtf16StringSpanWithQuotes(out escapedCharsSize);
+                    }
                     ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
                 }
 
                 var stringLength = 0;
                 // We should also get info about how many escaped chars exist from here
-                if (TryFindEndOfUtf16String(ref stringStart, _buffer.Length - pos, ref stringLength, out escapedCharsSize))
+                if (TryFindEndOfUtf16String(ref stringStart, _buffer.Length - pos - 1, ref stringLength, out escapedCharsSize))
                 {
                     var result = MemoryMarshal.CreateReadOnlySpan(ref stringStart, stringLength + 1);
-                    pos += stringLength; // skip the doublequote too
+                    pos += stringLength + 1; // skip the doublequote too
                     return result;
                 }
             }
 
+            if (_buffer.TrySlideOrResize())
+            {
+                return ReadUtf16StringSpanWithQuotes(out escapedCharsSize);
+            }
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             escapedCharsSize = default;
             return null;
@@ -569,6 +604,11 @@ namespace SpanJson
                     default:
                         return;
                 }
+            }
+
+            if (_buffer.TrySlideOrResize())
+            {
+                SkipWhitespaceUtf16();
             }
         }
 

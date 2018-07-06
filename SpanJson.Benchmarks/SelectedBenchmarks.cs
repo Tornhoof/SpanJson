@@ -82,17 +82,17 @@ namespace SpanJson.Benchmarks
         //    return JsonSerializer.Generic.Utf8.Serialize(Answer);
         //}
 
-        //[Benchmark]
-        //public Answer DeserializeAnswerWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
-        //}
+        [Benchmark]
+        public Answer DeserializeAnswerWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
+        }
 
-        //[Benchmark]
-        //public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
-        //{
-        //    return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
-        //}
+        [Benchmark]
+        public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
+        {
+            return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
+        }
 
 
         //[Benchmark]
@@ -535,30 +535,6 @@ namespace SpanJson.Benchmarks
         //    var reader = new JsonReader<char>("true");
         //    return reader.ReadUtf16Boolean();
         //}
-
-        [Benchmark]
-        public void SerializeAnswerUtf8()
-        {
-            SpanJsonUtf8Serializer.Serialize(Answer);
-        }
-
-        [Benchmark]
-        public void SerializeAnswerUtf8Integer()
-        {
-            JsonSerializer.Generic.Utf8.Serialize<Answer, CustomResolver<byte>>(Answer);
-        }
-    }
-
-    public sealed class CustomResolver<TSymbol> : ResolverBase<TSymbol, CustomResolver<TSymbol>> where TSymbol : struct
-    {
-        public CustomResolver() : base(new SpanJsonOptions
-        {
-            NullOption = NullOptions.ExcludeNulls,
-            NamingConvention = NamingConventions.CamelCase,
-            EnumOption = EnumOptions.Integer
-        })
-        {
-        }
     }
 
 }

@@ -286,5 +286,11 @@ namespace SpanJson
             ThrowNotSupportedException();
             return default;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Dispose()
+        {
+            _buffer.Dispose();
+        }
     }
 }

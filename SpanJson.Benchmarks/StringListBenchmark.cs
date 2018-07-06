@@ -12,7 +12,7 @@ namespace SpanJson.Benchmarks
     [Config(typeof(MyConfig))]
     public class StringListBenchmark
     {
-        [Params(1000, 2000)] public int Count;
+        [Params(1000, 10000)] public int Count;
 
         [GlobalSetup]
         public void Setup()
@@ -26,78 +26,76 @@ namespace SpanJson.Benchmarks
         private byte[] _inputByteBuffer;
         private string _inputStringBuffer;
 
+        //[Benchmark]
+        //public void OldWriterWayUtf8()
+        //{
+        //    var writer = new JsonWriter<byte>();
+        //    ListFormatter<List<string>, string, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default.Serialize(ref writer, _inputList, 0);
+        //}
+
+        //[Benchmark]
+        //public void OldWriterWayUtf16()
+        //{
+        //    var writer = new JsonWriter<char>();
+        //    ListFormatter<List<string>, string, char, ExcludeNullsOriginalCaseResolver<char>>.Default.Serialize(ref writer, _inputList, 0);
+        //}
+
+
+        //[Benchmark]
+        //public void NewWriterWayUtf8()
+        //{
+        //    var writer = new JsonWriter<byte>(Stream.Null);
+        //    ListFormatter<List<string>, string, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default.Serialize(ref writer, _inputList, 0);
+        //}
+
+        //[Benchmark]
+        //public void NewWriterWayUtf16()
+        //{
+        //    using (var textWriter = new StreamWriter(Stream.Null))
+        //    {
+        //        var writer = new JsonWriter<char>(textWriter);
+        //        ListFormatter<List<string>, string, char, ExcludeNullsOriginalCaseResolver<char>>.Default.Serialize(ref writer, _inputList, 0);
+        //    }
+        //}
+
         [Benchmark]
-        public void OldWriterWayUtf8()
+        public List<string> OldReaderWayUtf8()
         {
-            var writer = new JsonWriter<byte>();
-            ListFormatter<List<string>, string, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default.Serialize(ref writer, _inputList, 0);
+            var reader = new JsonReader<byte>(_inputByteBuffer);
+            return ListFormatter<List<string>, string, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
         }
 
         [Benchmark]
-        public void OldWriterWayUtf16()
+        public List<string> OldReaderWayUtf16()
         {
-            var writer = new JsonWriter<char>();
-            ListFormatter<List<string>, string, char, ExcludeNullsOriginalCaseResolver<char>>.Default.Serialize(ref writer, _inputList, 0);
+            var reader = new JsonReader<char>(_inputStringBuffer);
+            return ListFormatter<List<string>, string, char, ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
         }
 
 
         [Benchmark]
-        public void NewWriterWayUtf8()
+        public List<string> NewReaderWayUtf8()
         {
-            var writer = new JsonWriter<byte>(Stream.Null);
-            ListFormatter<List<string>, string, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default.Serialize(ref writer, _inputList, 0);
-        }
-
-        [Benchmark]
-        public void NewWriterWayUtf16()
-        {
-            using (var textWriter = new StreamWriter(Stream.Null))
+            using (var ms = new MemoryStream(_inputByteBuffer, false))
             {
-                var writer = new JsonWriter<char>(textWriter);
-                ListFormatter<List<string>, string, char, ExcludeNullsOriginalCaseResolver<char>>.Default.Serialize(ref writer, _inputList, 0);
+                var reader = new JsonReader<byte>(ms);
+                var result = ListFormatter<List<string>, string, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
+                reader.Dispose();
+                return result;
             }
         }
 
-        //[Benchmark]
-        //public List<string> OldReaderWayUtf8()
-        //{
-        //    var reader = new JsonReader<byte>(_inputByteBuffer);
-        //    return ListFormatter<List<string>, string, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
-        //}
-
-        //[Benchmark]
-        //public List<string> OldReaderWayUtf16()
-        //{
-        //    var reader = new JsonReader<char>(_inputStringBuffer);
-        //    return ListFormatter<List<string>, string, char, ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
-        //}
-
-
-        //[Benchmark]
-        //public List<string> NewReaderWayUtf8()
-        //{
-        //    using (var ms = new MemoryStream(_inputByteBuffer, false))
-        //    {
-        //        var reader = new StreamingJsonReader<byte>(ms, 2048);
-        //        reader.Fill(0);
-        //        var result = ListFormatter<List<string>, string, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref reader);
-        //        reader.Return();
-        //        return result;
-        //    }
-        //}
-
-        //[Benchmark]
-        //public List<string> NewReaderWayUtf16()
-        //{
-        //    using (var textReader = new StringReader(_inputStringBuffer))
-        //    {
-        //        var reader = new StreamingJsonReader<char>(textReader, 2048);
-        //        reader.Fill(0);
-        //        var result = ListFormatter<List<string>, string, char, ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
-        //        reader.Return();
-        //        return result;
-        //    }
-        //}
+        [Benchmark]
+        public List<string> NewReaderWayUtf16()
+        {
+            using (var textReader = new StringReader(_inputStringBuffer))
+            {
+                var reader = new JsonReader<char>(textReader);
+                var result = ListFormatter<List<string>, string, char, ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref reader);
+                reader.Dispose();
+                return result;
+            }
+        }
     }
 }
 
