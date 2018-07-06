@@ -1,53 +1,45 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using SpanJson.Buffers;
 
 namespace SpanJson
 {
     public ref partial struct JsonReader<TSymbol> where TSymbol : struct
     {
-        private readonly ReadOnlySpan<char> _chars;
-        private readonly ReadOnlySpan<byte> _bytes;
-        private readonly int _length;
-
-        private int _pos;
+        private ReadBuffer<TSymbol> _buffer;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public JsonReader(in ReadOnlySpan<TSymbol> input)
         {
-            _length = input.Length;
-            _pos = 0;
-
-            if (typeof(TSymbol) == typeof(char))
-            {
-                _chars = MemoryMarshal.Cast<TSymbol, char>(input);
-                _bytes = null;
-            }
-            else if (typeof(TSymbol) == typeof(byte))
-            {
-                _bytes = MemoryMarshal.Cast<TSymbol, byte>(input);
-                _chars = null;
-            }
-            else
-            {
-                ThrowNotSupportedException();
-                _chars = default;
-                _bytes = default;
-            }
+            _buffer = new ReadBuffer<TSymbol>(input);
         }
 
-        public int Position => _pos;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public JsonReader(TextReader input)
+        {
+            _buffer = new ReadBuffer<TSymbol>(input);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public JsonReader(Stream input)
+        {
+            _buffer = new ReadBuffer<TSymbol>(input);
+        }
+
+        public int Position => _buffer.Pos;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void ThrowJsonParserException(JsonParserException.ParserError error, Type type)
         {
-            throw new JsonParserException(error, type, _pos);
+            throw new JsonParserException(error, type, _buffer.Pos);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void ThrowJsonParserException(JsonParserException.ParserError error)
         {
-            throw new JsonParserException(error, _pos);
+            throw new JsonParserException(error, _buffer.Pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

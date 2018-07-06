@@ -66,10 +66,10 @@ namespace SpanJson
         private ReadOnlySpan<char> ReadUtf16NumberInternal()
         {
             SkipWhitespaceUtf16();
-            ref var pos = ref _pos;
+            ref var pos = ref _buffer.Pos;
             if (TryFindEndOfUtf16Number(pos, out var charsConsumed))
             {
-                var result = _chars.Slice(pos, charsConsumed);
+                var result = _buffer.Chars.Slice(pos, charsConsumed);
                 pos += charsConsumed;
                 return result;
             }
@@ -83,27 +83,27 @@ namespace SpanJson
         private long ReadUtf16NumberInt64()
         {
             SkipWhitespaceUtf16();
-            if (_pos >= _length)
+            if (_buffer.Pos >= _buffer.Length)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
                 return default;
             }
 
-            ref var c = ref MemoryMarshal.GetReference(_chars);
+            ref var c = ref MemoryMarshal.GetReference(_buffer.Chars);
             var neg = false;
-            if (Unsafe.Add(ref c, _pos) == '-')
+            if (Unsafe.Add(ref c, _buffer.Pos) == '-')
             {
-                _pos++;
+                _buffer.Pos++;
                 neg = true;
 
-                if (_pos >= _length) // we still need one digit
+                if (_buffer.Pos >= _buffer.Length) // we still need one digit
                 {
                     ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
                     return default;
                 }
             }
 
-            var result = (long) ReadUtf16NumberDigits(ref c, ref _pos);
+            var result = (long) ReadUtf16NumberDigits(ref c, ref _buffer.Pos);
             return neg ? unchecked(-result) : result;
         }
 
@@ -119,7 +119,7 @@ namespace SpanJson
             }
 
             pos++;
-            while (pos < _length && (value = Unsafe.Add(ref c, pos) - 48U) <= 9)
+            while (pos < _buffer.Length && (value = Unsafe.Add(ref c, pos) - 48U) <= 9)
             {
                 result = checked(result * 10 + value);
                 pos++;
@@ -133,14 +133,14 @@ namespace SpanJson
         private ulong ReadUtf16NumberUInt64()
         {
             SkipWhitespaceUtf16();
-            if (_pos >= _length)
+            if (_buffer.Pos >= _buffer.Length)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
                 return default;
             }
 
-            ref var c = ref MemoryMarshal.GetReference(_chars);
-            return ReadUtf16NumberDigits(ref c, ref _pos);
+            ref var c = ref MemoryMarshal.GetReference(_buffer.Chars);
+            return ReadUtf16NumberDigits(ref c, ref _buffer.Pos);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -172,10 +172,10 @@ namespace SpanJson
         public bool ReadUtf16Boolean()
         {
             SkipWhitespaceUtf16();
-            ref var pos = ref _pos;
-            if (pos <= _length - 4)
+            ref var pos = ref _buffer.Pos;
+            if (pos <= _buffer.Length - 4)
             {
-                ref var c = ref MemoryMarshal.GetReference(_chars);
+                ref var c = ref MemoryMarshal.GetReference(_buffer.Chars);
                 ref var start = ref Unsafe.Add(ref c, pos);
                 ref var bstart = ref Unsafe.As<char, byte>(ref start);
                 var value = Unsafe.ReadUnaligned<ulong>(ref bstart);
@@ -185,7 +185,7 @@ namespace SpanJson
                     return true;
                 }
 
-                if (pos <= _length - 5 && value == 0x0073006C00610066UL /* slaf */ && Unsafe.Add(ref c, pos + 4) == 'e')
+                if (pos <= _buffer.Length - 5 && value == 0x0073006C00610066UL /* slaf */ && Unsafe.Add(ref c, pos + 4) == 'e')
                 {
                     pos += 5;
                     return false;
@@ -330,7 +330,7 @@ namespace SpanJson
         public ReadOnlySpan<char> ReadUtf16NameSpan()
         {
             var span = ReadUtf16StringSpan();
-            if (_chars[_pos++] != JsonUtf16Constant.NameSeparator)
+            if (_buffer.Chars[_buffer.Pos++] != JsonUtf16Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
@@ -342,7 +342,7 @@ namespace SpanJson
         public string ReadUtf16EscapedName()
         {
             var span = ReadUtf16StringSpanInternal(out var escapedCharsSize);
-            if (_chars[_pos++] != JsonUtf16Constant.NameSeparator)
+            if (_buffer.Chars[_buffer.Pos++] != JsonUtf16Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
@@ -463,10 +463,10 @@ namespace SpanJson
 
         private ReadOnlySpan<char> ReadUtf16StringSpanInternal(out int escapedCharsSize)
         {
-            ref var pos = ref _pos;
-            if (pos <= _length - 2)
+            ref var pos = ref _buffer.Pos;
+            if (pos <= _buffer.Length - 2)
             {
-                ref var c = ref MemoryMarshal.GetReference(_chars);
+                ref var c = ref MemoryMarshal.GetReference(_buffer.Chars);
                 ref var stringStart = ref Unsafe.Add(ref c, pos++);
                 if (stringStart != JsonUtf16Constant.String)
                 {
@@ -475,7 +475,7 @@ namespace SpanJson
 
                 var stringLength = 0;
                 // We should also get info about how many escaped chars exist from here
-                if (TryFindEndOfUtf16String(ref stringStart, _length - pos, ref stringLength, out escapedCharsSize))
+                if (TryFindEndOfUtf16String(ref stringStart, _buffer.Length - pos, ref stringLength, out escapedCharsSize))
                 {
                     var result = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref stringStart, 1), stringLength - 1);
                     pos += stringLength; // skip the doublequote too
@@ -493,10 +493,10 @@ namespace SpanJson
         /// </summary>
         private ReadOnlySpan<char> ReadUtf16StringSpanWithQuotes(out int escapedCharsSize)
         {
-            ref var pos = ref _pos;
-            if (pos <= _length - 2)
+            ref var pos = ref _buffer.Pos;
+            if (pos <= _buffer.Length - 2)
             {
-                ref var c = ref MemoryMarshal.GetReference(_chars);
+                ref var c = ref MemoryMarshal.GetReference(_buffer.Chars);
                 ref var stringStart = ref Unsafe.Add(ref c, pos++);
                 if (stringStart != JsonUtf16Constant.String)
                 {
@@ -505,7 +505,7 @@ namespace SpanJson
 
                 var stringLength = 0;
                 // We should also get info about how many escaped chars exist from here
-                if (TryFindEndOfUtf16String(ref stringStart, _length - pos, ref stringLength, out escapedCharsSize))
+                if (TryFindEndOfUtf16String(ref stringStart, _buffer.Length - pos, ref stringLength, out escapedCharsSize))
                 {
                     var result = MemoryMarshal.CreateReadOnlySpan(ref stringStart, stringLength + 1);
                     pos += stringLength; // skip the doublequote too
@@ -527,11 +527,11 @@ namespace SpanJson
         public bool ReadUtf16IsNull()
         {
             SkipWhitespaceUtf16();
-            ref var pos = ref _pos;
-            ref var c = ref MemoryMarshal.GetReference(_chars);
+            ref var pos = ref _buffer.Pos;
+            ref var c = ref MemoryMarshal.GetReference(_buffer.Chars);
             ref var start = ref Unsafe.Add(ref c, pos);
             ref var bstart = ref Unsafe.As<char, byte>(ref start);
-            if (pos <= _length - 4 && Unsafe.ReadUnaligned<ulong>(ref bstart) == 0x006C006C0075006EUL /* llun */)
+            if (pos <= _buffer.Length - 4 && Unsafe.ReadUnaligned<ulong>(ref bstart) == 0x006C006C0075006EUL /* llun */)
             {
                 pos += 4;
                 return true;
@@ -552,10 +552,10 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void SkipWhitespaceUtf16()
         {
-            ref var pos = ref _pos;
-            while (pos < _length)
+            ref var pos = ref _buffer.Pos;
+            while (pos < _buffer.Length)
             {
-                var c = _chars[pos];
+                var c = _buffer.Chars[pos];
                 switch (c)
                 {
                     case ' ':
@@ -586,8 +586,8 @@ namespace SpanJson
         public bool ReadUtf16BeginArray()
         {
             SkipWhitespaceUtf16();
-            ref var pos = ref _pos;
-            if (pos < _length && _chars[pos] == JsonUtf16Constant.BeginArray)
+            ref var pos = ref _buffer.Pos;
+            if (pos < _buffer.Length && _buffer.Chars[pos] == JsonUtf16Constant.BeginArray)
             {
                 pos++;
                 return true;
@@ -600,8 +600,8 @@ namespace SpanJson
         public bool TryReadUtf16IsEndArrayOrValueSeparator(ref int count)
         {
             SkipWhitespaceUtf16();
-            ref var pos = ref _pos;
-            if (pos < _length && _chars[pos] == JsonUtf16Constant.EndArray)
+            ref var pos = ref _buffer.Pos;
+            if (pos < _buffer.Length && _buffer.Chars[pos] == JsonUtf16Constant.EndArray)
             {
                 pos++;
                 return true;
@@ -609,7 +609,7 @@ namespace SpanJson
 
             if (count++ > 0)
             {
-                if (pos < _length && _chars[pos] == JsonUtf16Constant.ValueSeparator)
+                if (pos < _buffer.Length && _buffer.Chars[pos] == JsonUtf16Constant.ValueSeparator)
                 {
                     pos++;
                     return false;
@@ -625,8 +625,8 @@ namespace SpanJson
         public bool ReadUtf16IsBeginObject()
         {
             SkipWhitespaceUtf16();
-            ref var pos = ref _pos;
-            if (_chars[pos] == JsonUtf16Constant.BeginObject)
+            ref var pos = ref _buffer.Pos;
+            if (_buffer.Chars[pos] == JsonUtf16Constant.BeginObject)
             {
                 pos++;
                 return true;
@@ -649,8 +649,8 @@ namespace SpanJson
         public bool ReadUtf16IsEndObject()
         {
             SkipWhitespaceUtf16();
-            ref var pos = ref _pos;
-            if (_chars[pos] == JsonUtf16Constant.EndObject)
+            ref var pos = ref _buffer.Pos;
+            if (_buffer.Chars[pos] == JsonUtf16Constant.EndObject)
             {
                 pos++;
                 return true;
@@ -663,8 +663,8 @@ namespace SpanJson
         public bool TryReadUtf16IsEndObjectOrValueSeparator(ref int count)
         {
             SkipWhitespaceUtf16();
-            ref var pos = ref _pos;
-            if (pos < _length && _chars[pos] == JsonUtf16Constant.EndObject)
+            ref var pos = ref _buffer.Pos;
+            if (pos < _buffer.Length && _buffer.Chars[pos] == JsonUtf16Constant.EndObject)
             {
                 pos++;
                 return true;
@@ -672,7 +672,7 @@ namespace SpanJson
 
             if (count++ > 0)
             {
-                if (_chars[pos] == JsonUtf16Constant.ValueSeparator)
+                if (_buffer.Chars[pos] == JsonUtf16Constant.ValueSeparator)
                 {
                     pos++;
                     return false;
@@ -716,8 +716,8 @@ namespace SpanJson
 
         private void SkipNextUtf16Segment(int stack)
         {
-            ref var pos = ref _pos;
-            while (pos < _length)
+            ref var pos = ref _buffer.Pos;
+            while (pos < _buffer.Length)
             {
                 var token = ReadUtf16NextToken();
                 switch (token)
@@ -770,7 +770,7 @@ namespace SpanJson
 
         public void SkipNextUtf16Value(JsonToken token)
         {
-            ref var pos = ref _pos;
+            ref var pos = ref _buffer.Pos;
             switch (token)
             {
                 case JsonToken.None:
@@ -816,10 +816,10 @@ namespace SpanJson
         private bool TryFindEndOfUtf16Number(int pos, out int charsConsumed)
         {
             var i = pos;
-            var length = _chars.Length;
+            var length = _buffer.Chars.Length;
             for (; i < length; i++)
             {
-                var c = _chars[i];
+                var c = _buffer.Chars[i];
                 if (!IsNumericUtf16Symbol(c))
                 {
                     break;
@@ -866,7 +866,7 @@ namespace SpanJson
 
         private bool SkipUtf16String(ref int pos)
         {
-            ref var c = ref MemoryMarshal.GetReference(_chars);
+            ref var c = ref MemoryMarshal.GetReference(_buffer.Chars);
             ref var stringStart = ref Unsafe.Add(ref c, pos++);
             if (stringStart != JsonUtf16Constant.String)
             {
@@ -875,7 +875,7 @@ namespace SpanJson
 
             var stringLength = 0;
             // We should also get info about how many escaped chars exist from here
-            if (TryFindEndOfUtf16String(ref stringStart, _length - pos, ref stringLength, out _))
+            if (TryFindEndOfUtf16String(ref stringStart, _buffer.Length - pos, ref stringLength, out _))
             {
                 pos += stringLength; // skip the doublequote too
                 return true;
@@ -891,7 +891,7 @@ namespace SpanJson
 
         public object ReadUtf16Dynamic(int stack)
         {
-            ref var pos = ref _pos;
+            ref var pos = ref _buffer.Pos;
             var nextToken = ReadUtf16NextToken();
             if (stack > 256)
             {
@@ -983,13 +983,13 @@ namespace SpanJson
         public JsonToken ReadUtf16NextToken()
         {
             SkipWhitespaceUtf16();
-            ref var pos = ref _pos;
-            if (pos >= _chars.Length)
+            ref var pos = ref _buffer.Pos;
+            if (pos >= _buffer.Chars.Length)
             {
                 return JsonToken.None;
             }
 
-            var c = _chars[pos];
+            var c = _buffer.Chars[pos];
             switch (c)
             {
                 case JsonUtf16Constant.BeginObject:
