@@ -7,6 +7,6 @@ namespace SpanJson.Buffers
     public static class BufferConstants
     {
         public const int WriteBufferSize = 4096;
-        public const int ReadBufferSize = 4096;
+        public const int ReadBufferSize = 128;
     }
 }

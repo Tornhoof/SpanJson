@@ -6,10 +6,10 @@ namespace SpanJson.Benchmarks
     {
         private static void Main(string[] args)
         {
-            var ab = new StringListBenchmark();
-            ab.Count = 1000;
+            var ab = new AsyncBenchmark();
+            ab.Count = 100;
             ab.Setup();
-            ab.NewReaderWayUtf16();
+            ab.DeserializeAnswerListAsync().GetAwaiter().GetResult();
             // dotnet run -c Release -- --methods=ReadUtf8Char
             var switcher = new BenchmarkSwitcher(typeof(Program).Assembly);
             switcher.Run(args);

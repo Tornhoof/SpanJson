@@ -85,7 +85,7 @@ namespace SpanJson
                 pos += bytesConsumed;
                 return result;
             }
-            if (_buffer.TrySlideOrResize())
+            if (_buffer.TrySlideOrGrow())
             {
                 return ReadUtf8NumberInternal();
             }
@@ -100,7 +100,7 @@ namespace SpanJson
             SkipWhitespaceUtf8();
             if (_buffer.Pos >= _buffer.Length)
             {
-                if (_buffer.TrySlideOrResize())
+                if (_buffer.TrySlideOrGrow())
                 {
                     return ReadUtf8NumberInt64();
                 }
@@ -117,7 +117,7 @@ namespace SpanJson
 
                 if (_buffer.Pos >= _buffer.Length) // we still need one digit
                 {
-                    if (_buffer.TrySlideOrResize())
+                    if (_buffer.TrySlideOrGrow())
                     {
                         return ReadUtf8NumberInt64();
                     }
@@ -136,7 +136,7 @@ namespace SpanJson
             SkipWhitespaceUtf8();
             if (_buffer.Pos >= _buffer.Length)
             {
-                if (_buffer.TrySlideOrResize())
+                if (_buffer.TrySlideOrGrow())
                 {
                     return ReadUtf8NumberUInt64();
                 }
@@ -335,7 +335,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ReadUtf8EscapedName()
         {
-            var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
+            var span = ReadUtf8StringSpanInternal(false, out var escapedCharsSize);
             if (_buffer.Bytes[_buffer.Pos++] != JsonUtf8Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
@@ -352,7 +352,7 @@ namespace SpanJson
                 return null;
             }
 
-            var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
+            var span = ReadUtf8StringSpanInternal(false, out var escapedCharsSize);
             return escapedCharsSize == 0 ? ConvertToString(span) : UnescapeUtf8(span, escapedCharsSize);
         }
 
@@ -459,10 +459,10 @@ namespace SpanJson
                 return JsonUtf8Constant.NullTerminator;
             }
 
-            return ReadUtf8StringSpanInternal(out _);
+            return ReadUtf8StringSpanInternal(false, out _);
         }
 
-        private ReadOnlySpan<byte> ReadUtf8StringSpanInternal(out int escapedCharsSize)
+        private ReadOnlySpan<byte> ReadUtf8StringSpanInternal(bool alreadySlid, out int escapedCharsSize)
         {
             ref var pos = ref _buffer.Pos;
             if (pos <= _buffer.Length - 2)
@@ -471,9 +471,9 @@ namespace SpanJson
                 ref var stringStart = ref Unsafe.Add(ref b, pos);
                 if (stringStart != JsonUtf8Constant.String)
                 {
-                    if (_buffer.TrySlideOrResize())
+                    if (_buffer.TrySlideOrGrow())
                     {
-                        return ReadUtf8StringSpanInternal(out escapedCharsSize);
+                        return ReadUtf8StringSpanInternal(alreadySlid, out escapedCharsSize);
                     }
 
                     ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
@@ -489,9 +489,9 @@ namespace SpanJson
                 }
             }
 
-            if (_buffer.TrySlideOrResize())
+            if (_buffer.TrySlideOrGrow(alreadySlid)) // we can't find the end, so we need to resize
             {
-                return ReadUtf8StringSpanInternal(out escapedCharsSize);
+                return ReadUtf8StringSpanInternal(alreadySlid, out escapedCharsSize);
             }
 
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
@@ -502,7 +502,7 @@ namespace SpanJson
         /// <summary>
         ///     Includes the quotes on each end
         /// </summary>
-        private ReadOnlySpan<byte> ReadUtf8StringSpanWithQuotes(out int escapedCharsSize)
+        private ReadOnlySpan<byte> ReadUtf8StringSpanWithQuotes(bool alreadySlid, out int escapedCharsSize)
         {
             ref var pos = ref _buffer.Pos;
             if (pos <= _buffer.Length - 2)
@@ -511,9 +511,9 @@ namespace SpanJson
                 ref var stringStart = ref Unsafe.Add(ref b, pos);
                 if (stringStart != JsonUtf8Constant.String)
                 {
-                    if (_buffer.TrySlideOrResize())
+                    if (_buffer.TrySlideOrGrow())
                     {
-                        return ReadUtf8StringSpanWithQuotes(out escapedCharsSize);
+                        return ReadUtf8StringSpanWithQuotes(alreadySlid, out escapedCharsSize);
                     }
 
                     ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
@@ -529,9 +529,9 @@ namespace SpanJson
                 }
             }
 
-            if (_buffer.TrySlideOrResize())
+            if (_buffer.TrySlideOrGrow(alreadySlid)) // we can't find the end, so we need to resize
             {
-                return ReadUtf8StringSpanWithQuotes(out escapedCharsSize);
+                return ReadUtf8StringSpanWithQuotes(alreadySlid, out escapedCharsSize);
             }
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             escapedCharsSize = default;
@@ -561,7 +561,6 @@ namespace SpanJson
                 pos += 4;
                 return true;
             }
-
             return false;
         }
 
@@ -596,9 +595,9 @@ namespace SpanJson
                 }
             }
 
-            if (_buffer.TrySlideOrResize())
+            if (_buffer.TrySlideOrGrow())
             {
-                SkipWhitespaceUtf16();
+                SkipWhitespaceUtf8();
             }
         }
 
@@ -714,6 +713,11 @@ namespace SpanJson
                 {
                     pos++;
                     return false;
+                }
+
+                if (_buffer.TrySlideOrGrow()) // we can't find the end, so we need to resize
+                {
+                    return TryReadUtf8IsEndObjectOrValueSeparator(ref count);
                 }
 
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedSeparator);
@@ -864,6 +868,14 @@ namespace SpanJson
                 }
             }
 
+            if (i == length)
+            {
+                if (_buffer.TrySlideOrGrow())
+                {
+                    return TryFindEndOfUtf8Number(pos, out bytesConsumed);
+                }
+            }
+
             if (i > pos)
             {
                 bytesConsumed = i - pos;
@@ -948,7 +960,7 @@ namespace SpanJson
                 }
                 case JsonToken.String:
                 {
-                    var span = ReadUtf8StringSpanWithQuotes(out _);
+                    var span = ReadUtf8StringSpanWithQuotes(false, out _);
                     return new SpanJsonDynamicUtf8String(span);
                 }
                 case JsonToken.BeginObject:

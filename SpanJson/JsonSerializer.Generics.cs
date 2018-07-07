@@ -145,6 +145,24 @@ namespace SpanJson
 
                 public static ValueTask<T> InnerDeserializeAsync(TextReader reader, CancellationToken cancellationToken = default)
                 {
+                    if (_lastDeserializationSize < MaxBufferSize)
+                    {
+                        return ReadFixedSizeAsync(reader, cancellationToken);
+                    }
+                    else
+                    {
+                        return ReadStreamingAsync(reader, cancellationToken);
+                    }
+                }
+
+                private static ValueTask<T> ReadStreamingAsync(TextReader reader, CancellationToken cancellationToken = default)
+                {
+                    var jsonReader = new JsonReader<TSymbol>(reader);
+                    return new ValueTask<T>(Formatter.Deserialize(ref jsonReader));
+                }
+
+                private static ValueTask<T> ReadFixedSizeAsync(TextReader reader, CancellationToken cancellationToken = default)
+                {
                     var input = reader.ReadToEndAsync();
                     if (input.IsCompletedSuccessfully)
                     {
@@ -155,6 +173,24 @@ namespace SpanJson
                 }
 
                 public static ValueTask<T> InnerDeserializeAsync(Stream stream, CancellationToken cancellationToken = default)
+                {
+                    if (_lastDeserializationSize < MaxBufferSize)
+                    {
+                        return ReadFixedSizeAsync(stream, cancellationToken);
+                    }
+                    else
+                    {
+                        return ReadStreamingAsync(stream, cancellationToken);
+                    }
+                }
+
+                private static ValueTask<T> ReadStreamingAsync(Stream stream, CancellationToken cancellationToken = default)
+                {
+                    var jsonReader = new JsonReader<TSymbol>(stream);
+                    return new ValueTask<T>(Formatter.Deserialize(ref jsonReader));
+                }
+
+                private static ValueTask<T> ReadFixedSizeAsync(Stream stream, CancellationToken cancellationToken)
                 {
                     if (stream is MemoryStream ms && ms.TryGetBuffer(out var buffer))
                     {

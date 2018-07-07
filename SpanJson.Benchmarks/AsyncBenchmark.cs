@@ -13,22 +13,50 @@ namespace SpanJson.Benchmarks
     [Config(typeof(MyConfig))]
     public class AsyncBenchmark
     {
-        private static ExpressionTreeFixture Fixture = new ExpressionTreeFixture();
-        private static List<Answer> Answers;
+        private static readonly ExpressionTreeFixture Fixture = new ExpressionTreeFixture();
+        private List<Answer> _answers;
+        private byte[] _data;
 
-        [Params(10, 100, 1000)] public int Count;
+        [Params(10, 100, 1000, 10000)] public int Count;
 
         [GlobalSetup]
         public void Setup()
         {
-            Answers = Fixture.CreateMany<Answer>(Count).ToList();
-            var output = JsonSerializer.Generic.Utf8.Serialize(Answers);
+            _answers = Fixture.CreateMany<Answer>(Count).ToList();
+            _data = JsonSerializer.Generic.Utf8.Serialize(_answers);
+            DeserializeAnswerListAsync().GetAwaiter().GetResult();
+        }
+
+
+        [Benchmark]
+        public async Task SerializeAnswerListAsync()
+        {
+            await JsonSerializer.Generic.Utf8.SerializeAsync(_answers, Stream.Null).ConfigureAwait(false);
         }
 
         [Benchmark]
-        public async Task SerializeAnswerList()
+        public void SerializeAnswerList()
         {
-            await JsonSerializer.Generic.Utf8.SerializeAsync(Answers, Stream.Null).ConfigureAwait(false);
+            JsonSerializer.Generic.Utf8.Serialize(_answers);
+        }
+
+        [Benchmark]
+        public async Task DeserializeAnswerListAsync()
+        {
+            using (var ms = new MemoryStream(_data, false))
+            {
+                using (var tr = new StreamReader(ms, Encoding.UTF8))
+                {
+
+                    var result = await JsonSerializer.Generic.Utf16.DeserializeAsync<List<Answer>>(tr).ConfigureAwait(false);
+                }
+            }
+        }
+
+        [Benchmark]
+        public void DeserializeAnswerList()
+        {
+            JsonSerializer.Generic.Utf8.Serialize(_answers);
         }
     }
 }

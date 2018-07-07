@@ -47,10 +47,40 @@ namespace SpanJson.Buffers
             }
         }
 
-        public bool TrySlideOrResize()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void Grow()
+        {
+            FormatterUtils.Grow(ref _data);
+            if (typeof(TSymbol) == typeof(char))
+            {
+                Chars = MemoryMarshal.Cast<TSymbol, char>(_data);
+                Bytes = null;
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                Bytes = MemoryMarshal.Cast<TSymbol, byte>(_data);
+                Chars = null;
+            }
+        }
+
+        /// <summary>
+        /// This method decides if we can slide the read window or if we first need to grow the window
+        /// Growing is only necessary for strings, all the other data types are fixed size
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool TrySlideOrGrow(bool alreadySlid = false)
         {
             if (_isStreaming)
             {
+                if (alreadySlid)
+                {
+                    Grow();
+                }
+
+                if (Pos == 0)
+                {
+                    return false;
+                }
                 var remaining = _data.Length - Pos;
                 _data.AsSpan(Pos).CopyTo(_data); // copy the remaining data to the beginning
                 if (typeof(TSymbol) == typeof(char))
