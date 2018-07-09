@@ -9,7 +9,7 @@ namespace SpanJson.Shared
 {
     public class AsyncNullStream : Stream
     {
-
+        public static readonly AsyncNullStream Default = new AsyncNullStream();
         public override void Flush()
         {
         }
