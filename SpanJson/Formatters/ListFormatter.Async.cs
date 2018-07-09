@@ -9,8 +9,8 @@ namespace SpanJson.Formatters
         /// <summary>
         /// Writes the list elements
         /// Idea:
-        /// - Write everything synchronously until our buffer is full
-        /// - Flush it and either continue if done synchronously or asynchronously with the remaining elements
+        /// - Write everything synchronously until our buffer is full (enough)
+        /// - Flush it and either continue synchronously, if the flush is completed already, or asynchronously with the remaining elements
         /// </summary>
         public ValueTask SerializeAsync(AsyncWriter<TSymbol> asyncWriter, TList value, int nestingLimit, CancellationToken cancellationToken = default)
         {
@@ -19,7 +19,7 @@ namespace SpanJson.Formatters
             if (value == null)
             {
                 writer.WriteNull();
-                return asyncWriter.FlushAsync(writer.Position, cancellationToken);
+                return new ValueTask(asyncWriter.FlushAsync(writer.Position, cancellationToken));
             }
 
             var nextNestingLimit = RecursionCandidate<T>.IsRecursionCandidate ? nestingLimit + 1 : nestingLimit;
@@ -44,6 +44,7 @@ namespace SpanJson.Formatters
                         else
                         {
                             // It's async, we need to call the async wrapper method and continue from there
+                            // this stackoverflows for larget sizes
                             return SerializeArrayElementsAsync(asyncWriter, task, value, i + 1, nextNestingLimit, cancellationToken);
                         }
                     }
@@ -51,13 +52,13 @@ namespace SpanJson.Formatters
             }
 
             writer.WriteEndArray();
-            return asyncWriter.FlushAsync(writer.Position, cancellationToken);
+            return new ValueTask(asyncWriter.FlushAsync(writer.Position, cancellationToken));
         }
 
         /// <summary>
         /// awaits the async task and continues writing the remaining list elements
         /// </summary>
-        private async ValueTask SerializeArrayElementsAsync(AsyncWriter<TSymbol> asyncWriter, ValueTask task, TList value, int nextIndex, int nestingLimit,
+        private async ValueTask SerializeArrayElementsAsync(AsyncWriter<TSymbol> asyncWriter, Task task, TList value, int nextIndex, int nestingLimit,
             CancellationToken cancellationToken = default)
         {
             await task.ConfigureAwait(false);
@@ -88,13 +89,14 @@ namespace SpanJson.Formatters
                     else
                     {
                         // It's async, we need to call the async wrapper method and continue from there
+                        // this stackoverflows for large sizes
                         return SerializeArrayElementsAsync(asyncWriter, task, value, i + 1, nestingLimit, cancellationToken);
                     }
                 }
             }
 
             writer.WriteEndArray();
-            return asyncWriter.FlushAsync(writer.Position, cancellationToken);
+            return new ValueTask(asyncWriter.FlushAsync(writer.Position, cancellationToken));
         }
 
         // TODO

@@ -27,25 +27,28 @@ namespace SpanJson
 
         private AsyncWriter()
         {
-            _data = ArrayPool<TSymbol>.Shared.Rent(4096);
+            _data = ArrayPool<TSymbol>.Shared.Rent(8192);
         }
 
         public int MaxSafeWriteSize => _data.Length - 100;
 
+        public bool SyncMode { get; set; }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ValueTask FlushAsync(int count, CancellationToken cancellationToken = default)
+        public Task FlushAsync(int count, CancellationToken cancellationToken = default)
         {
+
             if (typeof(TSymbol) == typeof(char))
             {
                 var temp = Unsafe.As<TSymbol[], char[]>(ref _data);
-                return new ValueTask(_writer.WriteAsync(temp, 0, count));
+                return _writer.WriteAsync(temp, 0, count);
             }
 
             if (typeof(TSymbol) == typeof(byte))
             {
                 var temp = Unsafe.As<TSymbol[], byte[]>(ref _data);
-                return new ValueTask(_stream.WriteAsync(temp, 0, count, cancellationToken));
+                return _stream.WriteAsync(temp, 0, count, cancellationToken);
             }
 
             ThrowNotSupportedException();
