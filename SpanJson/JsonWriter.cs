@@ -37,10 +37,10 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public JsonWriter(TSymbol[] data)
+        public JsonWriter(TSymbol[] data, int pos)
         {
             Data = data;
-            _pos = 0;
+            _pos = pos;
             if (typeof(TSymbol) == typeof(char))
             {
                 _chars = MemoryMarshal.Cast<TSymbol, char>(data);

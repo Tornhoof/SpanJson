@@ -57,7 +57,7 @@ namespace SpanJson.Benchmarks
             }
         }
 
-         [Benchmark]
+        [Benchmark]
         public async Task AsyncStringListAsyncStreamNull()
         {
             using (var asyncWriter = new AsyncWriter<byte>(AsyncNullStream.Default))
@@ -67,15 +67,15 @@ namespace SpanJson.Benchmarks
         }
 
         //[Benchmark]
-        //public async Task AsyncStringListFileStream()
-        //{
-        //    using (var fs = File.Create($"asynctest{Count}.bin"))
-        //    {
-        //        using (var asyncWriter = new AsyncWriter<byte>(fs))
-        //        {
-        //            await ListFormatter<List<string>, string, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default.SerializeAsync(asyncWriter, _list, 0);
-        //        }
-        //    }
-        //}
+        public async Task AsyncStringListFileStream()
+        {
+            using (var fs = File.Create($"asynctest{Count}.bin"))
+            {
+                using (var asyncWriter = new AsyncWriter<byte>(fs))
+                {
+                    await ListFormatter<List<string>, string, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default.SerializeAsync(asyncWriter, _list, 0);
+                }
+            }
+        }
     }
 }
