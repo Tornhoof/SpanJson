@@ -36,7 +36,36 @@ namespace SpanJson
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public JsonWriter(TSymbol[] data)
+        {
+            Data = data;
+            _pos = 0;
+            if (typeof(TSymbol) == typeof(char))
+            {
+                _chars = MemoryMarshal.Cast<TSymbol, char>(data);
+                _bytes = null;
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                _bytes = MemoryMarshal.Cast<TSymbol, byte>(data);
+                _chars = null;
+            }
+            else
+            {
+                ThrowNotSupportedException();
+                _chars = null;
+                _bytes = null;
+
+            }
+        }
+
         public int Position => _pos;
+
+        public void Reset()
+        {
+            _pos = 0;
+        }
 
         public TSymbol[] Data { get; private set; }
 
