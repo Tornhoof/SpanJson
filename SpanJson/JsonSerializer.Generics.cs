@@ -42,12 +42,35 @@ namespace SpanJson
                     return result;
                 }
 
+                public static ArraySegment<char> InnerSerializeToCharArrayPool(T input)
+                {
+                    var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSize);
+                    Formatter.Serialize(ref jsonWriter, input, 0);
+                    _lastSerializationSize = jsonWriter.Position;
+                    var temp = jsonWriter.Data;
+                    var data = Unsafe.As<TSymbol[], char[]>(ref temp);
+                    var result = new ArraySegment<char>(data, 0, jsonWriter.Position);
+                    return result;
+                }
+
                 public static byte[] InnerSerializeToByteArray(T input)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSize);
                     Formatter.Serialize(ref jsonWriter, input, 0);
                     _lastSerializationSize = jsonWriter.Position;
                     var result = jsonWriter.ToByteArray();
+                    return result;
+                }
+
+
+                public static ArraySegment<byte> InnerSerializeToByteArrayPool(T input)
+                {
+                    var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSize);
+                    Formatter.Serialize(ref jsonWriter, input, 0);
+                    _lastSerializationSize = jsonWriter.Position * 2;
+                    var temp = jsonWriter.Data;
+                    var data = Unsafe.As<TSymbol[], byte[]>(ref temp);
+                    var result = new ArraySegment<byte>(data, 0, jsonWriter.Position);
                     return result;
                 }
 
@@ -221,6 +244,18 @@ namespace SpanJson
                 }
 
                 /// <summary>
+                ///     Serialize to char buffer from ArrayPool
+                ///     The returned ArraySegment's Array needs to be returned to the ArrayPool
+                /// </summary>
+                /// <typeparam name="T">Type</typeparam>
+                /// <param name="input">Input</param>
+                /// <returns>Char array from ArrayPool</returns>
+                public static ArraySegment<char> SerializeUnsafe<T>(T input)
+                {
+                    return SerializeUnsafe<T, ExcludeNullsOriginalCaseResolver<char>>(input);
+                }
+
+                /// <summary>
                 ///     Serialize to string with specific resolver.
                 /// </summary>
                 /// <typeparam name="T">Type</typeparam>
@@ -231,6 +266,21 @@ namespace SpanJson
                     where TResolver : IJsonFormatterResolver<char, TResolver>, new()
                 {
                     return Inner<T, char, TResolver>.InnerSerializeToString(input);
+                }
+
+
+                /// <summary>
+                ///     Serialize to string with specific resolver.
+                ///     The returned ArraySegment's Array needs to be returned to the ArrayPool
+                /// </summary>
+                /// <typeparam name="T">Type</typeparam>
+                /// <typeparam name="TResolver">Resolver</typeparam>
+                /// <param name="input">Input</param>
+                /// <returns>String</returns>
+                public static ArraySegment<char> SerializeUnsafe<T, TResolver>(T input)
+                    where TResolver : IJsonFormatterResolver<char, TResolver>, new()
+                {
+                    return Inner<T, char, TResolver>.InnerSerializeToCharArrayPool(input);
                 }
 
                 /// <summary>
@@ -354,6 +404,18 @@ namespace SpanJson
                 }
 
                 /// <summary>
+                ///     Serialize to byte array from ArrayPool.
+                ///     The returned ArraySegment's Array needs to be returned to the ArrayPool
+                /// </summary>
+                /// <typeparam name="T">Type</typeparam>
+                /// <param name="input">Input</param>
+                /// <returns>Byte array from ArrayPool</returns>
+                public static ArraySegment<byte> SerializeUnsafe<T>(T input)
+                {
+                    return SerializeUnsafe<T, ExcludeNullsOriginalCaseResolver<byte>>(input);
+                }
+
+                /// <summary>
                 ///     Deserialize from byte array.
                 /// </summary>
                 /// <typeparam name="T">Type</typeparam>
@@ -412,6 +474,20 @@ namespace SpanJson
                     where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
                 {
                     return Inner<T, byte, TResolver>.InnerSerializeToByteArray(input);
+                }
+
+                /// <summary>
+                ///     Serialize to byte array with specific resolver.
+                ///     The returned ArraySegment's Array needs to be returned to the ArrayPool
+                /// </summary>
+                /// <typeparam name="T">Type</typeparam>
+                /// <typeparam name="TResolver">Resolver</typeparam>
+                /// <param name="input">Input</param>
+                /// <returns>Byte array from ArrayPool</returns>
+                public static ArraySegment<byte> SerializeUnsafe<T, TResolver>(T input)
+                    where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
+                {
+                    return Inner<T, byte, TResolver>.InnerSerializeToByteArrayPool(input);
                 }
 
                 /// <summary>
