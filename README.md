@@ -41,14 +41,22 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 ## How to use it ##
 ```csharp
 Synchronous API:
+
 var result = JsonSerializer.Generic.Utf16.Serialize(input);
 var result = JsonSerializer.NonGeneric.Utf16.Serialize(input);
 var result = JsonSerializer.Generic.Utf16.Deserialize<Input>(input);
 var result = JsonSerializer.NonGeneric.Utf16.Deserialize(input, typeof(Input));
+
 var result = JsonSerializer.Generic.Utf8.Serialize(input);
 var result = JsonSerializer.NonGeneric.Utf8.Serialize(input);
 var result = JsonSerializer.Generic.Utf8.Deserialize<Input>(input);
 var result = JsonSerializer.NonGeneric.Utf8.Deserialize(input, typeof(Input));
+
+// The following methods return an ArraySegment from the ArrayPool, you NEED to return it yourself after working with it.
+var result = JsonSerializer.Generic.Utf16.SerializeToArrayPool(input);
+var result = JsonSerializer.NonGeneric.Utf16.SerializeToArrayPool(input);
+var result = JsonSerializer.Generic.Utf8.SerializeToArrayPool(input);
+var result = JsonSerializer.NonGeneric.Utf8.SerializeToArrayPool(input);
 
 Asynchronous API:
 

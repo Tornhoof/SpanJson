@@ -34,14 +34,14 @@ namespace SpanJson.Benchmarks
         [Benchmark]
         public void SerializeUtf16Unsafe()
         {
-            var buffer = JsonSerializer.Generic.Utf16.SerializeUnsafe(Message);
+            var buffer = JsonSerializer.Generic.Utf16.SerializeToArrayPool(Message);
             ArrayPool<char>.Shared.Return(buffer.Array);
         }
 
         [Benchmark]
         public void SerializeUtf8Unsafe()
         {
-            var buffer = JsonSerializer.Generic.Utf8.SerializeUnsafe(Message);
+            var buffer = JsonSerializer.Generic.Utf8.SerializeToArrayPool(Message);
             ArrayPool<byte>.Shared.Return(buffer.Array);
         }
 
