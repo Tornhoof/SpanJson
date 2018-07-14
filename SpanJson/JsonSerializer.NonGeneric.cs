@@ -37,6 +37,19 @@ namespace SpanJson
                     return invoker.ToStringSerializer(input);
                 }
 
+                public static ArraySegment<char> InnerSerializeToCharArrayPool(object input)
+                {
+                    if (input == null)
+                    {
+                        return null;
+                    }
+
+                    // ReSharper disable ConvertClosureToMethodGroup
+                    var invoker = Invokers.GetOrAdd(input.GetType(), x => BuildInvoker(x));
+                    // ReSharper restore ConvertClosureToMethodGroup
+                    return invoker.ToCharArrayPoolSerializer(input);
+                }
+
                 public static byte[] InnerSerializeToByteArray(object input)
                 {
                     if (input == null)
@@ -48,6 +61,19 @@ namespace SpanJson
                     var invoker = Invokers.GetOrAdd(input.GetType(), x => BuildInvoker(x));
                     // ReSharper restore ConvertClosureToMethodGroup
                     return invoker.ToByteArraySerializer(input);
+                }
+
+                public static ArraySegment<byte> InnerSerializeToByteArrayPool(object input)
+                {
+                    if (input == null)
+                    {
+                        return null;
+                    }
+
+                    // ReSharper disable ConvertClosureToMethodGroup
+                    var invoker = Invokers.GetOrAdd(input.GetType(), x => BuildInvoker(x));
+                    // ReSharper restore ConvertClosureToMethodGroup
+                    return invoker.ToByteArrayPoolSerializer(input);
                 }
 
                 public static object InnerDeserialize(in ReadOnlySpan<TSymbol> input, Type type)
@@ -122,14 +148,14 @@ namespace SpanJson
                 {
                     if (typeof(TSymbol) == typeof(char))
                     {
-                        return new Invoker(BuildToStringSerializer(type), null, BuildDeserializer(type),
+                        return new Invoker(BuildToStringSerializer(type), null, BuildToCharArrayPoolSerializer(type), null, BuildDeserializer(type),
                             BuildAsyncTextWriterSerializer(type),
                             BuildAsyncTextReaderDeserializer(type), null, null);
                     }
 
                     if (typeof(TSymbol) == typeof(byte))
                     {
-                        return new Invoker(null, BuildToByteArraySerializer(type), BuildDeserializer(type),
+                        return new Invoker(null, BuildToByteArraySerializer(type), null, BuildToByteArrayPoolSerializer(type), BuildDeserializer(type),
                             null, null, BuildAsyncStreamSerializer(type), BuildAsyncStreamDeserializer(type));
                     }
 
@@ -156,6 +182,30 @@ namespace SpanJson
                         Expression.Lambda<SerializeToStringDelegate>(
                             Expression.Call(typeof(Generic.Utf16), nameof(Generic.Utf16.Serialize),
                                 new[] {type, typeof(TResolver)}, typedInputParam),
+                            inputParam);
+                    return lambdaExpression.Compile();
+                }
+
+                private static SerializeToByteArrayPoolDelegate BuildToByteArrayPoolSerializer(Type type)
+                {
+                    var inputParam = Expression.Parameter(typeof(object), "input");
+                    var typedInputParam = Expression.Convert(inputParam, type);
+                    var lambdaExpression =
+                        Expression.Lambda<SerializeToByteArrayPoolDelegate>(
+                            Expression.Call(typeof(Generic.Utf8), nameof(Generic.Utf8.SerializeToArrayPool),
+                                new[] { type, typeof(TResolver) }, typedInputParam),
+                            inputParam);
+                    return lambdaExpression.Compile();
+                }
+
+                private static SerializeToCharArrayPoolDelegate BuildToCharArrayPoolSerializer(Type type)
+                {
+                    var inputParam = Expression.Parameter(typeof(object), "input");
+                    var typedInputParam = Expression.Convert(inputParam, type);
+                    var lambdaExpression =
+                        Expression.Lambda<SerializeToCharArrayPoolDelegate>(
+                            Expression.Call(typeof(Generic.Utf16), nameof(Generic.Utf16.SerializeToArrayPool),
+                                new[] { type, typeof(TResolver) }, typedInputParam),
                             inputParam);
                     return lambdaExpression.Compile();
                 }
@@ -229,13 +279,15 @@ namespace SpanJson
 
                 private delegate ValueTask<object> DeserializeFromTextReaderDelegateAsync(TextReader textReader, CancellationToken cancellationToken = default);
 
-                private readonly struct Invoker
+                private class Invoker
                 {
-                    public Invoker(SerializeToStringDelegate toStringSerializer, SerializeToByteArrayDelegate toByteArraySerializer,
+                    public Invoker(SerializeToStringDelegate toStringSerializer, SerializeToByteArrayDelegate toByteArraySerializer, SerializeToCharArrayPoolDelegate toCharArrayPoolSerializer, SerializeToByteArrayPoolDelegate toByteArrayPoolSerializer,
                         DeserializeDelegate deserializer, SerializeToTextWriterDelegateAsync serializeToTextWriterDelegateAsync,
                         DeserializeFromTextReaderDelegateAsync deserializeFromTextReaderDelegateAsync, SerializeToStreamDelegateAsync toStreamSerializerAsync,
                         DeserializeFromStreamDelegateAsync fromStreamDeserializerAsync)
                     {
+                        ToCharArrayPoolSerializer = toCharArrayPoolSerializer;
+                        ToByteArrayPoolSerializer = toByteArrayPoolSerializer;
                         ToByteArraySerializer = toByteArraySerializer;
                         ToStringSerializer = toStringSerializer;
                         ToTextWriterSerializerAsync = serializeToTextWriterDelegateAsync;
@@ -247,6 +299,8 @@ namespace SpanJson
 
                     public readonly SerializeToStringDelegate ToStringSerializer;
                     public readonly SerializeToByteArrayDelegate ToByteArraySerializer;
+                    public readonly SerializeToCharArrayPoolDelegate ToCharArrayPoolSerializer;
+                    public readonly SerializeToByteArrayPoolDelegate ToByteArrayPoolSerializer;
                     public readonly DeserializeDelegate Deserializer;
                     public readonly SerializeToTextWriterDelegateAsync ToTextWriterSerializerAsync;
                     public readonly DeserializeFromTextReaderDelegateAsync FromTextReaderDeserializerAsync;
@@ -255,10 +309,12 @@ namespace SpanJson
                 }
 
                 private delegate byte[] SerializeToByteArrayDelegate(object input);
+                private delegate ArraySegment<byte> SerializeToByteArrayPoolDelegate(object input);
 
                 private delegate ValueTask SerializeToStreamDelegateAsync(object input, Stream stream, CancellationToken cancellationToken = default);
 
                 private delegate string SerializeToStringDelegate(object input);
+                private delegate ArraySegment<char> SerializeToCharArrayPoolDelegate(object input);
 
                 private delegate ValueTask SerializeToTextWriterDelegateAsync(object input, TextWriter writer, CancellationToken cancellationToken = default);
             }
@@ -276,6 +332,17 @@ namespace SpanJson
                 public static string Serialize(object input)
                 {
                     return Serialize<ExcludeNullsOriginalCaseResolver<char>>(input);
+                }
+
+                /// <summary>
+                ///     Serialize to char buffer from ArrayPool
+                ///     The returned ArraySegment's Array needs to be returned to the ArrayPool
+                /// </summary>
+                /// <param name="input">Input</param>
+                /// <returns>Char array from ArrayPool</returns>
+                public static ArraySegment<char> SerializeToArrayPool(object input)
+                {
+                    return SerializeToArrayPool<ExcludeNullsOriginalCaseResolver<char>>(input);
                 }
 
                 /// <summary>
@@ -338,6 +405,18 @@ namespace SpanJson
                 }
 
                 /// <summary>
+                ///     Serialize to char array from Array Pool with specific resolver.
+                ///     The returned ArraySegment's Array needs to be returned to the ArrayPool
+                /// </summary>
+                /// <typeparam name="TResolver">Resolver</typeparam>
+                /// <param name="input">Input</param>
+                /// <returns>Char array from Array Pool</returns>
+                public static ArraySegment<char> SerializeToArrayPool<TResolver>(object input) where TResolver : IJsonFormatterResolver<char, TResolver>, new()
+                {
+                    return Inner<char, TResolver>.InnerSerializeToCharArrayPool(input);
+                }
+
+                /// <summary>
                 ///     Deserialize from TextReader with specific resolver.
                 /// </summary>
                 /// <typeparam name="TResolver">Resolver</typeparam>
@@ -390,6 +469,17 @@ namespace SpanJson
                 public static byte[] Serialize(object input)
                 {
                     return Serialize<ExcludeNullsOriginalCaseResolver<byte>>(input);
+                }
+
+                /// <summary>
+                ///     Serialize to byte array from ArrayPool.
+                ///     The returned ArraySegment's Array needs to be returned to the ArrayPool
+                /// </summary>
+                /// <param name="input">Input</param>
+                /// <returns>Byte array from ArrayPool</returns>
+                public static ArraySegment<byte> SerializeToArrayPool(object input)
+                {
+                    return SerializeToArrayPool<ExcludeNullsOriginalCaseResolver<byte>>(input);
                 }
 
                 /// <summary>
@@ -478,6 +568,18 @@ namespace SpanJson
                 public static byte[] Serialize<TResolver>(object input) where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
                 {
                     return Inner<byte, TResolver>.InnerSerializeToByteArray(input);
+                }
+
+                /// <summary>
+                ///     Serialize to byte array from ArrayPool with specific resolver.
+                ///     The returned ArraySegment's Array needs to be returned to the ArrayPool
+                /// </summary>
+                /// <typeparam name="TResolver">Resolver</typeparam>
+                /// <param name="input">Input</param>
+                /// <returns>Byte array</returns>
+                public static ArraySegment<byte> SerializeToArrayPool<TResolver>(object input) where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
+                {
+                    return Inner<byte, TResolver>.InnerSerializeToByteArrayPool(input);
                 }
 
                 /// <summary>

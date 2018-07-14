@@ -35,31 +35,53 @@ namespace SpanJson
 
                 public static string InnerSerializeToString(T input)
                 {
-                    var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSize);
+                    var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
                     Formatter.Serialize(ref jsonWriter, input, 0);
-                    _lastSerializationSize = jsonWriter.Position;
+                    _lastSerializationSizeEstimate = jsonWriter.Data.Length;
                     var result = jsonWriter.ToString(); // includes Dispose
+                    return result;
+                }
+
+                public static ArraySegment<char> InnerSerializeToCharArrayPool(T input)
+                {
+                    var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
+                    Formatter.Serialize(ref jsonWriter, input, 0);
+                    _lastSerializationSizeEstimate = jsonWriter.Data.Length;
+                    var temp = jsonWriter.Data;
+                    var data = Unsafe.As<TSymbol[], char[]>(ref temp);
+                    var result = new ArraySegment<char>(data, 0, jsonWriter.Position);
                     return result;
                 }
 
                 public static byte[] InnerSerializeToByteArray(T input)
                 {
-                    var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSize);
+                    var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
                     Formatter.Serialize(ref jsonWriter, input, 0);
-                    _lastSerializationSize = jsonWriter.Position;
+                    _lastSerializationSizeEstimate = jsonWriter.Data.Length;
                     var result = jsonWriter.ToByteArray();
+                    return result;
+                }
+
+
+                public static ArraySegment<byte> InnerSerializeToByteArrayPool(T input)
+                {
+                    var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
+                    Formatter.Serialize(ref jsonWriter, input, 0);
+                    _lastSerializationSizeEstimate = jsonWriter.Data.Length;
+                    var temp = jsonWriter.Data;
+                    var data = Unsafe.As<TSymbol[], byte[]>(ref temp);
+                    var result = new ArraySegment<byte>(data, 0, jsonWriter.Position);
                     return result;
                 }
 
                 public static ValueTask InnerSerializeAsync(T input, TextWriter writer, CancellationToken cancellationToken = default)
                 {
-                    var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSize);
+                    var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
                     Formatter.Serialize(ref jsonWriter, input, 0);
-                    var newSize = jsonWriter.Position;
-                    _lastSerializationSize = newSize;
+                    _lastSerializationSizeEstimate = jsonWriter.Data.Length;
                     var temp = jsonWriter.Data;
                     var data = Unsafe.As<TSymbol[], char[]>(ref temp);
-                    var result = writer.WriteAsync(data, 0, newSize);
+                    var result = writer.WriteAsync(data, 0, jsonWriter.Position);
                     if (result.IsCompletedSuccessfully)
                     {
                         // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
@@ -72,13 +94,12 @@ namespace SpanJson
 
                 public static ValueTask InnerSerializeAsync(T input, Stream stream, CancellationToken cancellationToken = default)
                 {
-                    var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSize);
+                    var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
                     Formatter.Serialize(ref jsonWriter, input, 0);
-                    var newSize = jsonWriter.Position;
-                    _lastSerializationSize = newSize;
+                    _lastSerializationSizeEstimate = jsonWriter.Data.Length;
                     var temp = jsonWriter.Data;
                     var data = Unsafe.As<TSymbol[], byte[]>(ref temp);
-                    var result = stream.WriteAsync(data, 0, newSize, cancellationToken);
+                    var result = stream.WriteAsync(data, 0, jsonWriter.Position, cancellationToken);
                     if (result.IsCompletedSuccessfully)
                     {
                         // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
@@ -91,7 +112,7 @@ namespace SpanJson
 
                 public static T InnerDeserialize(in ReadOnlySpan<TSymbol> input)
                 {
-                    _lastDeserializationSize = input.Length;
+                    _lastDeserializationSizeEstimate = input.Length;
                     var jsonReader = new JsonReader<TSymbol>(input);
                     return Formatter.Deserialize(ref jsonReader);
                 }
@@ -117,7 +138,7 @@ namespace SpanJson
 
                     var input = stream.CanSeek
                         ? ReadStreamFullAsync(stream, cancellationToken)
-                        : ReadStreamAsync(stream, _lastDeserializationSize, cancellationToken);
+                        : ReadStreamAsync(stream, _lastDeserializationSizeEstimate, cancellationToken);
                     if (input.IsCompletedSuccessfully)
                     {
                         var memory = input.Result;
@@ -198,9 +219,9 @@ namespace SpanJson
                 }
 
                 // ReSharper disable StaticMemberInGenericType
-                private static int _lastSerializationSize = 256; // initial size, get's updated with each serialization
+                private static int _lastSerializationSizeEstimate = 256; // initial size, get's updated with each serialization
 
-                private static int _lastDeserializationSize = 256; // initial size, get's updated with each deserialization
+                private static int _lastDeserializationSizeEstimate = 256; // initial size, get's updated with each deserialization
                 // ReSharper restore StaticMemberInGenericType
             }
 
@@ -221,6 +242,18 @@ namespace SpanJson
                 }
 
                 /// <summary>
+                ///     Serialize to char buffer from ArrayPool
+                ///     The returned ArraySegment's Array needs to be returned to the ArrayPool
+                /// </summary>
+                /// <typeparam name="T">Type</typeparam>
+                /// <param name="input">Input</param>
+                /// <returns>Char array from ArrayPool</returns>
+                public static ArraySegment<char> SerializeToArrayPool<T>(T input)
+                {
+                    return SerializeToArrayPool<T, ExcludeNullsOriginalCaseResolver<char>>(input);
+                }
+
+                /// <summary>
                 ///     Serialize to string with specific resolver.
                 /// </summary>
                 /// <typeparam name="T">Type</typeparam>
@@ -231,6 +264,21 @@ namespace SpanJson
                     where TResolver : IJsonFormatterResolver<char, TResolver>, new()
                 {
                     return Inner<T, char, TResolver>.InnerSerializeToString(input);
+                }
+
+
+                /// <summary>
+                ///     Serialize to string with specific resolver.
+                ///     The returned ArraySegment's Array needs to be returned to the ArrayPool
+                /// </summary>
+                /// <typeparam name="T">Type</typeparam>
+                /// <typeparam name="TResolver">Resolver</typeparam>
+                /// <param name="input">Input</param>
+                /// <returns>String</returns>
+                public static ArraySegment<char> SerializeToArrayPool<T, TResolver>(T input)
+                    where TResolver : IJsonFormatterResolver<char, TResolver>, new()
+                {
+                    return Inner<T, char, TResolver>.InnerSerializeToCharArrayPool(input);
                 }
 
                 /// <summary>
@@ -354,6 +402,18 @@ namespace SpanJson
                 }
 
                 /// <summary>
+                ///     Serialize to byte array from ArrayPool.
+                ///     The returned ArraySegment's Array needs to be returned to the ArrayPool
+                /// </summary>
+                /// <typeparam name="T">Type</typeparam>
+                /// <param name="input">Input</param>
+                /// <returns>Byte array from ArrayPool</returns>
+                public static ArraySegment<byte> SerializeToArrayPool<T>(T input)
+                {
+                    return SerializeToArrayPool<T, ExcludeNullsOriginalCaseResolver<byte>>(input);
+                }
+
+                /// <summary>
                 ///     Deserialize from byte array.
                 /// </summary>
                 /// <typeparam name="T">Type</typeparam>
@@ -412,6 +472,20 @@ namespace SpanJson
                     where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
                 {
                     return Inner<T, byte, TResolver>.InnerSerializeToByteArray(input);
+                }
+
+                /// <summary>
+                ///     Serialize to byte array from array pool with specific resolver.
+                ///     The returned ArraySegment's Array needs to be returned to the ArrayPool
+                /// </summary>
+                /// <typeparam name="T">Type</typeparam>
+                /// <typeparam name="TResolver">Resolver</typeparam>
+                /// <param name="input">Input</param>
+                /// <returns>Byte array from ArrayPool</returns>
+                public static ArraySegment<byte> SerializeToArrayPool<T, TResolver>(T input)
+                    where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
+                {
+                    return Inner<T, byte, TResolver>.InnerSerializeToByteArrayPool(input);
                 }
 
                 /// <summary>
