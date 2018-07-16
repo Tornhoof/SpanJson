@@ -28,6 +28,7 @@ namespace SpanJson.Formatters
         {
             return args?.Length > 0 ? type.GetMethod(name, args) : type.GetMethod(name);
         }
+
         protected static ConstantExpression GetConstantExpressionOfString<TSymbol>(string input)
         {
             if (typeof(TSymbol) == typeof(char))
