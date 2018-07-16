@@ -76,6 +76,40 @@ namespace SpanJson.Tests
 
 		    public int abcdefghijklmnopqrstuvwxyzabcdefgh {get;set;}
 
+		    public int abcdefghijklmnopqrstuvwxyzabcdefghi {get;set;}
+
+		    public int abcdefghijklmnopqrstuvwxyzabcdefghij {get;set;}
+
+		    public int abcdefghijklmnopqrstuvwxyzabcdefghijk {get;set;}
+
+		    public int abcdefghijklmnopqrstuvwxyzabcdefghijkl {get;set;}
+
+		    public int abcdefghijklmnopqrstuvwxyzabcdefghijklm {get;set;}
+
+		    public int abcdefghijklmnopqrstuvwxyzabcdefghijklmn {get;set;}
+
+		    public int abcdefghijklmnopqrstuvwxyzabcdefghijklmno {get;set;}
+
+		    public int abcdefghijklmnopqrstuvwxyzabcdefghijklmnop {get;set;}
+
+		    public int abcdefghijklmnopqrstuvwxyzabcdefghijklmnopq {get;set;}
+
+		    public int abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqr {get;set;}
+
+		    public int abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrs {get;set;}
+
+		    public int abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrst {get;set;}
+
+		    public int abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstu {get;set;}
+
+		    public int abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv {get;set;}
+
+		    public int abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvw {get;set;}
+
+		    public int abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx {get;set;}
+
+		    public int abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy {get;set;}
+
 			public override bool Equals(object obj)
 			{
 				if (ReferenceEquals(null, obj)) return false;
@@ -255,6 +289,91 @@ namespace SpanJson.Tests
 				}
 
 				if(abcdefghijklmnopqrstuvwxyzabcdefgh != other.abcdefghijklmnopqrstuvwxyzabcdefgh)
+				{
+					return false;
+				}
+
+				if(abcdefghijklmnopqrstuvwxyzabcdefghi != other.abcdefghijklmnopqrstuvwxyzabcdefghi)
+				{
+					return false;
+				}
+
+				if(abcdefghijklmnopqrstuvwxyzabcdefghij != other.abcdefghijklmnopqrstuvwxyzabcdefghij)
+				{
+					return false;
+				}
+
+				if(abcdefghijklmnopqrstuvwxyzabcdefghijk != other.abcdefghijklmnopqrstuvwxyzabcdefghijk)
+				{
+					return false;
+				}
+
+				if(abcdefghijklmnopqrstuvwxyzabcdefghijkl != other.abcdefghijklmnopqrstuvwxyzabcdefghijkl)
+				{
+					return false;
+				}
+
+				if(abcdefghijklmnopqrstuvwxyzabcdefghijklm != other.abcdefghijklmnopqrstuvwxyzabcdefghijklm)
+				{
+					return false;
+				}
+
+				if(abcdefghijklmnopqrstuvwxyzabcdefghijklmn != other.abcdefghijklmnopqrstuvwxyzabcdefghijklmn)
+				{
+					return false;
+				}
+
+				if(abcdefghijklmnopqrstuvwxyzabcdefghijklmno != other.abcdefghijklmnopqrstuvwxyzabcdefghijklmno)
+				{
+					return false;
+				}
+
+				if(abcdefghijklmnopqrstuvwxyzabcdefghijklmnop != other.abcdefghijklmnopqrstuvwxyzabcdefghijklmnop)
+				{
+					return false;
+				}
+
+				if(abcdefghijklmnopqrstuvwxyzabcdefghijklmnopq != other.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopq)
+				{
+					return false;
+				}
+
+				if(abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqr != other.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqr)
+				{
+					return false;
+				}
+
+				if(abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrs != other.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrs)
+				{
+					return false;
+				}
+
+				if(abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrst != other.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrst)
+				{
+					return false;
+				}
+
+				if(abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstu != other.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstu)
+				{
+					return false;
+				}
+
+				if(abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv != other.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuv)
+				{
+					return false;
+				}
+
+				if(abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvw != other.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvw)
+				{
+					return false;
+				}
+
+				if(abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx != other.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwx)
+				{
+					return false;
+				}
+
+				if(abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy != other.abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy)
 				{
 					return false;
 				}

@@ -16,7 +16,7 @@ namespace SpanJson.Tests
 		{
 <#
 		var propertyName = string.Empty;
-		for(int i = 0; i<=33;i++)
+		for(int i = 0; i<=50;i++)
 		{
 			propertyName += (char) (i%26 + 'a');
 #>
@@ -40,7 +40,7 @@ namespace SpanJson.Tests
 		    {
 <#
 		var equalityPropertyName = string.Empty;
-		for(int i = 0; i<=33;i++)
+		for(int i = 0; i<=50;i++)
 		{
 			equalityPropertyName += (char) (i%26 + 'a');
 #>
