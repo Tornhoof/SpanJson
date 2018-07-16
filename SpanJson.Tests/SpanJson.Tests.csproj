@@ -23,12 +23,20 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
 
-
   <ItemGroup>
     <None Update="Generated\BclTests.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BclTests.cs</LastGenOutput>
     </None>
+    <None Update="JsonWriterPropertyNameLengthTests.TestObject.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>JsonWriterPropertyNameLengthTests.TestObject.cs</LastGenOutput>
+    </None>
+    <Compile Update="JsonWriterPropertyNameLengthTests.TestObject.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>JsonWriterPropertyNameLengthTests.TestObject.tt</DependentUpon>
+    </Compile>
     <Compile Update="Generated\BclTests.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

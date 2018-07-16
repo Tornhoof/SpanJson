@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
@@ -31,20 +33,17 @@ namespace SpanJson.Formatters
                         Expression.Constant(new InvalidOperationException($"Nesting Limit of {NestingLimit} exceeded in Type {typeof(T).Name}.")))));
             }
 
-            MethodInfo propertyNameWriterMethodInfo;
             MethodInfo seperatorWriteMethodInfo;
             MethodInfo writeBeginObjectMethodInfo;
             MethodInfo writeEndObjectMethodInfo;
             if (typeof(TSymbol) == typeof(char))
             {
-                propertyNameWriterMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim), typeof(string));
                 seperatorWriteMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16ValueSeparator));
                 writeBeginObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16BeginObject));
                 writeEndObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16EndObject));
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                propertyNameWriterMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim), typeof(byte[]));
                 seperatorWriteMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8ValueSeparator));
                 writeBeginObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8BeginObject));
                 writeEndObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8EndObject));
@@ -100,7 +99,36 @@ namespace SpanJson.Formatters
                     parameterExpressions.Add(nestingLimitParameter);
                 }
 
-                var writerNameConstant = GetConstantExpressionOfString<TSymbol>($"\"{memberInfo.Name}\":");
+                ConstantExpression[] writeNameExpressions;
+                var formattedMemberInfoName = $"\"{memberInfo.Name}\":";
+
+                MethodInfo propertyNameWriterMethodInfo;
+                if (typeof(TSymbol) == typeof(char))
+                {
+                    writeNameExpressions = new [] { Expression.Constant(formattedMemberInfoName) };
+                    propertyNameWriterMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim), typeof(string));
+                }
+                else if (typeof(TSymbol) == typeof(byte))
+                {
+                    // Everything above a length of 32 is not optimized
+                    if (formattedMemberInfoName.Length > 32)
+                    {
+                        writeNameExpressions = new[] {Expression.Constant(Encoding.UTF8.GetBytes(formattedMemberInfoName))};
+                        propertyNameWriterMethodInfo =
+                            FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim), typeof(byte[]));
+                    }
+                    else
+                    {
+                        writeNameExpressions = GetIntegersForMemberName(formattedMemberInfoName);
+                        var typesToMatch = writeNameExpressions.Select(a => a.Value.GetType());
+                        propertyNameWriterMethodInfo =
+                            FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim), typesToMatch.ToArray());
+                    }
+                }
+                else
+                {
+                    throw new NotSupportedException();
+                }
                 var valueExpressions = new List<Expression>();
                 // we need to add the separator, but only if a value was written before
                 // we reset the indicator after each seperator write and set it after writing each field
@@ -114,7 +142,7 @@ namespace SpanJson.Formatters
                         ));
                 }
 
-                valueExpressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo, writerNameConstant));
+                valueExpressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo, writeNameExpressions));
                 valueExpressions.Add(Expression.Call(serializerInstance, serializeMethodInfo, parameterExpressions));
                 valueExpressions.Add(Expression.Assign(writeSeperator, Expression.Constant(true)));
                 Expression testNullExpression = null;
@@ -165,6 +193,49 @@ namespace SpanJson.Formatters
             var lambda =
                 Expression.Lambda<SerializeDelegate<T, TSymbol>>(blockExpression, writerParameter, valueParameter, nestingLimitParameter);
             return lambda.Compile();
+        }
+
+        /// <summary>
+        /// This is basically the same algorithm as in the t4 template to create the methods
+        /// It's necessary to update both
+        /// </summary>
+        private static ConstantExpression[] GetIntegersForMemberName(string formattedMemberInfoName)
+        {
+            var result = new List<ConstantExpression>();
+            var bytes = Encoding.UTF8.GetBytes(formattedMemberInfoName);
+            var remaining = bytes.Length;
+            var ulongCount = Math.DivRem(remaining, 8, out remaining);
+            int offset = 0;
+            for (int j = 0; j < ulongCount; j++)
+            {
+                result.Add(Expression.Constant(BitConverter.ToUInt64(bytes, offset)));
+                offset += sizeof(ulong);
+            }
+
+            var uintCount = Math.DivRem(remaining, 4, out remaining);
+            for (int j = 0; j < uintCount; j++)
+            {
+                result.Add(Expression.Constant(BitConverter.ToUInt32(bytes, offset)));
+                offset += sizeof(uint);
+            }
+
+            var ushortCount = Math.DivRem(remaining, 2, out remaining);
+            for (int j = 0; j < ushortCount; j++)
+            {
+                result.Add(Expression.Constant(BitConverter.ToUInt16(bytes, offset)));
+                offset += sizeof(ushort);
+            }
+
+            var byteCount = Math.DivRem(remaining, 1, out remaining);
+            for (int j = 0; j < byteCount; j++)
+            {
+                result.Add(Expression.Constant(bytes[offset]));
+                offset++;
+            }
+
+            Debug.Assert(remaining == 0);
+            Debug.Assert(offset == bytes.Length);
+            return result.ToArray();
         }
 
         protected static DeserializeDelegate<T, TSymbol> BuildDeserializeDelegate<T, TSymbol, TResolver>()

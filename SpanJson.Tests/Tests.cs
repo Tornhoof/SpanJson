@@ -35,6 +35,7 @@ namespace SpanJson.Tests
             var model = fixture.Create(modelType);
             var serialized = JsonSerializer.NonGeneric.Utf8.Serialize(model);
             Assert.NotNull(serialized);
+            var encoded = Encoding.UTF8.GetString(serialized);
             var deserialized = JsonSerializer.NonGeneric.Utf8.Deserialize(serialized, modelType);
             Assert.NotNull(deserialized);
             Assert.IsType(modelType, deserialized);
