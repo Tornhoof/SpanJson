@@ -25,11 +25,11 @@ namespace SpanJson.Benchmarks
         //    return JsonSerializer.Generic.Utf16.Serialize(Message);
         //}
 
-        [Benchmark]
-        public byte[] SerializeUtf8()
-        {
-            return JsonSerializer.Generic.Utf8.Serialize(Message);
-        }
+        //[Benchmark]
+        //public byte[] SerializeUtf8()
+        //{
+        //    return JsonSerializer.Generic.Utf8.Serialize(Message);
+        //}
 
         //[Benchmark]
         //public void SerializeUtf16Unsafe()
@@ -38,12 +38,12 @@ namespace SpanJson.Benchmarks
         //    ArrayPool<char>.Shared.Return(buffer.Array);
         //}
 
-        [Benchmark]
-        public void SerializeUtf8Unsafe()
-        {
-            var buffer = JsonSerializer.Generic.Utf8.SerializeToArrayPool(Message);
-            ArrayPool<byte>.Shared.Return(buffer.Array);
-        }
+        //[Benchmark]
+        //public void SerializeUtf8Unsafe()
+        //{
+        //    var buffer = JsonSerializer.Generic.Utf8.SerializeToArrayPool(Message);
+        //    ArrayPool<byte>.Shared.Return(buffer.Array);
+        //}
 
         //[Benchmark]
         //public ValueTask SerializeUtf16Async()
@@ -54,10 +54,61 @@ namespace SpanJson.Benchmarks
         //    }
         //}
 
+        //[Benchmark]
+        //public Task SerializeUtf8Async()
+        //{
+        //    return JsonSerializer.Generic.Utf8.SerializeAsync(Message, Stream.Null).AsTask();
+        //}
+
+        //[Benchmark]
+        //public Task SerializeUtf8JsonAsync()
+        //{
+        //    return Utf8Json.JsonSerializer.SerializeAsync(Stream.Null, Message);
+        //}
+
+        //[Benchmark]
+        //public void SerializeUtf8JsonUnsafe()
+        //{
+        //    Utf8Json.JsonSerializer.SerializeUnsafe(Message);
+        //}
+
+        //[Benchmark]
+        //public void SerializeUtf8Json()
+        //{
+        //    Utf8Json.JsonSerializer.Serialize(Message);
+        //}
+
+        //[Benchmark]
+        //public void WriteMessageDirectlyUtf16()
+        //{
+        //    var jsonWriter = new JsonWriter<char>(64);
+        //    jsonWriter.WriteUtf16BeginObject();
+        //    jsonWriter.WriteUtf16Verbatim("\"message\":");
+        //    jsonWriter.WriteUtf16String("Hello, World!");
+        //    jsonWriter.WriteUtf16EndObject();            
+        //}
+
+        private static readonly byte[] NameByteArray = Encoding.UTF8.GetBytes("\"message\":");
+
         [Benchmark]
-        public Task SerializeUtf8Async()
+        public void WriteMessageDirectlyUtf8()
         {
-            return JsonSerializer.Generic.Utf8.SerializeAsync(Message, Stream.Null).AsTask();
+            var jsonWriter = new JsonWriter<byte>(64);
+            jsonWriter.WriteUtf8BeginObject();
+            jsonWriter.WriteUtf8Verbatim(NameByteArray);
+            jsonWriter.WriteUtf8String("Hello, World!");
+            jsonWriter.WriteUtf8EndObject();
+        }
+
+        [Benchmark]
+        public void WriteMessageDirectlyUtf8JsonUtf8()
+        {
+            var buffer = ArrayPool<byte>.Shared.Rent(64);
+            var jsonWriter = new Utf8Json.JsonWriter(buffer);
+            jsonWriter.WriteBeginObject();
+            jsonWriter.WriteRaw(NameByteArray);
+            jsonWriter.WriteString("Hello, World!");
+            jsonWriter.WriteEndObject();
         }
     }
 }
