@@ -229,7 +229,7 @@ namespace SpanJson.Formatters
             var byteCount = Math.DivRem(remaining, 1, out remaining);
             for (int j = 0; j < byteCount; j++)
             {
-                result.Add(Expression.Constant(bytes[remaining + j]));
+                result.Add(Expression.Constant(bytes[offset]));
                 offset++;
             }
 
