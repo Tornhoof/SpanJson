@@ -29,21 +29,6 @@ namespace SpanJson.Formatters
             return args?.Length > 0 ? type.GetMethod(name, args) : type.GetMethod(name);
         }
 
-        protected static ConstantExpression GetConstantExpressionOfString<TSymbol>(string input)
-        {
-            if (typeof(TSymbol) == typeof(char))
-            {
-                return Expression.Constant(input);
-            }
-
-            if (typeof(TSymbol) == typeof(byte))
-            {
-                return Expression.Constant(Encoding.UTF8.GetBytes(input));
-            }
-
-            throw new NotSupportedException();
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected static void SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref JsonWriter<TSymbol> writer,
             T value, IJsonFormatter<T, TSymbol> formatter,
