@@ -19,11 +19,11 @@ namespace SpanJson.Benchmarks
         private static readonly JsonMessage Message = new JsonMessage {message = "Hello, World!"};
 
 
-        [Benchmark]
-        public string SerializeUtf16()
-        {
-            return JsonSerializer.Generic.Utf16.Serialize(Message);
-        }
+        //[Benchmark]
+        //public string SerializeUtf16()
+        //{
+        //    return JsonSerializer.Generic.Utf16.Serialize(Message);
+        //}
 
         [Benchmark]
         public byte[] SerializeUtf8()
@@ -31,12 +31,12 @@ namespace SpanJson.Benchmarks
             return JsonSerializer.Generic.Utf8.Serialize(Message);
         }
 
-        [Benchmark]
-        public void SerializeUtf16Unsafe()
-        {
-            var buffer = JsonSerializer.Generic.Utf16.SerializeToArrayPool(Message);
-            ArrayPool<char>.Shared.Return(buffer.Array);
-        }
+        //[Benchmark]
+        //public void SerializeUtf16Unsafe()
+        //{
+        //    var buffer = JsonSerializer.Generic.Utf16.SerializeToArrayPool(Message);
+        //    ArrayPool<char>.Shared.Return(buffer.Array);
+        //}
 
         [Benchmark]
         public void SerializeUtf8Unsafe()
@@ -45,14 +45,14 @@ namespace SpanJson.Benchmarks
             ArrayPool<byte>.Shared.Return(buffer.Array);
         }
 
-        [Benchmark]
-        public ValueTask SerializeUtf16Async()
-        {
-            using (var tw = new StreamWriter(Stream.Null))
-            {
-                return JsonSerializer.Generic.Utf16.SerializeAsync(Message, tw);
-            }
-        }
+        //[Benchmark]
+        //public ValueTask SerializeUtf16Async()
+        //{
+        //    using (var tw = new StreamWriter(Stream.Null))
+        //    {
+        //        return JsonSerializer.Generic.Utf16.SerializeAsync(Message, tw);
+        //    }
+        //}
 
         [Benchmark]
         public Task SerializeUtf8Async()
