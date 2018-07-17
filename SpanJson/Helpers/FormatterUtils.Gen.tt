@@ -29,15 +29,23 @@ using System.Buffers;
 namespace SpanJson.Helpers
 {
     public static partial class FormatterUtils
-	{
+    {
 <# foreach(var t in types) { #>
-		public static void Grow(ref <#=t.Name#>[] array)
-		{
-			var backup = array;
-			array = ArrayPool<<#=t.Name#>>.Shared.Rent(backup.Length * 2);
-			Buffer.BlockCopy(backup, 0, array, 0, backup.Length * sizeof(<#=t.Name#>));
-			ArrayPool<<#=t.Name#>>.Shared.Return(backup);
-		}
+        public static void GrowArray(ref <#=t.Name#>[] array)
+        {
+            var backup = array;
+            array = ArrayPool<<#=t.Name#>>.Shared.Rent(backup.Length * 2);
+            Buffer.BlockCopy(backup, 0, array, 0, backup.Length * sizeof(<#=t.Name#>));
+            ArrayPool<<#=t.Name#>>.Shared.Return(backup);
+        }
+
+        public static <#=t.Name#>[] CopyArray(<#=t.Name#>[] array, int count)
+        {
+            var result = new <#=t.Name#>[count];
+            Buffer.BlockCopy(array, 0, result, 0, array.Length * sizeof(<#=t.Name#>));
+            return result;
+        }
+
 <# } #>
     }
 }

@@ -11,12 +11,12 @@
 <# 
     var serializers = new []
     {
-		new {ResultType = typeof(string), Name = "JilSerializer"},
-		new {ResultType = typeof(string), Name = "SpanJsonSerializer"},
-		new {ResultType = typeof(byte[]), Name = "SpanJsonUtf8Serializer"},
-		new {ResultType = typeof(byte[]), Name = "Utf8JsonSerializer"},
+        new {ResultType = typeof(string), Name = "JilSerializer"},
+        new {ResultType = typeof(string), Name = "SpanJsonSerializer"},
+        new {ResultType = typeof(byte[]), Name = "SpanJsonUtf8Serializer"},
+        new {ResultType = typeof(byte[]), Name = "Utf8JsonSerializer"},
     };
-	var models = typeof(SpanJson.Shared.Models.AccessToken).Assembly
+    var models = typeof(SpanJson.Shared.Models.AccessToken).Assembly
                 .GetTypes()
                 .Where(t => t.Namespace.Contains("Models") && !t.IsEnum && !t.IsInterface && !t.IsAbstract)
                 .ToList();
@@ -32,59 +32,59 @@ namespace SpanJson.Benchmarks
   [Config(typeof(MyConfig))]
   public partial class ModelBenchmark
   {
-	private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
+    private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
 <#  
     foreach(var serializer in serializers)
     { 
 #>  
-	private static readonly <#= serializer.Name #> <#= serializer.Name #> = new <#= serializer.Name #>();
+    private static readonly <#= serializer.Name #> <#= serializer.Name #> = new <#= serializer.Name #>();
 <#  
     }   
 #>  
 <#  
     foreach(var model in models)
     { 
-		var fullNameFixed = model.FullName.Replace('+','.');		
+        var fullNameFixed = model.FullName.Replace('+','.');        
 #>  
-	private static readonly <#= fullNameFixed #> <#= model.Name #>Input = ExpressionTreeFixture.Create<<#= fullNameFixed #>>();
+    private static readonly <#= fullNameFixed #> <#= model.Name #>Input = ExpressionTreeFixture.Create<<#= fullNameFixed #>>();
 <#  
     }   
 #>  
 <#  
     foreach(var model in models)
     {  
-		var fullNameFixed = model.FullName.Replace('+','.');
-	foreach(var serializer in serializers)
-	{
-		var resultType = serializer.ResultType;
+        var fullNameFixed = model.FullName.Replace('+','.');
+    foreach(var serializer in serializers)
+    {
+        var resultType = serializer.ResultType;
 #>  
 
-	[Benchmark]
-	public <#= resultType.FullName #> Serialize<#= model.Name #>With<#= serializer.Name #>()
-	{
-		return <#= serializer.Name #>.Serialize(<#= model.Name #>Input);
-	}	
+    [Benchmark]
+    public <#= resultType.FullName #> Serialize<#= model.Name #>With<#= serializer.Name #>()
+    {
+        return <#= serializer.Name #>.Serialize(<#= model.Name #>Input);
+    }   
 <#  
     }   
-	}
+    }
 #> 
 <#  
     foreach(var model in models)
     {  
-		var fullNameFixed = model.FullName.Replace('+','.');
-	foreach(var serializer in serializers)
-	{
-		var resultType = serializer.ResultType;		
+        var fullNameFixed = model.FullName.Replace('+','.');
+    foreach(var serializer in serializers)
+    {
+        var resultType = serializer.ResultType;     
 #>  
-	private static readonly <#= resultType.Name#> <#= model.Name #>OutputOf<#= serializer.Name #> = <#= serializer.Name #>.Serialize(<#= model.Name #>Input);
-	[Benchmark]
-	public <#= fullNameFixed #> Deserialize<#= model.Name #>With<#= serializer.Name #>()
-	{
-		return <#= serializer.Name #>.Deserialize<<#= fullNameFixed #>>(<#= model.Name #>OutputOf<#= serializer.Name #>);
-	}
+    private static readonly <#= resultType.Name#> <#= model.Name #>OutputOf<#= serializer.Name #> = <#= serializer.Name #>.Serialize(<#= model.Name #>Input);
+    [Benchmark]
+    public <#= fullNameFixed #> Deserialize<#= model.Name #>With<#= serializer.Name #>()
+    {
+        return <#= serializer.Name #>.Deserialize<<#= fullNameFixed #>>(<#= model.Name #>OutputOf<#= serializer.Name #>);
+    }
 <#  
     }   
-	}
+    }
 #> 
   }
 }

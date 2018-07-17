@@ -83,7 +83,7 @@ void GenerateArrayDeserializeCode(string typeName, string utfName)
                 {
                     if (count == temp.Length)
                     {
-                        FormatterUtils.Grow(ref temp);
+                        FormatterUtils.GrowArray(ref temp);
                     }
 
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
@@ -95,8 +95,7 @@ void GenerateArrayDeserializeCode(string typeName, string utfName)
                 }
                 else
                 {
-                    result = new <#= typeName #>[count];
-                    Array.Copy(temp, result, count);
+                    result = FormatterUtils.CopyArray(temp, count);
                 }
             }
             finally
@@ -206,6 +205,7 @@ namespace SpanJson.Formatters
             return ElementFormatter.Deserialize(ref reader);
         }
     }
+
     public sealed class Nullable<#= t.Name #><#= utfName #>ArrayFormatter : IJsonFormatter<<#= t.Name #>?[], <#= symbol.Name #>> 
     {
         public static readonly Nullable<#= t.Name #><#= utfName #>ArrayFormatter Default = new Nullable<#= t.Name #><#= utfName #>ArrayFormatter();

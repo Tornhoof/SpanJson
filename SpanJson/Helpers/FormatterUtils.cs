@@ -63,12 +63,19 @@ namespace SpanJson.Helpers
             return digits;
         }
 
-        public static void Grow<T>(ref T[] array)
+        public static void GrowArray<T>(ref T[] array)
         {
             var backup = array;
             array = ArrayPool<T>.Shared.Rent(backup.Length * 2);
             backup.CopyTo(array, 0);
             ArrayPool<T>.Shared.Return(backup);
+        }
+
+        public static T[] CopyArray<T>(T[] array, int count)
+        {
+            var result = new T[count];
+            Array.Copy(array, result, count);
+            return result;
         }
     }
 }

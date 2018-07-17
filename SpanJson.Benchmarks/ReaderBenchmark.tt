@@ -7,7 +7,7 @@
 <#@ import namespace="System.Reflection" #>  
 <#@ import namespace="System" #>  
 <# 
-	var bclTypes = new[]
+    var bclTypes = new[]
     {
         typeof(sbyte),
         typeof(Int16),
@@ -20,22 +20,22 @@
         typeof(Single),
         typeof(Double),
         typeof(bool), 
-		typeof(char),
-		typeof(DateTime),
-		typeof(DateTimeOffset), 
-		typeof(TimeSpan),
-		typeof(Guid),
-		typeof(string),
-		typeof(decimal),
-		typeof(Version),
-		typeof(Uri)
+        typeof(char),
+        typeof(DateTime),
+        typeof(DateTimeOffset), 
+        typeof(TimeSpan),
+        typeof(Guid),
+        typeof(string),
+        typeof(decimal),
+        typeof(Version),
+        typeof(Uri)
     };
 
-	var symbols = new []
-	{
-		new {SymbolType = typeof(byte), Name = "Utf8"},
-		new {SymbolType = typeof(char), Name = "Utf16"},
-	};
+    var symbols = new []
+    {
+        new {SymbolType = typeof(byte), Name = "Utf8"},
+        new {SymbolType = typeof(char), Name = "Utf16"},
+    };
 #> 
 using System;
 using BenchmarkDotNet.Attributes;
@@ -48,32 +48,32 @@ namespace SpanJson.Benchmarks
   [DisassemblyDiagnoser]
   public class ReaderBenchmark
   {
-	private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();  
+    private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();  
 <#  
     foreach(var model in bclTypes)
     { 
 #>  
-	private static readonly <#= model.Name #> <#= model.Name #>Input = ExpressionTreeFixture.Create<<#= model.Name #>>();
-	private static readonly byte[] <#= model.Name #>InputUtf8 = JsonSerializer.Generic.Utf8.Serialize(<#= model.Name #>Input);
-	private static readonly string <#= model.Name #>InputUtf16 = JsonSerializer.Generic.Utf16.Serialize(<#= model.Name #>Input);
+    private static readonly <#= model.Name #> <#= model.Name #>Input = ExpressionTreeFixture.Create<<#= model.Name #>>();
+    private static readonly byte[] <#= model.Name #>InputUtf8 = JsonSerializer.Generic.Utf8.Serialize(<#= model.Name #>Input);
+    private static readonly string <#= model.Name #>InputUtf16 = JsonSerializer.Generic.Utf16.Serialize(<#= model.Name #>Input);
 <#  
     }   
 #>
 <#  
     foreach(var model in bclTypes)
     {  
-	foreach(var symbol in symbols)
-	{
+    foreach(var symbol in symbols)
+    {
 #>  
-	[Benchmark]
-	public void Read<#= symbol.Name #><#= model.Name #>()
-	{
-	    var reader = new JsonReader<<#=symbol.SymbolType.Name #>>(<#= model.Name #>Input<#= symbol.Name #>);
-		reader.Read<#= symbol.Name #><#= model.Name #>();
-	}
+    [Benchmark]
+    public void Read<#= symbol.Name #><#= model.Name #>()
+    {
+        var reader = new JsonReader<<#=symbol.SymbolType.Name #>>(<#= model.Name #>Input<#= symbol.Name #>);
+        reader.Read<#= symbol.Name #><#= model.Name #>();
+    }
 <#  
     }   
-	}
+    }
 #> 
   }
 }

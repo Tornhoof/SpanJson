@@ -17,20 +17,20 @@
         typeof(UInt64),
         typeof(Single),
         typeof(Double),
-		typeof(decimal),
+        typeof(decimal),
         typeof(bool), 
-		typeof(char),
-		typeof(DateTime),
-		typeof(DateTimeOffset), 
-		typeof(TimeSpan),
-		typeof(Guid),
-		typeof(string),
-		typeof(Version),
-		typeof(Uri)
+        typeof(char),
+        typeof(DateTime),
+        typeof(DateTimeOffset), 
+        typeof(TimeSpan),
+        typeof(Guid),
+        typeof(string),
+        typeof(Version),
+        typeof(Uri)
     };
-	var minMaxValueTypes = new[]
-	{
-	    typeof(sbyte),
+    var minMaxValueTypes = new[]
+    {
+        typeof(sbyte),
         typeof(Int16),
         typeof(Int32),
         typeof(Int64),
@@ -38,8 +38,8 @@
         typeof(UInt16),
         typeof(UInt32),
         typeof(UInt64),
-		typeof(char),
-	};
+        typeof(char),
+    };
 #>
 using System;
 using System.Collections.Generic;
@@ -51,18 +51,18 @@ using Xunit;
 namespace SpanJson.Tests.Generated
 {
 <# foreach(var t in types) {  #>
-<# if(t.IsValueType) { #>			
-	public partial class Nullable<#= t.Name #>ListTests : NullableListTestBase<<#= t.Name #>>
-	{
-	}
+<# if(t.IsValueType) { #>           
+    public partial class Nullable<#= t.Name #>ListTests : NullableListTestBase<<#= t.Name #>>
+    {
+    }
 
-	public partial class Nullable<#= t.Name #>ArrayTests : NullableArrayTestBase<<#= t.Name #>>
-	{
-	}
-	public partial class <#= t.Name #>Tests : StructTestBase<<#= t.Name #>>
-	{
+    public partial class Nullable<#= t.Name #>ArrayTests : NullableArrayTestBase<<#= t.Name #>>
+    {
+    }
+    public partial class <#= t.Name #>Tests : StructTestBase<<#= t.Name #>>
+    {
 <#  if(minMaxValueTypes.Contains(t)) {#>
-		[Theory]
+        [Theory]
         [InlineData(<#= t.Name #>.MinValue)]
         [InlineData(<#= t.Name #>.MaxValue)]
         public void SerializeDeserializeMinMaxUtf8(<#= t.Name #> input)
@@ -83,19 +83,19 @@ namespace SpanJson.Tests.Generated
             Assert.Equal(input, deserialized);
         }
 <# } #>
-	}
+    }
 <# } #>
 <# if(!t.IsValueType) { #>
-	public partial class <#= t.Name #>Tests : ClassTestBase<<#= t.Name #>>
-	{
-	}
+    public partial class <#= t.Name #>Tests : ClassTestBase<<#= t.Name #>>
+    {
+    }
 <# } #>
-	public partial class <#= t.Name #>ListTests : ListTestBase<<#= t.Name #>>
-	{
-	}
+    public partial class <#= t.Name #>ListTests : ListTestBase<<#= t.Name #>>
+    {
+    }
 
-	public partial class <#= t.Name #>ArrayTests : ArrayTestBase<<#= t.Name #>>
-	{
-	}
+    public partial class <#= t.Name #>ArrayTests : ArrayTestBase<<#= t.Name #>>
+    {
+    }
 <# } #>
 }
