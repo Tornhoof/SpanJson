@@ -43,20 +43,11 @@
     <None Update="Formatters\BclFormatter.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BclFormatter.cs</LastGenOutput>
-    </None>
-    <None Update="Helpers\FormatterUtils.Gen.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>FormatterUtils.Gen.cs</LastGenOutput>
-    </None>
+    </None>    
     <None Update="JsonWriter.Utf8.WriteVerbatimIntegers.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>JsonWriter.Utf8.WriteVerbatimIntegers.cs</LastGenOutput>
     </None>
-    <Compile Update="Helpers\FormatterUtils.Gen.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>FormatterUtils.Gen.tt</DependentUpon>
-    </Compile>
     <Compile Update="JsonWriter.Utf8.WriteVerbatimIntegers.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
