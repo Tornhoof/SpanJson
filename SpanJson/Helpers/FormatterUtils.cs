@@ -1,10 +1,11 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace SpanJson.Helpers
 {
-    public static class FormatterUtils
+    public static partial class FormatterUtils
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int CountDigits(ulong value)

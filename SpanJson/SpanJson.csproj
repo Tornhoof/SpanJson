@@ -36,6 +36,11 @@
   </ItemGroup>
   
   <ItemGroup>
+    <None Include="Helpers\FormatterUtils.Grow.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FormatterUtils.Grow.tt</DependentUpon>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -47,10 +52,19 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BclFormatter.cs</LastGenOutput>
     </None>
+    <None Update="Helpers\FormatterUtils.Grow.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FormatterUtils.Grow.cs</LastGenOutput>
+    </None>
     <None Update="JsonWriter.Utf8.WriteVerbatimIntegers.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>JsonWriter.Utf8.WriteVerbatimIntegers.cs</LastGenOutput>
     </None>
+    <Compile Update="Helpers\FormatterUtils.Grow.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FormatterUtils.Grow.tt</DependentUpon>
+    </Compile>
     <Compile Update="JsonWriter.Utf8.WriteVerbatimIntegers.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
