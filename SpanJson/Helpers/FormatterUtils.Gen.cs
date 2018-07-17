@@ -17,7 +17,7 @@ namespace SpanJson.Helpers
         public static SByte[] CopyArray(SByte[] array, int count)
         {
             var result = new SByte[count];
-            Buffer.BlockCopy(array, 0, result, 0, array.Length * sizeof(SByte));
+            Buffer.BlockCopy(array, 0, result, 0, count * sizeof(SByte));
             return result;
         }
 
@@ -32,7 +32,7 @@ namespace SpanJson.Helpers
         public static Int16[] CopyArray(Int16[] array, int count)
         {
             var result = new Int16[count];
-            Buffer.BlockCopy(array, 0, result, 0, array.Length * sizeof(Int16));
+            Buffer.BlockCopy(array, 0, result, 0, count * sizeof(Int16));
             return result;
         }
 
@@ -47,7 +47,7 @@ namespace SpanJson.Helpers
         public static Int32[] CopyArray(Int32[] array, int count)
         {
             var result = new Int32[count];
-            Buffer.BlockCopy(array, 0, result, 0, array.Length * sizeof(Int32));
+            Buffer.BlockCopy(array, 0, result, 0, count * sizeof(Int32));
             return result;
         }
 
@@ -62,7 +62,7 @@ namespace SpanJson.Helpers
         public static Int64[] CopyArray(Int64[] array, int count)
         {
             var result = new Int64[count];
-            Buffer.BlockCopy(array, 0, result, 0, array.Length * sizeof(Int64));
+            Buffer.BlockCopy(array, 0, result, 0, count * sizeof(Int64));
             return result;
         }
 
@@ -77,7 +77,7 @@ namespace SpanJson.Helpers
         public static Byte[] CopyArray(Byte[] array, int count)
         {
             var result = new Byte[count];
-            Buffer.BlockCopy(array, 0, result, 0, array.Length * sizeof(Byte));
+            Buffer.BlockCopy(array, 0, result, 0, count * sizeof(Byte));
             return result;
         }
 
@@ -92,7 +92,7 @@ namespace SpanJson.Helpers
         public static UInt16[] CopyArray(UInt16[] array, int count)
         {
             var result = new UInt16[count];
-            Buffer.BlockCopy(array, 0, result, 0, array.Length * sizeof(UInt16));
+            Buffer.BlockCopy(array, 0, result, 0, count * sizeof(UInt16));
             return result;
         }
 
@@ -107,7 +107,7 @@ namespace SpanJson.Helpers
         public static UInt32[] CopyArray(UInt32[] array, int count)
         {
             var result = new UInt32[count];
-            Buffer.BlockCopy(array, 0, result, 0, array.Length * sizeof(UInt32));
+            Buffer.BlockCopy(array, 0, result, 0, count * sizeof(UInt32));
             return result;
         }
 
@@ -122,7 +122,7 @@ namespace SpanJson.Helpers
         public static UInt64[] CopyArray(UInt64[] array, int count)
         {
             var result = new UInt64[count];
-            Buffer.BlockCopy(array, 0, result, 0, array.Length * sizeof(UInt64));
+            Buffer.BlockCopy(array, 0, result, 0, count * sizeof(UInt64));
             return result;
         }
 
@@ -137,7 +137,7 @@ namespace SpanJson.Helpers
         public static Single[] CopyArray(Single[] array, int count)
         {
             var result = new Single[count];
-            Buffer.BlockCopy(array, 0, result, 0, array.Length * sizeof(Single));
+            Buffer.BlockCopy(array, 0, result, 0, count * sizeof(Single));
             return result;
         }
 
@@ -152,22 +152,7 @@ namespace SpanJson.Helpers
         public static Double[] CopyArray(Double[] array, int count)
         {
             var result = new Double[count];
-            Buffer.BlockCopy(array, 0, result, 0, array.Length * sizeof(Double));
-            return result;
-        }
-
-        public static void GrowArray(ref Decimal[] array)
-        {
-            var backup = array;
-            array = ArrayPool<Decimal>.Shared.Rent(backup.Length * 2);
-            Buffer.BlockCopy(backup, 0, array, 0, backup.Length * sizeof(Decimal));
-            ArrayPool<Decimal>.Shared.Return(backup);
-        }
-
-        public static Decimal[] CopyArray(Decimal[] array, int count)
-        {
-            var result = new Decimal[count];
-            Buffer.BlockCopy(array, 0, result, 0, array.Length * sizeof(Decimal));
+            Buffer.BlockCopy(array, 0, result, 0, count * sizeof(Double));
             return result;
         }
 
@@ -182,7 +167,7 @@ namespace SpanJson.Helpers
         public static Boolean[] CopyArray(Boolean[] array, int count)
         {
             var result = new Boolean[count];
-            Buffer.BlockCopy(array, 0, result, 0, array.Length * sizeof(Boolean));
+            Buffer.BlockCopy(array, 0, result, 0, count * sizeof(Boolean));
             return result;
         }
 
@@ -197,7 +182,7 @@ namespace SpanJson.Helpers
         public static Char[] CopyArray(Char[] array, int count)
         {
             var result = new Char[count];
-            Buffer.BlockCopy(array, 0, result, 0, array.Length * sizeof(Char));
+            Buffer.BlockCopy(array, 0, result, 0, count * sizeof(Char));
             return result;
         }
 

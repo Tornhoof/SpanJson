@@ -951,7 +951,7 @@ namespace SpanJson
                         }
                         else
                         {
-                            return FormatterUtils.CopyArray(temp, count);
+                            result = FormatterUtils.CopyArray(temp, count);
                         }
 
                         return new SpanJsonDynamicArray<TSymbol>(result);

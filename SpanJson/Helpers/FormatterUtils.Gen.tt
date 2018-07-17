@@ -17,7 +17,6 @@ var types = new[]
     typeof(UInt64),
     typeof(Single),
     typeof(Double),
-    typeof(decimal),
     typeof(bool),
     typeof(char),
 };
@@ -42,7 +41,7 @@ namespace SpanJson.Helpers
         public static <#=t.Name#>[] CopyArray(<#=t.Name#>[] array, int count)
         {
             var result = new <#=t.Name#>[count];
-            Buffer.BlockCopy(array, 0, result, 0, array.Length * sizeof(<#=t.Name#>));
+            Buffer.BlockCopy(array, 0, result, 0, count * sizeof(<#=t.Name#>));
             return result;
         }
 
