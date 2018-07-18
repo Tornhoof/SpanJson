@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Xunit;
 
 namespace SpanJson.Tests
@@ -369,6 +370,71 @@ namespace SpanJson.Tests
             Assert.Equal(collection.Count, deserialized.Count);
             Assert.Contains("Hello", deserialized);
             Assert.Contains("World", deserialized);
+        }
+
+        public class EnumerableHelper : IEquatable<EnumerableHelper>
+        {
+            public IReadOnlyCollection<int> Values { get; set; }
+            public IDictionary<string,string> Dictionary { get; set; }
+
+            public bool Equals(EnumerableHelper other)
+            {
+                if (Values.Count != other.Values.Count)
+                {
+                    return false;
+                }
+                if (Dictionary.Count != other.Dictionary.Count)
+                {
+                    return false;
+                }
+                var list = new List<int>(Values);
+                var otherList = new List<int>(other.Values);
+                return list.SequenceEqual(otherList) && Dictionary.SequenceEqual(other.Dictionary);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is EnumerableHelper value)
+                {
+                    return Equals(value);
+                }
+
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                return 0;
+            }
+        }
+
+        [Fact]
+        public void SerializeDeserializeEnumerableHelperUtf16()
+        {
+            var eh = new EnumerableHelper
+            {
+                Values = new List<int> {1, 2, 3, 4, 5},
+                Dictionary = new Dictionary<string, string> {{"a", "b"}, {"b", "c"}}
+            };
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(eh);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<EnumerableHelper>(serialized);
+            Assert.NotNull(deserialized);
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeEnumerableHelperUtf8()
+        {
+            var eh = new EnumerableHelper
+            {
+                Values = new List<int> { 1, 2, 3, 4, 5 },
+                Dictionary = new Dictionary<string, string> { { "a", "b" }, { "b", "c" } }
+            };
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(eh);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<EnumerableHelper>(serialized);
+            Assert.NotNull(deserialized);
         }
     }
 }

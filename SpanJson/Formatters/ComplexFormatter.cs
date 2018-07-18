@@ -246,14 +246,23 @@ namespace SpanJson.Formatters
             var objectDescription = resolver.GetObjectDescription<T>();
             var memberInfos = objectDescription.Where(a => a.CanWrite).ToList();
             var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
-            // can't deserialize abstract or interface
-            if (memberInfos.Any(a => a.MemberType.IsAbstract || a.MemberType.IsInterface))
+            // can't deserialize abstract and only support interfaces based on IEnumerable<T> (this includes, IList, IReadOnlyList, IDictionary et al.
+            foreach (var memberInfo in memberInfos)
             {
-                return Expression
-                    .Lambda<DeserializeDelegate<T, TSymbol>>(Expression.Block(
-                            Expression.Throw(Expression.Constant(new NotSupportedException($"{typeof(T).Name} contains abstract or interface members."))),
-                            Expression.Default(typeof(T))),
-                        readerParameter).Compile();
+                var memberType = memberInfo.MemberType;
+                if (memberType.IsAbstract)
+                {
+                    if (memberType.TryGetTypeOfGenericInterface	(typeof(IEnumerable<>), out _))
+                    {
+                        continue;
+                    }
+
+                    return Expression
+                        .Lambda<DeserializeDelegate<T, TSymbol>>(Expression.Block(
+                                Expression.Throw(Expression.Constant(new NotSupportedException($"{typeof(T).Name} contains abstract members."))),
+                                Expression.Default(typeof(T))),
+                            readerParameter).Compile();
+                }
             }
 
             if (typeof(T).IsAbstract)
