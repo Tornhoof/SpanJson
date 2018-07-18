@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using Xunit;
 
 namespace SpanJson.Tests
@@ -176,6 +176,198 @@ namespace SpanJson.Tests
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<CustomEnumerable<string>>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(collection, deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeQueueUtf16()
+        {
+            var collection = new Queue<string>(new[] {"Hello", "World"});
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Queue<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection, deserialized);
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeQueueUtf8()
+        {
+            var collection = new Queue<string>(new[] { "Hello", "World" });
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<Queue<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection, deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeConcurrentQueueUtf16()
+        {
+            var collection = new ConcurrentQueue<string>(new[] { "Hello", "World" });
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<ConcurrentQueue<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection, deserialized);
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeConcurrentQueueUtf8()
+        {
+            var collection = new ConcurrentQueue<string>(new[] { "Hello", "World" });
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<ConcurrentQueue<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection, deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeConcurrentBagUtf16()
+        {
+            var collection = new ConcurrentBag<string>(new[] { "Hello", "World" });
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<ConcurrentBag<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection.Count, deserialized.Count);
+            Assert.Contains("Hello", deserialized);
+            Assert.Contains("World", deserialized);
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeConcurrentBagUtf8()
+        {
+            var collection = new ConcurrentBag<string>(new[] { "Hello", "World" });
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<ConcurrentBag<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection.Count, deserialized.Count);
+            Assert.Contains("Hello", deserialized);
+            Assert.Contains("World", deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeHashSetUtf16()
+        {
+            var collection = new HashSet<string>(new[] { "Hello", "World" });
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<HashSet<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection.Count, deserialized.Count);
+            Assert.Contains("Hello", deserialized);
+            Assert.Contains("World", deserialized);
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeHashSetUtf8()
+        {
+            var collection = new HashSet<string>(new[] { "Hello", "World" });
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<HashSet<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection.Count, deserialized.Count);
+            Assert.Contains("Hello", deserialized);
+            Assert.Contains("World", deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeISetSetUtf16()
+        {
+            var collection = new HashSet<string>(new[] { "Hello", "World" });
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<ISet<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection.Count, deserialized.Count);
+            Assert.Contains("Hello", deserialized);
+            Assert.Contains("World", deserialized);
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeISetUtf8()
+        {
+            var collection = new HashSet<string>(new[] { "Hello", "World" });
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<ISet<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection.Count, deserialized.Count);
+            Assert.Contains("Hello", deserialized);
+            Assert.Contains("World", deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeStackUtf16()
+        {
+            var collection = new Stack<string>(new[] { "Hello", "World" });
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(collection);
+            Assert.NotNull(serialized);
+            Assert.Throws<NotSupportedException>(() => JsonSerializer.Generic.Utf16.Deserialize<ConcurrentStack<string>>(serialized));
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeStackUtf8()
+        {
+            var collection = new Stack<string>(new[] { "Hello", "World" });
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(collection);
+            Assert.NotNull(serialized);
+            Assert.Throws<NotSupportedException>(() => JsonSerializer.Generic.Utf8.Deserialize<ConcurrentStack<string>>(serialized));
+        }
+
+        [Fact]
+        public void SerializeDeserializeConcurrentStackUtf16()
+        {
+            var collection = new ConcurrentStack<string>(new[] { "Hello", "World", "Universe" });
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(collection);
+            Assert.NotNull(serialized);
+            Assert.Throws<NotSupportedException>(() => JsonSerializer.Generic.Utf16.Deserialize<ConcurrentStack<string>>(serialized));
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeConcurrentStackUtf8()
+        {
+            var collection = new ConcurrentStack<string>(new[] { "Hello", "World", "Universe" });
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(collection);
+            Assert.NotNull(serialized);
+            Assert.Throws<NotSupportedException>(() => JsonSerializer.Generic.Utf8.Deserialize<ConcurrentStack<string>>(serialized));
+        }
+
+        [Fact]
+        public void SerializeDeserializeLinkedListUtf16()
+        {
+            var collection = new LinkedList<string>(new[] { "Hello", "World" });
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<LinkedList<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection.Count, deserialized.Count);
+            Assert.Contains("Hello", deserialized);
+            Assert.Contains("World", deserialized);
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeLinkedListUtf8()
+        {
+            var collection = new LinkedList<string>(new[] { "Hello", "World" });
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<LinkedList<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection.Count, deserialized.Count);
+            Assert.Contains("Hello", deserialized);
+            Assert.Contains("World", deserialized);
         }
     }
 }

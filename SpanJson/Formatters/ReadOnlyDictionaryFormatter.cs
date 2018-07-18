@@ -9,7 +9,8 @@ namespace SpanJson.Formatters
     public sealed class ReadOnlyDictionaryFormatter<TDictionary, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TDictionary, TSymbol>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : class, IReadOnlyDictionary<string, T>
     {
-        private static readonly Func<Dictionary<string, T>, TDictionary> Converter = BuildConvertFunctor<Dictionary<string, T>, TDictionary>();
+        private static readonly Func<Dictionary<string, T>, TDictionary> Converter =
+            StandardResolvers.GetResolver<TSymbol, TResolver>().GetEnumerableConvertFunctor<Dictionary<string, T>, TDictionary>();
         public static readonly ReadOnlyDictionaryFormatter<TDictionary, T, TSymbol, TResolver> Default = new ReadOnlyDictionaryFormatter<TDictionary, T, TSymbol, TResolver>();
         private static readonly IJsonFormatter<T, TSymbol> ElementFormatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
 

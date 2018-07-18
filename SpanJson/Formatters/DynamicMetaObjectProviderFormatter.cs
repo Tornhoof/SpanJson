@@ -20,7 +20,7 @@ namespace SpanJson.Formatters
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
         where TSymbol : struct
     {
-        private static readonly Func<T> CreateFunctor = BuildCreateFunctor<T>(null);
+        private static readonly Func<T> CreateFunctor = StandardResolvers.GetResolver<TSymbol, TResolver>().GetCreateFunctor<T>();
 
         public static readonly DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver> Default = new DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver>();
 

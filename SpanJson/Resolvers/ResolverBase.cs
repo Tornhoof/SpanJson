@@ -18,7 +18,7 @@ namespace SpanJson.Resolvers
 
         protected static readonly ParameterExpression DynamicMetaObjectParameterExpression = Expression.Parameter(typeof(object));
 
-        protected static bool TryBaseClassJsonConstructorAttribute(Type type, out JsonConstructorAttribute attribute)
+        protected static bool TryGetBaseClassJsonConstructorAttribute(Type type, out JsonConstructorAttribute attribute)
         {
             if (BaseClassJsonConstructorMap.TryGetValue(type, out attribute))
             {
@@ -105,6 +105,7 @@ namespace SpanJson.Resolvers
             {
                 return GetDefaultOrCreate(memberInfo.CustomSerializer);
             }
+
             var type = overrideMemberType ?? memberInfo.MemberType;
             return GetFormatter(type);
             // ReSharper restore ConvertClosureToMethodGroup
@@ -198,7 +199,7 @@ namespace SpanJson.Resolvers
                 return;
             }
 
-            if (TryBaseClassJsonConstructorAttribute(type, out attribute))
+            if (TryGetBaseClassJsonConstructorAttribute(type, out attribute))
             {
                 // We basically take the one with the most parameters, this needs to match the dictionary // TODO find better method
                 constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance).OrderByDescending(a => a.GetParameters().Length)
@@ -227,8 +228,8 @@ namespace SpanJson.Resolvers
 
         private static IJsonFormatter GetDefaultOrCreate(Type type)
         {
-            return (IJsonFormatter)(type.GetField("Default", BindingFlags.Public | BindingFlags.Static)
-                                        ?.GetValue(null) ?? Activator.CreateInstance(type)); // leave the createinstance here, this helps with recursive types
+            return (IJsonFormatter) (type.GetField("Default", BindingFlags.Public | BindingFlags.Static)
+                                         ?.GetValue(null) ?? Activator.CreateInstance(type)); // leave the createinstance here, this helps with recursive types
         }
 
         private IJsonFormatter BuildFormatter(Type type)
@@ -278,7 +279,8 @@ namespace SpanJson.Resolvers
                     throw new NotImplementedException($"{rodictArgumentTypes[0]} is not supported a Key for Dictionary.");
                 }
 
-                return GetDefaultOrCreate(typeof(ReadOnlyDictionaryFormatter<,,,>).MakeGenericType(type, rodictArgumentTypes[1], typeof(TSymbol), typeof(TResolver)));
+                return GetDefaultOrCreate(
+                    typeof(ReadOnlyDictionaryFormatter<,,,>).MakeGenericType(type, rodictArgumentTypes[1], typeof(TSymbol), typeof(TResolver)));
             }
 
             if (type.TryGetTypeOfGenericInterface(typeof(IList<>), out var listArgumentTypes) && !IsBadList(type))
@@ -313,7 +315,7 @@ namespace SpanJson.Resolvers
             return GetDefaultOrCreate(typeof(ComplexClassFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
         }
 
-        private static bool IsBadDictionary(Type type)
+        protected virtual bool IsBadDictionary(Type type)
         {
             // ReadOnlyDictionary is kinda broken, it implements IDictionary<T> too, but without any standard ctor
             // Make sure this is using the ReadOnlyDictionaryFormatter
@@ -325,7 +327,7 @@ namespace SpanJson.Resolvers
             return false;
         }
 
-        private static bool IsBadList(Type type)
+        protected virtual bool IsBadList(Type type)
         {
             // ReadOnlyCollection is kinda broken, it implements IList<T> too, but without any standard ctor
             // Make sure this is using the EnumerableFormatter
@@ -346,6 +348,7 @@ namespace SpanJson.Resolvers
                 {
                     continue;
                 }
+
                 if (candidate.TryGetTypeOfGenericInterface(typeof(IJsonFormatter<,>), out var argumentTypes) && argumentTypes.Length == 2)
                 {
                     if (argumentTypes[0] == type && argumentTypes[1] == typeof(TSymbol))
@@ -356,6 +359,7 @@ namespace SpanJson.Resolvers
                         {
                             continue;
                         }
+
                         return GetDefaultOrCreate(candidate);
                     }
                 }
@@ -388,6 +392,95 @@ namespace SpanJson.Resolvers
                 {
                     return HasCustomFormatterForRelatedType(relatedType); // we need to recurse if the related type is again nullable
                 }
+            }
+
+            return false;
+        }
+
+        public virtual Func<T> GetCreateFunctor<T>()
+        {
+            var type = typeof(T);
+            var ci = type.GetConstructor(Type.EmptyTypes);
+            if (type.IsInterface || ci == null)
+            {
+                type = GetFunctorFallBackType(type);
+                if (type == null)
+                {
+                    return () => throw new NotSupportedException($"Can't create {typeof(T).Name}.");
+                }
+            }
+
+            return Expression.Lambda<Func<T>>(Expression.New(type)).Compile();
+        }
+
+        protected virtual Type GetFunctorFallBackType(Type type)
+        {
+            if (type.TryGetTypeOfGenericInterface(typeof(IDictionary<,>), out var dictArgumentTypes))
+            {
+                return typeof(Dictionary<,>).MakeGenericType(dictArgumentTypes);
+            }
+
+            if (type.TryGetTypeOfGenericInterface(typeof(IList<>), out var listArgumentTypes))
+            {
+                return typeof(List<>).MakeGenericType(listArgumentTypes);
+            }
+
+            if (type.TryGetTypeOfGenericInterface(typeof(ISet<>), out var setArgumentTypes))
+            {
+                return typeof(HashSet<>).MakeGenericType(setArgumentTypes);
+            }
+
+            return null;
+        }
+
+
+        public virtual Func<T, TConverted> GetEnumerableConvertFunctor<T, TConverted>()
+        {
+            var inputType = typeof(T);
+            var convertedType = typeof(TConverted);
+
+            if (convertedType.IsAssignableFrom(inputType))
+            {
+                var pExpression = Expression.Parameter(inputType, "input");
+                return Expression.Lambda<Func<T, TConverted>>(Expression.Convert(pExpression, convertedType), pExpression).Compile();
+            }
+
+            if (IsUnsupportedEnumerable(convertedType))
+            {
+                return _ => throw new NotSupportedException($"{typeof(TConverted).Name} is not supported.");
+            }
+
+            if (convertedType.IsInterface)
+            {
+                convertedType = GetFunctorFallBackType(convertedType);
+                if (convertedType == null)
+                {
+                    return _ => throw new NotSupportedException($"Can't convert {typeof(T).Name} to {typeof(TConverted).Name}.");
+                }
+            }
+
+            var paramExpression = Expression.Parameter(inputType, "input");
+            var ci = convertedType.GetConstructors().FirstOrDefault(a =>
+                a.GetParameters().Length == 1 && a.GetParameters().Single().ParameterType.IsAssignableFrom(paramExpression.Type));
+            if (ci == null)
+            {
+                return _ => throw new NotSupportedException($"No constructor of {convertedType.Name} accepts {paramExpression.Type.Name}.");
+            }
+
+            var lambda = Expression.Lambda<Func<T, TConverted>>(Expression.New(ci, paramExpression), paramExpression);
+            return lambda.Compile();
+        }
+
+        /// <summary>
+        /// Some types are just bad to be deserialized for enumerables
+        /// </summary>
+        protected virtual bool IsUnsupportedEnumerable(Type type)
+        {
+
+            // TODO: Stack/ConcurrentStack require that the order of the elements is reversed on deserialization, block it for now
+            if (type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(Stack<>) || type.GetGenericTypeDefinition() == typeof(ConcurrentStack<>)))
+            {
+                return true;
             }
 
             return false;
