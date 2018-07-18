@@ -44,7 +44,7 @@ namespace SpanJson.Tests
         /// This hits the resizing, otherwise the ascii case would hit array bounds
         /// </summary>
         [Theory]
-        [InlineData("칱칳칶칹칼캠츧.txt","{\"Name\":\"칱칳칶칹칼캠츧.txt\"}")]
+        [InlineData("칱칳칶칹칼캠츧.txt", "{\"Name\":\"칱칳칶칹칼캠츧.txt\"}")]
         [InlineData("Hello\" World.txt", "{\"Name\":\"Hello\\\" World.txt\"}")]
         [InlineData("Hello\"\"World.txt", "{\"Name\":\"Hello\\\"\\\"World.txt\"}")]
         public void WriteMultiCharStringUtf8Resizing(string input, string comparison)

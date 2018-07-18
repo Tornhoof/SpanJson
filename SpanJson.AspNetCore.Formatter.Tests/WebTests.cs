@@ -41,7 +41,6 @@ namespace SpanJson.AspNetCore.Formatter.Tests
                     var resultModel = JsonSerializer.Generic.Utf8.Deserialize<TestObject, AspNetCoreDefaultResolver<byte>>(body);
                     Assert.Equal(model, resultModel);
                 }
-
             }
         }
     }

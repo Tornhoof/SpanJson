@@ -93,7 +93,7 @@ namespace SpanJson.Tests
         [Fact]
         public async Task SerializeDeserializeNonGenericUtf8MemoryStream()
         {
-            var input = Enumerable.Repeat(new AsyncTestObject { Text = "Hello World" }, 10000).ToList();
+            var input = Enumerable.Repeat(new AsyncTestObject {Text = "Hello World"}, 10000).ToList();
 
             using (var ms = new MemoryStream())
             {
@@ -109,7 +109,7 @@ namespace SpanJson.Tests
         [Fact]
         public async Task SerializeDeserializeGenericUtf8WrappedMemoryStreamSeekable()
         {
-            var input = Enumerable.Repeat(new AsyncTestObject { Text = "Hello World" }, 10000).ToList();
+            var input = Enumerable.Repeat(new AsyncTestObject {Text = "Hello World"}, 10000).ToList();
 
             using (var ms = new WrappedMemoryStream(true))
             {
@@ -125,7 +125,7 @@ namespace SpanJson.Tests
         [Fact]
         public async Task SerializeDeserializeGenericUtf8WrappedMemoryStreamNonSeekable()
         {
-            var input = Enumerable.Repeat(new AsyncTestObject { Text = "Hello World" }, 10000).ToList();
+            var input = Enumerable.Repeat(new AsyncTestObject {Text = "Hello World"}, 10000).ToList();
 
             using (var ms = new WrappedMemoryStream(false))
             {
@@ -141,10 +141,12 @@ namespace SpanJson.Tests
         public class WrappedMemoryStream : Stream
         {
             private readonly MemoryStream _stream = new MemoryStream();
+
             public WrappedMemoryStream(bool canSeek)
             {
                 CanSeek = canSeek;
             }
+
             public override void Flush()
             {
                 _stream.Flush();

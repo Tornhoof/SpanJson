@@ -6,12 +6,15 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public sealed class ReadOnlyDictionaryFormatter<TDictionary, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TDictionary, TSymbol>
+    public class ReadOnlyDictionaryFormatter<TDictionary, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TDictionary, TSymbol>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : class, IReadOnlyDictionary<string, T>
     {
         private static readonly Func<Dictionary<string, T>, TDictionary> Converter =
             StandardResolvers.GetResolver<TSymbol, TResolver>().GetEnumerableConvertFunctor<Dictionary<string, T>, TDictionary>();
-        public static readonly ReadOnlyDictionaryFormatter<TDictionary, T, TSymbol, TResolver> Default = new ReadOnlyDictionaryFormatter<TDictionary, T, TSymbol, TResolver>();
+
+        public static readonly ReadOnlyDictionaryFormatter<TDictionary, T, TSymbol, TResolver> Default =
+            new ReadOnlyDictionaryFormatter<TDictionary, T, TSymbol, TResolver>();
+
         private static readonly IJsonFormatter<T, TSymbol> ElementFormatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
 
         public TDictionary Deserialize(ref JsonReader<TSymbol> reader)
@@ -22,7 +25,7 @@ namespace SpanJson.Formatters
             }
 
             reader.ReadBeginObjectOrThrow();
-            var result = new Dictionary<string, T>(); // using new T() is 5-10 times slower
+            var result = new Dictionary<string, T>();
             var count = 0;
             while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
             {

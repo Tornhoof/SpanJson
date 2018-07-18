@@ -155,8 +155,8 @@ namespace SpanJson.Tests
         [InlineData("2017-06-12T05:30:45.0010000Z", 2017, 6, 12, 5, 30, 45, 10000, DateTimeKind.Utc)]
         [InlineData("2017-06-12T05:30:45.7607389", 2017, 6, 12, 5, 30, 45, 7607389, DateTimeKind.Unspecified)]
         [InlineData("2017-06-12T05:30:45.7607389Z", 2017, 6, 12, 5, 30, 45, 7607389, DateTimeKind.Utc)]
-        [InlineData("2017-06-12T05:30:45.0000001Z", 2017, 6, 12, 5, 30, 45, 0000001,  DateTimeKind.Utc)]
-        [InlineData("2017-06-12T05:30:45.0000001", 2017, 6, 12, 5, 30, 45, 0000001,  DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T05:30:45.0000001Z", 2017, 6, 12, 5, 30, 45, 0000001, DateTimeKind.Utc)]
+        [InlineData("2017-06-12T05:30:45.0000001", 2017, 6, 12, 5, 30, 45, 0000001, DateTimeKind.Unspecified)]
         public void FormatDateTime(string comparison, int year, int month, int day, int hour, int minute,
             int second, int fraction, DateTimeKind kind)
         {

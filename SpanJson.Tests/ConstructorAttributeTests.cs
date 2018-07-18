@@ -9,7 +9,6 @@ namespace SpanJson.Tests
 {
     public class ConstructorAttributeTests
     {
-
         public class InTest
         {
             public int Value { get; }
@@ -176,6 +175,7 @@ namespace SpanJson.Tests
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<InTest>(serialized);
             Assert.Equal(intest.Value, deserialized.Value);
         }
+
         [Fact]
         public void RefTestUtf16()
         {
@@ -233,6 +233,7 @@ namespace SpanJson.Tests
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<RefNullableTest>(serialized);
             Assert.Equal(refTest.Value, deserialized.Value);
         }
+
         [Fact]
         public void RefNullableTestNullUtf16()
         {
@@ -249,7 +250,7 @@ namespace SpanJson.Tests
             int? value = null;
             var refTest = new RefNullableTest(ref value);
             var serialized = JsonSerializer.Generic.Utf8.Serialize<RefNullableTest, IncludeNullsOriginalCaseResolver<byte>>(refTest);
-            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<RefNullableTest, IncludeNullsOriginalCaseResolver<byte> > (serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<RefNullableTest, IncludeNullsOriginalCaseResolver<byte>>(serialized);
             Assert.Equal(refTest.Value, deserialized.Value);
         }
 
@@ -315,4 +316,3 @@ namespace SpanJson.Tests
         }
     }
 }
-

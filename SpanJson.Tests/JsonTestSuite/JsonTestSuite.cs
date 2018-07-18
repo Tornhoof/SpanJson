@@ -128,7 +128,6 @@ namespace SpanJson.Tests.JsonTestSuite
                         var type = GetTestType(name);
                         foreach (var symbolType in Enum.GetValues(typeof(SymbolType)))
                         {
-
                             if (name.StartsWith("y_"))
                             {
                                 result.Add(new object[] {name, text, Result.Accepted, type, symbolType});
@@ -139,16 +138,16 @@ namespace SpanJson.Tests.JsonTestSuite
                                 // We have a specific list of errors we currently do not parse as errors
                                 if (IgnoredErrors.Contains(name))
                                 {
-                                    result.Add(new object[] {name, text, Result.Accepted, type, symbolType });
+                                    result.Add(new object[] {name, text, Result.Accepted, type, symbolType});
                                 }
                                 else
                                 {
-                                    result.Add(new object[] {name, text, Result.Rejected, type, symbolType });
+                                    result.Add(new object[] {name, text, Result.Rejected, type, symbolType});
                                 }
                             }
                             else if (name.StartsWith("i_"))
                             {
-                                result.Add(new object[] {name, text, Result.Both, type, symbolType });
+                                result.Add(new object[] {name, text, Result.Both, type, symbolType});
                             }
                         }
                     }

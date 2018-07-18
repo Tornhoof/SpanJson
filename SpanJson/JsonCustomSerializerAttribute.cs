@@ -14,7 +14,7 @@ namespace SpanJson
 
         public JsonCustomSerializerAttribute(Type type)
         {
-            if (! type.TryGetTypeOfGenericInterface(typeof(ICustomJsonFormatter<>), out _))
+            if (!type.TryGetTypeOfGenericInterface(typeof(ICustomJsonFormatter<>), out _))
             {
                 throw new InvalidOperationException($"{type.FullName} must implement ICustomJsonFormatter<T>.");
             }

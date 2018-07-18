@@ -256,7 +256,6 @@ namespace SpanJson.Tests.Generated
             Assert.Equal(input, (T?) deserialized);
             var deserializedText = deserialized.ToString();
             Assert.NotNull(deserializedText);
-
         }
 
         [Fact]

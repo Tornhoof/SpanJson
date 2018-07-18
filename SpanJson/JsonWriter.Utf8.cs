@@ -308,6 +308,7 @@ namespace SpanJson
 
             WriteUtf8DoubleQuote();
         }
+
         private void WriteEscapedUtf8CharInternal(char value)
         {
             switch (value)

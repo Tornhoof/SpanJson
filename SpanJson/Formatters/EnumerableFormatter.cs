@@ -12,7 +12,9 @@ namespace SpanJson.Formatters
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TEnumerable : class, IEnumerable<T>
 
     {
-        private static readonly Func<T[], TEnumerable> Converter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetEnumerableConvertFunctor<T[], TEnumerable>();
+        private static readonly Func<T[], TEnumerable> Converter =
+            StandardResolvers.GetResolver<TSymbol, TResolver>().GetEnumerableConvertFunctor<T[], TEnumerable>();
+
         public static readonly EnumerableFormatter<TEnumerable, T, TSymbol, TResolver> Default = new EnumerableFormatter<TEnumerable, T, TSymbol, TResolver>();
 
         private static readonly IJsonFormatter<T, TSymbol> ElementFormatter =

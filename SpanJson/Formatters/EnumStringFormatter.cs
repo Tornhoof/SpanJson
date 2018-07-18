@@ -49,6 +49,7 @@ namespace SpanJson.Formatters
             {
                 throw new NotSupportedException();
             }
+
             var returnValue = Expression.Variable(typeof(T), "returnValue");
             var nameSpan = Expression.Variable(typeof(ReadOnlySpan<TSymbol>), "nameSpan");
             var lengthParameter = Expression.Variable(typeof(int), "length");

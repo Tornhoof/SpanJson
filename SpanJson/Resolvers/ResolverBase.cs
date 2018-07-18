@@ -60,7 +60,6 @@ namespace SpanJson.Resolvers
     public abstract class ResolverBase<TSymbol, TResolver> : ResolverBase, IJsonFormatterResolver<TSymbol, TResolver>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
-
         private readonly SpanJsonOptions _spanJsonOptions;
 
         // ReSharper disable StaticMemberInGenericType
@@ -476,7 +475,6 @@ namespace SpanJson.Resolvers
         /// </summary>
         protected virtual bool IsUnsupportedEnumerable(Type type)
         {
-
             // TODO: Stack/ConcurrentStack require that the order of the elements is reversed on deserialization, block it for now
             if (type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(Stack<>) || type.GetGenericTypeDefinition() == typeof(ConcurrentStack<>)))
             {

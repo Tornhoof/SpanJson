@@ -12,7 +12,6 @@ namespace SpanJson.AspNetCore.Formatter.Tests
         public HttpClient Client { get; }
 
 
-
         public TestControllerFixture()
         {
             var builder = new WebHostBuilder().UseStartup<Startup>();

@@ -44,7 +44,6 @@ namespace SpanJson.Tests
         }
 
 
-
         public class MyDynamicObject : DynamicObject
         {
             private readonly Dictionary<string, object> _dictionary = new Dictionary<string, object>();
@@ -182,9 +181,8 @@ namespace SpanJson.Tests
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
-            Assert.Equal("Hello World", (string)dynamicObject.Text);
+            Assert.Equal("Hello World", (string) dynamicObject.Text);
         }
-
 
 
         [Fact]
@@ -213,7 +211,7 @@ namespace SpanJson.Tests
             {
                 var deserialized = JSON.DeserializeDynamic(serialized);
                 Assert.NotNull(deserialized);
-                Assert.Equal("Hello World", (string)dynamicObject.Text);
+                Assert.Equal("Hello World", (string) dynamicObject.Text);
             }
         }
 
@@ -253,7 +251,7 @@ namespace SpanJson.Tests
             dynamic dynamicObject = new MyDynamicObject();
             dynamicObject.Text = "Hello World";
             dynamicObject.Value = 5;
-            dynamicObject.Array = new string[] { "Hello", "World" };
+            dynamicObject.Array = new string[] {"Hello", "World"};
 
             var serialized = JsonSerializer.Generic.Utf8.Serialize(dynamicObject);
             Assert.NotNull(serialized);
@@ -268,7 +266,7 @@ namespace SpanJson.Tests
             dynamic dynamicObject = new MyDynamicObject();
             dynamicObject.Text = "Hello World";
             dynamicObject.Value = 5;
-            dynamicObject.Array = new string[] { "Hello", "World" };
+            dynamicObject.Array = new string[] {"Hello", "World"};
 
             var serialized = JsonSerializer.Generic.Utf16.Serialize(dynamicObject);
             Assert.NotNull(serialized);
@@ -346,10 +344,10 @@ namespace SpanJson.Tests
         public void SerializeDeserializeDynamicChildUtf8()
         {
             var parent = new NonDynamicParent();
-            var child1 = new NonDynamicParent.DynamicChild { Fixed = Guid.NewGuid() };
+            var child1 = new NonDynamicParent.DynamicChild {Fixed = Guid.NewGuid()};
             child1.Add("Id", Guid.NewGuid());
             parent.Children.Add(child1);
-            var child2 = new NonDynamicParent.DynamicChild { Fixed = Guid.NewGuid() };
+            var child2 = new NonDynamicParent.DynamicChild {Fixed = Guid.NewGuid()};
             child2.Add("Name", "Hello World");
             parent.Children.Add(child2);
             var serialized = JsonSerializer.Generic.Utf16.Serialize(parent);
@@ -361,8 +359,8 @@ namespace SpanJson.Tests
             dynamic dynamicChild1 = parent.Children[0];
             dynamic dynamicChild2 = parent.Children[1];
             dynamic deserializedDynamic = deserialized;
-            Assert.Equal(dynamicChild1.Id, (Guid)deserializedDynamic.Children[0].Id);
-            Assert.Equal(dynamicChild2.Name, (string)deserializedDynamic.Children[1].Name);
+            Assert.Equal(dynamicChild1.Id, (Guid) deserializedDynamic.Children[0].Id);
+            Assert.Equal(dynamicChild2.Name, (string) deserializedDynamic.Children[1].Name);
         }
 
         [Fact]
@@ -387,7 +385,7 @@ namespace SpanJson.Tests
             Assert.Equal(100000, deserialized.Length);
             for (int i = 0; i < deserialized.Length; i++)
             {
-                Assert.Equal(array[i], (int)deserialized[i]);
+                Assert.Equal(array[i], (int) deserialized[i]);
             }
         }
 
@@ -399,6 +397,7 @@ namespace SpanJson.Tests
                 public string Name { get; } = "Hello World";
                 private static readonly string[] extraFields = new string[] {nameof(Fixed), nameof(Name)};
                 private readonly Dictionary<string, object> _extra = new Dictionary<string, object>();
+
                 public override IEnumerable<string> GetDynamicMemberNames()
                 {
                     return _extra.Keys.Concat(extraFields);
@@ -419,6 +418,7 @@ namespace SpanJson.Tests
                     _extra.Add(key, value);
                 }
             }
+
             public List<DynamicChild> Children { get; set; } = new List<DynamicChild>();
         }
     }

@@ -40,7 +40,7 @@ namespace SpanJson.Tests
         public void SerializeDeserializeUtf8(TestEnum value)
         {
             var serialized = JsonSerializer.Generic.Utf8.Serialize<TestEnum, ExcludeNullCamelCaseIntegerEnumResolver<byte>>(value);
-            Assert.Contains(((int)value).ToString(CultureInfo.InvariantCulture), Encoding.UTF8.GetString(serialized));
+            Assert.Contains(((int) value).ToString(CultureInfo.InvariantCulture), Encoding.UTF8.GetString(serialized));
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<TestEnum, ExcludeNullCamelCaseIntegerEnumResolver<byte>>(serialized);
             Assert.Equal(value, deserialized);
         }
@@ -64,7 +64,7 @@ namespace SpanJson.Tests
         public void SerializeDeserializeLongUtf8(TestLongEnum value)
         {
             var serialized = JsonSerializer.Generic.Utf8.Serialize<TestLongEnum, ExcludeNullCamelCaseIntegerEnumResolver<byte>>(value);
-            Assert.Contains(((long)value).ToString(CultureInfo.InvariantCulture), Encoding.UTF8.GetString(serialized));
+            Assert.Contains(((long) value).ToString(CultureInfo.InvariantCulture), Encoding.UTF8.GetString(serialized));
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<TestLongEnum, ExcludeNullCamelCaseIntegerEnumResolver<byte>>(serialized);
             Assert.Equal(value, deserialized);
         }

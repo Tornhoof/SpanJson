@@ -193,7 +193,7 @@ namespace SpanJson
                     var lambdaExpression =
                         Expression.Lambda<SerializeToByteArrayPoolDelegate>(
                             Expression.Call(typeof(Generic.Utf8), nameof(Generic.Utf8.SerializeToArrayPool),
-                                new[] { type, typeof(TResolver) }, typedInputParam),
+                                new[] {type, typeof(TResolver)}, typedInputParam),
                             inputParam);
                     return lambdaExpression.Compile();
                 }
@@ -205,7 +205,7 @@ namespace SpanJson
                     var lambdaExpression =
                         Expression.Lambda<SerializeToCharArrayPoolDelegate>(
                             Expression.Call(typeof(Generic.Utf16), nameof(Generic.Utf16.SerializeToArrayPool),
-                                new[] { type, typeof(TResolver) }, typedInputParam),
+                                new[] {type, typeof(TResolver)}, typedInputParam),
                             inputParam);
                     return lambdaExpression.Compile();
                 }
@@ -281,7 +281,8 @@ namespace SpanJson
 
                 private class Invoker
                 {
-                    public Invoker(SerializeToStringDelegate toStringSerializer, SerializeToByteArrayDelegate toByteArraySerializer, SerializeToCharArrayPoolDelegate toCharArrayPoolSerializer, SerializeToByteArrayPoolDelegate toByteArrayPoolSerializer,
+                    public Invoker(SerializeToStringDelegate toStringSerializer, SerializeToByteArrayDelegate toByteArraySerializer,
+                        SerializeToCharArrayPoolDelegate toCharArrayPoolSerializer, SerializeToByteArrayPoolDelegate toByteArrayPoolSerializer,
                         DeserializeDelegate deserializer, SerializeToTextWriterDelegateAsync serializeToTextWriterDelegateAsync,
                         DeserializeFromTextReaderDelegateAsync deserializeFromTextReaderDelegateAsync, SerializeToStreamDelegateAsync toStreamSerializerAsync,
                         DeserializeFromStreamDelegateAsync fromStreamDeserializerAsync)
@@ -309,11 +310,13 @@ namespace SpanJson
                 }
 
                 private delegate byte[] SerializeToByteArrayDelegate(object input);
+
                 private delegate ArraySegment<byte> SerializeToByteArrayPoolDelegate(object input);
 
                 private delegate ValueTask SerializeToStreamDelegateAsync(object input, Stream stream, CancellationToken cancellationToken = default);
 
                 private delegate string SerializeToStringDelegate(object input);
+
                 private delegate ArraySegment<char> SerializeToCharArrayPoolDelegate(object input);
 
                 private delegate ValueTask SerializeToTextWriterDelegateAsync(object input, TextWriter writer, CancellationToken cancellationToken = default);

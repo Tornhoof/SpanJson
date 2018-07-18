@@ -19,7 +19,7 @@ namespace SpanJson.Tests.Generated
         [Fact]
         public void SerializeDeserializeAllAsciiUtf16()
         {
-            var chars = string.Join(", ", Enumerable.Range(0, 0x80).Select(a => (char)a));
+            var chars = string.Join(", ", Enumerable.Range(0, 0x80).Select(a => (char) a));
             var serialized = JsonSerializer.Generic.Utf16.Serialize(chars);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<string>(serialized);

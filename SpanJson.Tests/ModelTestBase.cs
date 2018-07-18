@@ -13,7 +13,7 @@ namespace SpanJson.Tests
                 .Where(t => t.Namespace == typeof(AccessToken).Namespace && !t.IsEnum && !t.IsInterface &&
                             !t.IsAbstract)
                 .ToList();
-            return models.Where(a => a != null).Select(a => new object[] { a });
+            return models.Where(a => a != null).Select(a => new object[] {a});
         }
     }
 }
