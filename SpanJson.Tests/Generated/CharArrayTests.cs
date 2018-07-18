@@ -33,7 +33,7 @@ namespace SpanJson.Tests.Generated
         [Fact]
         public void SerializeDeserializeAllAsciiUtf8()
         {
-            var chars = Enumerable.Range(0, 0x80).Select(a => (char)a).ToArray();
+            var chars = Enumerable.Range(0, 0x80).Select(a => (char) a).ToArray();
             var serialized = JsonSerializer.Generic.Utf8.Serialize(chars);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<char[]>(serialized);

@@ -17,6 +17,7 @@ namespace SpanJson.Tests
         {
             public List<Child> Children { get; set; }
         }
+
         public class Parent : Human
         {
             public List<Child> Children { get; set; }
@@ -58,13 +59,13 @@ namespace SpanJson.Tests
         [Fact]
         public void NoNameMatches()
         {
-            var parent = new AnotherParent { Age = 30, Name = "Adam", Children = new List<Child> {new Child {Name = "Cain", Age = 5}}};
+            var parent = new AnotherParent {Age = 30, Name = "Adam", Children = new List<Child> {new Child {Name = "Cain", Age = 5}}};
             var serializedWithCamelCase =
-                JsonSerializer.Generic.Utf16.Serialize<AnotherParent,  ExcludeNullsOriginalCaseResolver<char>>(parent);
+                JsonSerializer.Generic.Utf16.Serialize<AnotherParent, ExcludeNullsOriginalCaseResolver<char>>(parent);
             serializedWithCamelCase = serializedWithCamelCase.ToLowerInvariant();
             Assert.Contains("age", serializedWithCamelCase);
             var deserialized =
-                JsonSerializer.Generic.Utf16.Deserialize<AnotherParent,  ExcludeNullsOriginalCaseResolver<char>>(serializedWithCamelCase);
+                JsonSerializer.Generic.Utf16.Deserialize<AnotherParent, ExcludeNullsOriginalCaseResolver<char>>(serializedWithCamelCase);
             Assert.NotNull(deserialized);
             Assert.Null(deserialized.Children);
             Assert.Equal(0, deserialized.Age);
@@ -74,7 +75,7 @@ namespace SpanJson.Tests
         [Fact]
         public void Loops()
         {
-            var node = new Node { Id = Guid.NewGuid() };
+            var node = new Node {Id = Guid.NewGuid()};
             node.Children.Add(node);
             var ex = Assert.Throws<InvalidOperationException>(() => JsonSerializer.Generic.Utf16.Serialize(node));
             Assert.Contains("Nesting Limit", ex.Message);
@@ -166,7 +167,7 @@ namespace SpanJson.Tests
                         new Son {Name = "Cain", Age = 5, SonSpecific = true},
                         new Daughter {Name = "Lilith", Age = 8, DaughterSpecific = true}
                     }
-                }            
+                }
             };
             var serialized = JsonSerializer.Generic.Utf16.Serialize(parent);
             Assert.Contains("\"Name\":\"Eve\"", serialized);

@@ -12,7 +12,6 @@ namespace SpanJson.Helpers
     {
         private static int GetSymbolSize<TSymbol>() where TSymbol : struct
         {
-
             if (typeof(TSymbol) == typeof(char))
             {
                 return sizeof(char);
@@ -25,6 +24,7 @@ namespace SpanJson.Helpers
 
             throw new NotSupportedException();
         }
+
         /// <summary>
         /// This method builds a chain of if statements  of the following logic:
         /// if(length == x AND ReadInteger(span) == y AND ...) then assign value

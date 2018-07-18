@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -8,22 +9,6 @@ namespace SpanJson.Formatters
 {
     public abstract class BaseFormatter
     {
-        protected static Func<T> BuildCreateFunctor<T>(Type defaultType)
-        {
-            var type = typeof(T);
-            var ci = type.GetConstructor(Type.EmptyTypes);
-            if (type.IsInterface || ci == null)
-            {
-                type = defaultType;
-                if (type == null)
-                {
-                    return () => throw new NotSupportedException($"Can't create {typeof(T).Name}.");
-                }
-            }
-
-            return Expression.Lambda<Func<T>>(Expression.New(type)).Compile();
-        }
-
         protected static MethodInfo FindPublicInstanceMethod(Type type, string name, params Type[] args)
         {
             return args?.Length > 0 ? type.GetMethod(name, args) : type.GetMethod(name);

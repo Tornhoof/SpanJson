@@ -11,6 +11,7 @@ namespace SpanJson.Formatters
 
         private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
         public static readonly EnumIntegerFormatter<T, TSymbol, TResolver> Default = new EnumIntegerFormatter<T, TSymbol, TResolver>();
+
         public void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
         {
             Serializer(ref writer, value);
@@ -67,7 +68,8 @@ namespace SpanJson.Formatters
             }
 
             var readerMethodInfo = FindPublicInstanceMethod(readerParameter.Type, methodName);
-            var lambda = Expression.Lambda<DeserializeDelegate>(Expression.Convert(Expression.Call(readerParameter, readerMethodInfo), typeof(T)), readerParameter);
+            var lambda = Expression.Lambda<DeserializeDelegate>(Expression.Convert(Expression.Call(readerParameter, readerMethodInfo), typeof(T)),
+                readerParameter);
             return lambda.Compile();
         }
 

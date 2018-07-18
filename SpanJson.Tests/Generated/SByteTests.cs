@@ -6,7 +6,6 @@ namespace SpanJson.Tests.Generated
 {
     public partial class SByteTests
     {
-
         [Theory]
         [InlineData(-5)]
         [InlineData(-3)]

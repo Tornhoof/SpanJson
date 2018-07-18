@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    /// <summary>
-    ///     Used for types which are not built-in
-    /// </summary>
-    public sealed class DictionaryFormatter<TDictionary, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TDictionary, TSymbol>
-        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : class, IDictionary<string, T>
+    public class ReadOnlyDictionaryFormatter<TDictionary, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TDictionary, TSymbol>
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : class, IReadOnlyDictionary<string, T>
     {
-        private static readonly Func<TDictionary> CreateFunctor = StandardResolvers.GetResolver<TSymbol, TResolver>().GetCreateFunctor<TDictionary>();
-        public static readonly DictionaryFormatter<TDictionary, T, TSymbol, TResolver> Default = new DictionaryFormatter<TDictionary, T, TSymbol, TResolver>();
+        private static readonly Func<Dictionary<string, T>, TDictionary> Converter =
+            StandardResolvers.GetResolver<TSymbol, TResolver>().GetEnumerableConvertFunctor<Dictionary<string, T>, TDictionary>();
+
+        public static readonly ReadOnlyDictionaryFormatter<TDictionary, T, TSymbol, TResolver> Default =
+            new ReadOnlyDictionaryFormatter<TDictionary, T, TSymbol, TResolver>();
+
         private static readonly IJsonFormatter<T, TSymbol> ElementFormatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
 
         public TDictionary Deserialize(ref JsonReader<TSymbol> reader)
@@ -23,7 +25,7 @@ namespace SpanJson.Formatters
             }
 
             reader.ReadBeginObjectOrThrow();
-            var result = CreateFunctor(); // using new T() is 5-10 times slower
+            var result = new Dictionary<string, T>();
             var count = 0;
             while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
             {
@@ -32,7 +34,7 @@ namespace SpanJson.Formatters
                 result[key] = value;
             }
 
-            return result;
+            return Converter(result);
         }
 
         public void Serialize(ref JsonWriter<TSymbol> writer, TDictionary value, int nestingLimit)

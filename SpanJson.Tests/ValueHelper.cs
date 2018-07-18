@@ -19,11 +19,12 @@ namespace SpanJson.Tests
                 foreach (var propertyInfo in props)
                 {
                     var randValue = prng.Next(modValue);
-                    if (randValue == 0 && (propertyInfo.PropertyType.IsClass || Nullable.GetUnderlyingType(propertyInfo.PropertyType) != null) && propertyInfo.CanWrite)
+                    if (randValue == 0 && (propertyInfo.PropertyType.IsClass || Nullable.GetUnderlyingType(propertyInfo.PropertyType) != null) &&
+                        propertyInfo.CanWrite)
                     {
                         propertyInfo.SetValue(current, null);
                     }
-                    else if(propertyInfo.PropertyType.IsClass && !propertyInfo.PropertyType.IsGenericType && propertyInfo.PropertyType != typeof(string))
+                    else if (propertyInfo.PropertyType.IsClass && !propertyInfo.PropertyType.IsGenericType && propertyInfo.PropertyType != typeof(string))
                     {
                         var value = propertyInfo.GetValue(current);
                         if (value != null)

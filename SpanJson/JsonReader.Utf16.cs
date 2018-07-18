@@ -305,6 +305,7 @@ namespace SpanJson
             {
                 return value;
             }
+
             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(TimeSpan));
             return default;
         }
@@ -318,10 +319,11 @@ namespace SpanJson
                 byteSpan[i] = (byte) span[i];
             }
 
-            if (Utf8Parser.TryParse(byteSpan, out Guid result, out var bytesConsumed, 'D') && bytesConsumed == span.Length) 
+            if (Utf8Parser.TryParse(byteSpan, out Guid result, out var bytesConsumed, 'D') && bytesConsumed == span.Length)
             {
                 return result;
             }
+
             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(Guid));
             return default;
         }

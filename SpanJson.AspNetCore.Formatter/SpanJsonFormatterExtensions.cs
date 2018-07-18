@@ -13,7 +13,8 @@ namespace SpanJson.AspNetCore.Formatter
         /// <summary>
         /// Uses SpanJson in UTF8 mode with custom formatter resolver
         /// </summary>
-        public static IMvcCoreBuilder AddSpanJsonCustom<TResolver>(this IMvcCoreBuilder mvcCoreBuilder) where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
+        public static IMvcCoreBuilder AddSpanJsonCustom<TResolver>(this IMvcCoreBuilder mvcCoreBuilder)
+            where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
         {
             Configure<TResolver>(mvcCoreBuilder.Services);
             return mvcCoreBuilder;
@@ -57,6 +58,5 @@ namespace SpanJson.AspNetCore.Formatter
                 config.OutputFormatters.Add(new SpanJsonOutputFormatter<TResolver>());
             });
         }
-
     }
 }

@@ -36,7 +36,6 @@ namespace SpanJson.Tests.Generated
         [InlineData("\"00:00:00.0000010\"", 0000010)]
         [InlineData("\"00:00:00.0000001\"", 0000001)]
         //[InlineData("\"00:00:00.00000001\"", 0000000)] // TODO readd
-
         public void DeserializeShort(string input, long ticks)
         {
             var deserializeUtf16 = JsonSerializer.Generic.Utf16.Deserialize<TimeSpan>(input);

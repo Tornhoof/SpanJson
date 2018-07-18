@@ -25,7 +25,8 @@ namespace SpanJson.Tests
                 if (ReferenceEquals(null, other)) return false;
                 if (ReferenceEquals(this, other)) return true;
                 return string.Equals(Value, other.Value) && Date.Equals(other.Date) &&
-                       NullableDate.Equals(other.NullableDate) && NullableDateArray.SequenceEqual(other.NullableDateArray) && DateArray.SequenceEqual(other.DateArray) && DateList.SequenceEqual(other.DateList);
+                       NullableDate.Equals(other.NullableDate) && NullableDateArray.SequenceEqual(other.NullableDateArray) &&
+                       DateArray.SequenceEqual(other.DateArray) && DateList.SequenceEqual(other.DateList);
             }
 
             public override bool Equals(object obj)

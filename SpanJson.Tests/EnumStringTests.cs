@@ -85,7 +85,7 @@ namespace SpanJson.Tests
         [Fact]
         public void SerializeDeserializeNullableEnumUtf8()
         {
-            var test = new TestDO { Value = null, AnotherValue = 1 };
+            var test = new TestDO {Value = null, AnotherValue = 1};
             var serialized = JsonSerializer.Generic.Utf8.Serialize<TestDO, IncludeNullsOriginalCaseResolver<byte>>(test);
             Assert.Contains("null", Encoding.UTF8.GetString(serialized));
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<TestDO, IncludeNullsOriginalCaseResolver<byte>>(serialized);

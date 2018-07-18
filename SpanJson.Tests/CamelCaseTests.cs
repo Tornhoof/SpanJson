@@ -20,7 +20,7 @@ namespace SpanJson.Tests
         [Fact]
         public void SerializeDeserializeUtf8()
         {
-            var input = new TestObject { Text = "Hello World" };
+            var input = new TestObject {Text = "Hello World"};
             var serialized = JsonSerializer.Generic.Utf8.Serialize<TestObject, ExcludeNullsCamelCaseResolver<byte>>(input);
             Assert.Contains("\"text\":", Encoding.UTF8.GetString(serialized));
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<TestObject, ExcludeNullsCamelCaseResolver<byte>>(serialized);

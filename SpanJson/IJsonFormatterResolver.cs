@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using SpanJson.Resolvers;
 
@@ -15,7 +16,9 @@ namespace SpanJson
     {
         IJsonFormatter<T, TSymbol> GetFormatter<T>();
         JsonObjectDescription GetObjectDescription<T>();
-
         JsonObjectDescription GetDynamicObjectDescription(IDynamicMetaObjectProvider provider);
+
+        Func<T> GetCreateFunctor<T>();
+        Func<T, TConverted> GetEnumerableConvertFunctor<T, TConverted>();
     }
 }

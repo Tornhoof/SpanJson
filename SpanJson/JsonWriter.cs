@@ -32,7 +32,6 @@ namespace SpanJson
                 ThrowNotSupportedException();
                 _chars = null;
                 _bytes = null;
-
             }
         }
 

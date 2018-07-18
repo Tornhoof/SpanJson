@@ -3,7 +3,6 @@ using Xunit;
 
 namespace SpanJson.Tests.Generated
 {
-
     // Can't use InlineData, won't compile
     public partial class DecimalTests
     {

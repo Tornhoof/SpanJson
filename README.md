@@ -19,7 +19,7 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 - Enums (string and integer, for integer see section Custom Resolver)
 - Anonymous types
 - Dictionary<,> with string as key
-- Serialization of Enumerables
+- Serialization/Deserialization of most IEnumerable<T> types (Stack and ConcurrentStack are not supported)
 - Support for ``[DataMember(Name="MemberName")]`` to set field name
 - Support for ``[IgnoreDataMember]`` to ignore a specific member
 - Support for ``ShouldSerializeXXX`` pattern to decide at runtime if a member should be serialized

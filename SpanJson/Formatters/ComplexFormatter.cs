@@ -66,7 +66,6 @@ namespace SpanJson.Formatters
                 var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
                 if (IsNoRuntimeDecisionRequired(memberInfo.MemberType))
                 {
-
                     var underlyingType = Nullable.GetUnderlyingType(memberInfo.MemberType);
                     // if it's nullable and we don't need the null, we call the underlying provider directly
                     if (memberInfo.ExcludeNull && underlyingType != null)
@@ -105,8 +104,9 @@ namespace SpanJson.Formatters
                 MethodInfo propertyNameWriterMethodInfo;
                 if (typeof(TSymbol) == typeof(char))
                 {
-                    writeNameExpressions = new [] { Expression.Constant(formattedMemberInfoName) };
-                    propertyNameWriterMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim), typeof(string));
+                    writeNameExpressions = new[] {Expression.Constant(formattedMemberInfoName)};
+                    propertyNameWriterMethodInfo =
+                        FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim), typeof(string));
                 }
                 else if (typeof(TSymbol) == typeof(byte))
                 {
@@ -129,6 +129,7 @@ namespace SpanJson.Formatters
                 {
                     throw new NotSupportedException();
                 }
+
                 var valueExpressions = new List<Expression>();
                 // we need to add the separator, but only if a value was written before
                 // we reset the indicator after each seperator write and set it after writing each field
@@ -245,14 +246,23 @@ namespace SpanJson.Formatters
             var objectDescription = resolver.GetObjectDescription<T>();
             var memberInfos = objectDescription.Where(a => a.CanWrite).ToList();
             var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
-            // can't deserialize abstract or interface
-            if (memberInfos.Any(a => a.MemberType.IsAbstract || a.MemberType.IsInterface))
+            // can't deserialize abstract and only support interfaces based on IEnumerable<T> (this includes, IList, IReadOnlyList, IDictionary et al.
+            foreach (var memberInfo in memberInfos)
             {
-                return Expression
-                    .Lambda<DeserializeDelegate<T, TSymbol>>(Expression.Block(
-                            Expression.Throw(Expression.Constant(new NotSupportedException($"{typeof(T).Name} contains abstract or interface members."))),
-                            Expression.Default(typeof(T))),
-                        readerParameter).Compile();
+                var memberType = memberInfo.MemberType;
+                if (memberType.IsAbstract)
+                {
+                    if (memberType.TryGetTypeOfGenericInterface	(typeof(IEnumerable<>), out _))
+                    {
+                        continue;
+                    }
+
+                    return Expression
+                        .Lambda<DeserializeDelegate<T, TSymbol>>(Expression.Block(
+                                Expression.Throw(Expression.Constant(new NotSupportedException($"{typeof(T).Name} contains abstract members."))),
+                                Expression.Default(typeof(T))),
+                            readerParameter).Compile();
+                }
             }
 
             if (typeof(T).IsAbstract)
@@ -321,7 +331,8 @@ namespace SpanJson.Formatters
                     var formatterType = formatter.GetType();
                     var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
                     return Expression.Assign(constructorParameterExpresssions[element.Index],
-                        Expression.Call(Expression.Field(null, fieldInfo), FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()),
+                        Expression.Call(Expression.Field(null, fieldInfo),
+                            FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()),
                             readerParameter));
                 };
             }
@@ -334,7 +345,8 @@ namespace SpanJson.Formatters
                     var formatterType = formatter.GetType();
                     var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
                     return Expression.Assign(Expression.PropertyOrField(returnValue, memberInfo.MemberName),
-                        Expression.Call(Expression.Field(null, fieldInfo), FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()),
+                        Expression.Call(Expression.Field(null, fieldInfo),
+                            FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()),
                             readerParameter));
                 };
             }
@@ -430,8 +442,5 @@ namespace SpanJson.Formatters
 
 
         protected delegate void SerializeDelegate<in T, TSymbol>(ref JsonWriter<TSymbol> writer, T value, int nestingLimit) where TSymbol : struct;
-
-
-
     }
 }
