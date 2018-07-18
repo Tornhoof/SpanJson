@@ -1,0 +1,181 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Text;
+using Xunit;
+
+namespace SpanJson.Tests
+{
+    public class EnumerableTests
+    {
+        public class CustomEnumerable<T> : IEnumerable<T>, IEquatable<CustomEnumerable<T>>
+        {
+            private readonly IEnumerable<T> _values;
+
+            public CustomEnumerable(IEnumerable<T> values)
+            {
+                _values = values;
+            }
+
+            public IEnumerator<T> GetEnumerator() => _values.GetEnumerator();
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public bool Equals(CustomEnumerable<T> other)
+            {
+                using (var enumerator = GetEnumerator())
+                {
+                    using (var otherEnumerator = other.GetEnumerator())
+                    {
+                        if (enumerator.MoveNext() != otherEnumerator.MoveNext())
+                        {
+                            return false;
+                        }
+                        if(!Equals(enumerator.Current, otherEnumerator.Current))
+                        {
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            }
+
+            public override bool Equals(object other)
+            {
+                if (other is CustomEnumerable<T> value)
+                {
+                    return Equals(value);
+                }
+
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                return 0;
+            }
+        }
+
+        [Fact]
+        public void SerializeDeserializeCollectionUtf16()
+        {
+            var collection = new Collection<string> {"Hello", "World"};
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Collection<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection, deserialized);
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeCollectionUtf8()
+        {
+            var collection = new Collection<string> {"Hello", "World"};
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<Collection<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection, deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeReadOnlyCollectionUtf16()
+        {
+            var collection = new ReadOnlyCollection<string>(new List<string> {"Hello", "World"});
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<ReadOnlyCollection<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection, deserialized);
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeReadOnlyCollectionUtf8()
+        {
+            var collection = new ReadOnlyCollection<string>(new List<string> {"Hello", "World"});
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<ReadOnlyCollection<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection, deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeIReadOnlyCollectionUtf16()
+        {
+            var collection = new List<string> {"Hello", "World"};
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<IReadOnlyCollection<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection, deserialized);
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeIReadOnlyCollectionUtf8()
+        {
+            var collection = new List<string> { "Hello", "World" };
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<IReadOnlyCollection<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection, deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeIEnumerableUtf16()
+        {
+            var collection = new List<string> { "Hello", "World" };
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<IEnumerable<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection, deserialized);
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeIEnumerableUtf8()
+        {
+            var collection = new List<string> { "Hello", "World" };
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(collection);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<IEnumerable<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection, deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeCustomIEnumerableUtf16()
+        {
+            var collection = new List<string> { "Hello", "World" };
+            var customEnumerable = new CustomEnumerable<string>(collection);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(customEnumerable);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<CustomEnumerable<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection, deserialized);
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeCustomIEnumerableUtf8()
+        {
+            var collection = new List<string> { "Hello", "World" };
+            var customEnumerable = new CustomEnumerable<string>(collection);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(customEnumerable);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<CustomEnumerable<string>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(collection, deserialized);
+        }
+    }
+}

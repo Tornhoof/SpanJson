@@ -281,7 +281,7 @@ namespace SpanJson.Resolvers
                 return GetDefaultOrCreate(typeof(ReadOnlyDictionaryFormatter<,,,>).MakeGenericType(type, rodictArgumentTypes[1], typeof(TSymbol), typeof(TResolver)));
             }
 
-            if (type.TryGetTypeOfGenericInterface(typeof(IList<>), out var listArgumentTypes))
+            if (type.TryGetTypeOfGenericInterface(typeof(IList<>), out var listArgumentTypes) && !IsBadList(type))
             {
                 return GetDefaultOrCreate(typeof(ListFormatter<,,,>).MakeGenericType(type, listArgumentTypes.Single(), typeof(TSymbol), typeof(TResolver)));
             }
@@ -318,6 +318,18 @@ namespace SpanJson.Resolvers
             // ReadOnlyDictionary is kinda broken, it implements IDictionary<T> too, but without any standard ctor
             // Make sure this is using the ReadOnlyDictionaryFormatter
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ReadOnlyDictionary<,>))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsBadList(Type type)
+        {
+            // ReadOnlyCollection is kinda broken, it implements IList<T> too, but without any standard ctor
+            // Make sure this is using the EnumerableFormatter
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ReadOnlyCollection<>))
             {
                 return true;
             }
