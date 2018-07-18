@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -260,7 +261,7 @@ namespace SpanJson.Resolvers
                 }
             }
 
-            if (type.TryGetTypeOfGenericInterface(typeof(IDictionary<,>), out var dictArgumentTypes))
+            if (type.TryGetTypeOfGenericInterface(typeof(IDictionary<,>), out var dictArgumentTypes) && !IsBadDictionary(type))
             {
                 if (dictArgumentTypes.Length != 2 || dictArgumentTypes[0] != typeof(string))
                 {
@@ -268,6 +269,16 @@ namespace SpanJson.Resolvers
                 }
 
                 return GetDefaultOrCreate(typeof(DictionaryFormatter<,,,>).MakeGenericType(type, dictArgumentTypes[1], typeof(TSymbol), typeof(TResolver)));
+            }
+
+            if (type.TryGetTypeOfGenericInterface(typeof(IReadOnlyDictionary<,>), out var rodictArgumentTypes))
+            {
+                if (rodictArgumentTypes.Length != 2 || rodictArgumentTypes[0] != typeof(string))
+                {
+                    throw new NotImplementedException($"{rodictArgumentTypes[0]} is not supported a Key for Dictionary.");
+                }
+
+                return GetDefaultOrCreate(typeof(ReadOnlyDictionaryFormatter<,,,>).MakeGenericType(type, rodictArgumentTypes[1], typeof(TSymbol), typeof(TResolver)));
             }
 
             if (type.TryGetTypeOfGenericInterface(typeof(IList<>), out var listArgumentTypes))
@@ -300,6 +311,18 @@ namespace SpanJson.Resolvers
             }
 
             return GetDefaultOrCreate(typeof(ComplexClassFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
+        }
+
+        private static bool IsBadDictionary(Type type)
+        {
+            // ReadOnlyDictionary is kinda broken, it implements IDictionary<T> too, but without any standard ctor
+            // Make sure this is using the ReadOnlyDictionaryFormatter
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ReadOnlyDictionary<,>))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private static IJsonFormatter GetIntegrated(Type type)
