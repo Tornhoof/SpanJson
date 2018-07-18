@@ -1,10 +1,11 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace SpanJson.Helpers
 {
-    public static class FormatterUtils
+    public static partial class FormatterUtils
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int CountDigits(ulong value)
@@ -62,12 +63,19 @@ namespace SpanJson.Helpers
             return digits;
         }
 
-        public static void Grow<T>(ref T[] array)
+        public static void GrowArray<T>(ref T[] array)
         {
             var backup = array;
             array = ArrayPool<T>.Shared.Rent(backup.Length * 2);
-            backup.CopyTo(array, 0);
+            backup.AsSpan().CopyTo(array);
             ArrayPool<T>.Shared.Return(backup);
+        }
+
+        public static T[] CopyArray<T>(T[] array, int count)
+        {
+            var result = new T[count];
+            array.AsSpan(0, count).CopyTo(result);
+            return result;
         }
     }
 }

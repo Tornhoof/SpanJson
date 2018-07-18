@@ -9,12 +9,12 @@
 <# 
     var serializers = new []
     {
-		new {ResultType = typeof(string), Name = "JilSerializer"},
-		new {ResultType = typeof(string), Name =  "SpanJsonSerializer"},
-		new {ResultType = typeof(byte[]), Name = "SpanJsonUtf8Serializer"},
-		new {ResultType = typeof(byte[]), Name = "Utf8JsonSerializer"},
+        new {ResultType = typeof(string), Name = "JilSerializer"},
+        new {ResultType = typeof(string), Name =  "SpanJsonSerializer"},
+        new {ResultType = typeof(byte[]), Name = "SpanJsonUtf8Serializer"},
+        new {ResultType = typeof(byte[]), Name = "Utf8JsonSerializer"},
     };
-	var bclTypes = new[]
+    var bclTypes = new[]
     {
         typeof(sbyte),
         typeof(Int16),
@@ -27,15 +27,15 @@
         typeof(Single),
         typeof(Double),
         typeof(bool), 
-		typeof(char),
-		typeof(DateTime),
-		typeof(DateTimeOffset), 
-		typeof(TimeSpan),
-		typeof(Guid),
-		typeof(string),
-		typeof(decimal),
-		typeof(Version),
-		typeof(Uri)
+        typeof(char),
+        typeof(DateTime),
+        typeof(DateTimeOffset), 
+        typeof(TimeSpan),
+        typeof(Guid),
+        typeof(string),
+        typeof(decimal),
+        typeof(Version),
+        typeof(Uri)
     };
 #> 
 using System;
@@ -49,12 +49,12 @@ namespace SpanJson.Benchmarks
   [Config(typeof(MyConfig))]
   public class BclBenchmark
   {
-	private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
+    private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
 <#  
     foreach(var serializer in serializers)
     { 
 #>  
-	private static readonly <#= serializer.Name #> <#= serializer.Name #> = new <#= serializer.Name #>();
+    private static readonly <#= serializer.Name #> <#= serializer.Name #> = new <#= serializer.Name #>();
 <#  
     }   
 #>  
@@ -62,41 +62,41 @@ namespace SpanJson.Benchmarks
     foreach(var model in bclTypes)
     { 
 #>  
-	private static readonly <#= model.Name #> <#= model.Name #>Input = ExpressionTreeFixture.Create<<#= model.Name #>>();
+    private static readonly <#= model.Name #> <#= model.Name #>Input = ExpressionTreeFixture.Create<<#= model.Name #>>();
 <#  
     }   
 #>  
 <#  
     foreach(var model in bclTypes)
     {  
-	foreach(var serializer in serializers)
-	{
+    foreach(var serializer in serializers)
+    {
 #>  
 
-	[Benchmark]
-	public <#= serializer.ResultType.Name #> Serialize<#= model.Name #>With<#= serializer.Name #>()
-	{
-		return <#= serializer.Name #>.Serialize(<#= model.Name #>Input);
-	}	
+    [Benchmark]
+    public <#= serializer.ResultType.Name #> Serialize<#= model.Name #>With<#= serializer.Name #>()
+    {
+        return <#= serializer.Name #>.Serialize(<#= model.Name #>Input);
+    }   
 <#  
     }   
-	}
+    }
 #> 
 <#  
     foreach(var model in bclTypes)
     {  
-	foreach(var serializer in serializers)
-	{
+    foreach(var serializer in serializers)
+    {
 #>  
-	private static readonly <#= serializer.ResultType.Name#> <#= model.Name #>OutputOf<#= serializer.Name #> = <#= serializer.Name #>.Serialize(<#= model.Name #>Input);
-	[Benchmark]
-	public <#= model.Name #> Deserialize<#= model.Name #>With<#= serializer.Name #>()
-	{
-		return <#= serializer.Name #>.Deserialize<<#= model.Name #>>(<#= model.Name #>OutputOf<#= serializer.Name #>);
-	}
+    private static readonly <#= serializer.ResultType.Name#> <#= model.Name #>OutputOf<#= serializer.Name #> = <#= serializer.Name #>.Serialize(<#= model.Name #>Input);
+    [Benchmark]
+    public <#= model.Name #> Deserialize<#= model.Name #>With<#= serializer.Name #>()
+    {
+        return <#= serializer.Name #>.Deserialize<<#= model.Name #>>(<#= model.Name #>OutputOf<#= serializer.Name #>);
+    }
 <#  
     }   
-	}
+    }
 #> 
   }
 }

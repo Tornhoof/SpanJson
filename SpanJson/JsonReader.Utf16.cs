@@ -945,7 +945,7 @@ namespace SpanJson
                         {
                             if (count == temp.Length)
                             {
-                                FormatterUtils.Grow(ref temp);
+                                FormatterUtils.GrowArray(ref temp);
                             }
 
                             temp[count - 1] = ReadUtf16Dynamic(stack + 1);
@@ -958,8 +958,7 @@ namespace SpanJson
                         }
                         else
                         {
-                            result = new object[count];
-                            Array.Copy(temp, result, count);
+                            result = FormatterUtils.CopyArray(temp, count);
                         }
 
                         return new SpanJsonDynamicArray<TSymbol>(result);

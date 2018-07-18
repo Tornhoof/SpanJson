@@ -7,7 +7,7 @@
 <#@ import namespace="System.Reflection" #>  
 <#@ import namespace="System" #>  
 <# 
-	var bclTypes = new[]
+    var bclTypes = new[]
     {
         typeof(sbyte),
         typeof(Int16),
@@ -20,22 +20,22 @@
         typeof(Single),
         typeof(Double),
         typeof(bool), 
-		typeof(char),
-		typeof(DateTime),
-		typeof(DateTimeOffset), 
-		typeof(TimeSpan),
-		typeof(Guid),
-		typeof(string),
-		typeof(decimal),
-		typeof(Version),
-		typeof(Uri)
+        typeof(char),
+        typeof(DateTime),
+        typeof(DateTimeOffset), 
+        typeof(TimeSpan),
+        typeof(Guid),
+        typeof(string),
+        typeof(decimal),
+        typeof(Version),
+        typeof(Uri)
     };
 
-	var symbols = new []
-	{
-		new {SymbolType = typeof(byte), Name = "Utf8"},
-		new {SymbolType = typeof(char), Name = "Utf16"},
-	};
+    var symbols = new []
+    {
+        new {SymbolType = typeof(byte), Name = "Utf8"},
+        new {SymbolType = typeof(char), Name = "Utf16"},
+    };
 #> 
 using System;
 using BenchmarkDotNet.Attributes;
@@ -48,30 +48,30 @@ namespace SpanJson.Benchmarks
   [DisassemblyDiagnoser]
   public class WriterBenchmark
   {
-	private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();  
+    private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();  
 <#  
     foreach(var model in bclTypes)
     { 
 #>  
-	private static readonly <#= model.Name #> <#= model.Name #>Input = ExpressionTreeFixture.Create<<#= model.Name #>>();
+    private static readonly <#= model.Name #> <#= model.Name #>Input = ExpressionTreeFixture.Create<<#= model.Name #>>();
 <#  
     }   
 #>
 <#  
     foreach(var model in bclTypes)
     {  
-	foreach(var symbol in symbols)
-	{
+    foreach(var symbol in symbols)
+    {
 #>  
-	[Benchmark]
-	public void Write<#= symbol.Name #><#= model.Name #>()
-	{
-	    var writer = new JsonWriter<<#=symbol.SymbolType.Name #>>();
-		writer.Write<#= symbol.Name #><#= model.Name #>(<#= model.Name #>Input);
-	}
+    [Benchmark]
+    public void Write<#= symbol.Name #><#= model.Name #>()
+    {
+        var writer = new JsonWriter<<#=symbol.SymbolType.Name #>>();
+        writer.Write<#= symbol.Name #><#= model.Name #>(<#= model.Name #>Input);
+    }
 <#  
     }   
-	}
+    }
 #> 
   }
 }

@@ -34,9 +34,6 @@
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.0" />
     <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.8.1" />
   </ItemGroup>
-  
-  <ItemGroup>
-  </ItemGroup>
 
   <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
@@ -46,7 +43,7 @@
     <None Update="Formatters\BclFormatter.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BclFormatter.cs</LastGenOutput>
-    </None>
+    </None>    
     <None Update="JsonWriter.Utf8.WriteVerbatimIntegers.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>JsonWriter.Utf8.WriteVerbatimIntegers.cs</LastGenOutput>

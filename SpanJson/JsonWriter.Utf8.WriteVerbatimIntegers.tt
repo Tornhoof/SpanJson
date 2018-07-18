@@ -10,8 +10,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 namespace SpanJson
 {
-	public ref partial struct JsonWriter<TSymbol> where TSymbol : struct
-	{
+    public ref partial struct JsonWriter<TSymbol> where TSymbol : struct
+    {
 <#
     for (int i = 4; i <= 32; i++)
     {
@@ -46,32 +46,32 @@ namespace SpanJson
             values.Add("byte " + (char) (count++ + 'a'));
             sizes.Add(sizeof(byte));
         }
-		var arguments = string.Join(", ", values);
+        var arguments = string.Join(", ", values);
 #>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public void WriteUtf8Verbatim(<#=arguments#>)
-		{
-			ref var pos = ref _pos;
+        public void WriteUtf8Verbatim(<#=arguments#>)
+        {
+            ref var pos = ref _pos;
             if (pos > _bytes.Length - <#=i#>)
             {
                 Grow(<#=i#>);
             }
 
-			ref var bStart = ref MemoryMarshal.GetReference(_bytes);
+            ref var bStart = ref MemoryMarshal.GetReference(_bytes);
 <#
-			for(int k = 0;k<sizes.Count;k++)
-			{
-			var currentArgument = (char) (k + 'a');
+            for(int k = 0;k<sizes.Count;k++)
+            {
+            var currentArgument = (char) (k + 'a');
 #>
-			Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), <#=currentArgument#>);
-		    pos += <#=sizes[k] #>;
+            Unsafe.WriteUnaligned(ref Unsafe.Add(ref bStart, pos), <#=currentArgument#>);
+            pos += <#=sizes[k] #>;
 <#
-			}
+            }
 #>
-		}
+        }
 
-<#			
-		}
+<#          
+        }
 #>
-	}
+    }
 }

@@ -29,21 +29,13 @@ namespace SpanJson.Formatters
                 {
                     if (count == temp.Length)
                     {
-                        FormatterUtils.Grow(ref temp);
+                        FormatterUtils.GrowArray(ref temp);
                     }
 
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                if (count == 0)
-                {
-                    result = Array.Empty<T>();
-                }
-                else
-                {
-                    result = new T[count];
-                    Array.Copy(temp, result, count);
-                }
+                result = count == 0 ? Array.Empty<T>() : FormatterUtils.CopyArray(temp, count);
             }
             finally
             {
