@@ -507,10 +507,10 @@ namespace SpanJson
         private void WriteUtf8VerbatimBuffered(in ReadOnlySpan<byte> value)
         {
             var input = value;
-            var length = _chars.Length;
+            var length = _bytes.Length;
             while (true)
             {
-                var sliceSize = Math.Min(input.Length, length - 1);
+                var sliceSize = Math.Min(input.Length, length);
                 var sliced = MemoryMarshal.Cast<byte, TSymbol>(input.Slice(0, sliceSize));
                 _writer.Write(sliced);
                 input = input.Slice(sliceSize);
