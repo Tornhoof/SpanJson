@@ -11,12 +11,14 @@ namespace SpanJson
         private Span<char> _chars;
         private Span<byte> _bytes;
         private int _pos;
-
+        private readonly BufferWriter<TSymbol> _writer;
+ 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public JsonWriter(int initialSize)
         {
             Data = ArrayPool<TSymbol>.Shared.Rent(initialSize);
             _pos = 0;
+            _writer = default;
             if (typeof(TSymbol) == typeof(char))
             {
                 _chars = MemoryMarshal.Cast<TSymbol, char>(Data);
@@ -25,6 +27,32 @@ namespace SpanJson
             else if (typeof(TSymbol) == typeof(byte))
             {
                 _bytes = MemoryMarshal.Cast<TSymbol, byte>(Data);
+                _chars = null;
+            }
+            else
+            {
+                ThrowNotSupportedException();
+                _chars = null;
+                _bytes = null;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public JsonWriter(BufferWriter<TSymbol> writer)
+        {
+            _pos = 0;
+            _writer = writer;
+            Data = null;
+            if (typeof(TSymbol) == typeof(char))
+            {
+                var charWriter = Unsafe.As<BufferWriter<TSymbol>, BufferWriter<char>>(ref writer);
+                _chars = charWriter.GetSpan();
+                _bytes = null;
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                var byteWriter = Unsafe.As<BufferWriter<TSymbol>, BufferWriter<byte>>(ref writer);
+                _bytes = byteWriter.GetSpan();
                 _chars = null;
             }
             else
