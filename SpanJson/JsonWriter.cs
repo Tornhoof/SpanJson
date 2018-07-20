@@ -45,14 +45,12 @@ namespace SpanJson
             Data = null;
             if (typeof(TSymbol) == typeof(char))
             {
-                var charWriter = Unsafe.As<BufferWriter<TSymbol>, BufferWriter<char>>(ref writer);
-                _chars = charWriter.GetSpan();
+                _chars = MemoryMarshal.Cast<TSymbol, char>(writer.GetSpan());
                 _bytes = null;
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                var byteWriter = Unsafe.As<BufferWriter<TSymbol>, BufferWriter<byte>>(ref writer);
-                _bytes = byteWriter.GetSpan();
+                _bytes = MemoryMarshal.Cast<TSymbol, byte>(writer.GetSpan());
                 _chars = null;
             }
             else

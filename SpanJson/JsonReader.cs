@@ -10,7 +10,7 @@ namespace SpanJson
         private ReadOnlySpan<char> _chars;
         private ReadOnlySpan<byte> _bytes;
         private int _length;
-        private bool _isBuffered;
+        private readonly bool _isBuffered;
         private int _pos;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -39,7 +39,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public JsonReader(BufferReader<TSymbol> buffer, int length)
+        public JsonReader(BufferReader<TSymbol> buffer)
         {
             _buffer = buffer;
             _length = _buffer.Length;
@@ -325,7 +325,6 @@ namespace SpanJson
         /// <summary>
         /// we need to make sure that enough buffer is there for everything except dynamic length values
         /// </summary>
-        [MethodImpl(MethodImplOptions.NoInlining)]
         private bool SlideIfNecessary()
         {
             if ((uint) _length - 50 < _pos)
@@ -339,19 +338,24 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private bool SlideOrResize(bool resize)
+        private void SlideAndResize()
         {
-            if (resize)
+            _buffer.SlideWindow(ref _pos);
+            _buffer.Resize(ref _pos);
+            var newBuffer = _buffer.GetSpan();
+            _length = _buffer.Length;
+            if (typeof(TSymbol) == typeof(byte))
             {
-                _buffer.Resize(ref _pos);
+                _bytes = MemoryMarshal.Cast<TSymbol, byte>(newBuffer);
+            }
+            else if (typeof(TSymbol) == typeof(char))
+            {
+                _chars = MemoryMarshal.Cast<TSymbol, char>(newBuffer);
             }
             else
             {
-                _buffer.SlideWindow(ref _pos);
+                ThrowNotSupportedException();
             }
-
-            _length = _buffer.Length;
-            return true;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace SpanJson
             public static string Print(in ReadOnlySpan<char> input)
             {
                 var reader = new JsonReader<char>(input);
-                var writer = new JsonWriter<char>();
+                var writer = new JsonWriter<char>(input.Length);
                 Print(ref reader, ref writer, 0);
                 return writer.ToString();
             }
@@ -30,7 +30,7 @@ namespace SpanJson
             public static byte[] Print(in ReadOnlySpan<byte> input)
             {
                 var reader = new JsonReader<byte>(input);
-                var writer = new JsonWriter<byte>();
+                var writer = new JsonWriter<byte>(input.Length);
                 Print(ref reader, ref writer, 0);
                 return writer.ToByteArray();
             }

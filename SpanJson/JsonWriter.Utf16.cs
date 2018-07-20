@@ -472,8 +472,8 @@ namespace SpanJson
             while (true)
             {
                 var sliceSize = Math.Min(input.Length, length);
-                var sliced = MemoryMarshal.Cast<char, TSymbol>(input.Slice(0, sliceSize));
-                _writer.Write(sliced);
+                var sliced = input.Slice(0, sliceSize);
+                _writer.WriteUtf16(sliced);
                 input = input.Slice(sliceSize);
                 if (input.Length == 0)
                 {
@@ -514,15 +514,14 @@ namespace SpanJson
         /// </summary>
         private void WriteUtf16NameBuffered(in ReadOnlySpan<char> value)
         {
-            Span<char> stack = stackalloc char[1] {JsonUtf16Constant.DoubleQuote};
-            _writer.Write(MemoryMarshal.Cast<char, TSymbol>(stack));
+            _writer.WriteDoubleQuote();
             var input = value;
             var length = _chars.Length;
             while (true)
             {
                 var sliceSize = Math.Min(input.Length, length);
-                var sliced = MemoryMarshal.Cast<char, TSymbol>(input.Slice(0, sliceSize));
-                _writer.Write(sliced);
+                var sliced = input.Slice(0, sliceSize);
+                _writer.WriteUtf16(sliced);
                 input = input.Slice(sliceSize);
                 if (input.Length == 0)
                 {

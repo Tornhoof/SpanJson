@@ -95,13 +95,12 @@ namespace SpanJson
                     }
                     else
                     {
-                        using (var bufferWriter = new BufferWriter<TSymbol>(writer))
-                        {
-                            var jsonWriter = new JsonWriter<TSymbol>(bufferWriter);
-                            Formatter.Serialize(ref jsonWriter, input, 0);
-                            var pos = jsonWriter.Position;
-                            bufferWriter.Flush(ref pos);
-                        }
+                        var bufferWriter = new BufferWriter<TSymbol>(writer);
+                        var jsonWriter = new JsonWriter<TSymbol>(bufferWriter);
+                        Formatter.Serialize(ref jsonWriter, input, 0);
+                        var pos = jsonWriter.Position;
+                        bufferWriter.Flush(ref pos);
+                        bufferWriter.Dispose();
 
                         return new ValueTask();
                     }
@@ -128,13 +127,12 @@ namespace SpanJson
                     }
                     else
                     {
-                        using (var bufferWriter = new BufferWriter<TSymbol>(stream))
-                        {
-                            var jsonWriter = new JsonWriter<TSymbol>(bufferWriter);
-                            Formatter.Serialize(ref jsonWriter, input, 0);
-                            var pos = jsonWriter.Position;
-                            bufferWriter.Flush(ref pos);
-                        }
+                        var bufferWriter = new BufferWriter<TSymbol>(stream);
+                        var jsonWriter = new JsonWriter<TSymbol>(bufferWriter);
+                        Formatter.Serialize(ref jsonWriter, input, 0);
+                        var pos = jsonWriter.Position;
+                        bufferWriter.Flush(ref pos);
+                        bufferWriter.Dispose();
 
                         return new ValueTask();
                     }

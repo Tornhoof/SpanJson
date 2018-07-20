@@ -511,8 +511,8 @@ namespace SpanJson
             while (true)
             {
                 var sliceSize = Math.Min(input.Length, length);
-                var sliced = MemoryMarshal.Cast<byte, TSymbol>(input.Slice(0, sliceSize));
-                _writer.Write(sliced);
+                var sliced = input.Slice(0, sliceSize);
+                _writer.WriteUtf8(sliced);
                 input = input.Slice(sliceSize);
                 if (input.Length == 0)
                 {

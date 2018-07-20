@@ -9,7 +9,7 @@ using SpanJson.Helpers;
 
 namespace SpanJson
 {
-    public struct BufferReader<TSymbol> where TSymbol : struct 
+    public ref struct BufferReader<TSymbol> where TSymbol : struct 
     {
         private readonly Stream _stream;
         private readonly TextReader _reader;

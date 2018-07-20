@@ -9,7 +9,7 @@ using System.Text;
 
 namespace SpanJson
 {
-    public struct BufferWriter<TSymbol> : IDisposable where TSymbol : struct
+    public ref struct BufferWriter<TSymbol> where TSymbol : struct
     {
         private readonly Stream _stream;
         private readonly TextWriter _writer;
@@ -58,17 +58,41 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Write(in ReadOnlySpan<TSymbol> values)
+        public void WriteUtf8(in ReadOnlySpan<byte> values)
         {
             if (typeof(TSymbol) == typeof(byte))
             {
-                var byteBuffer = MemoryMarshal.Cast<TSymbol, byte>(values);
-                _stream.Write(byteBuffer);
+                _stream.Write(values);
             }
-            else if (typeof(TSymbol) == typeof(char))
+            else
             {
-                var charBuffer = MemoryMarshal.Cast<TSymbol, char>(values);
-                _writer.Write(charBuffer);
+                ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteUtf16(in ReadOnlySpan<char> values)
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                _writer.Write(values);
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteDoubleQuote()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                _writer.Write(JsonUtf16Constant.DoubleQuote);
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                _stream.WriteByte(JsonUtf8Constant.DoubleQuote);
             }
             else
             {

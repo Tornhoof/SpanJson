@@ -10,8 +10,6 @@ namespace SpanJson.Tests
 {
     public class LargeBufferTests
     {
-
-
         private static string CreateString(int length)
         {
             const string alphaNumeric = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -45,17 +43,16 @@ namespace SpanJson.Tests
             var encoded = Encoding.UTF8.GetBytes(testString);
             using (var ms = new MemoryStream())
             {
-                using (var bw = new BufferWriter<byte>(ms))
-                {
-                    var jsonWriter = new JsonWriter<byte>(bw);
-                    jsonWriter.WriteUtf8String(testString);
-                    int pos = jsonWriter.Position;
-                    bw.Flush(ref pos);
-                    var output = ms.ToArray();
-                    Assert.Equal((byte)'"', output[0]);
-                    Assert.Equal((byte) '"', output[output.Length - 1]);
-                    Assert.Equal(encoded, output.AsSpan().Slice(1, output.Length - 2).ToArray());
-                }
+                var bw = new BufferWriter<byte>(ms);
+                var jsonWriter = new JsonWriter<byte>(bw);
+                jsonWriter.WriteUtf8String(testString);
+                int pos = jsonWriter.Position;
+                bw.Flush(ref pos);
+                var output = ms.ToArray();
+                Assert.Equal((byte) '"', output[0]);
+                Assert.Equal((byte) '"', output[output.Length - 1]);
+                Assert.Equal(encoded, output.AsSpan().Slice(1, output.Length - 2).ToArray());
+                bw.Dispose();
             }
         }
 
@@ -79,7 +76,7 @@ namespace SpanJson.Tests
             var encoded = Encoding.UTF8.GetBytes(testString);
             using (var ms = new MemoryStream())
             {
-                using (var bw = new BufferWriter<byte>(ms))
+                var bw = new BufferWriter<byte>(ms);
                 {
                     var jsonWriter = new JsonWriter<byte>(bw);
                     jsonWriter.WriteUtf8Verbatim(encoded);
@@ -114,18 +111,17 @@ namespace SpanJson.Tests
             var encoded = Encoding.UTF8.GetBytes(testString);
             using (var ms = new MemoryStream())
             {
-                using (var bw = new BufferWriter<byte>(ms))
-                {
-                    var jsonWriter = new JsonWriter<byte>(bw);
-                    jsonWriter.WriteUtf8Name(testString);
-                    int pos = jsonWriter.Position;
-                    bw.Flush(ref pos);
-                    var output = ms.ToArray();
-                    Assert.Equal((byte)'"', output[0]);
-                    Assert.Equal((byte)'"', output[output.Length - 2]);
-                    Assert.Equal((byte)':', output[output.Length - 1]);
-                    Assert.Equal(encoded, output.AsSpan().Slice(1, output.Length - 3).ToArray());
-                }
+                var bw = new BufferWriter<byte>(ms);
+                var jsonWriter = new JsonWriter<byte>(bw);
+                jsonWriter.WriteUtf8Name(testString);
+                int pos = jsonWriter.Position;
+                bw.Flush(ref pos);
+                var output = ms.ToArray();
+                Assert.Equal((byte) '"', output[0]);
+                Assert.Equal((byte) '"', output[output.Length - 2]);
+                Assert.Equal((byte) ':', output[output.Length - 1]);
+                Assert.Equal(encoded, output.AsSpan().Slice(1, output.Length - 3).ToArray());
+                bw.Dispose();
             }
         }
 
@@ -149,17 +145,16 @@ namespace SpanJson.Tests
             var sb = new StringBuilder();
             using (var tw = new StringWriter(sb))
             {
-                using (var bw = new BufferWriter<char>(tw))
-                {
-                    var jsonWriter = new JsonWriter<char>(bw);
-                    jsonWriter.WriteUtf16String(testString);
-                    var pos = jsonWriter.Position;
-                    bw.Flush(ref pos);
-                    Assert.Equal('"', sb[0]);
-                    Assert.Equal('"', sb[sb.Length - 1]);
-                    var output = sb.ToString(1, sb.Length - 2);
-                    Assert.Equal(testString, output);
-                }
+                var bw = new BufferWriter<char>(tw);
+                var jsonWriter = new JsonWriter<char>(bw);
+                jsonWriter.WriteUtf16String(testString);
+                var pos = jsonWriter.Position;
+                bw.Flush(ref pos);
+                Assert.Equal('"', sb[0]);
+                Assert.Equal('"', sb[sb.Length - 1]);
+                var output = sb.ToString(1, sb.Length - 2);
+                Assert.Equal(testString, output);
+                bw.Dispose();
             }
         }
 
@@ -186,18 +181,17 @@ namespace SpanJson.Tests
             var sb = new StringBuilder();
             using (var tw = new StringWriter(sb))
             {
-                using (var bw = new BufferWriter<char>(tw))
-                {
-                    var jsonWriter = new JsonWriter<char>(bw);
-                    jsonWriter.WriteUtf16Name(testString);
-                    var pos = jsonWriter.Position;
-                    bw.Flush(ref pos);
-                    Assert.Equal('"', sb[0]);
-                    Assert.Equal('"', sb[sb.Length - 2]);
-                    Assert.Equal(':', sb[sb.Length - 1]);
-                    var output = sb.ToString(1, sb.Length - 3);
-                    Assert.Equal(testString, output);
-                }
+                var bw = new BufferWriter<char>(tw);
+                var jsonWriter = new JsonWriter<char>(bw);
+                jsonWriter.WriteUtf16Name(testString);
+                var pos = jsonWriter.Position;
+                bw.Flush(ref pos);
+                Assert.Equal('"', sb[0]);
+                Assert.Equal('"', sb[sb.Length - 2]);
+                Assert.Equal(':', sb[sb.Length - 1]);
+                var output = sb.ToString(1, sb.Length - 3);
+                Assert.Equal(testString, output);
+                bw.Dispose();
             }
         }
 
@@ -220,15 +214,14 @@ namespace SpanJson.Tests
             var sb = new StringBuilder();
             using (var tw = new StringWriter(sb))
             {
-                using (var bw = new BufferWriter<char>(tw))
-                {
-                    var jsonWriter = new JsonWriter<char>(bw);
-                    jsonWriter.WriteUtf16Verbatim(testString);
-                    var pos = jsonWriter.Position;
-                    bw.Flush(ref pos);
-                    var output = sb.ToString();
-                    Assert.Equal(testString, output);
-                }
+                var bw = new BufferWriter<char>(tw);
+                var jsonWriter = new JsonWriter<char>(bw);
+                jsonWriter.WriteUtf16Verbatim(testString);
+                var pos = jsonWriter.Position;
+                bw.Flush(ref pos);
+                var output = sb.ToString();
+                Assert.Equal(testString, output);
+                bw.Dispose();
             }
         }
     }
