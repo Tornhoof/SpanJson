@@ -461,7 +461,7 @@ namespace SpanJson
 
                 var stringLength = 0;
                 // We should also get info about how many escaped chars exist from here
-                if (TryFindEndOfUtf8String(ref stringStart, _length - pos, ref stringLength, out escapedCharsSize))
+                if (TryFindEndOfUtf8String(ref stringStart, _length - pos, ref stringLength, out escapedCharsSize, 0))
                 {
                     var result = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref stringStart, 1), stringLength - 1);
                     pos += stringLength; // skip the doublequote too
@@ -491,7 +491,7 @@ namespace SpanJson
 
                 var stringLength = 0;
                 // We should also get info about how many escaped chars exist from here
-                if (TryFindEndOfUtf8String(ref stringStart, _length - pos, ref stringLength, out escapedCharsSize))
+                if (TryFindEndOfUtf8String(ref stringStart, _length - pos, ref stringLength, out escapedCharsSize, 0))
                 {
                     var result = MemoryMarshal.CreateReadOnlySpan(ref stringStart, stringLength + 1);
                     pos += stringLength; // skip the doublequote too
@@ -563,8 +563,9 @@ namespace SpanJson
                     }
                 }
             }
+
             end:
-            if (SlideIfNecessary())
+            if (_isBuffered && SlideIfNecessary())
             {
                 SkipWhitespaceUtf8();
             }
@@ -843,7 +844,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool TryFindEndOfUtf8String(ref byte bStart, int length, ref int stringLength, out int escapedCharsSize, bool resize = false)
+        private bool TryFindEndOfUtf8String(ref byte bStart, int length, ref int stringLength, out int escapedCharsSize, byte resize)
         {
             escapedCharsSize = 0;
             while (stringLength < length)
@@ -852,7 +853,7 @@ namespace SpanJson
                 if (b == JsonUtf8Constant.ReverseSolidus)
                 {
                     escapedCharsSize++;
-                    b =  ref Unsafe.Add(ref bStart, ++stringLength);
+                    b = ref Unsafe.Add(ref bStart, ++stringLength);
                     if (b == (byte) 'u' || b == (byte) 'U')
                     {
                         escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
@@ -866,10 +867,21 @@ namespace SpanJson
                 }
             }
 
-            if (SlideOrResize(resize)) // looks like we can't find the end of the string, we need to slide and probably even resize
+            return _isBuffered && HandleCantFindEndOfUtf8String(ref bStart, length, ref stringLength, ref escapedCharsSize, resize);
+        }
+
+
+        /// <summary>
+        /// Don't inline, that's an edge case, we need to have a max length probably or we might crash oom
+        /// </summary>
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private bool HandleCantFindEndOfUtf8String(ref byte bStart, int length, ref int stringLength, ref int escapedCharsSize, byte resize)
+        {
+            if (resize < 20 && SlideOrResize(resize > 0)) // looks like we can't find the end of the string, we need to slide and probably even resize
             {
-                return TryFindEndOfUtf8String(ref bStart, length, ref stringLength, out escapedCharsSize, true);
+                return TryFindEndOfUtf8String(ref bStart, length, ref stringLength, out escapedCharsSize, resize++);
             }
+
             return false;
         }
 
@@ -879,7 +891,7 @@ namespace SpanJson
             ref var stringStart = ref Unsafe.Add(ref b, pos++);
             var stringLength = 0;
             // We should also get info about how many escaped chars exist from here
-            if (TryFindEndOfUtf8String(ref stringStart, _length - pos, ref stringLength, out _))
+            if (TryFindEndOfUtf8String(ref stringStart, _length - pos, ref stringLength, out _, 0))
             {
                 pos += stringLength; // skip the doublequote too
                 return true;

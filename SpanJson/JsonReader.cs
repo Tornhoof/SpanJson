@@ -325,10 +325,10 @@ namespace SpanJson
         /// <summary>
         /// we need to make sure that enough buffer is there for everything except dynamic length values
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private bool SlideIfNecessary()
         {
-            if (_isBuffered && _length - _pos < 50)
+            if ((uint) _length - 50 < _pos)
             {
                 _buffer.SlideWindow(ref _pos);
                 _length = _buffer.Length;
@@ -338,14 +338,9 @@ namespace SpanJson
             return false;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private bool SlideOrResize(bool resize)
         {
-            if (!_isBuffered)
-            {
-                return false;
-            }
-
             if (resize)
             {
                 _buffer.Resize(ref _pos);
