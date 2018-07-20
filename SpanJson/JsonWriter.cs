@@ -86,6 +86,12 @@ namespace SpanJson
             Debug.Assert(requiredAdditionalCapacity > 0);
 
             var toReturn = Data;
+            if (toReturn == null)
+            {
+                _writer.Flush(ref _pos);
+                return;
+            }
+
             if (typeof(TSymbol) == typeof(char))
             {
                 var poolArray =
@@ -104,12 +110,7 @@ namespace SpanJson
                 _bytes = converted;
                 Data = poolArray;
             }
-
-
-            if (toReturn != null)
-            {
-                ArrayPool<TSymbol>.Shared.Return(toReturn);
-            }
+            ArrayPool<TSymbol>.Shared.Return(toReturn);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
