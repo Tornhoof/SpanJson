@@ -266,15 +266,47 @@ namespace SpanJson
         /// <param name="value"></param>
         public void WriteUtf8String(string value)
         {
-            ref var pos = ref _pos;
             var sLength = Encoding.UTF8.GetMaxByteCount(value.Length) + 7; // assume that a fully escaped char fits too + 2 double quotes
-            if (pos > _bytes.Length - sLength)
+            if (_pos > _bytes.Length - sLength)
             {
                 Grow(sLength);
+                if (Data == null && sLength > _bytes.Length) // buffer mode
+                {
+                    WriteUtf8StringBuffered(value);
+                    return;
+                }
             }
 
             WriteUtf8DoubleQuote();
-            var span = value.AsSpan();
+            WriteUtf8StringInternal(value);
+            WriteUtf8DoubleQuote();
+        }
+
+        private void WriteUtf8StringBuffered(in ReadOnlySpan<char> value)
+        {
+            ref var pos = ref _pos;
+            var input = value;
+            var length = _bytes.Length >> 1;
+            WriteUtf8DoubleQuote();
+            while (true)
+            {
+                var sliceSize = Math.Min(input.Length, length - 1);
+                WriteUtf8StringInternal(input.Slice(0, sliceSize));
+                _writer.Flush(ref pos);
+                input = input.Slice(sliceSize);
+                if (input.Length == 0)
+                {
+                    break;
+                }
+            }
+
+            WriteUtf8DoubleQuote();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void WriteUtf8StringInternal(in ReadOnlySpan<char> span)
+        {
+            ref int pos = ref _pos;
             var index = 0;
             var from = 0;
             while (index < span.Length)
@@ -305,8 +337,6 @@ namespace SpanJson
             {
                 pos += Encoding.UTF8.GetBytes(span.Slice(from), _bytes.Slice(pos));
             }
-
-            WriteUtf8DoubleQuote();
         }
 
         private void WriteEscapedUtf8CharInternal(char value)
@@ -459,10 +489,38 @@ namespace SpanJson
             if (pos > _bytes.Length - sLength)
             {
                 Grow(sLength);
+                if (Data == null && sLength > _bytes.Length) // buffer mode
+                {
+                    WriteUtf8VerbatimBuffered(value);
+                    return;
+                }
             }
 
             value.CopyTo(_bytes.Slice(pos));
             pos += value.Length;
+        }
+
+
+        /// <summary>
+        /// The value is too long, we need to write it in blocks
+        /// </summary>
+        private void WriteUtf8VerbatimBuffered(in ReadOnlySpan<byte> value)
+        {
+            var input = value;
+            var length = _chars.Length;
+            while (true)
+            {
+                var sliceSize = Math.Min(input.Length, length - 1);
+                var sliced = MemoryMarshal.Cast<byte, TSymbol>(input.Slice(0, sliceSize));
+                _writer.Write(sliced);
+                input = input.Slice(sliceSize);
+                if (input.Length == 0)
+                {
+                    break;
+                }
+            }
+
+            _pos = 0;
         }
 
         /// <summary>
@@ -476,10 +534,39 @@ namespace SpanJson
             if (pos > _bytes.Length - sLength)
             {
                 Grow(sLength);
+                if (Data == null && sLength > _bytes.Length) // buffer mode
+                {
+                    WriteUtf8NameBuffered(value);
+                    return;
+                }
             }
 
             WriteUtf8DoubleQuote();
             pos += Encoding.UTF8.GetBytes(value, _bytes.Slice(pos));
+            WriteUtf8DoubleQuote();
+            _bytes[pos++] = JsonUtf8Constant.NameSeparator;
+        }
+
+        /// <summary>
+        /// The value is too long, we need to write it in blocks
+        /// </summary>
+        private void WriteUtf8NameBuffered(in ReadOnlySpan<char> value)
+        {
+            ref var pos = ref _pos;
+            WriteUtf8DoubleQuote();
+            var input = value;
+            var length = _bytes.Length >> 1;
+            while (true)
+            {
+                var sliceSize = Math.Min(input.Length, length - 1);
+                pos += Encoding.UTF8.GetBytes(input.Slice(0, sliceSize), _bytes.Slice(pos));
+                _writer.Flush(ref pos);
+                input = input.Slice(sliceSize);
+                if (input.Length == 0)
+                {
+                    break;
+                }
+            }
             WriteUtf8DoubleQuote();
             _bytes[pos++] = JsonUtf8Constant.NameSeparator;
         }

@@ -35,20 +35,23 @@ namespace SpanJson.Tests
             }
         }
 
-        [Fact]
-        public async Task SerializeDeserializeGenericUtf16()
+        [Theory]
+        [InlineData(1000)]
+        [InlineData(10000)]
+        [InlineData(100000)]
+        public async Task SerializeDeserializeGenericUtf16(int count)
         {
             var sb = new StringBuilder();
-            var input = new AsyncTestObject {Text = "Hello World"};
+            var input = Enumerable.Repeat(new AsyncTestObject {Text = "Hello World"}, count).ToList();
             using (var tw = new StringWriter(sb))
             {
                 await JsonSerializer.Generic.Utf16.SerializeAsync(input, tw);
             }
 
-            AsyncTestObject deserialized = null;
+            List<AsyncTestObject> deserialized;
             using (var tr = new StringReader(sb.ToString()))
             {
-                deserialized = await JsonSerializer.Generic.Utf16.DeserializeAsync<AsyncTestObject>(tr);
+                deserialized = await JsonSerializer.Generic.Utf16.DeserializeAsync<List<AsyncTestObject>>(tr);
             }
 
             Assert.Equal(input, deserialized);
@@ -90,10 +93,13 @@ namespace SpanJson.Tests
             }
         }
 
-        [Fact]
-        public async Task SerializeDeserializeNonGenericUtf8MemoryStream()
+        [Theory]
+        [InlineData(1000)]
+        [InlineData(10000)]
+        [InlineData(100000)]
+        public async Task SerializeDeserializeNonGenericUtf8MemoryStream(int count)
         {
-            var input = Enumerable.Repeat(new AsyncTestObject {Text = "Hello World"}, 10000).ToList();
+            var input = Enumerable.Repeat(new AsyncTestObject {Text = "Hello World"}, count).ToList();
 
             using (var ms = new MemoryStream())
             {
@@ -106,10 +112,13 @@ namespace SpanJson.Tests
             }
         }
 
-        [Fact]
-        public async Task SerializeDeserializeGenericUtf8WrappedMemoryStreamSeekable()
+        [Theory]
+        [InlineData(1000)]
+        [InlineData(10000)]
+        [InlineData(100000)]
+        public async Task SerializeDeserializeGenericUtf8WrappedMemoryStreamSeekable(int count)
         {
-            var input = Enumerable.Repeat(new AsyncTestObject {Text = "Hello World"}, 10000).ToList();
+            var input = Enumerable.Repeat(new AsyncTestObject {Text = "Hello World"}, count).ToList();
 
             using (var ms = new WrappedMemoryStream(true))
             {
@@ -122,10 +131,13 @@ namespace SpanJson.Tests
             }
         }
 
-        [Fact]
-        public async Task SerializeDeserializeGenericUtf8WrappedMemoryStreamNonSeekable()
+        [Theory]
+        [InlineData(1000)]
+        [InlineData(10000)]
+        [InlineData(100000)]
+        public async Task SerializeDeserializeGenericUtf8WrappedMemoryStreamNonSeekable(int count)
         {
-            var input = Enumerable.Repeat(new AsyncTestObject {Text = "Hello World"}, 10000).ToList();
+            var input = Enumerable.Repeat(new AsyncTestObject {Text = "Hello World"}, count).ToList();
 
             using (var ms = new WrappedMemoryStream(false))
             {

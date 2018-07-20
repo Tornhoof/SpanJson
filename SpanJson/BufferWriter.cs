@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace SpanJson
@@ -48,6 +50,25 @@ namespace SpanJson
                 var charBuffer = Unsafe.As<TSymbol[], char[]>(ref temp);
                 _writer.Write(charBuffer, 0, pos);
                 pos = 0;
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Write(in ReadOnlySpan<TSymbol> values)
+        {
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                var byteBuffer = MemoryMarshal.Cast<TSymbol, byte>(values);
+                _stream.Write(byteBuffer);
+            }
+            else if (typeof(TSymbol) == typeof(char))
+            {
+                var charBuffer = MemoryMarshal.Cast<TSymbol, char>(values);
+                _writer.Write(charBuffer);
             }
             else
             {

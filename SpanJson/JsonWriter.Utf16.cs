@@ -2,6 +2,7 @@
 using System.Buffers.Text;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using SpanJson.Helpers;
 
 namespace SpanJson
@@ -379,15 +380,25 @@ namespace SpanJson
 
         public void WriteUtf16String(string value)
         {
-            ref var pos = ref _pos;
             var sLength = value.Length + 7; // assume that a fully escaped char fits too
-            if (pos > _chars.Length - sLength)
+            if (_pos > _chars.Length - sLength)
             {
                 Grow(sLength);
+                if (Data == null && sLength > _chars.Length) // buffer mode
+                {
+                    WriteUtf16StringBuffered(value);
+                    return;
+                }
             }
 
             WriteUtf16DoubleQuote();
-            var span = value.AsSpan();
+            WriteUtf16StringInternal(value);
+            WriteUtf16DoubleQuote();
+        }
+
+        private void WriteUtf16StringInternal(in ReadOnlySpan<char> span)
+        {
+            ref var pos = ref _pos;
             for (var i = 0; i < span.Length; i++)
             {
                 ref readonly var c = ref span[i];
@@ -403,6 +414,25 @@ namespace SpanJson
                 else
                 {
                     _chars[pos++] = c;
+                }
+            }
+        }
+
+        private void WriteUtf16StringBuffered(in ReadOnlySpan<char> value)
+        {
+            ref var pos = ref _pos;
+            var input = value;
+            var length = _chars.Length;
+            WriteUtf16DoubleQuote();
+            while (true)
+            {
+                var sliceSize = Math.Min(input.Length, length - 1);
+                WriteUtf16StringInternal(input.Slice(0, sliceSize));
+                _writer.Flush(ref pos);
+                input = input.Slice(sliceSize);
+                if (input.Length == 0)
+                {
+                    break;
                 }
             }
 
@@ -421,10 +451,37 @@ namespace SpanJson
             if (pos > _chars.Length - sLength)
             {
                 Grow(sLength);
+                if (Data == null && sLength > _chars.Length) // buffer mode
+                {
+                    WriteUtf16VerbatimBuffered(value);
+                    return;
+                }
             }
 
             value.CopyTo(_chars.Slice(pos));
             pos += value.Length;
+        }
+
+        /// <summary>
+        /// The value is too long, we need to write it in blocks
+        /// </summary>
+        private void WriteUtf16VerbatimBuffered(in ReadOnlySpan<char> value)
+        {
+            var input = value;
+            var length = _chars.Length;
+            while (true)
+            {
+                var sliceSize = Math.Min(input.Length, length - 1);
+                var sliced = MemoryMarshal.Cast<char, TSymbol>(input.Slice(0, sliceSize));
+                _writer.Write(sliced);
+                input = input.Slice(sliceSize);
+                if (input.Length == 0)
+                {
+                    break;
+                }
+            }
+
+            _pos = 0;
         }
 
         /// <summary>
@@ -438,6 +495,11 @@ namespace SpanJson
             if (pos > _chars.Length - sLength)
             {
                 Grow(sLength);
+                if (Data == null && sLength > _chars.Length) // buffer mode
+                {
+                    WriteUtf16NameBuffered(value);
+                    return;
+                }
             }
 
             WriteUtf16DoubleQuote();
@@ -445,6 +507,30 @@ namespace SpanJson
             pos += value.Length;
             WriteUtf16DoubleQuote();
             _chars[pos++] = JsonUtf16Constant.NameSeparator;
+        }
+
+        /// <summary>
+        /// The value is too long, we need to write it in blocks
+        /// </summary>
+        private void WriteUtf16NameBuffered(in ReadOnlySpan<char> value)
+        {
+            WriteUtf16DoubleQuote();
+            var input = value;
+            var length = _chars.Length;
+            while (true)
+            {
+                var sliceSize = Math.Min(input.Length, length - 1);
+                var sliced = MemoryMarshal.Cast<char, TSymbol>(input.Slice(0, sliceSize));
+                _writer.Write(sliced);
+                input = input.Slice(sliceSize);
+                if (input.Length == 0)
+                {
+                    break;
+                }
+            }
+            _pos = 0;
+            WriteUtf16DoubleQuote();
+            _chars[_pos++] = JsonUtf16Constant.NameSeparator;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

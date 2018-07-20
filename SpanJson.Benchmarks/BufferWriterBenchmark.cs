@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Jobs;
 using SpanJson.Formatters;
@@ -21,7 +22,8 @@ namespace SpanJson.Benchmarks
 
         private static readonly ExpressionTreeFixture Fixture = new ExpressionTreeFixture();
 
-        [Params(100, 1000, 10000)] public int Count;
+        [Params(100, 1000, 10000)]
+        public int Count;
 
         private List<string> _stringList;
         private List<Answer> _answerList;
@@ -71,6 +73,18 @@ namespace SpanJson.Benchmarks
             var pos = writer.Position;
             buffer.Flush(ref pos);
             buffer.Dispose();
+        }
+
+        [Benchmark]
+        public async ValueTask AnswerUtf8Async()
+        {
+            await JsonSerializer.Generic.Utf8.SerializeAsync(_answerList, Stream.Null);
+        }
+
+        [Benchmark]
+        public async ValueTask AnswerUtf16Async()
+        {
+            await JsonSerializer.Generic.Utf16.SerializeAsync(_answerList, TextWriter.Null);
         }
     }
 }
