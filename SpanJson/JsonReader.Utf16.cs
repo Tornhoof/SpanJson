@@ -211,7 +211,7 @@ namespace SpanJson
                 return span[pos++];
             }
 
-            if (span[pos] == JsonUtf8Constant.ReverseSolidus)
+            if (span[pos] == JsonUtf16Constant.ReverseSolidus)
             {
                 pos++;
                 return UnescapeUtf16CharInternal(span, ref pos);
@@ -856,9 +856,8 @@ namespace SpanJson
                         stringLength += 4;
                     }
                 }
-                else if (c == JsonUtf8Constant.String)
+                else if (c == JsonUtf16Constant.String)
                 {
-                    cStart = c;
                     return true;
                 }
             }
