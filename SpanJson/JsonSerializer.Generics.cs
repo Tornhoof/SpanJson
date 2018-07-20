@@ -76,38 +76,68 @@ namespace SpanJson
 
                 public static ValueTask InnerSerializeAsync(T input, TextWriter writer, CancellationToken cancellationToken = default)
                 {
-                    var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
-                    Formatter.Serialize(ref jsonWriter, input, 0);
-                    _lastSerializationSizeEstimate = jsonWriter.Data.Length;
-                    var temp = jsonWriter.Data;
-                    var data = Unsafe.As<TSymbol[], char[]>(ref temp);
-                    var result = writer.WriteAsync(data, 0, jsonWriter.Position);
-                    if (result.IsCompletedSuccessfully)
+                    if (_lastSerializationSizeEstimate < _bufferWriterSizeLimit)
                     {
-                        // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
-                        ArrayPool<char>.Shared.Return(data);
+                        var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
+                        Formatter.Serialize(ref jsonWriter, input, 0);
+                        _lastSerializationSizeEstimate = jsonWriter.Data.Length;
+                        var temp = jsonWriter.Data;
+                        var data = Unsafe.As<TSymbol[], char[]>(ref temp);
+                        var result = writer.WriteAsync(data, 0, jsonWriter.Position);
+                        if (result.IsCompletedSuccessfully)
+                        {
+                            // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
+                            ArrayPool<char>.Shared.Return(data);
+                            return new ValueTask();
+                        }
+
+                        return AwaitSerializeAsync(result, data);
+                    }
+                    else
+                    {
+                        using (var bufferWriter = new BufferWriter<TSymbol>(writer))
+                        {
+                            var jsonWriter = new JsonWriter<TSymbol>(bufferWriter);
+                            Formatter.Serialize(ref jsonWriter, input, 0);
+                            var pos = jsonWriter.Position;
+                            bufferWriter.Flush(ref pos);
+                        }
+
                         return new ValueTask();
                     }
-
-                    return AwaitSerializeAsync(result, data);
                 }
 
                 public static ValueTask InnerSerializeAsync(T input, Stream stream, CancellationToken cancellationToken = default)
                 {
-                    var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
-                    Formatter.Serialize(ref jsonWriter, input, 0);
-                    _lastSerializationSizeEstimate = jsonWriter.Data.Length;
-                    var temp = jsonWriter.Data;
-                    var data = Unsafe.As<TSymbol[], byte[]>(ref temp);
-                    var result = stream.WriteAsync(data, 0, jsonWriter.Position, cancellationToken);
-                    if (result.IsCompletedSuccessfully)
+                    if (_lastSerializationSizeEstimate < _bufferWriterSizeLimit)
                     {
-                        // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
-                        ArrayPool<byte>.Shared.Return(data);
+                        var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
+                        Formatter.Serialize(ref jsonWriter, input, 0);
+                        _lastSerializationSizeEstimate = jsonWriter.Data.Length;
+                        var temp = jsonWriter.Data;
+                        var data = Unsafe.As<TSymbol[], byte[]>(ref temp);
+                        var result = stream.WriteAsync(data, 0, jsonWriter.Position, cancellationToken);
+                        if (result.IsCompletedSuccessfully)
+                        {
+                            // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
+                            ArrayPool<byte>.Shared.Return(data);
+                            return new ValueTask();
+                        }
+
+                        return AwaitSerializeAsync(result, data);
+                    }
+                    else
+                    {
+                        using (var bufferWriter = new BufferWriter<TSymbol>(stream))
+                        {
+                            var jsonWriter = new JsonWriter<TSymbol>(bufferWriter);
+                            Formatter.Serialize(ref jsonWriter, input, 0);
+                            var pos = jsonWriter.Position;
+                            bufferWriter.Flush(ref pos);
+                        }
+
                         return new ValueTask();
                     }
-
-                    return AwaitSerializeAsync(result, data);
                 }
 
                 public static T InnerDeserialize(in ReadOnlySpan<TSymbol> input)
@@ -223,6 +253,8 @@ namespace SpanJson
 
                 private static int _lastDeserializationSizeEstimate = 256; // initial size, get's updated with each deserialization
                 // ReSharper restore StaticMemberInGenericType
+
+                private static int _bufferWriterSizeLimit = 1 << 16 / (typeof(TSymbol) == typeof(char) ? sizeof(char) : sizeof(byte));
             }
 
             /// <summary>

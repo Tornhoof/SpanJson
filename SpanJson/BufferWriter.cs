@@ -7,7 +7,7 @@ using System.Text;
 
 namespace SpanJson
 {
-    public struct BufferWriter<TSymbol> where TSymbol : struct
+    public struct BufferWriter<TSymbol> : IDisposable where TSymbol : struct
     {
         private readonly Stream _stream;
         private readonly TextWriter _writer;
