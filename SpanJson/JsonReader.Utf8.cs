@@ -854,7 +854,6 @@ namespace SpanJson
                 }
                 else if (b == JsonUtf8Constant.String)
                 {
-                    bStart = b;
                     return true;
                 }
             }
