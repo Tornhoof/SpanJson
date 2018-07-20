@@ -896,6 +896,12 @@ namespace SpanJson
                 pos += stringLength; // skip the doublequote too
                 return true;
             }
+
+            if (_isBuffered)
+            {
+                SlideAndResize();
+                return SkipUtf8String(ref pos);
+            }
             return false;
         }
 
