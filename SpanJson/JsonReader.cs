@@ -6,9 +6,9 @@ namespace SpanJson
 {
     public ref partial struct JsonReader<TSymbol> where TSymbol : struct
     {
-        private readonly ReadOnlySpan<char> _chars;
-        private readonly ReadOnlySpan<byte> _bytes;
-        private readonly int _length;
+        private ReadOnlySpan<char> _chars;
+        private ReadOnlySpan<byte> _bytes;
+        private int _length;
 
         private int _pos;
 
