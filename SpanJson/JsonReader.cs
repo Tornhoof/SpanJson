@@ -341,6 +341,11 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool SlideOrResize(bool resize)
         {
+            if (!_isBuffered)
+            {
+                return false;
+            }
+
             if (resize)
             {
                 _buffer.Resize(ref _pos);

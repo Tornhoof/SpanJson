@@ -559,12 +559,11 @@ namespace SpanJson
                     }
                     default:
                     {
-                        SlideIfNecessary();
-                        break;
+                        goto end;
                     }
                 }
             }
-
+            end:
             if (SlideIfNecessary())
             {
                 SkipWhitespaceUtf8();
