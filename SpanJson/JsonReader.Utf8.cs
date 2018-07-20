@@ -558,8 +558,16 @@ namespace SpanJson
                         continue;
                     }
                     default:
-                        return;
+                    {
+                        SlideIfNecessary();
+                        break;
+                    }
                 }
+            }
+
+            if (SlideIfNecessary())
+            {
+                SkipWhitespaceUtf8();
             }
         }
 
@@ -836,7 +844,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool TryFindEndOfUtf8String(ref byte bStart, int length, ref int stringLength, out int escapedCharsSize)
+        private bool TryFindEndOfUtf8String(ref byte bStart, int length, ref int stringLength, out int escapedCharsSize, bool resize = false)
         {
             escapedCharsSize = 0;
             while (stringLength < length)
@@ -859,6 +867,10 @@ namespace SpanJson
                 }
             }
 
+            if (SlideOrResize(resize)) // looks like we can't find the end of the string, we need to slide and probably even resize
+            {
+                return TryFindEndOfUtf8String(ref bStart, length, ref stringLength, out escapedCharsSize, true);
+            }
             return false;
         }
 

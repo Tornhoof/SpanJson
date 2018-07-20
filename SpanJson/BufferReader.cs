@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using SpanJson.Helpers;
 
 namespace SpanJson
 {
@@ -13,14 +14,13 @@ namespace SpanJson
         private readonly Stream _stream;
         private readonly TextReader _reader;
         private TSymbol[] _buffer;
-        private int _length;
 
         public BufferReader(Stream stream)
         {
             _stream = stream;
             _buffer = ArrayPool<TSymbol>.Shared.Rent(8192);
             _reader = default;
-            _length = 0;
+            Length = 0;
         }
 
         public BufferReader(TextReader reader)
@@ -28,9 +28,11 @@ namespace SpanJson
             _stream = default;
             _reader = reader;
             _buffer = ArrayPool<TSymbol>.Shared.Rent(8192);
-            _length = 0;
+            Length = 0;
         }
-        
+
+        public int Length { get; private set; }
+
         public ReadOnlySpan<TSymbol> GetSpan()
         {
             return _buffer;
@@ -42,12 +44,12 @@ namespace SpanJson
             if (typeof(TSymbol) == typeof(byte))
             {
                 var byteBuffer = MemoryMarshal.Cast<TSymbol, byte>(_buffer);
-                _length = _stream.Read(byteBuffer);
+                Length = _stream.Read(byteBuffer);
             }
             else if (typeof(TSymbol) == typeof(char))
             {
                 var charBuffer = MemoryMarshal.Cast<TSymbol, char>(_buffer);
-                _length = _reader.Read(charBuffer);
+                Length = _reader.Read(charBuffer);
             }
             else
             {
@@ -59,24 +61,31 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SlideWindow(ref int pos)
         {
-            int remaining = _length - pos;
+            int remaining = Length - pos;
             Array.Copy(_buffer, pos, _buffer, 0, remaining);
             pos = remaining;
-            _length = pos;
+            Length = pos;
             if (typeof(TSymbol) == typeof(byte))
             {                
                 var byteBuffer = MemoryMarshal.Cast<TSymbol, byte>(_buffer);
-                _length += _stream.Read(byteBuffer.Slice(pos));
+                Length += _stream.Read(byteBuffer.Slice(pos));
             }
             else if (typeof(TSymbol) == typeof(char))
             {
                 var charBuffer = MemoryMarshal.Cast<TSymbol, char>(_buffer);
-                _length += _reader.Read(charBuffer);
+                Length += _reader.Read(charBuffer);
             }
             else
             {
                 ThrowNotSupportedException();
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Resize(ref int pos)
+        {
+            FormatterUtils.GrowArray(ref _buffer);
+            SlideWindow(ref pos);
         }
 
         private static void ThrowNotSupportedException()

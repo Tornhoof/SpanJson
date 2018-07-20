@@ -6,10 +6,11 @@ namespace SpanJson
 {
     public ref partial struct JsonReader<TSymbol> where TSymbol : struct
     {
+        private BufferReader<TSymbol> _buffer;
         private ReadOnlySpan<char> _chars;
         private ReadOnlySpan<byte> _bytes;
         private int _length;
-
+        private bool _isBuffered;
         private int _pos;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -17,7 +18,8 @@ namespace SpanJson
         {
             _length = input.Length;
             _pos = 0;
-
+            _buffer = default;
+            _isBuffered = false;
             if (typeof(TSymbol) == typeof(char))
             {
                 _chars = MemoryMarshal.Cast<TSymbol, char>(input);
@@ -26,6 +28,31 @@ namespace SpanJson
             else if (typeof(TSymbol) == typeof(byte))
             {
                 _bytes = MemoryMarshal.Cast<TSymbol, byte>(input);
+                _chars = null;
+            }
+            else
+            {
+                ThrowNotSupportedException();
+                _chars = default;
+                _bytes = default;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public JsonReader(BufferReader<TSymbol> buffer, int length)
+        {
+            _buffer = buffer;
+            _length = _buffer.Length;
+            _pos = 0;
+            _isBuffered = true;
+            if (typeof(TSymbol) == typeof(char))
+            {
+                _chars = MemoryMarshal.Cast<TSymbol, char>(_buffer.GetSpan());
+                _bytes = null;
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                _bytes = MemoryMarshal.Cast<TSymbol, byte>(buffer.GetSpan());
                 _chars = null;
             }
             else
@@ -293,6 +320,38 @@ namespace SpanJson
 
             ThrowNotSupportedException();
             return default;
+        }
+
+        /// <summary>
+        /// we need to make sure that enough buffer is there for everything except dynamic length values
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool SlideIfNecessary()
+        {
+            if (_isBuffered && _length - _pos < 50)
+            {
+                _buffer.SlideWindow(ref _pos);
+                _length = _buffer.Length;
+                return true;
+            }
+
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool SlideOrResize(bool resize)
+        {
+            if (resize)
+            {
+                _buffer.Resize(ref _pos);
+            }
+            else
+            {
+                _buffer.SlideWindow(ref _pos);
+            }
+
+            _length = _buffer.Length;
+            return true;
         }
     }
 }
