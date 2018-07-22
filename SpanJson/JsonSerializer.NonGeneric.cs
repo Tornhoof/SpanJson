@@ -589,10 +589,21 @@ namespace SpanJson
                 ///     This is necessary to convert ValueTask of T to ValueTask of object
                 /// </summary>
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                internal static async ValueTask<object> GenericStreamObjectWrapper<T, TResolver>(Stream stream, CancellationToken cancellationToken = default)
+                internal static ValueTask<object> GenericStreamObjectWrapper<T, TResolver>(Stream stream, CancellationToken cancellationToken = default)
                     where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
                 {
-                    return await Generic.Utf8.DeserializeAsync<T, TResolver>(stream, cancellationToken).ConfigureAwait(false);
+                    var task = Generic.Utf8.DeserializeAsync<T, TResolver>(stream, cancellationToken);
+                    if (task.IsCompletedSuccessfully)
+                    {
+                        return new ValueTask<object>(task.Result);
+                    }
+
+                    return AwaitGenericStreamObjectWrapper(task);
+                }
+
+                private static async ValueTask<object> AwaitGenericStreamObjectWrapper<T>(ValueTask<T> valueTask)
+                {
+                    return await valueTask.ConfigureAwait(false);
                 }
             }
         }

@@ -5,10 +5,12 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
+using SpanJson.Formatters;
 
 namespace SpanJson.Benchmarks
 {
     [Config(typeof(MyConfig))]
+    [DisassemblyDiagnoser()]
     public class HelloWorldMessageBenchmark
     {
         public struct JsonMessage
@@ -16,77 +18,48 @@ namespace SpanJson.Benchmarks
             public string message { get; set; }
         }
 
-        private static readonly JsonMessage Message = new JsonMessage {message = "Hello, World!"};
+        private const string Message = "Hello, World!";
 
 
-        //[Benchmark]
-        //public string SerializeUtf16()
-        //{
-        //    return JsonSerializer.Generic.Utf16.Serialize(Message);
-        //}
 
-        //[Benchmark]
-        //public byte[] SerializeUtf8()
-        //{
-        //    return JsonSerializer.Generic.Utf8.Serialize(Message);
-        //}
+        [Benchmark]
+        public byte[] SerializeUtf8()
+        {
+            return JsonSerializer.Generic.Utf8.Serialize(Message);
+        }
 
-        //[Benchmark]
-        //public void SerializeUtf16Unsafe()
-        //{
-        //    var buffer = JsonSerializer.Generic.Utf16.SerializeToArrayPool(Message);
-        //    ArrayPool<char>.Shared.Return(buffer.Array);
-        //}
+        [Benchmark]
+        public void SerializeUtf8Unsafe()
+        {
+            var buffer = JsonSerializer.Generic.Utf8.SerializeToArrayPool(Message);
+            ArrayPool<byte>.Shared.Return(buffer.Array);
+        }
 
-        //[Benchmark]
-        //public void SerializeUtf8Unsafe()
-        //{
-        //    var buffer = JsonSerializer.Generic.Utf8.SerializeToArrayPool(Message);
-        //    ArrayPool<byte>.Shared.Return(buffer.Array);
-        //}
 
-        //[Benchmark]
-        //public ValueTask SerializeUtf16Async()
-        //{
-        //    using (var tw = new StreamWriter(Stream.Null))
-        //    {
-        //        return JsonSerializer.Generic.Utf16.SerializeAsync(Message, tw);
-        //    }
-        //}
+        [Benchmark]
+        public Task SerializeUtf8Async()
+        {
+            return JsonSerializer.Generic.Utf8.SerializeAsync(Message, Stream.Null).AsTask();
+        }
 
-        //[Benchmark]
-        //public Task SerializeUtf8Async()
-        //{
-        //    return JsonSerializer.Generic.Utf8.SerializeAsync(Message, Stream.Null).AsTask();
-        //}
+        [Benchmark]
+        public Task SerializeUtf8JsonAsync()
+        {
+            return Utf8Json.JsonSerializer.SerializeAsync(Stream.Null, Message);
+        }
 
-        //[Benchmark]
-        //public Task SerializeUtf8JsonAsync()
-        //{
-        //    return Utf8Json.JsonSerializer.SerializeAsync(Stream.Null, Message);
-        //}
+        [Benchmark]
+        public void SerializeUtf8JsonUnsafe()
+        {
+            Utf8Json.JsonSerializer.SerializeUnsafe(Message);
+        }
 
-        //[Benchmark]
-        //public void SerializeUtf8JsonUnsafe()
-        //{
-        //    Utf8Json.JsonSerializer.SerializeUnsafe(Message);
-        //}
+        [Benchmark]
+        public void SerializeUtf8Json()
+        {
+            Utf8Json.JsonSerializer.Serialize(Message);
+        }
 
-        //[Benchmark]
-        //public void SerializeUtf8Json()
-        //{
-        //    Utf8Json.JsonSerializer.Serialize(Message);
-        //}
-
-        //[Benchmark]
-        //public void WriteMessageDirectlyUtf16()
-        //{
-        //    var jsonWriter = new JsonWriter<char>(64);
-        //    jsonWriter.WriteUtf16BeginObject();
-        //    jsonWriter.WriteUtf16Verbatim("\"message\":");
-        //    jsonWriter.WriteUtf16String("Hello, World!");
-        //    jsonWriter.WriteUtf16EndObject();            
-        //}
 
         private static readonly byte[] NameByteArray = Encoding.UTF8.GetBytes("\"message\":");
 
@@ -95,8 +68,8 @@ namespace SpanJson.Benchmarks
         {
             var jsonWriter = new JsonWriter<byte>(64);
             jsonWriter.WriteUtf8BeginObject();
-            jsonWriter.WriteUtf8Verbatim(NameByteArray);
-            jsonWriter.WriteUtf8String("Hello, World!");
+            jsonWriter.WriteUtf8Verbatim(7306916068917079330UL, 14882);
+            jsonWriter.WriteUtf8String(Message);
             jsonWriter.WriteUtf8EndObject();
         }
 

@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
 namespace SpanJson
@@ -33,6 +34,7 @@ namespace SpanJson
             {
                 private static readonly IJsonFormatter<T, TSymbol> Formatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
 
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static string InnerSerializeToString(T input)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
@@ -42,6 +44,7 @@ namespace SpanJson
                     return result;
                 }
 
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static ArraySegment<char> InnerSerializeToCharArrayPool(T input)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
@@ -53,6 +56,7 @@ namespace SpanJson
                     return result;
                 }
 
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static byte[] InnerSerializeToByteArray(T input)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
@@ -62,7 +66,7 @@ namespace SpanJson
                     return result;
                 }
 
-
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static ArraySegment<byte> InnerSerializeToByteArrayPool(T input)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
@@ -74,6 +78,7 @@ namespace SpanJson
                     return result;
                 }
 
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static ValueTask InnerSerializeAsync(T input, TextWriter writer, CancellationToken cancellationToken = default)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
@@ -92,6 +97,7 @@ namespace SpanJson
                     return AwaitSerializeAsync(result, data);
                 }
 
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static ValueTask InnerSerializeAsync(T input, Stream stream, CancellationToken cancellationToken = default)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
@@ -110,6 +116,7 @@ namespace SpanJson
                     return AwaitSerializeAsync(result, data);
                 }
 
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static T InnerDeserialize(in ReadOnlySpan<TSymbol> input)
                 {
                     _lastDeserializationSizeEstimate = input.Length;
@@ -117,6 +124,7 @@ namespace SpanJson
                     return Formatter.Deserialize(ref jsonReader);
                 }
 
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static ValueTask<T> InnerDeserializeAsync(TextReader reader, CancellationToken cancellationToken = default)
                 {
                     var input = reader.ReadToEndAsync();
@@ -128,6 +136,7 @@ namespace SpanJson
                     return AwaitDeserializeAsync(input);
                 }
 
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static ValueTask<T> InnerDeserializeAsync(Stream stream, CancellationToken cancellationToken = default)
                 {
                     if (stream is MemoryStream ms && ms.TryGetBuffer(out var buffer))
@@ -175,21 +184,13 @@ namespace SpanJson
                     {
                         if (totalSize + read == buffer.Length)
                         {
-                            Grow(ref buffer);
+                            FormatterUtils.GrowArray(ref buffer);
                         }
 
                         totalSize += read;
                     }
 
                     return new Memory<byte>(buffer, 0, totalSize);
-                }
-
-                private static void Grow(ref byte[] array)
-                {
-                    var backup = array;
-                    array = ArrayPool<byte>.Shared.Rent(backup.Length * 2);
-                    backup.CopyTo(array, 0);
-                    ArrayPool<byte>.Shared.Return(backup);
                 }
 
                 // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
