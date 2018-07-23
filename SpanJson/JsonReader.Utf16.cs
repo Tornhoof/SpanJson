@@ -242,7 +242,6 @@ namespace SpanJson
                     return '\r';
                 case 't':
                     return '\t';
-                case 'U':
                 case 'u':
                 {
                     if (int.TryParse(span.Slice(pos, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var value))
@@ -411,7 +410,6 @@ namespace SpanJson
                         case 't':
                             unescaped = '\t';
                             break;
-                        case 'U':
                         case 'u':
                         {
                             if (int.TryParse(span.Slice(index, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var value))
@@ -850,7 +848,7 @@ namespace SpanJson
                 {
                     escapedCharsSize++;
                     c =  ref Unsafe.Add(ref cStart, ++stringLength);
-                    if (c == 'u' || c == 'U')
+                    if (c == 'u')
                     {
                         escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
                         stringLength += 4;
@@ -927,7 +925,13 @@ namespace SpanJson
                     var dictionary = new Dictionary<string, object>();
                     while (!TryReadUtf16IsEndObjectOrValueSeparator(ref count))
                     {
-                        var name = ReadUtf16NameSpan().ToString();
+                        var nameSpan = ReadUtf16NameSpan();
+                        if (nameSpan.SequenceEqual(JsonUtf16Constant.NullTerminator))
+                        {
+                            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
+                        }
+
+                        var name = nameSpan.ToString();
                         var value = ReadUtf16Dynamic(stack + 1);
                         dictionary[name] = value; // take last one
                     }
