@@ -32,7 +32,7 @@ namespace SpanJson.Tests.JsonTestSuite
         }
 
         /// <summary>
-        /// Mostly trailing invalid/unused values, invalid numbers and rare unescaping cases
+        /// Mostly trailing invalid/unused values, invalid numbers and rare unescape cases (for performance reasons)
         /// </summary>
         private static readonly string[] IgnoredErrors =
         {
