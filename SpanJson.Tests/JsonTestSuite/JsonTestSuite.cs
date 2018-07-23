@@ -31,6 +31,9 @@ namespace SpanJson.Tests.JsonTestSuite
             Structure
         }
 
+        /// <summary>
+        /// Mostly trailing invalid/unused values, invalid numbers and rare unescaping cases
+        /// </summary>
         private static readonly string[] IgnoredErrors =
         {
             "n_array_comma_after_close.json",
@@ -58,7 +61,6 @@ namespace SpanJson.Tests.JsonTestSuite
             "n_string_unescaped_crtl_char.json",
             "n_string_unescaped_newline.json",
             "n_string_unescaped_tab.json",
-            "n_string_unicode_CapitalU.json",
             "n_string_with_trailing_garbage.json",
             "n_structure_array_trailing_garbage.json",
             "n_structure_array_with_extra_array_close.json",

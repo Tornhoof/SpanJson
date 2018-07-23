@@ -242,7 +242,6 @@ namespace SpanJson
                     return '\r';
                 case 't':
                     return '\t';
-                case 'U':
                 case 'u':
                 {
                     if (int.TryParse(span.Slice(pos, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var value))
@@ -411,7 +410,6 @@ namespace SpanJson
                         case 't':
                             unescaped = '\t';
                             break;
-                        case 'U':
                         case 'u':
                         {
                             if (int.TryParse(span.Slice(index, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var value))
@@ -850,7 +848,7 @@ namespace SpanJson
                 {
                     escapedCharsSize++;
                     c =  ref Unsafe.Add(ref cStart, ++stringLength);
-                    if (c == 'u' || c == 'U')
+                    if (c == 'u')
                     {
                         escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
                         stringLength += 4;

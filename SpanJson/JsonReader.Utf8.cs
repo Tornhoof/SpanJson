@@ -240,7 +240,6 @@ namespace SpanJson
                         return '\r';
                     case (byte) 't':
                         return '\t';
-                    case (byte) 'U':
                     case (byte) 'u':
                         if (Utf8Parser.TryParse(span.Slice(2, 4), out int value, out _, 'X'))
                         {
@@ -396,7 +395,6 @@ namespace SpanJson
                         case (byte) 't':
                             unescaped = '\t';
                             break;
-                        case (byte) 'U':
                         case (byte) 'u':
                         {
                             if (Utf8Parser.TryParse(span.Slice(index, 4), out uint value, out var bytesConsumed, 'X'))
@@ -846,7 +844,7 @@ namespace SpanJson
                 {
                     escapedCharsSize++;
                     b =  ref Unsafe.Add(ref bStart, ++stringLength);
-                    if (b == (byte) 'u' || b == (byte) 'U')
+                    if (b == (byte) 'u')
                     {
                         escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
                         stringLength += 4;
