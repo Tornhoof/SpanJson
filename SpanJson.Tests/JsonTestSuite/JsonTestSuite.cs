@@ -50,7 +50,6 @@ namespace SpanJson.Tests.JsonTestSuite
             "n_number_real_without_fractional_part.json",
             "n_number_starting_with_dot.json",
             "n_number_with_leading_zero.json",
-            "n_object_repeated_null_null.json",
             "n_object_trailing_comment.json",
             "n_object_trailing_comment_open.json",
             "n_object_trailing_comment_slash_open.json",

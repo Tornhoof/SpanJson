@@ -918,7 +918,13 @@ namespace SpanJson
                     var dictionary = new Dictionary<string, object>();
                     while (!TryReadUtf8IsEndObjectOrValueSeparator(ref count))
                     {
-                        var name = ConvertToString(ReadUtf8NameSpan());
+                        var nameSpan = ReadUtf8NameSpan();
+                        if (nameSpan.SequenceEqual(JsonUtf8Constant.NullTerminator))
+                        {
+                            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
+                        }
+
+                        var name = ConvertToString(nameSpan);
                         var value = ReadUtf8Dynamic(stack + 1);
                         dictionary[name] = value; // take last one
                     }
