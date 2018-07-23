@@ -106,6 +106,27 @@ namespace SpanJson.Formatters
                     RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child, nextNestingLimit);
                 }
 
+                // Some dlr objects also have properties which are defined on the custom type, we also need to serialize/deserialize them
+                var definedMembers = Resolver.GetObjectDescription<T>();
+                foreach (var memberInfo in definedMembers)
+                {
+                    var getter = GetOrAddGetDefinedMember(memberInfo.MemberName);
+                    var child = getter(value);
+                    if (memberInfo.ExcludeNull && child == null)
+                    {
+                        continue;
+                    }
+
+                    if (counter++ > 0)
+                    {
+                        writer.WriteValueSeparator();
+                    }
+
+                    var nextNestingLimit = RecursionCandidate.LookupRecursionCandidate(memberInfo.MemberType) ? nestingLimit + 1 : nestingLimit;
+                    writer.WriteName(memberInfo.Name);
+                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child, nextNestingLimit);
+                }
+
                 writer.WriteEndObject();
             }
         }
@@ -127,10 +148,15 @@ namespace SpanJson.Formatters
                         .Lambda<DeserializeDelegate>(Expression.Call(readerParameter, skipNextMethodInfo), inputParameter, readerParameter).Compile();
                     result.Add(memberInfo.Name, skipExpression);
                 }
-                else if (memberInfo.MemberType.IsAbstract || memberInfo.MemberType.IsInterface)
+                // can't deserialize abstract and only support interfaces based on IEnumerable<T> (this includes, IList, IReadOnlyList, IDictionary et al.)
+                else if (memberInfo.MemberType.IsAbstract)
                 {
+                    if (memberInfo.MemberType.TryGetTypeOfGenericInterface(typeof(IEnumerable<>), out _))
+                    {
+                        continue;
+                    }
                     var throwExpression = Expression.Lambda<DeserializeDelegate>(Expression.Block(
-                            Expression.Throw(Expression.Constant(new NotSupportedException($"{typeof(T).Name} contains abstract or interface members."))),
+                            Expression.Throw(Expression.Constant(new NotSupportedException($"{typeof(T).Name} contains abstract members."))),
                             Expression.Default(typeof(T))),
                         inputParameter, readerParameter).Compile();
                     result.Add(memberInfo.Name, throwExpression);
@@ -148,6 +174,16 @@ namespace SpanJson.Formatters
             }
 
             return result;
+        }
+
+        private static Func<T, object> GetOrAddGetDefinedMember(string memberName)
+        {
+            return GetMemberCache.GetOrAdd(memberName, s =>
+            {
+                var paramExpression = Expression.Parameter(typeof(T), "input");
+                return Expression.Lambda<Func<T, object>>(Expression.Convert(Expression.PropertyOrField(paramExpression, s), typeof(object)), paramExpression)
+                    .Compile();
+            });
         }
 
 

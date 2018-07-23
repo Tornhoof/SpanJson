@@ -70,6 +70,16 @@ namespace SpanJson.Tests
             }
         }
 
+        public abstract class AbstractMember
+        {
+
+        }
+
+        public class ConcreteMember : AbstractMember
+        {
+
+        }
+
         public class DynamicObjectWithKnownMembers : DynamicObject
         {
             private readonly Dictionary<string, object> _dictionary = new Dictionary<string, object>();
@@ -99,7 +109,9 @@ namespace SpanJson.Tests
 
             public int ReadOnly { get; } = 8;
 
-            public IList<string> NotSupported { get; set; }
+            public IList<string> Supported { get; set; }
+
+            public AbstractMember NotSupported { get; set; }
         }
 
         [Fact]
@@ -130,30 +142,108 @@ namespace SpanJson.Tests
         }
 
         [Fact]
-        public void DynamicObjectWithKnownMembersUtf16()
+        public void DynamicObjectWithKnownMembersNoDynamicUtf16()
         {
+            var list = new List<string> { "Hello", "World" };
             dynamic dynamicObject = new DynamicObjectWithKnownMembers();
             dynamicObject.Value = 5;
+            dynamicObject.Supported = list;
 
             var serialized = JsonSerializer.Generic.Utf16.Serialize(dynamicObject);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<DynamicObjectWithKnownMembers>(serialized);
             Assert.NotNull(deserialized);
             Assert.Equal(5, (int) dynamicObject.Value);
+            var supported = (List<string>) dynamicObject.Supported;
+            Assert.NotEmpty(supported);
+            Assert.Equal(list, supported);
+        }
+
+
+        [Fact]
+        public void DynamicObjectWithKnownMembersNoDynamicUtf8()
+        {
+            var list = new List<string> { "Hello", "World" };
+            dynamic dynamicObject = new DynamicObjectWithKnownMembers();
+            dynamicObject.Value = 5;
+            dynamicObject.Supported = new List<string> { "Hello", "World" };
+
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(dynamicObject);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<DynamicObjectWithKnownMembers>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(5, (int) dynamicObject.Value);
+            var supported = (List<string>)dynamicObject.Supported;
+            Assert.NotEmpty(supported);
+            Assert.Equal(list, supported);
+        }
+
+        [Fact]
+        public void DynamicObjectWithKnownMembersUtf16()
+        {
+            var list = new List<string> {"Hello", "World"};
+            dynamic dynamicObject = new DynamicObjectWithKnownMembers();
+            dynamicObject.Value = 5;
+            dynamicObject.Text = "Hello World";
+            dynamicObject.Supported = list;
+
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(dynamicObject);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<DynamicObjectWithKnownMembers>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(5, (int) dynamicObject.Value);
+            var supported = (List<string>) dynamicObject.Supported;
+            Assert.NotEmpty(supported);
+            Assert.Equal(list, supported);
+            Assert.Equal("Hello World", (string) dynamicObject.Text);
         }
 
 
         [Fact]
         public void DynamicObjectWithKnownMembersUtf8()
         {
+            var list = new List<string> { "Hello", "World" };
             dynamic dynamicObject = new DynamicObjectWithKnownMembers();
             dynamicObject.Value = 5;
+            dynamicObject.Text = "Hello World";
+            dynamicObject.Supported = new List<string> { "Hello", "World" };
 
             var serialized = JsonSerializer.Generic.Utf8.Serialize(dynamicObject);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<DynamicObjectWithKnownMembers>(serialized);
             Assert.NotNull(deserialized);
-            Assert.Equal(5, (int) dynamicObject.Value);
+            Assert.Equal(5, (int)dynamicObject.Value);
+            var supported = (List<string>)dynamicObject.Supported;
+            Assert.NotEmpty(supported);
+            Assert.Equal(list, supported);
+            Assert.Equal("Hello World", (string)dynamicObject.Text);
+        }
+
+        [Fact]
+        public void DynamicObjectWithKnownMembersNotSupportedUtf16()
+        {
+            dynamic dynamicObject = new DynamicObjectWithKnownMembers();
+            dynamicObject.Value = 5;
+            dynamicObject.Text = "Hello World";
+            dynamicObject.NotSupported = new ConcreteMember();
+
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(dynamicObject);
+            Assert.NotNull(serialized);
+            Assert.Throws<NotSupportedException>(() => JsonSerializer.Generic.Utf16.Deserialize<DynamicObjectWithKnownMembers>(serialized));
+        }
+
+
+        [Fact]
+        public void DynamicObjectWithKnownMembersNotSupportedUtf8()
+        {
+            dynamic dynamicObject = new DynamicObjectWithKnownMembers();
+            dynamicObject.Value = 5;
+            dynamicObject.Text = "Hello World";
+            dynamicObject.NotSupported = new ConcreteMember();
+
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(dynamicObject);
+            Assert.NotNull(serialized);
+            Assert.Throws<NotSupportedException>(() => JsonSerializer.Generic.Utf8.Deserialize<DynamicObjectWithKnownMembers>(serialized));
         }
 
 
