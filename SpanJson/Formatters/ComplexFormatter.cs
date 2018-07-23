@@ -11,10 +11,17 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
+    /// <summary>
+    /// Main type for handling complex types
+    /// </summary>
     public abstract class ComplexFormatter : BaseFormatter
     {
         private const int NestingLimit = 256;
 
+        /// <summary>
+        /// Creates the serializer for both utf8 and utf16
+        /// There should not be a large difference between utf8 and utf16 besides member names
+        /// </summary>
         protected static SerializeDelegate<T, TSymbol> BuildSerializeDelegate<T, TSymbol, TResolver>()
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
@@ -23,7 +30,7 @@ namespace SpanJson.Formatters
             var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
             var nestingLimitParameter = Expression.Parameter(typeof(int), "nestingLimit");
-            var expressions = new List<Expression>();
+            var expressions = new List<Expression>();            
             if (RecursionCandidate<T>.IsRecursionCandidate)
             {
                 expressions.Add(Expression.IfThen(
@@ -33,18 +40,18 @@ namespace SpanJson.Formatters
                         Expression.Constant(new InvalidOperationException($"Nesting Limit of {NestingLimit} exceeded in Type {typeof(T).Name}.")))));
             }
 
-            MethodInfo seperatorWriteMethodInfo;
+            MethodInfo separatorWriteMethodInfo;
             MethodInfo writeBeginObjectMethodInfo;
             MethodInfo writeEndObjectMethodInfo;
             if (typeof(TSymbol) == typeof(char))
             {
-                seperatorWriteMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16ValueSeparator));
+                separatorWriteMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16ValueSeparator));
                 writeBeginObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16BeginObject));
                 writeEndObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16EndObject));
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                seperatorWriteMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8ValueSeparator));
+                separatorWriteMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8ValueSeparator));
                 writeBeginObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8BeginObject));
                 writeEndObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8EndObject));
             }
@@ -54,7 +61,7 @@ namespace SpanJson.Formatters
             }
 
             expressions.Add(Expression.Call(writerParameter, writeBeginObjectMethodInfo));
-            var writeSeperator = Expression.Variable(typeof(bool), "writeSeperator");
+            var writeSeparator = Expression.Variable(typeof(bool), "writeSeparator");
             for (var i = 0; i < memberInfos.Count; i++)
             {
                 var memberInfo = memberInfos[i];
@@ -108,7 +115,8 @@ namespace SpanJson.Formatters
                     propertyNameWriterMethodInfo =
                         FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim), typeof(string));
                 }
-                else if (typeof(TSymbol) == typeof(byte))
+                // utf8 has special logic for writing the attribute names as Expression.Constant(byte-Array) is slower than Expression.Constant(string)
+                else if (typeof(TSymbol) == typeof(byte)) 
                 {
                     // Everything above a length of 32 is not optimized
                     if (formattedMemberInfoName.Length > 32)
@@ -132,20 +140,20 @@ namespace SpanJson.Formatters
 
                 var valueExpressions = new List<Expression>();
                 // we need to add the separator, but only if a value was written before
-                // we reset the indicator after each seperator write and set it after writing each field
+                // we write the separator and set the marker after writing each field
                 if (i > 0)
                 {
                     valueExpressions.Add(
                         Expression.IfThen(
-                            writeSeperator,
+                            writeSeparator,
                             Expression.Block(
-                                Expression.Call(writerParameter, seperatorWriteMethodInfo))
+                                Expression.Call(writerParameter, separatorWriteMethodInfo))
                         ));
                 }
 
                 valueExpressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo, writeNameExpressions));
                 valueExpressions.Add(Expression.Call(serializerInstance, serializeMethodInfo, parameterExpressions));
-                valueExpressions.Add(Expression.Assign(writeSeperator, Expression.Constant(true)));
+                valueExpressions.Add(Expression.Assign(writeSeparator, Expression.Constant(true)));
                 Expression testNullExpression = null;
                 if (memberInfo.ExcludeNull)
                 {
@@ -190,7 +198,7 @@ namespace SpanJson.Formatters
             }
 
             expressions.Add(Expression.Call(writerParameter, writeEndObjectMethodInfo));
-            var blockExpression = Expression.Block(new[] {writeSeperator}, expressions);
+            var blockExpression = Expression.Block(new[] {writeSeparator}, expressions);
             var lambda =
                 Expression.Lambda<SerializeDelegate<T, TSymbol>>(blockExpression, writerParameter, valueParameter, nestingLimitParameter);
             return lambda.Compile();
@@ -239,6 +247,10 @@ namespace SpanJson.Formatters
             return result.ToArray();
         }
 
+        /// <summary>
+        /// Creates the deserializer for both utf8 and utf16
+        /// There should not be a large difference between utf8 and utf16 besides member names
+        /// </summary>
         protected static DeserializeDelegate<T, TSymbol> BuildDeserializeDelegate<T, TSymbol, TResolver>()
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
@@ -246,7 +258,7 @@ namespace SpanJson.Formatters
             var objectDescription = resolver.GetObjectDescription<T>();
             var memberInfos = objectDescription.Where(a => a.CanWrite).ToList();
             var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
-            // can't deserialize abstract and only support interfaces based on IEnumerable<T> (this includes, IList, IReadOnlyList, IDictionary et al.
+            // can't deserialize abstract and only support interfaces based on IEnumerable<T> (this includes, IList, IReadOnlyList, IDictionary et al.)
             foreach (var memberInfo in memberInfos)
             {
                 var memberType = memberInfo.MemberType;
@@ -317,6 +329,7 @@ namespace SpanJson.Formatters
             Expression[] constructorParameterExpresssions = null;
             if (objectDescription.Constructor != null)
             {
+                // If we want to use the constructor we serialize into an array of variables internally and then create the object from that
                 var dict = objectDescription.ConstructorMapping;
                 constructorParameterExpresssions = new Expression[dict.Count];
                 foreach (var valueTuple in dict)
@@ -361,6 +374,7 @@ namespace SpanJson.Formatters
             var parameters = new List<ParameterExpression> {nameSpan, lengthParameter};
             if (typeof(TSymbol) == typeof(char))
             {
+                // For utf16 we need to convert the attribute name to bytes to feed it to the matching logic
                 Expression<Action> functor = () => MemoryMarshal.AsBytes(new ReadOnlySpan<char>());
                 var asBytesMethodInfo = (functor.Body as MethodCallExpression).Method;
                 nameSpanExpression = Expression.Call(null, asBytesMethodInfo, assignNameSpan);
@@ -433,6 +447,10 @@ namespace SpanJson.Formatters
             return lambda.Compile();
         }
 
+        /// <summary>
+        /// In some cases it is necessary to decide at runtime which serializer to use
+        /// Structs and sealed type are safe (no derived types for them)
+        /// </summary>
         private static bool IsNoRuntimeDecisionRequired(Type memberType)
         {
             return memberType.IsValueType || memberType.IsSealed;
