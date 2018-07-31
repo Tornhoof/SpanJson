@@ -246,8 +246,20 @@ namespace SpanJson.Resolvers
 
             if (type.IsArray)
             {
-                return GetDefaultOrCreate(typeof(ArrayFormatter<,,>).MakeGenericType(type.GetElementType(),
-                    typeof(TSymbol), typeof(TResolver)));
+                var rank = type.GetArrayRank();
+                switch (rank)
+                {
+                    case 1:
+                        return GetDefaultOrCreate(typeof(ArrayFormatter<,,>).MakeGenericType(type.GetElementType(),
+                            typeof(TSymbol), typeof(TResolver)));
+                    case 2:
+                        return GetDefaultOrCreate(typeof(TwoDimensionalArrayFormatter<,,>).MakeGenericType(type.GetElementType(),
+                            typeof(TSymbol), typeof(TResolver)));
+                    default:
+                        throw new NotSupportedException("Only One- and Two-dimensional arrrays are supported.");
+                }
+
+
             }
 
             if (type.IsEnum)
