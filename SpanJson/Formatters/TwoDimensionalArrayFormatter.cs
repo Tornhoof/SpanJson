@@ -16,9 +16,6 @@ namespace SpanJson.Formatters
         private static readonly IJsonFormatter<T, TSymbol> ElementFormatter =
             StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
 
-        private static readonly IJsonFormatter<T[], TSymbol> OneDimensionalFormatter =
-            StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T[]>();
-
         public void Serialize(ref JsonWriter<TSymbol> writer, T[,] value, int nestingLimit)
         {
             if (value == null)
@@ -68,24 +65,31 @@ namespace SpanJson.Formatters
 
         public T[,] Deserialize(ref JsonReader<TSymbol> reader)
         {
-            T[] temp = null;
-            T[,] result;
-            try
+            var values = new List<T[]>(4);
+            reader.ReadBeginArrayOrThrow();
+            var count = 0;
+            while (!reader.TryReadIsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
             {
-                reader.ReadBeginArrayOrThrow();
-                var count = 0;
-                while (!reader.TryReadIsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
-                {
-
-                }
-
-                result = count == 0 ? Array.Empty<T>() : FormatterUtils.CopyArray(temp, count);
+                values.Add(ArrayFormatter<T, TSymbol, TResolver>.Default.Deserialize(ref reader));
             }
-            finally
+
+            if (values.Count == 0)
             {
-                if (temp != null)
+                return new T[0, 0];
+            }
+
+            var length = values[0].Length;
+            if (!values.TrueForAll(a => a.Length == length))
+            {
+                throw new JsonParserException(JsonParserException.ParserError.InvalidArrayFormat, reader.Position);
+            }
+
+            var result = new T[values.Count, length];
+            for (int i = 0; i < values.Count; i++)
+            {
+                for (int j = 0; j < length; j++)
                 {
-                    ArrayPool<T>.Shared.Return(temp);
+                    result[i, j] = values[i][j];
                 }
             }
 

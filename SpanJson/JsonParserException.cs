@@ -9,13 +9,14 @@ namespace SpanJson
             EndOfData,
             InvalidNumberFormat,
             InvalidSymbol,
+            InvalidArrayFormat,
             ExpectedDoubleQuote,
             ExpectedBeginArray,
             ExpectedEndArray,
             ExpectedBeginObject,
             ExpectedEndObject,
             ExpectedSeparator,
-            NestingTooDeep
+            NestingTooDeep,
         }
 
         public JsonParserException(ParserError error, int position) : base($"Error Reading JSON data: '{error}' at position: '{position}'.")
