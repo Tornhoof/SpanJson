@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Dynamic;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace SpanJson.Formatters.Dynamic
@@ -12,6 +13,7 @@ namespace SpanJson.Formatters.Dynamic
             Symbols = span.ToArray();
         }
 
+        [IgnoreDataMember]
         public TSymbol[] Symbols { get; }
 
         protected abstract BaseDynamicTypeConverter<TSymbol> Converter { get; }

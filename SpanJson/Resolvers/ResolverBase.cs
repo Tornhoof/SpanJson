@@ -273,6 +273,11 @@ namespace SpanJson.Resolvers
                 }
             }
 
+            if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(type))
+            {
+                return GetDefaultOrCreate(typeof(DynamicMetaObjectProviderFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
+            }
+
             if (type.TryGetTypeOfGenericInterface(typeof(IDictionary<,>), out var dictArgumentTypes) && !IsBadDictionary(type))
             {
                 if (dictArgumentTypes.Length != 2 || dictArgumentTypes[0] != typeof(string))
@@ -303,11 +308,6 @@ namespace SpanJson.Resolvers
             {
                 return GetDefaultOrCreate(
                     typeof(EnumerableFormatter<,,,>).MakeGenericType(type, enumArgumentTypes.Single(), typeof(TSymbol), typeof(TResolver)));
-            }
-
-            if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(type))
-            {
-                return GetDefaultOrCreate(typeof(DynamicMetaObjectProviderFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
             }
 
             if (type.TryGetNullableUnderlyingType(out var underlyingType))
