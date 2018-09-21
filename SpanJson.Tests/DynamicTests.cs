@@ -153,8 +153,8 @@ namespace SpanJson.Tests
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<DynamicObjectWithKnownMembers>(serialized);
             Assert.NotNull(deserialized);
-            Assert.Equal(5, (int) dynamicObject.Value);
-            var supported = (List<string>) dynamicObject.Supported;
+            Assert.Equal(5, (int)deserialized.Value);
+            var supported = (List<string>)deserialized.Supported;
             Assert.NotEmpty(supported);
             Assert.Equal(list, supported);
         }
@@ -163,17 +163,17 @@ namespace SpanJson.Tests
         [Fact]
         public void DynamicObjectWithKnownMembersNoDynamicUtf8()
         {
-            var list = new List<string> { "Hello", "World" };
+            var list = new List<string> {"Hello", "World"};
             dynamic dynamicObject = new DynamicObjectWithKnownMembers();
             dynamicObject.Value = 5;
-            dynamicObject.Supported = new List<string> { "Hello", "World" };
+            dynamicObject.Supported = new List<string> {"Hello", "World"};
 
             var serialized = JsonSerializer.Generic.Utf8.Serialize(dynamicObject);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<DynamicObjectWithKnownMembers>(serialized);
             Assert.NotNull(deserialized);
-            Assert.Equal(5, (int) dynamicObject.Value);
-            var supported = (List<string>)dynamicObject.Supported;
+            Assert.Equal(5, (int) deserialized.Value);
+            var supported = (List<string>) deserialized.Supported;
             Assert.NotEmpty(supported);
             Assert.Equal(list, supported);
         }
@@ -191,11 +191,11 @@ namespace SpanJson.Tests
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<DynamicObjectWithKnownMembers>(serialized);
             Assert.NotNull(deserialized);
-            Assert.Equal(5, (int) dynamicObject.Value);
-            var supported = (List<string>) dynamicObject.Supported;
+            Assert.Equal(5, (int)deserialized.Value);
+            var supported = (List<string>)deserialized.Supported;
             Assert.NotEmpty(supported);
             Assert.Equal(list, supported);
-            Assert.Equal("Hello World", (string) dynamicObject.Text);
+            Assert.Equal("Hello World", (string)deserialized.Text);
         }
 
 
@@ -212,11 +212,64 @@ namespace SpanJson.Tests
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<DynamicObjectWithKnownMembers>(serialized);
             Assert.NotNull(deserialized);
-            Assert.Equal(5, (int)dynamicObject.Value);
-            var supported = (List<string>)dynamicObject.Supported;
+            Assert.Equal(5, (int)deserialized.Value);
+            var supported = (List<string>)deserialized.Supported;
             Assert.NotEmpty(supported);
             Assert.Equal(list, supported);
-            Assert.Equal("Hello World", (string)dynamicObject.Text);
+            Assert.Equal("Hello World", (string)deserialized.Text);
+        }
+
+        [Fact]
+        public void DynamicObjectWithKnownMembersUtf16CamelCase()
+        {
+            var list = new List<string> { "Hello", "World" };
+            dynamic dynamicObject = new DynamicObjectWithKnownMembers();
+            dynamicObject.Value = 5;
+            dynamicObject.Text = "Hello World";
+            dynamicObject.Supported = list;
+            dynamicObject.DynamicValue = "Hello Universe";
+
+            var serialized = JsonSerializer.Generic.Utf16.Serialize< DynamicObjectWithKnownMembers, ExcludeNullsCamelCaseResolver<char>>(dynamicObject);
+            Assert.NotNull(serialized);
+            Assert.Contains("\"text\":", serialized);
+            Assert.Contains("\"value\":", serialized);
+            Assert.Contains("\"supported\":", serialized);
+            Assert.Contains("\"dynamicValue\":", serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<DynamicObjectWithKnownMembers, ExcludeNullsCamelCaseResolver<char>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(5, (int)deserialized.Value);
+            var supported = (List<string>)deserialized.Supported;
+            Assert.NotEmpty(supported);
+            Assert.Equal(list, supported);
+            Assert.Equal("Hello World", (string)deserialized.text);
+            Assert.Equal("Hello Universe", (string)deserialized.dynamicValue);
+        }
+
+
+        [Fact]
+        public void DynamicObjectWithKnownMembersUtf8CamelCase()
+        {
+            var list = new List<string> { "Hello", "World" };
+            dynamic dynamicObject = new DynamicObjectWithKnownMembers();
+            dynamicObject.Value = 5;
+            dynamicObject.Text = "Hello World";
+            dynamicObject.Supported = list;
+            dynamicObject.DynamicValue = "Hello Universe";
+            var serialized = JsonSerializer.Generic.Utf8.Serialize<DynamicObjectWithKnownMembers, ExcludeNullsCamelCaseResolver<byte>>(dynamicObject);
+            Assert.NotNull(serialized);
+            var serializedText = Encoding.UTF8.GetString(serialized);
+            Assert.Contains("\"text\":", serializedText);
+            Assert.Contains("\"value\":", serializedText);
+            Assert.Contains("\"supported\":", serializedText);
+            Assert.Contains("\"dynamicValue\":", serializedText);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<DynamicObjectWithKnownMembers, ExcludeNullsCamelCaseResolver<byte>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(5, (int)deserialized.Value);
+            var supported = (List<string>)deserialized.Supported;
+            Assert.NotEmpty(supported);
+            Assert.Equal(list, supported);
+            Assert.Equal("Hello World", (string)deserialized.text);
+            Assert.Equal("Hello Universe", (string)deserialized.dynamicValue);
         }
 
         [Fact]
@@ -257,7 +310,7 @@ namespace SpanJson.Tests
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
-            Assert.Equal("Hello World", (string) dynamicObject.Text);
+            Assert.Equal("Hello World", (string)deserialized.Text);
         }
 
 
@@ -271,7 +324,7 @@ namespace SpanJson.Tests
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
-            Assert.Equal("Hello World", (string) dynamicObject.Text);
+            Assert.Equal("Hello World", (string)deserialized.Text);
         }
 
 
@@ -286,7 +339,7 @@ namespace SpanJson.Tests
                 Assert.NotNull(serialized);
                 var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
                 Assert.NotNull(deserialized);
-                Assert.Equal("Hello World", (string) dynamicObject.Text);
+                Assert.Equal("Hello World", (string)deserialized.Text);
             }
         }
 
@@ -301,7 +354,7 @@ namespace SpanJson.Tests
             {
                 var deserialized = JSON.DeserializeDynamic(serialized);
                 Assert.NotNull(deserialized);
-                Assert.Equal("Hello World", (string) dynamicObject.Text);
+                Assert.Equal("Hello World", (string)deserialized.Text);
             }
         }
 
@@ -316,14 +369,46 @@ namespace SpanJson.Tests
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
             Assert.NotNull(deserialized);
-            Assert.Equal("Hello World", (string) dynamicObject.Text);
-            Assert.Equal(5, (int) dynamicObject.Value);
+            Assert.Equal("Hello World", (string)deserialized.Text);
+            Assert.Equal(5, (int)deserialized.Value);
+        }
+
+
+        [Fact]
+        public void ExpandoUtf16()
+        {
+            dynamic dynamicObject = new MyDynamicObject();
+            dynamicObject.Text = "Hello World";
+            dynamicObject.Value = 5;
+            dynamicObject.Array = new string[] { "Hello", "World" };
+
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(dynamicObject);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
+            var serialized2 = JsonSerializer.Generic.Utf16.Serialize(deserialized);
+            Assert.Equal(serialized, serialized2);
+
+        }
+
+        [Fact]
+        public void ExpandoUtf8()
+        {
+            dynamic dynamicObject = new ExpandoObject();
+            dynamicObject.Text = "Hello World";
+            dynamicObject.Value = 5;
+            dynamicObject.Array = new string[] { "Hello", "World" };
+
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(dynamicObject);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
+            var serialized2 = JsonSerializer.Generic.Utf8.Serialize(deserialized);
+            Assert.Equal(serialized, serialized2);
         }
 
         [Fact]
         public void DynamicObjectSerializeTwice()
         {
-            dynamic dynamicObject = new MyDynamicObject();
+            dynamic dynamicObject = new ExpandoObject();
             dynamicObject.Text = "Hello World";
             dynamicObject.Value = 5;
             dynamicObject.Array = new string[] {"Hello", "World"};
@@ -378,8 +463,8 @@ namespace SpanJson.Tests
             Assert.Contains("null", serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<MyDynamicObject, IncludeNullsOriginalCaseResolver<char>>(serialized);
             Assert.NotNull(deserialized);
-            Assert.Equal("Hello World", (string) dynamicObject.Text);
-            Assert.Equal(5, (int) dynamicObject.Value);
+            Assert.Equal("Hello World", (string)deserialized.Text);
+            Assert.Equal(5, (int)deserialized.Value);
             Assert.Null(deserialized.NullValue);
         }
 

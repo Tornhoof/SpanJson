@@ -6,10 +6,11 @@ using System.ComponentModel;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.Serialization;
 
 namespace SpanJson.Formatters.Dynamic
 {
-    public sealed class SpanJsonDynamicArray<TSymbol> : DynamicObject, IEnumerable<object> where TSymbol : struct
+    public sealed class SpanJsonDynamicArray<TSymbol> : DynamicObject, ISpanJsonDynamicArray where TSymbol : struct
     {
         private static readonly ConcurrentDictionary<Type, Func<object[], ICountableEnumerable>> Enumerables =
             new ConcurrentDictionary<Type, Func<object[], ICountableEnumerable>>();
@@ -21,8 +22,9 @@ namespace SpanJson.Formatters.Dynamic
             _input = input;
         }
 
+        [IgnoreDataMember]
         public object this[int index] => _input[index];
-
+        [IgnoreDataMember]
         public int Length => _input.Length;
 
         IEnumerator IEnumerable.GetEnumerator()

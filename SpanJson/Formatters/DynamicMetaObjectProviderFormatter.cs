@@ -82,6 +82,10 @@ namespace SpanJson.Formatters
                 var bytes = Encoding.UTF8.GetBytes(cValue.Symbols);
                 writer.WriteUtf8Verbatim(bytes);
             }
+            else if (value is ISpanJsonDynamicArray dynamicArray)
+            {
+                EnumerableFormatter<IEnumerable<object>, object, TSymbol, TResolver>.Default.Serialize(ref writer, dynamicArray, nestingLimit + 1);
+            }
             else
             {
                 var memberInfos = Resolver.GetDynamicObjectDescription(value);
@@ -147,30 +151,27 @@ namespace SpanJson.Formatters
                     var skipExpression = Expression
                         .Lambda<DeserializeDelegate>(Expression.Call(readerParameter, skipNextMethodInfo), inputParameter, readerParameter).Compile();
                     result.Add(memberInfo.Name, skipExpression);
+                    continue;
                 }
+
                 // can't deserialize abstract and only support interfaces based on IEnumerable<T> (this includes, IList, IReadOnlyList, IDictionary et al.)
-                else if (memberInfo.MemberType.IsAbstract)
+                if (memberInfo.MemberType.IsAbstract && !memberInfo.MemberType.TryGetTypeOfGenericInterface(typeof(IEnumerable<>), out _))
                 {
-                    if (memberInfo.MemberType.TryGetTypeOfGenericInterface(typeof(IEnumerable<>), out _))
-                    {
-                        continue;
-                    }
                     var throwExpression = Expression.Lambda<DeserializeDelegate>(Expression.Block(
                             Expression.Throw(Expression.Constant(new NotSupportedException($"{typeof(T).Name} contains abstract members."))),
                             Expression.Default(typeof(T))),
                         inputParameter, readerParameter).Compile();
                     result.Add(memberInfo.Name, throwExpression);
+                    continue;
                 }
-                else
-                {
-                    var formatterType = resolver.GetFormatter(memberInfo).GetType();
-                    var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
-                    var assignExpression = Expression.Assign(Expression.PropertyOrField(inputParameter, memberInfo.MemberName),
-                        Expression.Call(Expression.Field(null, fieldInfo),
-                            FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()), readerParameter));
-                    var lambda = Expression.Lambda<DeserializeDelegate>(assignExpression, inputParameter, readerParameter).Compile();
-                    result.Add(memberInfo.Name, lambda);
-                }
+
+                var formatterType = resolver.GetFormatter(memberInfo).GetType();
+                var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+                var assignExpression = Expression.Assign(Expression.PropertyOrField(inputParameter, memberInfo.MemberName),
+                    Expression.Call(Expression.Field(null, fieldInfo),
+                        FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()), readerParameter));
+                var lambda = Expression.Lambda<DeserializeDelegate>(assignExpression, inputParameter, readerParameter).Compile();
+                result.Add(memberInfo.Name, lambda);
             }
 
             return result;
