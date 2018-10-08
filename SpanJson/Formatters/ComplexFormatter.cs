@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
 using System.Text;
 using SpanJson.Helpers;
@@ -26,7 +28,8 @@ namespace SpanJson.Formatters
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             var resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
-            var memberInfos = resolver.GetObjectDescription<T>().Where(a => a.CanRead).ToList();
+            var objectDescription = resolver.GetObjectDescription<T>();
+            var memberInfos = objectDescription.Where(a => a.CanRead).ToList();
             var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
             var nestingLimitParameter = Expression.Parameter(typeof(int), "nestingLimit");
@@ -197,11 +200,107 @@ namespace SpanJson.Formatters
                 }
             }
 
+            if (objectDescription.ExtensionMemberInfo != null)
+            {
+                var knownNames = objectDescription.Members.Where(t => t.CanWrite).Select(a => a.Name).ToHashSet();
+                var memberInfo = typeof(ComplexFormatter).GetMethod(nameof(SerializeExtension), BindingFlags.Static | BindingFlags.NonPublic);
+                var closedMemberInfo = memberInfo.MakeGenericMethod(typeof(TSymbol), typeof(TResolver));
+                var valueExpression = Expression.TypeAs(Expression.PropertyOrField(valueParameter, objectDescription.ExtensionMemberInfo.MemberName),
+                    typeof(IDictionary<string, object>));
+                expressions.Add(Expression.IfThen(Expression.ReferenceNotEqual(valueExpression, Expression.Constant(null)), Expression.Call(null,
+                    closedMemberInfo, writerParameter, valueExpression, writeSeparator, Expression.Constant(objectDescription.ExtensionMemberInfo.ExcludeNulls),
+                    Expression.Constant(knownNames),
+                    Expression.Constant(objectDescription.ExtensionMemberInfo.NamingConvention), nestingLimitParameter)));
+            }
+
             expressions.Add(Expression.Call(writerParameter, writeEndObjectMethodInfo));
             var blockExpression = Expression.Block(new[] {writeSeparator}, expressions);
             var lambda =
                 Expression.Lambda<SerializeDelegate<T, TSymbol>>(blockExpression, writerParameter, valueParameter, nestingLimitParameter);
             return lambda.Compile();
+        }
+
+        private static void DeserializeExtension<TSymbol, TResolver>(ref JsonReader<TSymbol> reader, in ReadOnlySpan<byte> nameSpan, IDictionary<string, object> dictionary, bool excludeNulls)
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+        {
+            var value = RuntimeFormatter<TSymbol, TResolver>.Default.Deserialize(ref reader);
+            if (excludeNulls && value == null)
+            {
+                return;
+            }
+
+            string key = null;
+            if (typeof(TSymbol) == typeof(char))
+            {
+                key = Encoding.Unicode.GetString(nameSpan);
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                key = Encoding.UTF8.GetString(nameSpan);
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+            dictionary[key] = value;
+        }
+
+        private static void ThrowNotSupportedException()
+        {
+            throw new NotSupportedException();
+        }
+
+        private static void SerializeExtension<TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, IDictionary<string, object> value, bool writeSeparator, bool excludeNulls, HashSet<string> knownNames,
+            NamingConventions namingConvention, int nestingLimit)
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+        {
+            var valueLength = value.Count;
+            if (valueLength > 0)
+            {
+                foreach (var kvp in value)
+                {
+                    if (excludeNulls && kvp.Value == null)
+                    {
+                        continue;
+                    }
+                    if (writeSeparator)
+                    {
+                        writer.WriteValueSeparator();
+                    }
+                    var name = kvp.Key;
+                    if (namingConvention == NamingConventions.CamelCase && char.IsUpper(name[0]))
+                    {
+                        char[] array = null;
+                        try
+                        {
+                            array = ArrayPool<char>.Shared.Rent(name.Length);
+                            name.AsSpan().CopyTo(array);
+                            array[0] = char.ToLower(array[0]);
+                            writer.WriteName(array.AsSpan(0, name.Length));
+                        }
+                        finally
+                        {
+                            if (array != null)
+                            {
+                                ArrayPool<char>.Shared.Return(array);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        writer.WriteName(kvp.Key);
+                    }
+
+                    if (knownNames.Contains(name))
+                    {
+                        continue;
+                    }
+
+                    SerializeRuntimeDecisionInternal<object, TSymbol, TResolver>(ref writer, kvp.Value, RuntimeFormatter<TSymbol, TResolver>.Default,
+                        nestingLimit + 1);
+                    writeSeparator = true;
+                }
+            }
         }
 
         /// <summary>
@@ -400,12 +499,31 @@ namespace SpanJson.Formatters
                 throw new NotSupportedException();
             }
 
+            Expression skipCall = Expression.Call(readerParameter, skipNextMethodInfo);
+
+            if (objectDescription.ExtensionMemberInfo != null && objectDescription.Constructor == null) // we don't support constructor and extensions at the same time, this only leads to chaos
+            {
+                var extensionExpressions = new List<Expression>();
+                var dictExpression = Expression.PropertyOrField(returnValue, objectDescription.ExtensionMemberInfo.MemberName);
+                var createExpression = objectDescription.ExtensionMemberInfo.MemberType.IsInterface
+                    ? Expression.New(typeof(Dictionary<string, object>))
+                    : Expression.New(objectDescription.ExtensionMemberInfo.MemberType);
+                extensionExpressions.Add(Expression.IfThen(Expression.ReferenceEqual(dictExpression, Expression.Constant(null)),
+                    Expression.Assign(dictExpression, createExpression)));
+                var memberInfo = typeof(ComplexFormatter).GetMethod(nameof(DeserializeExtension), BindingFlags.Static | BindingFlags.NonPublic);
+                var closedMemberInfo = memberInfo.MakeGenericMethod(typeof(TSymbol), typeof(TResolver));
+                extensionExpressions.Add(Expression.Call(null, closedMemberInfo, readerParameter, byteNameSpan, dictExpression,
+                    Expression.Constant(objectDescription.ExtensionMemberInfo.ExcludeNulls)));
+                var extensionBlock = Expression.Block(extensionExpressions);
+                skipCall = extensionBlock;
+            }
+
             var expressions = new List<Expression>
             {
                 assignNameSpan,
                 lengthExpression,
                 MemberComparisonBuilder.Build<TSymbol>(memberInfos, 0, lengthParameter, byteNameSpan, endOfBlockLabel, matchExpressionFunctor),
-                Expression.Call(readerParameter, skipNextMethodInfo),
+                skipCall,
                 Expression.Label(endOfBlockLabel),
             };
 

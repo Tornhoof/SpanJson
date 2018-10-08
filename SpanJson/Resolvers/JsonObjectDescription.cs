@@ -7,9 +7,10 @@ namespace SpanJson.Resolvers
 {
     public class JsonObjectDescription : IReadOnlyList<JsonMemberInfo>
     {
-        public JsonObjectDescription(ConstructorInfo constructor, JsonConstructorAttribute attribute, JsonMemberInfo[] members)
+        public JsonObjectDescription(ConstructorInfo constructor, JsonConstructorAttribute attribute, JsonMemberInfo[] members, JsonExtensionMemberInfo extensionMemberInfo)
         {
             Members = members;
+            ExtensionMemberInfo = extensionMemberInfo;
             Constructor = constructor;
             Attribute = attribute;
             if (Constructor != null)
@@ -21,6 +22,7 @@ namespace SpanJson.Resolvers
         public ConstructorInfo Constructor { get; }
         public JsonConstructorAttribute Attribute { get; }
         public JsonMemberInfo[] Members { get; }
+        public JsonExtensionMemberInfo ExtensionMemberInfo { get; }
         public IReadOnlyDictionary<string, (Type Type, int Index)> ConstructorMapping { get; }
 
         public int Count => Members.Length;
@@ -53,8 +55,7 @@ namespace SpanJson.Resolvers
             var index = 0;
             foreach (var constructorParameter in constructorParameters)
             {
-                JsonMemberInfo memberInfo;
-                if (memberInfoDictionary.TryGetValue(constructorParameter.Name, out memberInfo) ||
+                if (memberInfoDictionary.TryGetValue(constructorParameter.Name, out var memberInfo) ||
                     Attribute.ParameterNames != null && index < Attribute.ParameterNames.Length &&
                     memberInfoDictionary.TryGetValue(Attribute.ParameterNames[index], out memberInfo))
                 {

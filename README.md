@@ -28,6 +28,8 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 - Support for tuples currently excludes the last type with 8 arguments (TRest)
 - Support for annotating a constructor with ``[JsonConstructor]`` to use that one instead of assigning members during deserialization
 - Support for custom serializes with ``[JsonCustomSerializer]`` to use that one instead of the normal formatter, see example below
+- Support for annotating a IDictionary<string,object> with ``[JsonExtensionData]``. Serialization will write all values from the dictionary as additional attributes. Deserialization will deserialize all unknown attributes into it.
+  This does not work together with the Dynamic Language Runtime (DLR) support or the ``[JsonConstructor]`` attribute. See Example below.
 
 - Different 'Resolvers' to control general behaviour:
   - Exclude Nulls with Camel Case: ``ExcludeNullsCamelCaseResolver``
@@ -187,6 +189,17 @@ public sealed class LongAsStringFormatter : ICustomJsonFormatter<long>
 
         throw new InvalidOperationException("Invalid value.");
     }
+}
+```
+
+```csharp
+public class ExtensionTest
+{
+    public string Key;
+    public string Value;
+
+    [JsonExtensionData]
+    public IDictionary<string, object> AdditionalValues { get; set; }
 }
 ```
 
