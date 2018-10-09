@@ -127,7 +127,7 @@ namespace SpanJson.Resolvers
                     _spanJsonOptions.NullOption == NullOptions.ExcludeNulls, true, true, null));
             }
 
-            return new JsonObjectDescription(null, null, result.ToArray());
+            return new JsonObjectDescription(null, null, result.ToArray(), null);
         }
 
         public IJsonFormatter<T, TSymbol> GetFormatter<T>()
@@ -156,36 +156,41 @@ namespace SpanJson.Resolvers
                 .Where(a => !a.IsLiteral).Cast<MemberInfo>().Concat(
                     type.GetProperties(BindingFlags.Public | BindingFlags.Instance));
             var result = new List<JsonMemberInfo>();
+            JsonExtensionMemberInfo extensionMemberInfo = null;
+            var excludeNulls = _spanJsonOptions.NullOption == NullOptions.ExcludeNulls;
             foreach (var memberInfo in publicMembers)
             {
-                if (!IsIgnored(memberInfo))
+                var memberType = memberInfo is FieldInfo fi ? fi.FieldType :
+                    memberInfo is PropertyInfo pi ? pi.PropertyType : null;
+                var name = Escape(GetAttributeName(memberInfo) ?? memberInfo.Name);
+                if (_spanJsonOptions.NamingConvention == NamingConventions.CamelCase)
                 {
-                    var canRead = true;
-                    var canWrite = true;
-                    if (memberInfo is PropertyInfo propertyInfo)
-                    {
-                        canRead = propertyInfo.CanRead;
-                        canWrite = propertyInfo.CanWrite;
-                    }
+                    name = MakeCamelCase(name);
+                }
 
-                    var name = Escape(GetAttributeName(memberInfo) ?? memberInfo.Name);
-                    if (_spanJsonOptions.NamingConvention == NamingConventions.CamelCase)
-                    {
-                        name = MakeCamelCase(name);
-                    }
+                var canRead = true;
+                var canWrite = true;
+                if (memberInfo is PropertyInfo propertyInfo)
+                {
+                    canRead = propertyInfo.CanRead;
+                    canWrite = propertyInfo.CanWrite;
+                }
+
+                if (memberInfo.GetCustomAttribute<JsonExtensionDataAttribute>() != null && typeof(IDictionary<string, object>).IsAssignableFrom(memberType) && canRead && canWrite)
+                {
+                    extensionMemberInfo = new JsonExtensionMemberInfo(memberInfo.Name, memberType, _spanJsonOptions.NamingConvention, excludeNulls);
+                }
+                else if (!IsIgnored(memberInfo))
+                {
 
                     var customSerializer = memberInfo.GetCustomAttribute<JsonCustomSerializerAttribute>()?.Type;
-
                     var shouldSerialize = type.GetMethod($"ShouldSerialize{memberInfo.Name}");
-                    var memberType = memberInfo is FieldInfo fi ? fi.FieldType :
-                        memberInfo is PropertyInfo pi ? pi.PropertyType : null;
-                    result.Add(new JsonMemberInfo(memberInfo.Name, memberType, shouldSerialize, name,
-                        _spanJsonOptions.NullOption == NullOptions.ExcludeNulls, canRead, canWrite, customSerializer));
+                    result.Add(new JsonMemberInfo(memberInfo.Name, memberType, shouldSerialize, name, excludeNulls, canRead, canWrite, customSerializer));
                 }
             }
 
             TryGetAnnotedAttributeConstructor(type, out var constructor, out var attribute);
-            return new JsonObjectDescription(constructor, attribute, result.ToArray());
+            return new JsonObjectDescription(constructor, attribute, result.ToArray(), extensionMemberInfo);
         }
 
         private void TryGetAnnotedAttributeConstructor(Type type, out ConstructorInfo constructor, out JsonConstructorAttribute attribute)
