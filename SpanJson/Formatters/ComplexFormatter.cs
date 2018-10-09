@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
 using System.Text;
 using SpanJson.Helpers;
@@ -14,15 +13,15 @@ using SpanJson.Resolvers;
 namespace SpanJson.Formatters
 {
     /// <summary>
-    /// Main type for handling complex types
+    ///     Main type for handling complex types
     /// </summary>
     public abstract class ComplexFormatter : BaseFormatter
     {
         private const int NestingLimit = 256;
 
         /// <summary>
-        /// Creates the serializer for both utf8 and utf16
-        /// There should not be a large difference between utf8 and utf16 besides member names
+        ///     Creates the serializer for both utf8 and utf16
+        ///     There should not be a large difference between utf8 and utf16 besides member names
         /// </summary>
         protected static SerializeDelegate<T, TSymbol> BuildSerializeDelegate<T, TSymbol, TResolver>()
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -33,7 +32,7 @@ namespace SpanJson.Formatters
             var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
             var nestingLimitParameter = Expression.Parameter(typeof(int), "nestingLimit");
-            var expressions = new List<Expression>();            
+            var expressions = new List<Expression>();
             if (RecursionCandidate<T>.IsRecursionCandidate)
             {
                 expressions.Add(Expression.IfThen(
@@ -119,7 +118,7 @@ namespace SpanJson.Formatters
                         FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim), typeof(string));
                 }
                 // utf8 has special logic for writing the attribute names as Expression.Constant(byte-Array) is slower than Expression.Constant(string)
-                else if (typeof(TSymbol) == typeof(byte)) 
+                else if (typeof(TSymbol) == typeof(byte))
                 {
                     // Everything above a length of 32 is not optimized
                     if (formattedMemberInfoName.Length > 32)
@@ -220,7 +219,8 @@ namespace SpanJson.Formatters
             return lambda.Compile();
         }
 
-        private static void DeserializeExtension<TSymbol, TResolver>(ref JsonReader<TSymbol> reader, in ReadOnlySpan<byte> nameSpan, IDictionary<string, object> dictionary, bool excludeNulls)
+        private static void DeserializeExtension<TSymbol, TResolver>(ref JsonReader<TSymbol> reader, in ReadOnlySpan<byte> nameSpan,
+            IDictionary<string, object> dictionary, bool excludeNulls)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             var value = RuntimeFormatter<TSymbol, TResolver>.Default.Deserialize(ref reader);
@@ -242,6 +242,7 @@ namespace SpanJson.Formatters
             {
                 ThrowNotSupportedException();
             }
+
             dictionary[key] = value;
         }
 
@@ -250,7 +251,8 @@ namespace SpanJson.Formatters
             throw new NotSupportedException();
         }
 
-        private static void SerializeExtension<TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, IDictionary<string, object> value, bool writeSeparator, bool excludeNulls, HashSet<string> knownNames,
+        private static void SerializeExtension<TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, IDictionary<string, object> value, bool writeSeparator,
+            bool excludeNulls, HashSet<string> knownNames,
             NamingConventions namingConvention, int nestingLimit)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
@@ -263,10 +265,12 @@ namespace SpanJson.Formatters
                     {
                         continue;
                     }
+
                     if (writeSeparator)
                     {
                         writer.WriteValueSeparator();
                     }
+
                     var name = kvp.Key;
                     if (namingConvention == NamingConventions.CamelCase && char.IsUpper(name[0]))
                     {
@@ -304,8 +308,8 @@ namespace SpanJson.Formatters
         }
 
         /// <summary>
-        /// This is basically the same algorithm as in the t4 template to create the methods
-        /// It's necessary to update both
+        ///     This is basically the same algorithm as in the t4 template to create the methods
+        ///     It's necessary to update both
         /// </summary>
         private static ConstantExpression[] GetIntegersForMemberName(string formattedMemberInfoName)
         {
@@ -313,29 +317,29 @@ namespace SpanJson.Formatters
             var bytes = Encoding.UTF8.GetBytes(formattedMemberInfoName);
             var remaining = bytes.Length;
             var ulongCount = Math.DivRem(remaining, 8, out remaining);
-            int offset = 0;
-            for (int j = 0; j < ulongCount; j++)
+            var offset = 0;
+            for (var j = 0; j < ulongCount; j++)
             {
                 result.Add(Expression.Constant(BitConverter.ToUInt64(bytes, offset)));
                 offset += sizeof(ulong);
             }
 
             var uintCount = Math.DivRem(remaining, 4, out remaining);
-            for (int j = 0; j < uintCount; j++)
+            for (var j = 0; j < uintCount; j++)
             {
                 result.Add(Expression.Constant(BitConverter.ToUInt32(bytes, offset)));
                 offset += sizeof(uint);
             }
 
             var ushortCount = Math.DivRem(remaining, 2, out remaining);
-            for (int j = 0; j < ushortCount; j++)
+            for (var j = 0; j < ushortCount; j++)
             {
                 result.Add(Expression.Constant(BitConverter.ToUInt16(bytes, offset)));
                 offset += sizeof(ushort);
             }
 
             var byteCount = Math.DivRem(remaining, 1, out remaining);
-            for (int j = 0; j < byteCount; j++)
+            for (var j = 0; j < byteCount; j++)
             {
                 result.Add(Expression.Constant(bytes[offset]));
                 offset++;
@@ -347,8 +351,8 @@ namespace SpanJson.Formatters
         }
 
         /// <summary>
-        /// Creates the deserializer for both utf8 and utf16
-        /// There should not be a large difference between utf8 and utf16 besides member names
+        ///     Creates the deserializer for both utf8 and utf16
+        ///     There should not be a large difference between utf8 and utf16 besides member names
         /// </summary>
         protected static DeserializeDelegate<T, TSymbol> BuildDeserializeDelegate<T, TSymbol, TResolver>()
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -363,7 +367,7 @@ namespace SpanJson.Formatters
                 var memberType = memberInfo.MemberType;
                 if (memberType.IsAbstract)
                 {
-                    if (memberType.TryGetTypeOfGenericInterface	(typeof(IEnumerable<>), out _))
+                    if (memberType.TryGetTypeOfGenericInterface(typeof(IEnumerable<>), out _))
                     {
                         continue;
                     }
@@ -381,7 +385,7 @@ namespace SpanJson.Formatters
                 return Expression.Lambda<DeserializeDelegate<T, TSymbol>>(Expression.Default(typeof(T)), readerParameter).Compile();
             }
 
-            if (memberInfos.Count == 0)
+            if (memberInfos.Count == 0 && objectDescription.ExtensionMemberInfo == null)
             {
                 Expression createExpression = null;
                 if (typeof(T).IsClass)
@@ -501,7 +505,8 @@ namespace SpanJson.Formatters
 
             Expression skipCall = Expression.Call(readerParameter, skipNextMethodInfo);
 
-            if (objectDescription.ExtensionMemberInfo != null && objectDescription.Constructor == null) // we don't support constructor and extensions at the same time, this only leads to chaos
+            // we don't support constructor and extensions at the same time, this only leads to chaos
+            if (objectDescription.ExtensionMemberInfo != null && objectDescription.Constructor == null)
             {
                 var extensionExpressions = new List<Expression>();
                 var dictExpression = Expression.PropertyOrField(returnValue, objectDescription.ExtensionMemberInfo.MemberName);
@@ -518,16 +523,24 @@ namespace SpanJson.Formatters
                 skipCall = extensionBlock;
             }
 
-            var expressions = new List<Expression>
-            {
-                assignNameSpan,
-                lengthExpression,
-                MemberComparisonBuilder.Build<TSymbol>(memberInfos, 0, lengthParameter, byteNameSpan, endOfBlockLabel, matchExpressionFunctor),
-                skipCall,
-                Expression.Label(endOfBlockLabel),
-            };
 
-            var ifBlock = Expression.Block(parameters, expressions);
+            var expressions = new List<Expression>();
+            if (memberInfos.Count > 0)
+            {
+                expressions.Add(assignNameSpan);
+                expressions.Add(lengthExpression);
+                expressions.Add(
+                    MemberComparisonBuilder.Build<TSymbol>(memberInfos, 0, lengthParameter, byteNameSpan, endOfBlockLabel, matchExpressionFunctor));
+                expressions.Add(skipCall);
+                expressions.Add(Expression.Label(endOfBlockLabel));
+            }
+            else
+            {
+                expressions.Add(assignNameSpan);
+                expressions.Add(skipCall);
+            }
+
+            var deserializeMemberBlock =  Expression.Block(parameters, expressions);
             var countExpression = Expression.Parameter(typeof(int), "count");
             var abortExpression = Expression.IsTrue(Expression.Call(readerParameter, tryReadEndObjectMethodInfo, countExpression));
             var readBeginObject = Expression.Call(readerParameter, beginObjectOrThrowMethodInfo);
@@ -543,7 +556,7 @@ namespace SpanJson.Formatters
                 block = Expression.Block(blockParameters, readBeginObject,
                     Expression.Loop(
                         Expression.IfThenElse(abortExpression, Expression.Break(loopAbort),
-                            ifBlock), loopAbort
+                            deserializeMemberBlock), loopAbort
                     ),
                     Expression.Assign(returnValue, Expression.New(objectDescription.Constructor, constructorParameterExpresssions)),
                     Expression.Label(returnTarget, returnValue)
@@ -555,7 +568,7 @@ namespace SpanJson.Formatters
                     Expression.Assign(returnValue, Expression.New(returnValue.Type)),
                     Expression.Loop(
                         Expression.IfThenElse(abortExpression, Expression.Break(loopAbort),
-                            ifBlock), loopAbort
+                            deserializeMemberBlock), loopAbort
                     ),
                     Expression.Label(returnTarget, returnValue)
                 );
@@ -566,8 +579,8 @@ namespace SpanJson.Formatters
         }
 
         /// <summary>
-        /// In some cases it is necessary to decide at runtime which serializer to use
-        /// Structs and sealed type are safe (no derived types for them)
+        ///     In some cases it is necessary to decide at runtime which serializer to use
+        ///     Structs and sealed type are safe (no derived types for them)
         /// </summary>
         private static bool IsNoRuntimeDecisionRequired(Type memberType)
         {

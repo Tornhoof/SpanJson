@@ -29,7 +29,7 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 - Support for annotating a constructor with ``[JsonConstructor]`` to use that one instead of assigning members during deserialization
 - Support for custom serializes with ``[JsonCustomSerializer]`` to use that one instead of the normal formatter, see example below
 - Support for annotating a IDictionary<string,object> with ``[JsonExtensionData]``. Serialization will write all values from the dictionary as additional attributes. Deserialization will deserialize all unknown attributes into it.
-  This does not work together with the Dynamic Language Runtime (DLR) support or the ``[JsonConstructor]`` attribute. See Example below.
+  This does not work together with the Dynamic Language Runtime (DLR) support or the ``[JsonConstructor]`` attribute. See Example below. The Dictionary will also honor the Case Setting (i.e. CamelCase) and null behaviour for the dictionary keys.
 
 - Different 'Resolvers' to control general behaviour:
   - Exclude Nulls with Camel Case: ``ExcludeNullsCamelCaseResolver``
@@ -193,6 +193,7 @@ public sealed class LongAsStringFormatter : ICustomJsonFormatter<long>
 ```
 
 ```csharp
+// Below class will serialize Key and Value and any additional key-value-pair from the dictionary
 public class ExtensionTest
 {
     public string Key;
