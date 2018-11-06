@@ -272,7 +272,14 @@ namespace SpanJson.Resolvers
                 switch (_spanJsonOptions.EnumOption)
                 {
                     case EnumOptions.String:
+                    {
+                        if (type.GetCustomAttribute<FlagsAttribute>() != null)
+                        {
+                            return GetDefaultOrCreate(typeof(EnumStringFlagsFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
+                        }
+
                         return GetDefaultOrCreate(typeof(EnumStringFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
+                    }
                     case EnumOptions.Integer:
                         return GetDefaultOrCreate(typeof(EnumIntegerFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
                 }

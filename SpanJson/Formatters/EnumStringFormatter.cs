@@ -29,10 +29,6 @@ namespace SpanJson.Formatters
         {
             Serializer(ref writer, value);
         }
-
-        /// <summary>
-        ///     Not sure if it's useful to build something like the automaton from the compelxformatter here
-        /// </summary>
         private static DeserializeDelegate BuildDeserializeDelegate()
         {
             var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");

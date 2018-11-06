@@ -16,6 +16,14 @@ namespace SpanJson.Tests
             Universe,
         }
 
+        [Flags]
+        public enum FlagEnum
+        {
+            First = 1,
+            Second = 2,
+            Third = 4
+        }
+
         [Theory]
         [InlineData(TestEnum.Hello, "\"Hello\"")]
         [InlineData(TestEnum.World, "\"World\"")]
@@ -61,6 +69,30 @@ namespace SpanJson.Tests
             var serialized = JsonSerializer.Generic.Utf16.Serialize(value);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<TestEnum>(serialized);
+            Assert.Equal(value, deserialized);
+        }
+
+        [Theory]
+        [InlineData(FlagEnum.First)]
+        [InlineData(FlagEnum.First | FlagEnum.Second)]
+        [InlineData(FlagEnum.First | FlagEnum.Second | FlagEnum.Third)]
+        public void SerializeDeserializeFlagsUtf16(FlagEnum value)
+        {
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(value);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<FlagEnum>(serialized);
+            Assert.Equal(value, deserialized);
+        }
+
+        [Theory]
+        [InlineData(FlagEnum.First)]
+        [InlineData(FlagEnum.First | FlagEnum.Second)]
+        [InlineData(FlagEnum.First | FlagEnum.Second | FlagEnum.Third)]
+        public void SerializeDeserializeFlagsUtf8(FlagEnum value)
+        {
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(value);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<FlagEnum>(serialized);
             Assert.Equal(value, deserialized);
         }
 
