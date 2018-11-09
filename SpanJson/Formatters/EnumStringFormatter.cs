@@ -29,15 +29,15 @@ namespace SpanJson.Formatters
 
         private static DeserializeDelegate BuildDeserializeDelegate()
         {
-            var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
+            var inputParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
             MethodInfo nameSpanMethodInfo;
             if (typeof(TSymbol) == typeof(char))
             {
-                nameSpanMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16StringSpan));
+                nameSpanMethodInfo = FindPublicInstanceMethod(inputParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16StringSpan));
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                nameSpanMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8StringSpan));
+                nameSpanMethodInfo = FindPublicInstanceMethod(inputParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8StringSpan));
             }
             else
             {
@@ -47,8 +47,7 @@ namespace SpanJson.Formatters
             var returnValue = Expression.Variable(typeof(T), "returnValue");
             var nameSpan = Expression.Variable(typeof(ReadOnlySpan<TSymbol>), "nameSpan");
             var lengthParameter = Expression.Variable(typeof(int), "length");
-            var endOfBlockLabel = Expression.Label();
-            var nameSpanExpression = Expression.Call(readerParameter, nameSpanMethodInfo);
+            var nameSpanExpression = Expression.Call(inputParameter, nameSpanMethodInfo);
             var assignNameSpan = Expression.Assign(nameSpan, nameSpanExpression);
             var lengthExpression = Expression.Assign(lengthParameter, Expression.PropertyOrField(nameSpan, "Length"));
             var byteNameSpan = Expression.Variable(typeof(ReadOnlySpan<byte>), "byteNameSpan");
@@ -66,36 +65,7 @@ namespace SpanJson.Formatters
                 byteNameSpan = nameSpan;
             }
 
-            var memberInfos = new List<JsonMemberInfo>();
-            var dict = new Dictionary<string, T>();
-            foreach (var value in Enum.GetValues(typeof(T)))
-            {
-                var formattedValue = GetFormattedValue(value);
-                memberInfos.Add(new JsonMemberInfo(value.ToString(), typeof(T), null, formattedValue, false, true, false, null));
-                dict.Add(value.ToString(), (T) value);
-            }
-
-            Expression MatchExpressionFunctor(JsonMemberInfo memberInfo)
-            {
-                var enumValue = dict[memberInfo.MemberName];
-                return Expression.Assign(returnValue, Expression.Constant(enumValue));
-            }
-
-            var returnTarget = Expression.Label(returnValue.Type);
-            var returnLabel = Expression.Label(returnTarget, returnValue);
-            var expressions = new List<Expression>
-            {
-                assignNameSpan,
-                lengthExpression,
-                MemberComparisonBuilder.Build<TSymbol>(memberInfos, 0, lengthParameter, byteNameSpan, endOfBlockLabel, MatchExpressionFunctor),
-                Expression.Throw(Expression.Constant(new InvalidOperationException())),
-                Expression.Label(endOfBlockLabel),
-                returnLabel
-            };
-            var blockExpression = Expression.Block(parameters, expressions);
-            var lambdaExpression =
-                Expression.Lambda<DeserializeDelegate>(blockExpression, readerParameter);
-            return lambdaExpression.Compile();
+            return BuildDeserializeDelegateExpressions<DeserializeDelegate>(returnValue, assignNameSpan, lengthExpression, lengthParameter, byteNameSpan, parameters, inputParameter);
         }
 
 

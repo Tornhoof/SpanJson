@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using SpanJson.Helpers;
+using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
@@ -12,8 +15,8 @@ namespace SpanJson.Formatters
         private static readonly SerializeDelegate Serializer = BuildSerializeDelegate(s => s);
         private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
         public static readonly EnumStringFlagsFormatter<T, TSymbol, TResolver> Default = new EnumStringFlagsFormatter<T, TSymbol, TResolver>();
+        private static readonly T[] Flags = BuildFlags();
 
-        private static readonly ValueTuple<T, ulong>[] Flags = BuildFlags();
 
 
         public T Deserialize(ref JsonReader<TSymbol> reader)
@@ -26,22 +29,7 @@ namespace SpanJson.Formatters
             }
 
             ulong result = default;
-            TSymbol separator;
-            if (typeof(TSymbol) == typeof(char))
-            {
-                var sepChar = ',';
-                separator = Unsafe.As<char, TSymbol>(ref sepChar);
-            }
-            else if (typeof(TSymbol) == typeof(byte))
-            {
-                var sepChar = (byte) ',';
-                separator = Unsafe.As<byte, TSymbol>(ref sepChar);
-            }
-            else
-            {
-                ThrowNotSupportedException();
-                return default;
-            }
+            var separator = GetSeparator();
 
             while (span.Length > 0)
             {
@@ -64,6 +52,24 @@ namespace SpanJson.Formatters
             return (T) Enum.ToObject(typeof(T), result);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static TSymbol GetSeparator()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                var sepChar = ',';
+                return Unsafe.As<char, TSymbol>(ref sepChar);
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                var sepChar = (byte) ',';
+                return Unsafe.As<byte, TSymbol>(ref sepChar);
+            }
+
+            ThrowNotSupportedException();
+            return default;
+        }
 
         public void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
         {
@@ -87,17 +93,27 @@ namespace SpanJson.Formatters
 
         private static DeserializeDelegate BuildDeserializeDelegate()
         {
-            return (in ReadOnlySpan<TSymbol> input) => default;
+            var returnValue = Expression.Variable(typeof(ulong), "returnValue");
+            var nameSpan = Expression.Parameter(typeof(ReadOnlySpan<TSymbol>), "nameSpan");
+            var lengthParameter = Expression.Variable(typeof(int), "length");
+            var lengthExpression = Expression.Assign(lengthParameter, Expression.PropertyOrField(nameSpan, "Length"));
+            Expression<Action> functor = () => MemoryMarshal.AsBytes(new ReadOnlySpan<char>());
+            var asBytesMethodInfo = (functor.Body as MethodCallExpression).Method;
+            var nameSpanExpression = Expression.Call(null, asBytesMethodInfo, nameSpan);
+            var byteNameSpan = Expression.Variable(typeof(ReadOnlySpan<byte>), "byteNameSpan");
+            var parameters = new List<ParameterExpression> {nameSpan, lengthParameter, returnValue, byteNameSpan};
+            var assignNameSpan = Expression.Assign(byteNameSpan, nameSpanExpression);
+            return BuildDeserializeDelegateExpressions<DeserializeDelegate>(returnValue, assignNameSpan, lengthExpression, lengthParameter, byteNameSpan,
+                parameters, nameSpan);
         }
 
-        private static (T, ulong)[] BuildFlags()
+        private static T[] BuildFlags()
         {
             var values = Enum.GetValues(typeof(T));
-            var result = new (T, ulong)[values.Length];
+            var result = new T[values.Length];
             for (var i = 0; i < values.Length; i++)
             {
-                var value = (T) values.GetValue(i);
-                result[i] = (value, Convert.ToUInt64(value));
+                result[i] = (T) values.GetValue(i);
             }
 
             return result;
@@ -111,12 +127,11 @@ namespace SpanJson.Formatters
 
         private IEnumerable<T> GetFlags(T input)
         {
-            foreach (var valueTuple in Flags)
+            foreach (var flag in Flags)
             {
-                var value = Convert.ToUInt64(input);
-                if ((value & valueTuple.Item2) == valueTuple.Item2)
+                if (input.HasFlag(flag))
                 {
-                    yield return valueTuple.Item1;
+                    yield return flag;
                 }
             }
         }

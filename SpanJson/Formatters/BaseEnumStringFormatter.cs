@@ -5,6 +5,8 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
+using SpanJson.Helpers;
+using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
@@ -59,11 +61,49 @@ namespace SpanJson.Formatters
             return lambdaExpression.Compile();
         }
 
-        protected static string GetFormattedValue(object enumValue)
+        private static string GetFormattedValue(object enumValue)
         {
             var name = enumValue.ToString();
             return typeof(T).GetMember(name)?.FirstOrDefault()?.GetCustomAttribute<EnumMemberAttribute>()?.Value ?? name;
         }
+
+        protected static TDelegate BuildDeserializeDelegateExpressions<TDelegate>(ParameterExpression returnValue, BinaryExpression assignNameSpan,
+            BinaryExpression lengthExpression, ParameterExpression lengthParameter, ParameterExpression byteNameSpan, List<ParameterExpression> parameters,
+            ParameterExpression inputParameter)
+        {
+            var memberInfos = new List<JsonMemberInfo>();
+            var dict = new Dictionary<string, T>();
+            foreach (var value in Enum.GetValues(typeof(T)))
+            {
+                var formattedValue = GetFormattedValue(value);
+                memberInfos.Add(new JsonMemberInfo(value.ToString(), typeof(T), null, formattedValue, false, true, false, null));
+                dict.Add(value.ToString(), (T)value);
+            }
+
+            Expression MatchExpressionFunctor(JsonMemberInfo memberInfo)
+            {
+                var enumValue = dict[memberInfo.MemberName];
+                return Expression.Assign(returnValue, Expression.Constant(enumValue));
+            }
+            var endOfBlockLabel = Expression.Label();
+            var returnTarget = Expression.Label(returnValue.Type);
+            var returnLabel = Expression.Label(returnTarget, returnValue);
+            var expressions = new List<Expression>
+            {
+                assignNameSpan,
+                lengthExpression,
+                MemberComparisonBuilder.Build<TSymbol>(memberInfos, 0, lengthParameter, byteNameSpan, endOfBlockLabel, MatchExpressionFunctor),
+                Expression.Throw(Expression.Constant(new InvalidOperationException())),
+                Expression.Label(endOfBlockLabel),
+                returnLabel
+            };
+            var blockExpression = Expression.Block(parameters, expressions);
+            var lambdaExpression =
+                Expression.Lambda<TDelegate>(blockExpression, inputParameter);
+            return lambdaExpression.Compile();
+        }
+
+
 
         protected delegate void SerializeDelegate(ref JsonWriter<TSymbol> writer, T value);
     }
