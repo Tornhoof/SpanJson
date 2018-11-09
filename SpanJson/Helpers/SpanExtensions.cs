@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace SpanJson.Helpers
@@ -7,18 +8,47 @@ namespace SpanJson.Helpers
     {
         public static ReadOnlySpan<T> Trim<T>(this ReadOnlySpan<T> input) where T : struct 
         {
-            if (typeof(T) == typeof(char))
+            var start = 0;
+            for (; start < input.Length; start++)
             {
-                var charSpan = MemoryMarshal.Cast<T, char>(input);
-                var trimmed = MemoryExtensions.Trim(charSpan);
-                return MemoryMarshal.Cast<char, T>(trimmed);
+                if (!IsWhiteSpace(input[start]))
+                {
+                    break;
+                }
             }
+            var end = input.Length - 1;
+            for (; end >= start; end--)
+            {
+                if (!IsWhiteSpace(input[end]))
+                {
+                    break;
+                }
+            }
+            return input.Slice(start, end - start + 1);
+        }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsWhiteSpace<T>(T value) where T : struct
+        {
             if (typeof(T) == typeof(byte))
             {
-                // TODO: trim of bytes
+                var b = Unsafe.As<T, byte>(ref value);
+                return char.IsWhiteSpace((char) b);
             }
-            return input;
+
+            if (typeof(T) == typeof(char))
+            {
+                var c = Unsafe.As<T, char>(ref value);
+                return char.IsWhiteSpace(c);
+            }
+
+            ThrowNotSupportedException();
+            return default;
+        }
+
+        private static void ThrowNotSupportedException()
+        {
+            throw new NotSupportedException();
         }
     }
 }

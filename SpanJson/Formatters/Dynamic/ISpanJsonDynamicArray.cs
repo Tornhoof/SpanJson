@@ -4,6 +4,5 @@ namespace SpanJson.Formatters.Dynamic
 {
     public interface ISpanJsonDynamicArray : IEnumerable<object>
     {
-
     }
 }

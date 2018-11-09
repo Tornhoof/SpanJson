@@ -6,7 +6,7 @@ using SpanJson.Resolvers;
 namespace SpanJson.Formatters
 {
     /// <summary>
-    ///     Used for types which are not built-in
+    /// Used for types which are not built-in
     /// </summary>
     public sealed class EnumerableFormatter<TEnumerable, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TEnumerable, TSymbol>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TEnumerable : class, IEnumerable<T>

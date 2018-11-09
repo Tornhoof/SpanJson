@@ -6,7 +6,7 @@ using SpanJson.Resolvers;
 namespace SpanJson.Formatters
 {
     /// <summary>
-    ///     Used for types which are not built-in
+    /// Used for types which are not built-in
     /// </summary>
     public sealed class DictionaryFormatter<TDictionary, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TDictionary, TSymbol>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : class, IDictionary<string, T>
