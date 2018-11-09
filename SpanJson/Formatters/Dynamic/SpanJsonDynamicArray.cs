@@ -24,6 +24,7 @@ namespace SpanJson.Formatters.Dynamic
 
         [IgnoreDataMember]
         public object this[int index] => _input[index];
+
         [IgnoreDataMember]
         public int Length => _input.Length;
 
@@ -33,7 +34,7 @@ namespace SpanJson.Formatters.Dynamic
         }
 
         /// <summary>
-        ///     Always works
+        /// Always works
         /// </summary>
         public IEnumerator<object> GetEnumerator()
         {

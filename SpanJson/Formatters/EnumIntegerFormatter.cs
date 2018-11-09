@@ -8,18 +8,18 @@ namespace SpanJson.Formatters
         where TSymbol : struct
     {
         private static readonly SerializeDelegate Serializer = BuildSerializeDelegate();
-
         private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
         public static readonly EnumIntegerFormatter<T, TSymbol, TResolver> Default = new EnumIntegerFormatter<T, TSymbol, TResolver>();
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
-        {
-            Serializer(ref writer, value);
-        }
 
         public T Deserialize(ref JsonReader<TSymbol> reader)
         {
             return Deserializer(ref reader);
+        }
+
+        public void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
+        {
+            Serializer(ref writer, value);
         }
 
 

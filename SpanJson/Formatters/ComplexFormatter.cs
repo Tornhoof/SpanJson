@@ -13,15 +13,15 @@ using SpanJson.Resolvers;
 namespace SpanJson.Formatters
 {
     /// <summary>
-    ///     Main type for handling complex types
+    /// Main type for handling complex types
     /// </summary>
     public abstract class ComplexFormatter : BaseFormatter
     {
         private const int NestingLimit = 256;
 
         /// <summary>
-        ///     Creates the serializer for both utf8 and utf16
-        ///     There should not be a large difference between utf8 and utf16 besides member names
+        /// Creates the serializer for both utf8 and utf16
+        /// There should not be a large difference between utf8 and utf16 besides member names
         /// </summary>
         protected static SerializeDelegate<T, TSymbol> BuildSerializeDelegate<T, TSymbol, TResolver>()
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -219,140 +219,9 @@ namespace SpanJson.Formatters
             return lambda.Compile();
         }
 
-        private static void DeserializeExtension<TSymbol, TResolver>(ref JsonReader<TSymbol> reader, in ReadOnlySpan<byte> nameSpan,
-            IDictionary<string, object> dictionary, bool excludeNulls)
-            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
-        {
-            var value = RuntimeFormatter<TSymbol, TResolver>.Default.Deserialize(ref reader);
-            if (excludeNulls && value == null)
-            {
-                return;
-            }
-
-            string key = null;
-            if (typeof(TSymbol) == typeof(char))
-            {
-                key = Encoding.Unicode.GetString(nameSpan);
-            }
-            else if (typeof(TSymbol) == typeof(byte))
-            {
-                key = Encoding.UTF8.GetString(nameSpan);
-            }
-            else
-            {
-                ThrowNotSupportedException();
-            }
-
-            dictionary[key] = value;
-        }
-
-        private static void ThrowNotSupportedException()
-        {
-            throw new NotSupportedException();
-        }
-
-        private static void SerializeExtension<TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, IDictionary<string, object> value, bool writeSeparator,
-            bool excludeNulls, HashSet<string> knownNames,
-            NamingConventions namingConvention, int nestingLimit)
-            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
-        {
-            var valueLength = value.Count;
-            if (valueLength > 0)
-            {
-                foreach (var kvp in value)
-                {
-                    if (excludeNulls && kvp.Value == null)
-                    {
-                        continue;
-                    }
-
-                    if (writeSeparator)
-                    {
-                        writer.WriteValueSeparator();
-                    }
-
-                    var name = kvp.Key;
-                    if (namingConvention == NamingConventions.CamelCase && char.IsUpper(name[0]))
-                    {
-                        char[] array = null;
-                        try
-                        {
-                            array = ArrayPool<char>.Shared.Rent(name.Length);
-                            name.AsSpan().CopyTo(array);
-                            array[0] = char.ToLower(array[0]);
-                            writer.WriteName(array.AsSpan(0, name.Length));
-                        }
-                        finally
-                        {
-                            if (array != null)
-                            {
-                                ArrayPool<char>.Shared.Return(array);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        writer.WriteName(kvp.Key);
-                    }
-
-                    if (knownNames.Contains(name))
-                    {
-                        continue;
-                    }
-
-                    SerializeRuntimeDecisionInternal<object, TSymbol, TResolver>(ref writer, kvp.Value, RuntimeFormatter<TSymbol, TResolver>.Default,
-                        nestingLimit + 1);
-                    writeSeparator = true;
-                }
-            }
-        }
-
         /// <summary>
-        ///     This is basically the same algorithm as in the t4 template to create the methods
-        ///     It's necessary to update both
-        /// </summary>
-        private static ConstantExpression[] GetIntegersForMemberName(string formattedMemberInfoName)
-        {
-            var result = new List<ConstantExpression>();
-            var bytes = Encoding.UTF8.GetBytes(formattedMemberInfoName);
-            var remaining = bytes.Length;
-            var ulongCount = Math.DivRem(remaining, 8, out remaining);
-            var offset = 0;
-            for (var j = 0; j < ulongCount; j++)
-            {
-                result.Add(Expression.Constant(BitConverter.ToUInt64(bytes, offset)));
-                offset += sizeof(ulong);
-            }
-
-            var uintCount = Math.DivRem(remaining, 4, out remaining);
-            for (var j = 0; j < uintCount; j++)
-            {
-                result.Add(Expression.Constant(BitConverter.ToUInt32(bytes, offset)));
-                offset += sizeof(uint);
-            }
-
-            var ushortCount = Math.DivRem(remaining, 2, out remaining);
-            for (var j = 0; j < ushortCount; j++)
-            {
-                result.Add(Expression.Constant(BitConverter.ToUInt16(bytes, offset)));
-                offset += sizeof(ushort);
-            }
-
-            var byteCount = Math.DivRem(remaining, 1, out remaining);
-            for (var j = 0; j < byteCount; j++)
-            {
-                result.Add(Expression.Constant(bytes[offset]));
-                offset++;
-            }
-
-            Debug.Assert(remaining == 0);
-            Debug.Assert(offset == bytes.Length);
-            return result.ToArray();
-        }
-
-        /// <summary>
-        ///     Creates the deserializer for both utf8 and utf16
-        ///     There should not be a large difference between utf8 and utf16 besides member names
+        /// Creates the deserializer for both utf8 and utf16
+        /// There should not be a large difference between utf8 and utf16 besides member names
         /// </summary>
         protected static DeserializeDelegate<T, TSymbol> BuildDeserializeDelegate<T, TSymbol, TResolver>()
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
@@ -540,7 +409,7 @@ namespace SpanJson.Formatters
                 expressions.Add(skipCall);
             }
 
-            var deserializeMemberBlock =  Expression.Block(parameters, expressions);
+            var deserializeMemberBlock = Expression.Block(parameters, expressions);
             var countExpression = Expression.Parameter(typeof(int), "count");
             var abortExpression = Expression.IsTrue(Expression.Call(readerParameter, tryReadEndObjectMethodInfo, countExpression));
             var readBeginObject = Expression.Call(readerParameter, beginObjectOrThrowMethodInfo);
@@ -578,9 +447,140 @@ namespace SpanJson.Formatters
             return lambda.Compile();
         }
 
+        private static void DeserializeExtension<TSymbol, TResolver>(ref JsonReader<TSymbol> reader, in ReadOnlySpan<byte> nameSpan,
+            IDictionary<string, object> dictionary, bool excludeNulls)
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+        {
+            var value = RuntimeFormatter<TSymbol, TResolver>.Default.Deserialize(ref reader);
+            if (excludeNulls && value == null)
+            {
+                return;
+            }
+
+            string key = null;
+            if (typeof(TSymbol) == typeof(char))
+            {
+                key = Encoding.Unicode.GetString(nameSpan);
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                key = Encoding.UTF8.GetString(nameSpan);
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+
+            dictionary[key] = value;
+        }
+
+        private static void ThrowNotSupportedException()
+        {
+            throw new NotSupportedException();
+        }
+
+        private static void SerializeExtension<TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, IDictionary<string, object> value, bool writeSeparator,
+            bool excludeNulls, HashSet<string> knownNames,
+            NamingConventions namingConvention, int nestingLimit)
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+        {
+            var valueLength = value.Count;
+            if (valueLength > 0)
+            {
+                foreach (var kvp in value)
+                {
+                    if (excludeNulls && kvp.Value == null)
+                    {
+                        continue;
+                    }
+
+                    if (writeSeparator)
+                    {
+                        writer.WriteValueSeparator();
+                    }
+
+                    var name = kvp.Key;
+                    if (namingConvention == NamingConventions.CamelCase && char.IsUpper(name[0]))
+                    {
+                        char[] array = null;
+                        try
+                        {
+                            array = ArrayPool<char>.Shared.Rent(name.Length);
+                            name.AsSpan().CopyTo(array);
+                            array[0] = char.ToLower(array[0]);
+                            writer.WriteName(array.AsSpan(0, name.Length));
+                        }
+                        finally
+                        {
+                            if (array != null)
+                            {
+                                ArrayPool<char>.Shared.Return(array);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        writer.WriteName(kvp.Key);
+                    }
+
+                    if (knownNames.Contains(name))
+                    {
+                        continue;
+                    }
+
+                    SerializeRuntimeDecisionInternal<object, TSymbol, TResolver>(ref writer, kvp.Value, RuntimeFormatter<TSymbol, TResolver>.Default,
+                        nestingLimit + 1);
+                    writeSeparator = true;
+                }
+            }
+        }
+
         /// <summary>
-        ///     In some cases it is necessary to decide at runtime which serializer to use
-        ///     Structs and sealed type are safe (no derived types for them)
+        /// This is basically the same algorithm as in the t4 template to create the methods
+        /// It's necessary to update both
+        /// </summary>
+        private static ConstantExpression[] GetIntegersForMemberName(string formattedMemberInfoName)
+        {
+            var result = new List<ConstantExpression>();
+            var bytes = Encoding.UTF8.GetBytes(formattedMemberInfoName);
+            var remaining = bytes.Length;
+            var ulongCount = Math.DivRem(remaining, 8, out remaining);
+            var offset = 0;
+            for (var j = 0; j < ulongCount; j++)
+            {
+                result.Add(Expression.Constant(BitConverter.ToUInt64(bytes, offset)));
+                offset += sizeof(ulong);
+            }
+
+            var uintCount = Math.DivRem(remaining, 4, out remaining);
+            for (var j = 0; j < uintCount; j++)
+            {
+                result.Add(Expression.Constant(BitConverter.ToUInt32(bytes, offset)));
+                offset += sizeof(uint);
+            }
+
+            var ushortCount = Math.DivRem(remaining, 2, out remaining);
+            for (var j = 0; j < ushortCount; j++)
+            {
+                result.Add(Expression.Constant(BitConverter.ToUInt16(bytes, offset)));
+                offset += sizeof(ushort);
+            }
+
+            var byteCount = Math.DivRem(remaining, 1, out remaining);
+            for (var j = 0; j < byteCount; j++)
+            {
+                result.Add(Expression.Constant(bytes[offset]));
+                offset++;
+            }
+
+            Debug.Assert(remaining == 0);
+            Debug.Assert(offset == bytes.Length);
+            return result.ToArray();
+        }
+
+        /// <summary>
+        /// In some cases it is necessary to decide at runtime which serializer to use
+        /// Structs and sealed type are safe (no derived types for them)
         /// </summary>
         private static bool IsNoRuntimeDecisionRequired(Type memberType)
         {

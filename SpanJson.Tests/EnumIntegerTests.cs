@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Text;
 using SpanJson.Resolvers;
 using Xunit;
@@ -19,6 +20,14 @@ namespace SpanJson.Tests
             Min = long.MinValue,
             None = 0,
             Max = long.MaxValue,
+        }
+
+        [Flags]
+        public enum FlagEnum
+        {
+            First = 1,
+            Second = 2,
+            Third = 4
         }
 
         [Theory]
@@ -66,6 +75,31 @@ namespace SpanJson.Tests
             var serialized = JsonSerializer.Generic.Utf8.Serialize<TestLongEnum, ExcludeNullCamelCaseIntegerEnumResolver<byte>>(value);
             Assert.Contains(((long) value).ToString(CultureInfo.InvariantCulture), Encoding.UTF8.GetString(serialized));
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<TestLongEnum, ExcludeNullCamelCaseIntegerEnumResolver<byte>>(serialized);
+            Assert.Equal(value, deserialized);
+        }
+
+        [Theory]
+        [InlineData(FlagEnum.First)]
+        [InlineData(FlagEnum.First | FlagEnum.Second)]
+        [InlineData(FlagEnum.First | FlagEnum.Second | FlagEnum.Third)]
+        public void SerializeDeserializeFlagsUtf16(FlagEnum value)
+        {
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<FlagEnum, ExcludeNullCamelCaseIntegerEnumResolver<char>>(value);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<FlagEnum, ExcludeNullCamelCaseIntegerEnumResolver<char>>(serialized);
+            Assert.Equal(value, deserialized);
+        }
+
+
+        [Theory]
+        [InlineData(FlagEnum.First)]
+        [InlineData(FlagEnum.First | FlagEnum.Second)]
+        [InlineData(FlagEnum.First | FlagEnum.Second | FlagEnum.Third)]
+        public void SerializeDeserializeFlagsUtf8(FlagEnum value)
+        {
+            var serialized = JsonSerializer.Generic.Utf8.Serialize<FlagEnum, ExcludeNullCamelCaseIntegerEnumResolver<byte>>(value);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<FlagEnum, ExcludeNullCamelCaseIntegerEnumResolver<byte>>(serialized);
             Assert.Equal(value, deserialized);
         }
     }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
@@ -15,6 +11,39 @@ namespace SpanJson.Formatters
 
         private static readonly IJsonFormatter<T, TSymbol> ElementFormatter =
             StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
+
+        public T[,] Deserialize(ref JsonReader<TSymbol> reader)
+        {
+            var values = new List<T[]>(4);
+            reader.ReadBeginArrayOrThrow();
+            var count = 0;
+            while (!reader.TryReadIsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
+            {
+                values.Add(ArrayFormatter<T, TSymbol, TResolver>.Default.Deserialize(ref reader));
+            }
+
+            if (values.Count == 0)
+            {
+                return new T[0, 0];
+            }
+
+            var length = values[0].Length;
+            if (!values.TrueForAll(a => a.Length == length))
+            {
+                throw new JsonParserException(JsonParserException.ParserError.InvalidArrayFormat, reader.Position);
+            }
+
+            var result = new T[values.Count, length];
+            for (var i = 0; i < values.Count; i++)
+            {
+                for (var j = 0; j < length; j++)
+                {
+                    result[i, j] = values[i][j];
+                }
+            }
+
+            return result;
+        }
 
         public void Serialize(ref JsonWriter<TSymbol> writer, T[,] value, int nestingLimit)
         {
@@ -61,39 +90,6 @@ namespace SpanJson.Formatters
             }
 
             writer.WriteEndArray();
-        }
-
-        public T[,] Deserialize(ref JsonReader<TSymbol> reader)
-        {
-            var values = new List<T[]>(4);
-            reader.ReadBeginArrayOrThrow();
-            var count = 0;
-            while (!reader.TryReadIsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
-            {
-                values.Add(ArrayFormatter<T, TSymbol, TResolver>.Default.Deserialize(ref reader));
-            }
-
-            if (values.Count == 0)
-            {
-                return new T[0, 0];
-            }
-
-            var length = values[0].Length;
-            if (!values.TrueForAll(a => a.Length == length))
-            {
-                throw new JsonParserException(JsonParserException.ParserError.InvalidArrayFormat, reader.Position);
-            }
-
-            var result = new T[values.Count, length];
-            for (int i = 0; i < values.Count; i++)
-            {
-                for (int j = 0; j < length; j++)
-                {
-                    result[i, j] = values[i][j];
-                }
-            }
-
-            return result;
         }
     }
 }
