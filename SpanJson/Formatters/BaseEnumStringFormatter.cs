@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
 using SpanJson.Helpers;
@@ -10,7 +11,7 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public abstract class BaseEnumStringFormatterr<T, TSymbol> : BaseFormatter where T : Enum
+    public abstract class BaseEnumStringFormatter<T, TSymbol> : BaseFormatter where T : Enum
         where TSymbol : struct
     {
         protected static SerializeDelegate BuildSerializeDelegate(Func<string, string> escapeFunctor)
@@ -67,17 +68,36 @@ namespace SpanJson.Formatters
             return typeof(T).GetMember(name)?.FirstOrDefault()?.GetCustomAttribute<EnumMemberAttribute>()?.Value ?? name;
         }
 
-        protected static TDelegate BuildDeserializeDelegateExpressions<TDelegate>(ParameterExpression returnValue, BinaryExpression assignNameSpan,
-            BinaryExpression lengthExpression, ParameterExpression lengthParameter, ParameterExpression byteNameSpan, List<ParameterExpression> parameters,
-            ParameterExpression inputParameter)
+        protected static TDelegate BuildDeserializeDelegateExpressions<TDelegate, TReturn>(ParameterExpression inputExpression, Expression nameSpanExpression)
         {
+            var nameSpan = Expression.Variable(typeof(ReadOnlySpan<TSymbol>), "nameSpan");
+            var returnValue = Expression.Variable(typeof(TReturn), "returnValue");
+            var lengthParameter = Expression.Variable(typeof(int), "length");
+            var endOfBlockLabel = Expression.Label();
+            var assignNameSpan = Expression.Assign(nameSpan, nameSpanExpression);
+            var lengthExpression = Expression.Assign(lengthParameter, Expression.PropertyOrField(nameSpan, "Length"));
+            var byteNameSpan = Expression.Variable(typeof(ReadOnlySpan<byte>), "byteNameSpan");
+            var parameters = new List<ParameterExpression> { nameSpan, lengthParameter, returnValue };
+            if (typeof(TSymbol) == typeof(char))
+            {
+                Expression<Action> functor = () => MemoryMarshal.AsBytes(new ReadOnlySpan<char>());
+                var asBytesMethodInfo = (functor.Body as MethodCallExpression).Method;
+                nameSpanExpression = Expression.Call(null, asBytesMethodInfo, assignNameSpan);
+                assignNameSpan = Expression.Assign(byteNameSpan, nameSpanExpression);
+                parameters.Add(byteNameSpan);
+            }
+            else
+            {
+                byteNameSpan = nameSpan;
+            }
+
             var memberInfos = new List<JsonMemberInfo>();
-            var dict = new Dictionary<string, T>();
+            var dict = new Dictionary<string, TReturn>();
             foreach (var value in Enum.GetValues(typeof(T)))
             {
                 var formattedValue = GetFormattedValue(value);
                 memberInfos.Add(new JsonMemberInfo(value.ToString(), typeof(T), null, formattedValue, false, true, false, null));
-                dict.Add(value.ToString(), (T)value);
+                dict.Add(value.ToString(), (TReturn) Convert.ChangeType(value, typeof(TReturn)));
             }
 
             Expression MatchExpressionFunctor(JsonMemberInfo memberInfo)
@@ -85,7 +105,7 @@ namespace SpanJson.Formatters
                 var enumValue = dict[memberInfo.MemberName];
                 return Expression.Assign(returnValue, Expression.Constant(enumValue));
             }
-            var endOfBlockLabel = Expression.Label();
+
             var returnTarget = Expression.Label(returnValue.Type);
             var returnLabel = Expression.Label(returnTarget, returnValue);
             var expressions = new List<Expression>
@@ -99,7 +119,7 @@ namespace SpanJson.Formatters
             };
             var blockExpression = Expression.Block(parameters, expressions);
             var lambdaExpression =
-                Expression.Lambda<TDelegate>(blockExpression, inputParameter);
+                Expression.Lambda<TDelegate>(blockExpression, inputExpression);
             return lambdaExpression.Compile();
         }
 

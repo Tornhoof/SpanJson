@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using SpanJson.Helpers;
-using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public sealed class EnumStringFormatter<T, TSymbol, TResolver> : BaseEnumStringFormatterr<T, TSymbol>, IJsonFormatter<T, TSymbol> where T : Enum
+    public sealed class EnumStringFormatter<T, TSymbol, TResolver> : BaseEnumStringFormatter<T, TSymbol>, IJsonFormatter<T, TSymbol> where T : Enum
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
         where TSymbol : struct
     {
@@ -29,43 +25,22 @@ namespace SpanJson.Formatters
 
         private static DeserializeDelegate BuildDeserializeDelegate()
         {
-            var inputParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
+            var readerParameter = Expression.Parameter(typeof(JsonReader<TSymbol>).MakeByRefType(), "reader");
             MethodInfo nameSpanMethodInfo;
             if (typeof(TSymbol) == typeof(char))
             {
-                nameSpanMethodInfo = FindPublicInstanceMethod(inputParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16StringSpan));
+                nameSpanMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf16StringSpan));
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                nameSpanMethodInfo = FindPublicInstanceMethod(inputParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8StringSpan));
+                nameSpanMethodInfo = FindPublicInstanceMethod(readerParameter.Type, nameof(JsonReader<TSymbol>.ReadUtf8StringSpan));
             }
             else
             {
                 throw new NotSupportedException();
             }
-
-            var returnValue = Expression.Variable(typeof(T), "returnValue");
-            var nameSpan = Expression.Variable(typeof(ReadOnlySpan<TSymbol>), "nameSpan");
-            var lengthParameter = Expression.Variable(typeof(int), "length");
-            var nameSpanExpression = Expression.Call(inputParameter, nameSpanMethodInfo);
-            var assignNameSpan = Expression.Assign(nameSpan, nameSpanExpression);
-            var lengthExpression = Expression.Assign(lengthParameter, Expression.PropertyOrField(nameSpan, "Length"));
-            var byteNameSpan = Expression.Variable(typeof(ReadOnlySpan<byte>), "byteNameSpan");
-            var parameters = new List<ParameterExpression> {nameSpan, lengthParameter, returnValue};
-            if (typeof(TSymbol) == typeof(char))
-            {
-                Expression<Action> functor = () => MemoryMarshal.AsBytes(new ReadOnlySpan<char>());
-                var asBytesMethodInfo = (functor.Body as MethodCallExpression).Method;
-                nameSpanExpression = Expression.Call(null, asBytesMethodInfo, assignNameSpan);
-                assignNameSpan = Expression.Assign(byteNameSpan, nameSpanExpression);
-                parameters.Add(byteNameSpan);
-            }
-            else
-            {
-                byteNameSpan = nameSpan;
-            }
-
-            return BuildDeserializeDelegateExpressions<DeserializeDelegate>(returnValue, assignNameSpan, lengthExpression, lengthParameter, byteNameSpan, parameters, inputParameter);
+            Expression nameSpanExpression = Expression.Call(readerParameter, nameSpanMethodInfo);
+            return BuildDeserializeDelegateExpressions<DeserializeDelegate, T>(readerParameter, nameSpanExpression);
         }
 
 

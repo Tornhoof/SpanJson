@@ -6,7 +6,7 @@ namespace SpanJson.Helpers
 {
     public static class SpanExtensions
     {
-        public static ReadOnlySpan<T> Trim<T>(this ReadOnlySpan<T> input) where T : struct 
+        public static ReadOnlySpan<T> Trim<T>(this ReadOnlySpan<T> input) where T : struct
         {
             var start = 0;
             for (; start < input.Length; start++)
@@ -16,6 +16,7 @@ namespace SpanJson.Helpers
                     break;
                 }
             }
+
             var end = input.Length - 1;
             for (; end >= start; end--)
             {
@@ -24,6 +25,7 @@ namespace SpanJson.Helpers
                     break;
                 }
             }
+
             return input.Slice(start, end - start + 1);
         }
 
@@ -46,6 +48,7 @@ namespace SpanJson.Helpers
             return default;
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private static void ThrowNotSupportedException()
         {
             throw new NotSupportedException();

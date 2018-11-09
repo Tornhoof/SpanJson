@@ -21,7 +21,8 @@ namespace SpanJson.Tests
         {
             First = 1,
             Second = 2,
-            Third = 4
+            Third = 4,
+            Fourth = -8,
         }
 
         [Theory]
@@ -76,6 +77,7 @@ namespace SpanJson.Tests
         [InlineData(FlagEnum.First)]
         [InlineData(FlagEnum.First | FlagEnum.Second)]
         [InlineData(FlagEnum.First | FlagEnum.Second | FlagEnum.Third)]
+        [InlineData(FlagEnum.First | FlagEnum.Second | FlagEnum.Third | FlagEnum.Fourth)]
         public void SerializeDeserializeFlagsUtf16(FlagEnum value)
         {
             var serialized = JsonSerializer.Generic.Utf16.Serialize(value);
@@ -88,6 +90,7 @@ namespace SpanJson.Tests
         [InlineData(FlagEnum.First)]
         [InlineData(FlagEnum.First | FlagEnum.Second)]
         [InlineData(FlagEnum.First | FlagEnum.Second | FlagEnum.Third)]
+        [InlineData(FlagEnum.First | FlagEnum.Second | FlagEnum.Third | FlagEnum.Fourth)]
         public void SerializeDeserializeFlagsUtf8(FlagEnum value)
         {
             var serialized = JsonSerializer.Generic.Utf8.Serialize(value);

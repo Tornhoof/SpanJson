@@ -275,7 +275,8 @@ namespace SpanJson.Resolvers
                     {
                         if (type.GetCustomAttribute<FlagsAttribute>() != null)
                         {
-                            return GetDefaultOrCreate(typeof(EnumStringFlagsFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
+                            var enumBaseType = Enum.GetUnderlyingType(type);
+                            return GetDefaultOrCreate(typeof(EnumStringFlagsFormatter<,,,>).MakeGenericType(type, enumBaseType, typeof(TSymbol), typeof(TResolver)));
                         }
 
                         return GetDefaultOrCreate(typeof(EnumStringFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));

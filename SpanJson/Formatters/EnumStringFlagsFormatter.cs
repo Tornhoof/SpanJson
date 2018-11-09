@@ -2,22 +2,22 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using SpanJson.Helpers;
-using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public sealed class EnumStringFlagsFormatter<T, TSymbol, TResolver> : BaseEnumStringFormatterr<T, TSymbol>, IJsonFormatter<T, TSymbol> where T : Enum
+    public sealed class EnumStringFlagsFormatter<T, TEnumBase, TSymbol, TResolver> : BaseEnumStringFormatter<T, TSymbol>, IJsonFormatter<T, TSymbol>
+        where T : Enum
+        where TEnumBase : struct, IComparable, IFormattable
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
         where TSymbol : struct, IEquatable<TSymbol>
     {
         private static readonly SerializeDelegate Serializer = BuildSerializeDelegate(s => s);
         private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
-        public static readonly EnumStringFlagsFormatter<T, TSymbol, TResolver> Default = new EnumStringFlagsFormatter<T, TSymbol, TResolver>();
         private static readonly T[] Flags = BuildFlags();
 
-
+        public static readonly EnumStringFlagsFormatter<T, TEnumBase, TSymbol, TResolver> Default =
+            new EnumStringFlagsFormatter<T, TEnumBase, TSymbol, TResolver>();
 
         public T Deserialize(ref JsonReader<TSymbol> reader)
         {
@@ -28,7 +28,7 @@ namespace SpanJson.Formatters
                 return default;
             }
 
-            ulong result = default;
+            TEnumBase result = default;
             var separator = GetSeparator();
 
             while (span.Length > 0)
@@ -38,18 +38,18 @@ namespace SpanJson.Formatters
                 if (index != -1)
                 {
                     var currentValue = span.Slice(0, index).Trim();
-                    result |= Deserializer(currentValue);
+                    result = EnumFlagHelpers.Combine(result, Deserializer(currentValue));
                     span = span.Slice(index + 1);
                 }
                 else
                 {
                     span = span.Trim();
-                    result |= Deserializer(span);
+                    result = EnumFlagHelpers.Combine(result, Deserializer(span));
                     break;
                 }
             }
 
-            return (T) Enum.ToObject(typeof(T), result);
+            return Unsafe.As<TEnumBase, T>(ref result);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -93,18 +93,9 @@ namespace SpanJson.Formatters
 
         private static DeserializeDelegate BuildDeserializeDelegate()
         {
-            var returnValue = Expression.Variable(typeof(ulong), "returnValue");
             var nameSpan = Expression.Parameter(typeof(ReadOnlySpan<TSymbol>), "nameSpan");
-            var lengthParameter = Expression.Variable(typeof(int), "length");
-            var lengthExpression = Expression.Assign(lengthParameter, Expression.PropertyOrField(nameSpan, "Length"));
-            Expression<Action> functor = () => MemoryMarshal.AsBytes(new ReadOnlySpan<char>());
-            var asBytesMethodInfo = (functor.Body as MethodCallExpression).Method;
-            var nameSpanExpression = Expression.Call(null, asBytesMethodInfo, nameSpan);
-            var byteNameSpan = Expression.Variable(typeof(ReadOnlySpan<byte>), "byteNameSpan");
-            var parameters = new List<ParameterExpression> {nameSpan, lengthParameter, returnValue, byteNameSpan};
-            var assignNameSpan = Expression.Assign(byteNameSpan, nameSpanExpression);
-            return BuildDeserializeDelegateExpressions<DeserializeDelegate>(returnValue, assignNameSpan, lengthExpression, lengthParameter, byteNameSpan,
-                parameters, nameSpan);
+            Expression nameSpanExpression = nameSpan;
+            return BuildDeserializeDelegateExpressions<DeserializeDelegate, TEnumBase>(nameSpan, nameSpanExpression);
         }
 
         private static T[] BuildFlags()
@@ -119,7 +110,7 @@ namespace SpanJson.Formatters
             return result;
         }
 
-
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private static void ThrowNotSupportedException()
         {
             throw new NotSupportedException();
@@ -129,14 +120,13 @@ namespace SpanJson.Formatters
         {
             foreach (var flag in Flags)
             {
-                if (input.HasFlag(flag))
+                if (EnumFlagHelpers.HasFlag<T, TEnumBase>(input, flag))
                 {
                     yield return flag;
                 }
             }
         }
 
-
-        private delegate ulong DeserializeDelegate(in ReadOnlySpan<TSymbol> input);
+        private delegate TEnumBase DeserializeDelegate(ReadOnlySpan<TSymbol> input);
     }
 }
