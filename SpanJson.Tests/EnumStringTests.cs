@@ -16,6 +16,15 @@ namespace SpanJson.Tests
             Universe,
         }
 
+        [Flags]
+        public enum FlagsEnum
+        {
+            First = 1,
+            Second = 2,
+            Third = 4,
+            Fourth = 8,
+        }
+
         [Theory]
         [InlineData(TestEnum.Hello, "\"Hello\"")]
         [InlineData(TestEnum.World, "\"World\"")]
@@ -64,9 +73,27 @@ namespace SpanJson.Tests
             Assert.Equal(value, deserialized);
         }
 
+        [Fact]
+        public void DeserializeFlagsEnumWithWhitespaceUtf8()
+        {
+            string value = "\"   First, Second   , Third,    Fourth  \"";
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<FlagsEnum>(Encoding.UTF8.GetBytes(value));
+            Assert.Equal(FlagsEnum.First | FlagsEnum.Second | FlagsEnum.Third | FlagsEnum.Fourth, deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeFlagsEnumWithWhitespaceUtf16()
+        {
+            string value = "\"   First, Second   , Third,    Fourth   \"";
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<FlagsEnum>(value);
+            Assert.Equal(FlagsEnum.First | FlagsEnum.Second | FlagsEnum.Third | FlagsEnum.Fourth, deserialized);
+        }
+
         public class TestDO
         {
             public TestEnum? Value { get; set; }
+
+            public FlagsEnum? Flags { get; set; }
 
             public int? AnotherValue { get; set; }
         }
@@ -74,7 +101,7 @@ namespace SpanJson.Tests
         [Fact]
         public void SerializeDeserializeNullableEnumUtf16()
         {
-            var test = new TestDO {Value = null, AnotherValue = 1};
+            var test = new TestDO {Value = null, AnotherValue = 1, Flags = FlagsEnum.Fourth | FlagsEnum.First};
             var serialized = JsonSerializer.Generic.Utf16.Serialize<TestDO, IncludeNullsOriginalCaseResolver<char>>(test);
             Assert.Contains("null", serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<TestDO, IncludeNullsOriginalCaseResolver<char>>(serialized);
@@ -85,7 +112,7 @@ namespace SpanJson.Tests
         [Fact]
         public void SerializeDeserializeNullableEnumUtf8()
         {
-            var test = new TestDO {Value = null, AnotherValue = 1};
+            var test = new TestDO {Value = null, AnotherValue = 1, Flags = null};
             var serialized = JsonSerializer.Generic.Utf8.Serialize<TestDO, IncludeNullsOriginalCaseResolver<byte>>(test);
             Assert.Contains("null", Encoding.UTF8.GetString(serialized));
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<TestDO, IncludeNullsOriginalCaseResolver<byte>>(serialized);
