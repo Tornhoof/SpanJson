@@ -24,6 +24,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="EnumFlagsTests.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>EnumFlagsTests.cs</LastGenOutput>
+    </None>
+    <Compile Update="EnumFlagsTests.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>EnumFlagsTests.tt</DependentUpon>
+    </Compile>
     <None Update="Generated\BclTests.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BclTests.cs</LastGenOutput>
