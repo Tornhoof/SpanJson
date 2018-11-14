@@ -31,7 +31,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.Value, nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
         }
     }
 }
