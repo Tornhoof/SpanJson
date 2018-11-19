@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Text;
+using Newtonsoft.Json;
 using SpanJson.Resolvers;
 using Xunit;
 
@@ -20,14 +21,6 @@ namespace SpanJson.Tests
             Min = long.MinValue,
             None = 0,
             Max = long.MaxValue,
-        }
-
-        [Flags]
-        public enum FlagEnum
-        {
-            First = 1,
-            Second = 2,
-            Third = 4
         }
 
         public enum DuplicateEnum
@@ -85,30 +78,7 @@ namespace SpanJson.Tests
             Assert.Equal(value, deserialized);
         }
 
-        [Theory]
-        [InlineData(FlagEnum.First)]
-        [InlineData(FlagEnum.First | FlagEnum.Second)]
-        [InlineData(FlagEnum.First | FlagEnum.Second | FlagEnum.Third)]
-        public void SerializeDeserializeFlagsUtf16(FlagEnum value)
-        {
-            var serialized = JsonSerializer.Generic.Utf16.Serialize<FlagEnum, ExcludeNullCamelCaseIntegerEnumResolver<char>>(value);
-            Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<FlagEnum, ExcludeNullCamelCaseIntegerEnumResolver<char>>(serialized);
-            Assert.Equal(value, deserialized);
-        }
 
-
-        [Theory]
-        [InlineData(FlagEnum.First)]
-        [InlineData(FlagEnum.First | FlagEnum.Second)]
-        [InlineData(FlagEnum.First | FlagEnum.Second | FlagEnum.Third)]
-        public void SerializeDeserializeFlagsUtf8(FlagEnum value)
-        {
-            var serialized = JsonSerializer.Generic.Utf8.Serialize<FlagEnum, ExcludeNullCamelCaseIntegerEnumResolver<byte>>(value);
-            Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<FlagEnum, ExcludeNullCamelCaseIntegerEnumResolver<byte>>(serialized);
-            Assert.Equal(value, deserialized);
-        }
 
         [Theory]
         [InlineData(DuplicateEnum.First)]
@@ -129,6 +99,94 @@ namespace SpanJson.Tests
             var serialized = JsonSerializer.Generic.Utf16.Serialize<DuplicateEnum, ExcludeNullCamelCaseIntegerEnumResolver<char>>(value);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<DuplicateEnum, ExcludeNullCamelCaseIntegerEnumResolver<char>>(serialized);
+            Assert.Equal(value, deserialized);
+        }
+
+        [Flags]
+        public enum FlagsEnum
+        {
+            First = 1,
+            Second = 2,
+            Third = 4
+        }
+
+
+        [Flags]
+        public enum DuplicateFlagsEnum
+        {
+            First = 1,
+            Second = 2,
+            Third = 2
+        }
+
+
+        [Theory]
+        [InlineData(DuplicateFlagsEnum.First)]
+        [InlineData(DuplicateFlagsEnum.First | DuplicateFlagsEnum.Second)]
+        public void SerializeDeserializeDuplicateFlagsUtf16(DuplicateFlagsEnum value)
+        {
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<DuplicateFlagsEnum, ExcludeNullCamelCaseIntegerEnumResolver<char>>(value);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<DuplicateFlagsEnum, ExcludeNullCamelCaseIntegerEnumResolver<char>>(serialized);
+            Assert.Equal(value, deserialized);
+        }
+
+
+        [Theory]
+        [InlineData(DuplicateFlagsEnum.First)]
+        [InlineData(DuplicateFlagsEnum.First | DuplicateFlagsEnum.Second)]
+        public void SerializeDeserializeDuplicateFlagsUtf8(DuplicateFlagsEnum value)
+        {
+            var serialized = JsonSerializer.Generic.Utf8.Serialize<DuplicateFlagsEnum, ExcludeNullCamelCaseIntegerEnumResolver<byte>>(value);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<DuplicateFlagsEnum, ExcludeNullCamelCaseIntegerEnumResolver<byte>>(serialized);
+            Assert.Equal(value, deserialized);
+        }
+
+
+        [Theory]
+        [InlineData(FlagsEnum.First)]
+        [InlineData(FlagsEnum.First | FlagsEnum.Second)]
+        [InlineData(FlagsEnum.First | FlagsEnum.Second | FlagsEnum.Third)]
+        public void SerializeDeserializeFlagsUtf16(FlagsEnum value)
+        {
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<FlagsEnum, ExcludeNullCamelCaseIntegerEnumResolver<char>>(value);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<FlagsEnum, ExcludeNullCamelCaseIntegerEnumResolver<char>>(serialized);
+            Assert.Equal(value, deserialized);
+        }
+
+
+        [Theory]
+        [InlineData(FlagsEnum.First)]
+        [InlineData(FlagsEnum.First | FlagsEnum.Second)]
+        [InlineData(FlagsEnum.First | FlagsEnum.Second | FlagsEnum.Third)]
+        public void SerializeDeserializeFlagsUtf8(FlagsEnum value)
+        {
+            var serialized = JsonSerializer.Generic.Utf8.Serialize<FlagsEnum, ExcludeNullCamelCaseIntegerEnumResolver<byte>>(value);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<FlagsEnum, ExcludeNullCamelCaseIntegerEnumResolver<byte>>(serialized);
+            Assert.Equal(value, deserialized);
+
+        }
+
+        [Fact]
+        public void SerializeDeserializeDuplicateUtf16Manual()
+        {
+            var value = DuplicateEnum.Third;
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<DuplicateEnum, ExcludeNullCamelCaseIntegerEnumResolver<char>>(value);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<DuplicateEnum, ExcludeNullCamelCaseIntegerEnumResolver<char>>(serialized);
+            Assert.Equal(value, deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeDuplicateFlagsUtf16Manual()
+        {
+            var value = DuplicateFlagsEnum.First | DuplicateFlagsEnum.Second | DuplicateFlagsEnum.Third;
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<DuplicateFlagsEnum, ExcludeNullCamelCaseIntegerEnumResolver<char>>(value);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<DuplicateFlagsEnum, ExcludeNullCamelCaseIntegerEnumResolver<char>>(serialized);
             Assert.Equal(value, deserialized);
         }
     }

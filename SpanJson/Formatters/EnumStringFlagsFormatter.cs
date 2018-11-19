@@ -100,11 +100,12 @@ namespace SpanJson.Formatters
 
         private static T[] BuildFlags()
         {
-            var values = Enum.GetValues(typeof(T));
-            var result = new T[values.Length];
-            for (var i = 0; i < values.Length; i++)
+            var names = Enum.GetNames(typeof(T));
+            var result = new T[names.Length];
+            for (var i = 0; i < names.Length; i++)
             {
-                result[i] = (T) values.GetValue(i);
+                var value = Enum.Parse(typeof(T), names[i]);
+                result[i] = (T) value;
             }
 
             return result;
