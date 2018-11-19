@@ -25,6 +25,13 @@ namespace SpanJson.Tests
             Fourth = 8,
         }
 
+        public enum DuplicateEnum
+        {
+            First = 1,
+            Second = 2,
+            Third = 1,
+        }
+
         [Theory]
         [InlineData(TestEnum.Hello, "\"Hello\"")]
         [InlineData(TestEnum.World, "\"World\"")]
@@ -70,6 +77,28 @@ namespace SpanJson.Tests
             var serialized = JsonSerializer.Generic.Utf16.Serialize(value);
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<TestEnum>(serialized);
+            Assert.Equal(value, deserialized);
+        }
+
+        [Theory]
+        [InlineData(DuplicateEnum.First)]
+        [InlineData(DuplicateEnum.Second)]
+        public void SerializeDeserializeDuplicateUtf8(DuplicateEnum value)
+        {
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(value);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<DuplicateEnum>(serialized);
+            Assert.Equal(value, deserialized);
+        }
+
+        [Theory]
+        [InlineData(DuplicateEnum.First)]
+        [InlineData(DuplicateEnum.Second)]
+        public void SerializeDeserializeDuplicateUtf16(DuplicateEnum value)
+        {
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(value);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<DuplicateEnum>(serialized);
             Assert.Equal(value, deserialized);
         }
 
