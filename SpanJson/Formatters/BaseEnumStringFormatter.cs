@@ -33,10 +33,10 @@ namespace SpanJson.Formatters
             }
 
             var cases = new List<SwitchCase>();
-            foreach (var value in Enum.GetValues(typeof(T)))
+            foreach (var name in Enum.GetNames(typeof(T)))
             {
                 Expression valueConstant;
-                var formattedValue = escapeFunctor(GetFormattedValue(value));
+                var formattedValue = escapeFunctor(GetFormattedValue(name));
                 if (typeof(TSymbol) == typeof(char))
                 {
                     valueConstant = Expression.Constant(formattedValue);
@@ -50,6 +50,7 @@ namespace SpanJson.Formatters
                     throw new NotSupportedException();
                 }
 
+                var value = Enum.Parse(typeof(T), name);
                 var switchCase = Expression.SwitchCase(Expression.Call(writerParameter, writerMethodInfo, valueConstant), Expression.Constant(value));
                 cases.Add(switchCase);
             }
@@ -62,10 +63,9 @@ namespace SpanJson.Formatters
             return lambdaExpression.Compile();
         }
 
-        private static string GetFormattedValue(object enumValue)
+        private static string GetFormattedValue(string enumValue)
         {
-            var name = enumValue.ToString();
-            return typeof(T).GetMember(name)?.FirstOrDefault()?.GetCustomAttribute<EnumMemberAttribute>()?.Value ?? name;
+           return typeof(T).GetMember(enumValue)?.FirstOrDefault()?.GetCustomAttribute<EnumMemberAttribute>()?.Value ?? enumValue;
         }
 
         protected static TDelegate BuildDeserializeDelegateExpressions<TDelegate, TReturn>(ParameterExpression inputExpression, Expression nameSpanExpression)
@@ -93,11 +93,12 @@ namespace SpanJson.Formatters
 
             var memberInfos = new List<JsonMemberInfo>();
             var dict = new Dictionary<string, TReturn>();
-            foreach (var value in Enum.GetValues(typeof(T)))
+            foreach (var name in Enum.GetNames(typeof(T)))
             {
-                var formattedValue = GetFormattedValue(value);
-                memberInfos.Add(new JsonMemberInfo(value.ToString(), typeof(T), null, formattedValue, false, true, false, null));
-                dict.Add(value.ToString(), (TReturn) Convert.ChangeType(value, typeof(TReturn)));
+                var formattedValue = GetFormattedValue(name);
+                memberInfos.Add(new JsonMemberInfo(name, typeof(T), null, formattedValue, false, true, false, null));
+                var value = Enum.Parse(typeof(T), name);
+                dict.Add(name, (TReturn) Convert.ChangeType(value, typeof(TReturn)));
             }
 
             Expression MatchExpressionFunctor(JsonMemberInfo memberInfo)

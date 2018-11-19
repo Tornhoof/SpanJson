@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using SpanJson.Resolvers;
 using Xunit;
 
@@ -23,6 +25,21 @@ namespace SpanJson.Tests
             Second = 2,
             Third = 4,
             Fourth = 8,
+        }
+
+        public enum DuplicateEnum
+        {
+            First = 1,
+            Second = 2,
+            Third = 1,
+        }
+
+        [Flags]
+        public enum DuplicateFlagsEnum
+        {
+            First = 1,
+            Second = 2,
+            Third = 1,
         }
 
         [Theory]
@@ -71,6 +88,55 @@ namespace SpanJson.Tests
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<TestEnum>(serialized);
             Assert.Equal(value, deserialized);
+        }
+
+        [Theory]
+        [InlineData(DuplicateEnum.First)]
+        [InlineData(DuplicateEnum.Second)]
+        public void SerializeDeserializeDuplicateUtf8(DuplicateEnum value)
+        {
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(value);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<DuplicateEnum>(serialized);
+            Assert.Equal(value, deserialized);
+        }
+
+        [Theory]
+        [InlineData(DuplicateEnum.First)]
+        [InlineData(DuplicateEnum.Second)]
+        public void SerializeDeserializeDuplicateUtf16(DuplicateEnum value)
+        {
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(value);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<DuplicateEnum>(serialized);
+            Assert.Equal(value, deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeDuplicateUtf16Manual()
+        {
+            var value = DuplicateEnum.Third;
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(value);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<DuplicateEnum>(serialized);
+            Assert.Equal(value, deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeDuplicateFlagsUtf16Manual()
+        {
+            var value = DuplicateFlagsEnum.First | DuplicateFlagsEnum.Second | DuplicateFlagsEnum.Third;
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(value);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<DuplicateFlagsEnum>(serialized);
+            Assert.Equal(value, deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeDuplicateFlagsUtf16NotFound()
+        {
+            string value = "\"   First, Second   , Third, Unknown  \"";
+            Assert.Throws<InvalidOperationException>(() => JsonSerializer.Generic.Utf16.Deserialize<DuplicateFlagsEnum>(value));
         }
 
         [Fact]
