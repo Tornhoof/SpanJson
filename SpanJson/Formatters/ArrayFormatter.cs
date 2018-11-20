@@ -16,6 +16,8 @@ namespace SpanJson.Formatters
         private static readonly IJsonFormatter<T, TSymbol> ElementFormatter =
             StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
 
+        private static readonly bool IsRecursionCandidate = RecursionCandidate<T>.IsRecursionCandidate;
+
         public T[] Deserialize(ref JsonReader<TSymbol> reader)
         {
             T[] temp = null;
@@ -56,7 +58,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            if (RecursionCandidate<T>.IsRecursionCandidate)
+            if (IsRecursionCandidate)
             {
                 writer.IncrementDepth();
             }
@@ -71,7 +73,7 @@ namespace SpanJson.Formatters
                     SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i], ElementFormatter);
                 }
             }
-            if (RecursionCandidate<T>.IsRecursionCandidate)
+            if (IsRecursionCandidate)
             {
                 writer.DecrementDepth();
             }

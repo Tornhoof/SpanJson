@@ -294,15 +294,15 @@ namespace SpanJson.Formatters
 
             // We need to decide during generation if we handle constructors or normal member assignment, the difference is done in the functor below
             Func<JsonMemberInfo, Expression> matchExpressionFunctor;
-            Expression[] constructorParameterExpresssions = null;
+            Expression[] constructorParameterExpressions = null;
             if (objectDescription.Constructor != null)
             {
                 // If we want to use the constructor we serialize into an array of variables internally and then create the object from that
                 var dict = objectDescription.ConstructorMapping;
-                constructorParameterExpresssions = new Expression[dict.Count];
+                constructorParameterExpressions = new Expression[dict.Count];
                 foreach (var valueTuple in dict)
                 {
-                    constructorParameterExpresssions[valueTuple.Value.Index] = Expression.Variable(valueTuple.Value.Type);
+                    constructorParameterExpressions[valueTuple.Value.Index] = Expression.Variable(valueTuple.Value.Type);
                 }
 
                 matchExpressionFunctor = memberInfo =>
@@ -311,7 +311,7 @@ namespace SpanJson.Formatters
                     var formatter = resolver.GetFormatter(memberInfo);
                     var formatterType = formatter.GetType();
                     var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
-                    return Expression.Assign(constructorParameterExpresssions[element.Index],
+                    return Expression.Assign(constructorParameterExpressions[element.Index],
                         Expression.Call(Expression.Field(null, fieldInfo),
                             FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()),
                             readerParameter));
@@ -416,14 +416,14 @@ namespace SpanJson.Formatters
             {
                 var blockParameters = new List<ParameterExpression> {returnValue, countExpression};
                 // ReSharper disable AssignNullToNotNullAttribute
-                blockParameters.AddRange(constructorParameterExpresssions.OfType<ParameterExpression>());
+                blockParameters.AddRange(constructorParameterExpressions.OfType<ParameterExpression>());
                 // ReSharper restore AssignNullToNotNullAttribute
                 block = Expression.Block(blockParameters, readBeginObject,
                     Expression.Loop(
                         Expression.IfThenElse(abortExpression, Expression.Break(loopAbort),
                             deserializeMemberBlock), loopAbort
                     ),
-                    Expression.Assign(returnValue, Expression.New(objectDescription.Constructor, constructorParameterExpresssions)),
+                    Expression.Assign(returnValue, Expression.New(objectDescription.Constructor, constructorParameterExpressions)),
                     Expression.Label(returnTarget, returnValue)
                 );
             }
