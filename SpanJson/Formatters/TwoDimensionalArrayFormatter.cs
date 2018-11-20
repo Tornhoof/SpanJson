@@ -45,7 +45,7 @@ namespace SpanJson.Formatters
             return result;
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T[,] value, int nestingLimit)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T[,] value)
         {
             if (value == null)
             {
@@ -65,11 +65,11 @@ namespace SpanJson.Formatters
                 writer.WriteBeginArray();
                 if (secondLength > 0)
                 {
-                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0, 0], ElementFormatter, nestingLimit);
+                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0, 0], ElementFormatter);
                     for (var k = 1; k < secondLength; k++)
                     {
                         writer.WriteValueSeparator();
-                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0, k], ElementFormatter, nestingLimit);
+                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0, k], ElementFormatter);
                     }
                 }
 
@@ -80,11 +80,11 @@ namespace SpanJson.Formatters
                     writer.WriteBeginArray();
                     if (secondLength > 0)
                     {
-                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i, 0], ElementFormatter, nestingLimit);
+                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i, 0], ElementFormatter);
                         for (var k = 1; k < secondLength; k++)
                         {
                             writer.WriteValueSeparator();
-                            SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i, k], ElementFormatter, nestingLimit);
+                            SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i, k], ElementFormatter);
                         }
                     }
 

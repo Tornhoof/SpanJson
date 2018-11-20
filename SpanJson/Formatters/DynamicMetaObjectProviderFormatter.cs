@@ -59,7 +59,7 @@ namespace SpanJson.Formatters
             return result;
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T value)
         {
             if (value == null)
             {
@@ -85,7 +85,7 @@ namespace SpanJson.Formatters
             else if (value is ISpanJsonDynamicArray dynamicArray)
             {
                 writer.IncrementDepth();
-                EnumerableFormatter<IEnumerable<object>, object, TSymbol, TResolver>.Default.Serialize(ref writer, dynamicArray, nestingLimit + 1);
+                EnumerableFormatter<IEnumerable<object>, object, TSymbol, TResolver>.Default.Serialize(ref writer, dynamicArray);
                 writer.DecrementDepth();
             }
             else
@@ -109,7 +109,7 @@ namespace SpanJson.Formatters
 
                     writer.IncrementDepth();
                     writer.WriteName(memberInfo.Name);
-                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child, nestingLimit);
+                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child);
                     writer.DecrementDepth();
                 }
 
@@ -131,7 +131,7 @@ namespace SpanJson.Formatters
 
                     writer.IncrementDepth();
                     writer.WriteName(memberInfo.Name);
-                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child, nestingLimit);
+                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child);
                     writer.DecrementDepth();
                 }
 

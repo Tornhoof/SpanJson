@@ -31,7 +31,7 @@ namespace SpanJson.Formatters
             return Converter(array);
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, TEnumerable value, int nestingLimit)
+        public void Serialize(ref JsonWriter<TSymbol> writer, TEnumerable value)
         {
             if (value == null)
             {
@@ -51,12 +51,12 @@ namespace SpanJson.Formatters
                 if (enumerator.MoveNext())
                 {
                     // first one, so we can write the separator prior to every following one
-                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, enumerator.Current, ElementFormatter, nestingLimit);
+                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, enumerator.Current, ElementFormatter);
                     // write all the other ones
                     while (enumerator.MoveNext())
                     {
                         writer.WriteValueSeparator();
-                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, enumerator.Current, ElementFormatter, nestingLimit);
+                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, enumerator.Current, ElementFormatter);
                     }
                 }
                 if (RecursionCandidate<T>.IsRecursionCandidate)

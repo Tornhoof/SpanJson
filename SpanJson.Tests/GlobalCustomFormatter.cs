@@ -79,14 +79,14 @@ namespace SpanJson.Tests
                 return DateTimeOffset.FromUnixTimeSeconds(reader.ReadUtf16Int64()).DateTime;
             }
 
-            public void Serialize(ref JsonWriter<byte> writer, DateTime value, int nestingLimit)
+            public void Serialize(ref JsonWriter<byte> writer, DateTime value)
             {
                 writer.WriteUtf8Int64(value <= MinValueDateTime
                     ? MinUnixTimeSeconds
                     : new DateTimeOffset(DateTime.SpecifyKind(value, DateTimeKind.Utc)).ToUnixTimeSeconds());
             }
 
-            public void Serialize(ref JsonWriter<char> writer, DateTime value, int nestingLimit)
+            public void Serialize(ref JsonWriter<char> writer, DateTime value)
             {
                 writer.WriteUtf16Int64(value <= MinValueDateTime
                     ? MinUnixTimeSeconds

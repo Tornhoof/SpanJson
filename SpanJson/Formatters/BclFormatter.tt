@@ -17,11 +17,11 @@ void GenerateListSerializeCode(string typeName, string utfName)
             writer.Write<#= utfName #>BeginArray();
             if (valueLength > 0)
             {
-                ElementFormatter.Serialize(ref writer, value[0], nestingLimit);
+                ElementFormatter.Serialize(ref writer, value[0]);
                 for (var i = 1; i < valueLength; i++)
                 {
                     writer.Write<#= utfName #>ValueSeparator();
-                    ElementFormatter.Serialize(ref writer, value[i], nestingLimit);
+                    ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
 
@@ -58,11 +58,11 @@ void GenerateArraySerializeCode(string typeName, string utfName)
             writer.Write<#= utfName #>BeginArray();
             if (valueLength > 0)
             {
-                ElementFormatter.Serialize(ref writer, value[0], nestingLimit);
+                ElementFormatter.Serialize(ref writer, value[0]);
                 for (var i = 1; i < valueLength; i++)
                 {
                     writer.Write<#= utfName #>ValueSeparator();
-                    ElementFormatter.Serialize(ref writer, value[i], nestingLimit);
+                    ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
 
@@ -162,7 +162,7 @@ namespace SpanJson.Formatters
     {
         public static readonly <#= t.Name #><#= utfName #>Formatter Default = new <#= t.Name #><#= utfName #>Formatter();
 
-        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #> value, int nestingLimit)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #> value)
         {
 <# if(!t.IsValueType) { #>
             if(value == null)
@@ -184,7 +184,7 @@ namespace SpanJson.Formatters
     {
         public static readonly Nullable<#= t.Name #><#= utfName #>Formatter Default = new Nullable<#= t.Name #><#= utfName #>Formatter();
         private static readonly <#= t.Name #><#= utfName #>Formatter ElementFormatter = <#= t.Name #><#= utfName #>Formatter.Default;
-        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>? value, int nestingLimit)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>? value)
         {
             if (value == null)
             {
@@ -192,7 +192,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault());
         }
 
         public <#= t.Name #>? Deserialize(ref JsonReader<<#= symbol.Name #>> reader)
@@ -210,7 +210,7 @@ namespace SpanJson.Formatters
     {
         public static readonly Nullable<#= t.Name #><#= utfName #>ArrayFormatter Default = new Nullable<#= t.Name #><#= utfName #>ArrayFormatter();
         private static readonly Nullable<#= t.Name #><#= utfName #>Formatter ElementFormatter = Nullable<#= t.Name #><#= utfName #>Formatter.Default;
-        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>?[] value, int nestingLimit)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>?[] value)
         {
 <#
             GenerateArraySerializeCode(t.Name+"?", utfName);
@@ -230,7 +230,7 @@ namespace SpanJson.Formatters
         public static readonly Nullable<#= t.Name #><#= utfName #>ListFormatter Default = new Nullable<#= t.Name #><#= utfName #>ListFormatter();
         private static readonly Nullable<#= t.Name #><#= utfName #>Formatter ElementFormatter = Nullable<#= t.Name #><#= utfName #>Formatter.Default;
 
-        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, List<<#= t.Name #>?> value, int nestingLimit)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, List<<#= t.Name #>?> value)
         {
 <#
             GenerateListSerializeCode(t.Name+"?", utfName);
@@ -250,7 +250,7 @@ namespace SpanJson.Formatters
     {
         public static readonly <#= t.Name #><#= utfName #>ArrayFormatter Default = new <#= t.Name #><#= utfName #>ArrayFormatter();
         private static readonly <#= t.Name #><#= utfName #>Formatter ElementFormatter = <#= t.Name #><#= utfName #>Formatter.Default;
-        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>[] value, int nestingLimit)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, <#= t.Name #>[] value)
         {
 <#
             GenerateArraySerializeCode(t.Name, utfName);
@@ -270,7 +270,7 @@ namespace SpanJson.Formatters
         public static readonly <#= t.Name #><#= utfName #>ListFormatter Default = new <#= t.Name #><#= utfName #>ListFormatter();
         private static readonly <#= t.Name #><#= utfName #>Formatter ElementFormatter = <#= t.Name #><#= utfName #>Formatter.Default;
 
-        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, List<<#= t.Name #>> value, int nestingLimit)
+        public void Serialize(ref JsonWriter<<#= symbol.Name #>> writer, List<<#= t.Name #>> value)
         {
 <#
             GenerateListSerializeCode(t.Name, utfName);

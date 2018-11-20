@@ -29,7 +29,6 @@ namespace SpanJson.Formatters
             var memberInfos = objectDescription.Where(a => a.CanRead).ToList();
             var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
-            var nestingLimitParameter = Expression.Parameter(typeof(int), "nestingLimit");
             var expressions = new List<Expression>();
             if (RecursionCandidate<T>.IsRecursionCandidate)
             {
@@ -81,7 +80,7 @@ namespace SpanJson.Formatters
                     }
 
                     serializeMethodInfo = FindPublicInstanceMethod(formatterType, "Serialize", writerParameter.Type.MakeByRefType(),
-                        underlyingType ?? memberInfo.MemberType, typeof(int));
+                        underlyingType ?? memberInfo.MemberType);
                     serializerInstance = Expression.Field(null, fieldInfo);
                 }
                 else
@@ -206,13 +205,13 @@ namespace SpanJson.Formatters
                 expressions.Add(Expression.IfThen(Expression.ReferenceNotEqual(valueExpression, Expression.Constant(null)), Expression.Call(null,
                     closedMemberInfo, writerParameter, valueExpression, writeSeparator, Expression.Constant(objectDescription.ExtensionMemberInfo.ExcludeNulls),
                     Expression.Constant(knownNames),
-                    Expression.Constant(objectDescription.ExtensionMemberInfo.NamingConvention), nestingLimitParameter)));
+                    Expression.Constant(objectDescription.ExtensionMemberInfo.NamingConvention))));
             }
 
             expressions.Add(Expression.Call(writerParameter, writeEndObjectMethodInfo));
             var blockExpression = Expression.Block(new[] {writeSeparator}, expressions);
             var lambda =
-                Expression.Lambda<SerializeDelegate<T, TSymbol>>(blockExpression, writerParameter, valueParameter, nestingLimitParameter);
+                Expression.Lambda<SerializeDelegate<T, TSymbol>>(blockExpression, writerParameter, valueParameter);
             return lambda.Compile();
         }
 
@@ -478,7 +477,7 @@ namespace SpanJson.Formatters
 
         private static void SerializeExtension<TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, IDictionary<string, object> value, bool writeSeparator,
             bool excludeNulls, HashSet<string> knownNames,
-            NamingConventions namingConvention, int nestingLimit)
+            NamingConventions namingConvention)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             var valueLength = value.Count;
@@ -526,7 +525,7 @@ namespace SpanJson.Formatters
                     }
 
                     writer.IncrementDepth();
-                    SerializeRuntimeDecisionInternal<object, TSymbol, TResolver>(ref writer, kvp.Value, RuntimeFormatter<TSymbol, TResolver>.Default, nestingLimit);
+                    SerializeRuntimeDecisionInternal<object, TSymbol, TResolver>(ref writer, kvp.Value, RuntimeFormatter<TSymbol, TResolver>.Default);
                     writer.DecrementDepth();
                     writeSeparator = true;
                 }
@@ -588,6 +587,6 @@ namespace SpanJson.Formatters
         protected delegate T DeserializeDelegate<out T, TSymbol>(ref JsonReader<TSymbol> reader) where TSymbol : struct;
 
 
-        protected delegate void SerializeDelegate<in T, TSymbol>(ref JsonWriter<TSymbol> writer, T value, int nestingLimit) where TSymbol : struct;
+        protected delegate void SerializeDelegate<in T, TSymbol>(ref JsonWriter<TSymbol> writer, T value) where TSymbol : struct;
     }
 }

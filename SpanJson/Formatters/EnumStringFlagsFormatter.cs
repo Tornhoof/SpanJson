@@ -71,7 +71,7 @@ namespace SpanJson.Formatters
             return default;
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T value)
         {
             writer.WriteDoubleQuote();
             using (var enumerator = GetFlags(value).GetEnumerator())

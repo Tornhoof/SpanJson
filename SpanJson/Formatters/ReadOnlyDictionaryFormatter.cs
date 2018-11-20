@@ -36,7 +36,7 @@ namespace SpanJson.Formatters
             return Converter(result);
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, TDictionary value, int nestingLimit)
+        public void Serialize(ref JsonWriter<TSymbol> writer, TDictionary value)
         {
             if (value == null)
             {
@@ -56,7 +56,7 @@ namespace SpanJson.Formatters
                 foreach (var kvp in value)
                 {
                     writer.WriteName(kvp.Key);
-                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, kvp.Value, ElementFormatter, nestingLimit);
+                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, kvp.Value, ElementFormatter);
                     if (counter++ < valueLength - 1)
                     {
                         writer.WriteValueSeparator();
