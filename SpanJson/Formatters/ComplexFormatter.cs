@@ -17,8 +17,6 @@ namespace SpanJson.Formatters
     /// </summary>
     public abstract class ComplexFormatter : BaseFormatter
     {
-        private const int NestingLimit = 256;
-
         /// <summary>
         /// Creates the serializer for both utf8 and utf16
         /// There should not be a large difference between utf8 and utf16 besides member names
@@ -35,11 +33,7 @@ namespace SpanJson.Formatters
             var expressions = new List<Expression>();
             if (RecursionCandidate<T>.IsRecursionCandidate)
             {
-                expressions.Add(Expression.IfThen(
-                    Expression.GreaterThan(
-                        nestingLimitParameter, Expression.Constant(NestingLimit)),
-                    Expression.Throw(
-                        Expression.Constant(new InvalidOperationException($"Nesting Limit of {NestingLimit} exceeded in Type {typeof(T).Name}.")))));
+                expressions.Add(Expression.Call(writerParameter, nameof(JsonWriter<TSymbol>.AssertDepth), Type.EmptyTypes));
             }
 
             MethodInfo separatorWriteMethodInfo;
@@ -98,13 +92,11 @@ namespace SpanJson.Formatters
                     parameterExpressions.Add(Expression.Field(null, fieldInfo));
                 }
 
-                if (RecursionCandidate.LookupRecursionCandidate(memberInfo.MemberType)) // only for possible candidates
+                bool isCandidate = RecursionCandidate.LookupRecursionCandidate(memberInfo.MemberType);
+
+                if (isCandidate) // only for possible candidates
                 {
-                    parameterExpressions.Add(Expression.Add(nestingLimitParameter, Expression.Constant(1)));
-                }
-                else
-                {
-                    parameterExpressions.Add(nestingLimitParameter);
+                    expressions.Add(Expression.Call(writerParameter, nameof(JsonWriter<TSymbol>.IncrementDepth), Type.EmptyTypes));
                 }
 
                 ConstantExpression[] writeNameExpressions;
@@ -196,6 +188,11 @@ namespace SpanJson.Formatters
                 else
                 {
                     expressions.AddRange(valueExpressions);
+                }
+
+                if (isCandidate) // only for possible candidates
+                {
+                    expressions.Add(Expression.Call(writerParameter, nameof(JsonWriter<TSymbol>.DecrementDepth), Type.EmptyTypes));
                 }
             }
 
@@ -528,8 +525,9 @@ namespace SpanJson.Formatters
                         continue;
                     }
 
-                    SerializeRuntimeDecisionInternal<object, TSymbol, TResolver>(ref writer, kvp.Value, RuntimeFormatter<TSymbol, TResolver>.Default,
-                        nestingLimit + 1);
+                    writer.IncrementDepth();
+                    SerializeRuntimeDecisionInternal<object, TSymbol, TResolver>(ref writer, kvp.Value, RuntimeFormatter<TSymbol, TResolver>.Default, nestingLimit);
+                    writer.DecrementDepth();
                     writeSeparator = true;
                 }
             }

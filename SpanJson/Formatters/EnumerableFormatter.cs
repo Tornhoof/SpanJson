@@ -39,7 +39,10 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            var nextNestingLimit = RecursionCandidate<T>.IsRecursionCandidate ? nestingLimit + 1 : nestingLimit;
+            if (RecursionCandidate<T>.IsRecursionCandidate)
+            {
+                writer.IncrementDepth();
+            }
             IEnumerator<T> enumerator = null;
             try
             {
@@ -48,15 +51,18 @@ namespace SpanJson.Formatters
                 if (enumerator.MoveNext())
                 {
                     // first one, so we can write the separator prior to every following one
-                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, enumerator.Current, ElementFormatter, nextNestingLimit);
+                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, enumerator.Current, ElementFormatter, nestingLimit);
                     // write all the other ones
                     while (enumerator.MoveNext())
                     {
                         writer.WriteValueSeparator();
-                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, enumerator.Current, ElementFormatter, nextNestingLimit);
+                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, enumerator.Current, ElementFormatter, nestingLimit);
                     }
                 }
-
+                if (RecursionCandidate<T>.IsRecursionCandidate)
+                {
+                    writer.DecrementDepth();
+                }
                 writer.WriteEndArray();
             }
             finally

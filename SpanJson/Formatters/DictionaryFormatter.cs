@@ -43,7 +43,10 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            var nextNestingLimit = RecursionCandidate<T>.IsRecursionCandidate ? nestingLimit + 1 : nestingLimit;
+            if (RecursionCandidate<T>.IsRecursionCandidate)
+            {
+                writer.IncrementDepth();
+            }
             var valueLength = value.Count;
             writer.WriteBeginObject();
             if (valueLength > 0)
@@ -52,14 +55,17 @@ namespace SpanJson.Formatters
                 foreach (var kvp in value)
                 {
                     writer.WriteName(kvp.Key);
-                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, kvp.Value, ElementFormatter, nextNestingLimit);
+                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, kvp.Value, ElementFormatter, nestingLimit);
                     if (counter++ < valueLength - 1)
                     {
                         writer.WriteValueSeparator();
                     }
                 }
             }
-
+            if (RecursionCandidate<T>.IsRecursionCandidate)
+            {
+                writer.DecrementDepth();
+            }
             writer.WriteEndObject();
         }
     }

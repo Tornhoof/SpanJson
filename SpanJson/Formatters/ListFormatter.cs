@@ -43,19 +43,25 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            var nextNestingLimit = RecursionCandidate<T>.IsRecursionCandidate ? nestingLimit + 1 : nestingLimit;
+            if (RecursionCandidate<T>.IsRecursionCandidate)
+            {
+                writer.IncrementDepth();
+            }
             var valueLength = value.Count;
             writer.WriteBeginArray();
             if (valueLength > 0)
             {
-                SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0], ElementFormatter, nextNestingLimit);
+                SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0], ElementFormatter, nestingLimit);
                 for (var i = 1; i < valueLength; i++)
                 {
                     writer.WriteValueSeparator();
-                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i], ElementFormatter, nextNestingLimit);
+                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i], ElementFormatter, nestingLimit);
                 }
             }
-
+            if (RecursionCandidate<T>.IsRecursionCandidate)
+            {
+                writer.DecrementDepth();
+            }
             writer.WriteEndArray();
         }
     }

@@ -53,7 +53,10 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            var nextNestingLimit = RecursionCandidate<T>.IsRecursionCandidate ? nestingLimit + 1 : nestingLimit;
+            if (RecursionCandidate<T>.IsRecursionCandidate)
+            {
+                writer.IncrementDepth();
+            }
             var firstLength = value.GetLength(0);
             var secondLength = value.GetLength(1);
             writer.WriteBeginArray();
@@ -62,11 +65,11 @@ namespace SpanJson.Formatters
                 writer.WriteBeginArray();
                 if (secondLength > 0)
                 {
-                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0, 0], ElementFormatter, nextNestingLimit);
+                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0, 0], ElementFormatter, nestingLimit);
                     for (var k = 1; k < secondLength; k++)
                     {
                         writer.WriteValueSeparator();
-                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0, k], ElementFormatter, nextNestingLimit);
+                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0, k], ElementFormatter, nestingLimit);
                     }
                 }
 
@@ -77,18 +80,21 @@ namespace SpanJson.Formatters
                     writer.WriteBeginArray();
                     if (secondLength > 0)
                     {
-                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i, 0], ElementFormatter, nextNestingLimit);
+                        SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i, 0], ElementFormatter, nestingLimit);
                         for (var k = 1; k < secondLength; k++)
                         {
                             writer.WriteValueSeparator();
-                            SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i, k], ElementFormatter, nextNestingLimit);
+                            SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i, k], ElementFormatter, nestingLimit);
                         }
                     }
 
                     writer.WriteEndArray();
                 }
             }
-
+            if (RecursionCandidate<T>.IsRecursionCandidate)
+            {
+                writer.DecrementDepth();
+            }
             writer.WriteEndArray();
         }
     }
