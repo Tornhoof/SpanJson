@@ -25,6 +25,9 @@ namespace SpanJson.Tests
             [JsonCustomSerializer(typeof(EnumAsIntFormatter))]
             public TestEnum Enum { get; set; }
 
+            [JsonCustomSerializer(typeof(MultiplyFormatter), 2)]
+            public long Multiplied { get; set; }
+
             public bool Equals(TestDTO other)
             {
                 if (ReferenceEquals(null, other)) return false;
@@ -55,10 +58,11 @@ namespace SpanJson.Tests
         [Fact]
         public void SerializeDeserializeUtf16()
         {
-            var test = new TestDTO {Enum = TestDTO.TestEnum.First, Name = "Hello World", Value = 12345678};
+            var test = new TestDTO {Enum = TestDTO.TestEnum.First, Name = "Hello World", Value = 12345678, Multiplied = 100};
             var serialized = JsonSerializer.Generic.Utf16.Serialize(test);
             Assert.Contains("\"Value\":\"12345678\"", serialized);
             Assert.Contains("\"Enum\":1", serialized);
+            Assert.Contains("\"Multiplied\":200", serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<TestDTO>(serialized);
             Assert.Equal(test, deserialized);
         }
@@ -66,11 +70,12 @@ namespace SpanJson.Tests
         [Fact]
         public void SerializeDeserializeUtf8()
         {
-            var test = new TestDTO {Enum = TestDTO.TestEnum.First, Name = "Hello World", Value = 12345678};
+            var test = new TestDTO {Enum = TestDTO.TestEnum.First, Name = "Hello World", Value = 12345678, Multiplied = 200 };
             var serialized = JsonSerializer.Generic.Utf8.Serialize(test);
             var stringEncoded = Encoding.UTF8.GetString(serialized);
             Assert.Contains("\"Value\":\"12345678\"", stringEncoded);
             Assert.Contains("\"Enum\":1", stringEncoded);
+            Assert.Contains("\"Multiplied\":400", stringEncoded);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<TestDTO>(serialized);
             Assert.Equal(test, deserialized);
         }
@@ -79,6 +84,8 @@ namespace SpanJson.Tests
         public sealed class LongAsStringFormatter : ICustomJsonFormatter<long>
         {
             public static readonly LongAsStringFormatter Default = new LongAsStringFormatter();
+
+            public object Arguments { get; set; }
 
             public void Serialize(ref JsonWriter<char> writer, long value)
             {
@@ -117,6 +124,8 @@ namespace SpanJson.Tests
         {
             public static readonly EnumAsIntFormatter Default = new EnumAsIntFormatter();
 
+            public object Arguments { get; set; }
+
             public void Serialize(ref JsonWriter<char> writer, TestDTO.TestEnum value)
             {
                 Int32Utf16Formatter.Default.Serialize(ref writer, (int) value);
@@ -135,6 +144,33 @@ namespace SpanJson.Tests
             public TestDTO.TestEnum Deserialize(ref JsonReader<byte> reader)
             {
                 return (TestDTO.TestEnum) Int32Utf8Formatter.Default.Deserialize(ref reader);
+            }
+        }
+
+        public sealed class MultiplyFormatter : ICustomJsonFormatter<long>
+        {
+            public static readonly MultiplyFormatter Default = new MultiplyFormatter();
+
+            public object Arguments { get; set; }
+
+            public void Serialize(ref JsonWriter<byte> writer, long value)
+            {
+                Int64Utf8Formatter.Default.Serialize(ref writer, value * (int) Arguments);
+            }
+
+            public long Deserialize(ref JsonReader<byte> reader)
+            {
+                return Int64Utf8Formatter.Default.Deserialize(ref reader) / (int) Arguments;
+            }
+
+            public void Serialize(ref JsonWriter<char> writer, long value)
+            {
+                Int64Utf16Formatter.Default.Serialize(ref writer, value * (int) Arguments);
+            }
+
+            public long Deserialize(ref JsonReader<char> reader)
+            {
+                return Int64Utf16Formatter.Default.Deserialize(ref reader) / (int) Arguments;
             }
         }
     }

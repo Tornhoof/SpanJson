@@ -69,6 +69,8 @@ namespace SpanJson.Tests
 
             public static readonly DateTimeToLongFormatter Default = new DateTimeToLongFormatter();
 
+            public object Arguments { get; set; }
+
             public DateTime Deserialize(ref JsonReader<byte> reader)
             {
                 return DateTimeOffset.FromUnixTimeSeconds(reader.ReadUtf8Int64()).DateTime;

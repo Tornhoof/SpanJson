@@ -6,7 +6,7 @@ namespace SpanJson.Resolvers
     public class JsonMemberInfo
     {
         public JsonMemberInfo(string memberName, Type memberType, MethodInfo shouldSerialize, string name, bool excludeNull, bool canRead, bool canWrite,
-            Type customSerializer)
+            Type customSerializer, object customSerializerArguments)
         {
             MemberName = memberName;
             MemberType = memberType;
@@ -16,6 +16,7 @@ namespace SpanJson.Resolvers
             CanRead = canRead;
             CanWrite = canWrite;
             CustomSerializer = customSerializer;
+            CustomSerializerArguments = customSerializerArguments;
         }
 
         public string MemberName { get; }
@@ -25,6 +26,7 @@ namespace SpanJson.Resolvers
         public bool ExcludeNull { get; }
 
         public Type CustomSerializer { get; }
+        public object CustomSerializerArguments { get; }
 
         public bool CanRead { get; }
         public bool CanWrite { get; set; }

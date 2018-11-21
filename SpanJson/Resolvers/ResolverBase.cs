@@ -102,7 +102,12 @@ namespace SpanJson.Resolvers
             // ReSharper disable ConvertClosureToMethodGroup
             if (memberInfo.CustomSerializer != null)
             {
-                return GetDefaultOrCreate(memberInfo.CustomSerializer);
+                var formatter = (IJsonFormatter) GetDefaultOrCreate(memberInfo.CustomSerializer);
+                if (formatter is ICustomJsonFormatter csf && memberInfo.CustomSerializerArguments != null)
+                {
+                    csf.Arguments = memberInfo.CustomSerializerArguments;
+                }
+                return formatter;
             }
 
             var type = overrideMemberType ?? memberInfo.MemberType;
@@ -124,7 +129,7 @@ namespace SpanJson.Resolvers
                 }
 
                 result.Add(new JsonMemberInfo(memberInfoName, typeof(object), null, name,
-                    _spanJsonOptions.NullOption == NullOptions.ExcludeNulls, true, true, null));
+                    _spanJsonOptions.NullOption == NullOptions.ExcludeNulls, true, true, null, null));
             }
 
             return new JsonObjectDescription(null, null, result.ToArray(), null);
@@ -183,17 +188,17 @@ namespace SpanJson.Resolvers
                 else if (!IsIgnored(memberInfo))
                 {
 
-                    var customSerializer = memberInfo.GetCustomAttribute<JsonCustomSerializerAttribute>()?.Type;
+                    var customSerializerAttr = memberInfo.GetCustomAttribute<JsonCustomSerializerAttribute>();
                     var shouldSerialize = type.GetMethod($"ShouldSerialize{memberInfo.Name}");
-                    result.Add(new JsonMemberInfo(memberInfo.Name, memberType, shouldSerialize, name, excludeNulls, canRead, canWrite, customSerializer));
+                    result.Add(new JsonMemberInfo(memberInfo.Name, memberType, shouldSerialize, name, excludeNulls, canRead, canWrite, customSerializerAttr?.Type, customSerializerAttr?.Arguments));
                 }
             }
 
-            TryGetAnnotedAttributeConstructor(type, out var constructor, out var attribute);
+            TryGetAnnotatedAttributeConstructor(type, out var constructor, out var attribute);
             return new JsonObjectDescription(constructor, attribute, result.ToArray(), extensionMemberInfo);
         }
 
-        private void TryGetAnnotedAttributeConstructor(Type type, out ConstructorInfo constructor, out JsonConstructorAttribute attribute)
+        private void TryGetAnnotatedAttributeConstructor(Type type, out ConstructorInfo constructor, out JsonConstructorAttribute attribute)
         {
             constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
                 .FirstOrDefault(a => a.GetCustomAttribute<JsonConstructorAttribute>() != null);
