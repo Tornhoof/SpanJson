@@ -16,7 +16,7 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 - Public Properties and Fields are considered for serialization/deserialization
 - DateTime{Offset} is in ISO8601 mode  
 - Dynamics
-- Enums (string and integer, for integer see section Custom Resolver)
+- Enums (string and integer, for integer see section Custom Resolver), incl. Flags
 - Anonymous types
 - Dictionary<,> with string as key
 - Serialization/Deserialization of most IEnumerable<T> types (Stack and ConcurrentStack are not supported)
@@ -149,7 +149,7 @@ namespace Test
 // Type with a custom serializer to (de)serialize the long value into/from string
 public class TestDTO
 {
-    [JsonCustomSerializer(typeof(LongAsStringFormatter))]
+    [JsonCustomSerializer(typeof(LongAsStringFormatter), "Hello World")]
     public long Value { get; set; }
 }
 
@@ -157,10 +157,12 @@ public class TestDTO
 public sealed class LongAsStringFormatter : ICustomJsonFormatter<long>
 {
     public static readonly LongAsStringFormatter Default = new LongAsStringFormatter();
+	
+	public object Arguments {get;set;} // the Argument from the attribute will be assigned
 
-    public void Serialize(ref JsonWriter<char> writer, long value, int nestingLimit)
+    public void Serialize(ref JsonWriter<char> writer, long value)
     {
-        StringUtf16Formatter.Default.Serialize(ref writer, value.ToString(CultureInfo.InvariantCulture), nestingLimit);
+        StringUtf16Formatter.Default.Serialize(ref writer, value.ToString(CultureInfo.InvariantCulture));
     }
 
     public long Deserialize(ref JsonReader<char> reader)
@@ -174,9 +176,9 @@ public sealed class LongAsStringFormatter : ICustomJsonFormatter<long>
         throw new InvalidOperationException("Invalid value.");
     }
 
-    public void Serialize(ref JsonWriter<byte> writer, long value, int nestingLimit)
+    public void Serialize(ref JsonWriter<byte> writer, long value)
     {
-        StringUtf8Formatter.Default.Serialize(ref writer, value.ToString(CultureInfo.InvariantCulture), nestingLimit);
+        StringUtf8Formatter.Default.Serialize(ref writer, value.ToString(CultureInfo.InvariantCulture));
     }
 
     public long Deserialize(ref JsonReader<byte> reader)
