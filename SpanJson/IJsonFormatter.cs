@@ -6,6 +6,7 @@
 
     public interface ICustomJsonFormatter
     {
+        object Arguments { get; set; }
     }
 
     public interface ICustomJsonFormatter<T> : IJsonFormatter<T, byte>, IJsonFormatter<T, char>, ICustomJsonFormatter

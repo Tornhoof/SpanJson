@@ -96,7 +96,7 @@ namespace SpanJson.Formatters
             foreach (var name in Enum.GetNames(typeof(T)))
             {
                 var formattedValue = GetFormattedValue(name);
-                memberInfos.Add(new JsonMemberInfo(name, typeof(T), null, formattedValue, false, true, false, null));
+                memberInfos.Add(new JsonMemberInfo(name, typeof(T), null, formattedValue, false, true, false, null, null));
                 var value = Enum.Parse(typeof(T), name);
                 dict.Add(name, (TReturn) Convert.ChangeType(value, typeof(TReturn)));
             }

@@ -12,6 +12,13 @@ namespace SpanJson
     {
         public Type Type { get; }
 
+        public object Arguments { get; set; }
+
+        public JsonCustomSerializerAttribute(Type type, object arguments) : this(type)
+        {
+            Arguments = arguments;
+        }
+
         public JsonCustomSerializerAttribute(Type type)
         {
             if (!type.TryGetTypeOfGenericInterface(typeof(ICustomJsonFormatter<>), out _))
