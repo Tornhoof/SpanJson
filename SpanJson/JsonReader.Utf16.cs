@@ -892,7 +892,7 @@ namespace SpanJson
         {
             ref var pos = ref _pos;
             var nextToken = ReadUtf16NextToken();
-            if (stack > 256)
+            if (stack > JsonSharedConstant.NestingLimit)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.NestingTooDeep);
             }

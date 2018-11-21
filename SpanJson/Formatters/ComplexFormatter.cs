@@ -17,8 +17,6 @@ namespace SpanJson.Formatters
     /// </summary>
     public abstract class ComplexFormatter : BaseFormatter
     {
-        private const int NestingLimit = 256;
-
         /// <summary>
         /// Creates the serializer for both utf8 and utf16
         /// There should not be a large difference between utf8 and utf16 besides member names
@@ -31,15 +29,10 @@ namespace SpanJson.Formatters
             var memberInfos = objectDescription.Where(a => a.CanRead).ToList();
             var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(T), "value");
-            var nestingLimitParameter = Expression.Parameter(typeof(int), "nestingLimit");
             var expressions = new List<Expression>();
             if (RecursionCandidate<T>.IsRecursionCandidate)
             {
-                expressions.Add(Expression.IfThen(
-                    Expression.GreaterThan(
-                        nestingLimitParameter, Expression.Constant(NestingLimit)),
-                    Expression.Throw(
-                        Expression.Constant(new InvalidOperationException($"Nesting Limit of {NestingLimit} exceeded in Type {typeof(T).Name}.")))));
+                expressions.Add(Expression.Call(writerParameter, nameof(JsonWriter<TSymbol>.AssertDepth), Type.EmptyTypes));
             }
 
             MethodInfo separatorWriteMethodInfo;
@@ -87,7 +80,7 @@ namespace SpanJson.Formatters
                     }
 
                     serializeMethodInfo = FindPublicInstanceMethod(formatterType, "Serialize", writerParameter.Type.MakeByRefType(),
-                        underlyingType ?? memberInfo.MemberType, typeof(int));
+                        underlyingType ?? memberInfo.MemberType);
                     serializerInstance = Expression.Field(null, fieldInfo);
                 }
                 else
@@ -98,13 +91,11 @@ namespace SpanJson.Formatters
                     parameterExpressions.Add(Expression.Field(null, fieldInfo));
                 }
 
-                if (RecursionCandidate.LookupRecursionCandidate(memberInfo.MemberType)) // only for possible candidates
+                bool isCandidate = RecursionCandidate.LookupRecursionCandidate(memberInfo.MemberType);
+
+                if (isCandidate) // only for possible candidates
                 {
-                    parameterExpressions.Add(Expression.Add(nestingLimitParameter, Expression.Constant(1)));
-                }
-                else
-                {
-                    parameterExpressions.Add(nestingLimitParameter);
+                    expressions.Add(Expression.Call(writerParameter, nameof(JsonWriter<TSymbol>.IncrementDepth), Type.EmptyTypes));
                 }
 
                 ConstantExpression[] writeNameExpressions;
@@ -197,6 +188,11 @@ namespace SpanJson.Formatters
                 {
                     expressions.AddRange(valueExpressions);
                 }
+
+                if (isCandidate) // only for possible candidates
+                {
+                    expressions.Add(Expression.Call(writerParameter, nameof(JsonWriter<TSymbol>.DecrementDepth), Type.EmptyTypes));
+                }
             }
 
             if (objectDescription.ExtensionMemberInfo != null)
@@ -209,13 +205,13 @@ namespace SpanJson.Formatters
                 expressions.Add(Expression.IfThen(Expression.ReferenceNotEqual(valueExpression, Expression.Constant(null)), Expression.Call(null,
                     closedMemberInfo, writerParameter, valueExpression, writeSeparator, Expression.Constant(objectDescription.ExtensionMemberInfo.ExcludeNulls),
                     Expression.Constant(knownNames),
-                    Expression.Constant(objectDescription.ExtensionMemberInfo.NamingConvention), nestingLimitParameter)));
+                    Expression.Constant(objectDescription.ExtensionMemberInfo.NamingConvention))));
             }
 
             expressions.Add(Expression.Call(writerParameter, writeEndObjectMethodInfo));
             var blockExpression = Expression.Block(new[] {writeSeparator}, expressions);
             var lambda =
-                Expression.Lambda<SerializeDelegate<T, TSymbol>>(blockExpression, writerParameter, valueParameter, nestingLimitParameter);
+                Expression.Lambda<SerializeDelegate<T, TSymbol>>(blockExpression, writerParameter, valueParameter);
             return lambda.Compile();
         }
 
@@ -298,15 +294,15 @@ namespace SpanJson.Formatters
 
             // We need to decide during generation if we handle constructors or normal member assignment, the difference is done in the functor below
             Func<JsonMemberInfo, Expression> matchExpressionFunctor;
-            Expression[] constructorParameterExpresssions = null;
+            Expression[] constructorParameterExpressions = null;
             if (objectDescription.Constructor != null)
             {
                 // If we want to use the constructor we serialize into an array of variables internally and then create the object from that
                 var dict = objectDescription.ConstructorMapping;
-                constructorParameterExpresssions = new Expression[dict.Count];
+                constructorParameterExpressions = new Expression[dict.Count];
                 foreach (var valueTuple in dict)
                 {
-                    constructorParameterExpresssions[valueTuple.Value.Index] = Expression.Variable(valueTuple.Value.Type);
+                    constructorParameterExpressions[valueTuple.Value.Index] = Expression.Variable(valueTuple.Value.Type);
                 }
 
                 matchExpressionFunctor = memberInfo =>
@@ -315,7 +311,7 @@ namespace SpanJson.Formatters
                     var formatter = resolver.GetFormatter(memberInfo);
                     var formatterType = formatter.GetType();
                     var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
-                    return Expression.Assign(constructorParameterExpresssions[element.Index],
+                    return Expression.Assign(constructorParameterExpressions[element.Index],
                         Expression.Call(Expression.Field(null, fieldInfo),
                             FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()),
                             readerParameter));
@@ -420,14 +416,14 @@ namespace SpanJson.Formatters
             {
                 var blockParameters = new List<ParameterExpression> {returnValue, countExpression};
                 // ReSharper disable AssignNullToNotNullAttribute
-                blockParameters.AddRange(constructorParameterExpresssions.OfType<ParameterExpression>());
+                blockParameters.AddRange(constructorParameterExpressions.OfType<ParameterExpression>());
                 // ReSharper restore AssignNullToNotNullAttribute
                 block = Expression.Block(blockParameters, readBeginObject,
                     Expression.Loop(
                         Expression.IfThenElse(abortExpression, Expression.Break(loopAbort),
                             deserializeMemberBlock), loopAbort
                     ),
-                    Expression.Assign(returnValue, Expression.New(objectDescription.Constructor, constructorParameterExpresssions)),
+                    Expression.Assign(returnValue, Expression.New(objectDescription.Constructor, constructorParameterExpressions)),
                     Expression.Label(returnTarget, returnValue)
                 );
             }
@@ -481,7 +477,7 @@ namespace SpanJson.Formatters
 
         private static void SerializeExtension<TSymbol, TResolver>(ref JsonWriter<TSymbol> writer, IDictionary<string, object> value, bool writeSeparator,
             bool excludeNulls, HashSet<string> knownNames,
-            NamingConventions namingConvention, int nestingLimit)
+            NamingConventions namingConvention)
             where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
         {
             var valueLength = value.Count;
@@ -528,8 +524,9 @@ namespace SpanJson.Formatters
                         continue;
                     }
 
-                    SerializeRuntimeDecisionInternal<object, TSymbol, TResolver>(ref writer, kvp.Value, RuntimeFormatter<TSymbol, TResolver>.Default,
-                        nestingLimit + 1);
+                    writer.IncrementDepth();
+                    SerializeRuntimeDecisionInternal<object, TSymbol, TResolver>(ref writer, kvp.Value, RuntimeFormatter<TSymbol, TResolver>.Default);
+                    writer.DecrementDepth();
                     writeSeparator = true;
                 }
             }
@@ -590,6 +587,6 @@ namespace SpanJson.Formatters
         protected delegate T DeserializeDelegate<out T, TSymbol>(ref JsonReader<TSymbol> reader) where TSymbol : struct;
 
 
-        protected delegate void SerializeDelegate<in T, TSymbol>(ref JsonWriter<TSymbol> writer, T value, int nestingLimit) where TSymbol : struct;
+        protected delegate void SerializeDelegate<in T, TSymbol>(ref JsonWriter<TSymbol> writer, T value) where TSymbol : struct;
     }
 }

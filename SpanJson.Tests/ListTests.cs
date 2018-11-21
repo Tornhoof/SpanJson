@@ -49,7 +49,7 @@ namespace SpanJson.Tests
         }
 
         [Fact]
-        public void MultDimArray()
+        public void MultiDimArray()
         {
             var jaggedArray = new int[][] {new[] {1, 2, 3}, new[] {4, 5, 6}};
             var serialized = JsonSerializer.Generic.Utf16.Serialize(jaggedArray);

@@ -19,7 +19,7 @@ namespace SpanJson.Formatters
             return reader.ReadDynamic();
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, object value, int nestingLimit)
+        public void Serialize(ref JsonWriter<TSymbol> writer, object value)
         {
             if (value == null)
             {
@@ -30,7 +30,7 @@ namespace SpanJson.Formatters
 
             // ReSharper disable ConvertClosureToMethodGroup
             var serializer = RuntimeSerializerDictionary.GetOrAdd(value.GetType(), x => BuildSerializeDelegate(x));
-            serializer(ref writer, value, nestingLimit);
+            serializer(ref writer, value);
             // ReSharper restore ConvertClosureToMethodGroup
         }
 
@@ -38,10 +38,9 @@ namespace SpanJson.Formatters
         {
             var writerParameter = Expression.Parameter(typeof(JsonWriter<TSymbol>).MakeByRefType(), "writer");
             var valueParameter = Expression.Parameter(typeof(object), "value");
-            var nestingLimitParameter = Expression.Parameter(typeof(int), "nestingLimit");
             if (type == typeof(object)) // if it's an object we can't do anything about so we write an empty object
             {
-                return (ref JsonWriter<TSymbol> writer, object value, int nestingLimit) =>
+                return (ref JsonWriter<TSymbol> writer, object value) =>
                 {
                     writer.WriteBeginObject();
                     writer.WriteEndObject();
@@ -53,10 +52,10 @@ namespace SpanJson.Formatters
             var serializeMethodInfo = formatterType.GetMethod("Serialize");
             var lambda = Expression.Lambda<SerializeDelegate>(
                 Expression.Call(Expression.Field(null, fieldInfo), serializeMethodInfo, writerParameter,
-                    Expression.Convert(valueParameter, type), nestingLimitParameter), writerParameter, valueParameter, nestingLimitParameter);
+                    Expression.Convert(valueParameter, type)), writerParameter, valueParameter);
             return lambda.Compile();
         }
 
-        private delegate void SerializeDelegate(ref JsonWriter<TSymbol> writer, object value, int nestingLimit);
+        private delegate void SerializeDelegate(ref JsonWriter<TSymbol> writer, object value);
     }
 }

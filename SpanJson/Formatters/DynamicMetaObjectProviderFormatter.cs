@@ -59,7 +59,7 @@ namespace SpanJson.Formatters
             return result;
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T value)
         {
             if (value == null)
             {
@@ -84,7 +84,9 @@ namespace SpanJson.Formatters
             }
             else if (value is ISpanJsonDynamicArray dynamicArray)
             {
-                EnumerableFormatter<IEnumerable<object>, object, TSymbol, TResolver>.Default.Serialize(ref writer, dynamicArray, nestingLimit + 1);
+                writer.IncrementDepth();
+                EnumerableFormatter<IEnumerable<object>, object, TSymbol, TResolver>.Default.Serialize(ref writer, dynamicArray);
+                writer.DecrementDepth();
             }
             else
             {
@@ -105,9 +107,10 @@ namespace SpanJson.Formatters
                         writer.WriteValueSeparator();
                     }
 
-                    var nextNestingLimit = RecursionCandidate.LookupRecursionCandidate(memberInfo.MemberType) ? nestingLimit + 1 : nestingLimit;
+                    writer.IncrementDepth();
                     writer.WriteName(memberInfo.Name);
-                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child, nextNestingLimit);
+                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child);
+                    writer.DecrementDepth();
                 }
 
                 // Some dlr objects also have properties which are defined on the custom type, we also need to serialize/deserialize them
@@ -126,9 +129,10 @@ namespace SpanJson.Formatters
                         writer.WriteValueSeparator();
                     }
 
-                    var nextNestingLimit = RecursionCandidate.LookupRecursionCandidate(memberInfo.MemberType) ? nestingLimit + 1 : nestingLimit;
+                    writer.IncrementDepth();
                     writer.WriteName(memberInfo.Name);
-                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child, nextNestingLimit);
+                    RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, child);
+                    writer.DecrementDepth();
                 }
 
                 writer.WriteEndObject();

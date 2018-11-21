@@ -23,7 +23,7 @@ namespace SpanJson.Formatters
             return ElementFormatter.Deserialize(ref reader);
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T? value, int nestingLimit)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T? value)
         {
             if (value == null)
             {
@@ -31,7 +31,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault(), nestingLimit);
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault());
         }
     }
 }

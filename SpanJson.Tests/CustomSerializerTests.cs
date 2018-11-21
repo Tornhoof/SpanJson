@@ -80,9 +80,9 @@ namespace SpanJson.Tests
         {
             public static readonly LongAsStringFormatter Default = new LongAsStringFormatter();
 
-            public void Serialize(ref JsonWriter<char> writer, long value, int nestingLimit)
+            public void Serialize(ref JsonWriter<char> writer, long value)
             {
-                StringUtf16Formatter.Default.Serialize(ref writer, value.ToString(CultureInfo.InvariantCulture), nestingLimit);
+                StringUtf16Formatter.Default.Serialize(ref writer, value.ToString(CultureInfo.InvariantCulture));
             }
 
             public long Deserialize(ref JsonReader<char> reader)
@@ -96,9 +96,9 @@ namespace SpanJson.Tests
                 throw new InvalidOperationException("Invalid value.");
             }
 
-            public void Serialize(ref JsonWriter<byte> writer, long value, int nestingLimit)
+            public void Serialize(ref JsonWriter<byte> writer, long value)
             {
-                StringUtf8Formatter.Default.Serialize(ref writer, value.ToString(CultureInfo.InvariantCulture), nestingLimit);
+                StringUtf8Formatter.Default.Serialize(ref writer, value.ToString(CultureInfo.InvariantCulture));
             }
 
             public long Deserialize(ref JsonReader<byte> reader)
@@ -117,9 +117,9 @@ namespace SpanJson.Tests
         {
             public static readonly EnumAsIntFormatter Default = new EnumAsIntFormatter();
 
-            public void Serialize(ref JsonWriter<char> writer, TestDTO.TestEnum value, int nestingLimit)
+            public void Serialize(ref JsonWriter<char> writer, TestDTO.TestEnum value)
             {
-                Int32Utf16Formatter.Default.Serialize(ref writer, (int) value, nestingLimit);
+                Int32Utf16Formatter.Default.Serialize(ref writer, (int) value);
             }
 
             public TestDTO.TestEnum Deserialize(ref JsonReader<char> reader)
@@ -127,9 +127,9 @@ namespace SpanJson.Tests
                 return (TestDTO.TestEnum) Int32Utf16Formatter.Default.Deserialize(ref reader);
             }
 
-            public void Serialize(ref JsonWriter<byte> writer, TestDTO.TestEnum value, int nestingLimit)
+            public void Serialize(ref JsonWriter<byte> writer, TestDTO.TestEnum value)
             {
-                Int32Utf8Formatter.Default.Serialize(ref writer, (int) value, nestingLimit);
+                Int32Utf8Formatter.Default.Serialize(ref writer, (int) value);
             }
 
             public TestDTO.TestEnum Deserialize(ref JsonReader<byte> reader)

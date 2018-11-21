@@ -16,6 +16,8 @@ namespace SpanJson.Formatters
         private static readonly IJsonFormatter<T, TSymbol> ElementFormatter =
             StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
 
+        private static readonly bool IsRecursionCandidate = RecursionCandidate<T>.IsRecursionCandidate;
+
         public T[] Deserialize(ref JsonReader<TSymbol> reader)
         {
             T[] temp = null;
@@ -48,7 +50,7 @@ namespace SpanJson.Formatters
             return result;
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T[] value, int nestingLimit)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T[] value)
         {
             if (value == null)
             {
@@ -56,19 +58,25 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            var nextNestingLimit = RecursionCandidate<T>.IsRecursionCandidate ? nestingLimit + 1 : nestingLimit;
+            if (IsRecursionCandidate)
+            {
+                writer.IncrementDepth();
+            }
             var valueLength = value.Length;
             writer.WriteBeginArray();
             if (valueLength > 0)
             {
-                SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0], ElementFormatter, nextNestingLimit);
+                SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0], ElementFormatter);
                 for (var i = 1; i < valueLength; i++)
                 {
                     writer.WriteValueSeparator();
-                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i], ElementFormatter, nextNestingLimit);
+                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i], ElementFormatter);
                 }
             }
-
+            if (IsRecursionCandidate)
+            {
+                writer.DecrementDepth();
+            }
             writer.WriteEndArray();
         }
     }

@@ -14,6 +14,7 @@ namespace SpanJson.Formatters
         private static readonly Func<TDictionary> CreateFunctor = StandardResolvers.GetResolver<TSymbol, TResolver>().GetCreateFunctor<TDictionary>();
         public static readonly DictionaryFormatter<TDictionary, T, TSymbol, TResolver> Default = new DictionaryFormatter<TDictionary, T, TSymbol, TResolver>();
         private static readonly IJsonFormatter<T, TSymbol> ElementFormatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
+        private static readonly bool IsRecursionCandidate = RecursionCandidate<T>.IsRecursionCandidate;
 
         public TDictionary Deserialize(ref JsonReader<TSymbol> reader)
         {
@@ -35,7 +36,7 @@ namespace SpanJson.Formatters
             return result;
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, TDictionary value, int nestingLimit)
+        public void Serialize(ref JsonWriter<TSymbol> writer, TDictionary value)
         {
             if (value == null)
             {
@@ -43,7 +44,10 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            var nextNestingLimit = RecursionCandidate<T>.IsRecursionCandidate ? nestingLimit + 1 : nestingLimit;
+            if (IsRecursionCandidate)
+            {
+                writer.IncrementDepth();
+            }
             var valueLength = value.Count;
             writer.WriteBeginObject();
             if (valueLength > 0)
@@ -52,14 +56,17 @@ namespace SpanJson.Formatters
                 foreach (var kvp in value)
                 {
                     writer.WriteName(kvp.Key);
-                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, kvp.Value, ElementFormatter, nextNestingLimit);
+                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, kvp.Value, ElementFormatter);
                     if (counter++ < valueLength - 1)
                     {
                         writer.WriteValueSeparator();
                     }
                 }
             }
-
+            if (IsRecursionCandidate)
+            {
+                writer.DecrementDepth();
+            }
             writer.WriteEndObject();
         }
     }

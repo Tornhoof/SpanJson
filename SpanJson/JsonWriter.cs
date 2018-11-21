@@ -17,6 +17,7 @@ namespace SpanJson
         {
             Data = ArrayPool<TSymbol>.Shared.Rent(initialSize);
             _pos = 0;
+            _depth = 0;
             if (typeof(TSymbol) == typeof(char))
             {
                 _chars = MemoryMarshal.Cast<TSymbol, char>(Data);
@@ -357,6 +358,20 @@ namespace SpanJson
         private static void ThrowNotSupportedException()
         {
             throw new NotSupportedException();
+        }
+
+        private int _depth;
+
+        public void IncrementDepth() => _depth++;
+
+        public void DecrementDepth() => _depth--;
+
+        public void AssertDepth()
+        {
+            if (_depth > JsonSharedConstant.NestingLimit)
+            {
+                throw new InvalidOperationException($"Nesting Limit of {JsonSharedConstant.NestingLimit} exceeded.");
+            }
         }
     }
 }

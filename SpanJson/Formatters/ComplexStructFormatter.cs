@@ -15,9 +15,9 @@
             return Deserializer(ref reader);
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T value, int nestingLimit)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T value)
         {
-            Serializer(ref writer, value, nestingLimit);
+            Serializer(ref writer, value);
         }
     }
 }
