@@ -641,6 +641,15 @@ namespace SpanJson
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ReadUtf8EndArrayOrThrow()
+        {
+            if (!ReadUtf8IsEndArray())
+            {
+                ThrowJsonParserException(JsonParserException.ParserError.ExpectedEndArray);
+            }
+        }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ReadUtf8IsEndObject()
@@ -648,6 +657,20 @@ namespace SpanJson
             SkipWhitespaceUtf8();
             ref var pos = ref _pos;
             if (_bytes[pos] == JsonUtf8Constant.EndObject)
+            {
+                pos++;
+                return true;
+            }
+
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool ReadUtf8IsEndArray()
+        {
+            SkipWhitespaceUtf8();
+            ref var pos = ref _pos;
+            if (_bytes[pos] == JsonUtf8Constant.EndArray)
             {
                 pos++;
                 return true;

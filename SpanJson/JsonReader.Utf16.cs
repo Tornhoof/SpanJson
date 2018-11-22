@@ -267,6 +267,15 @@ namespace SpanJson
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ReadUtf16EndArrayOrThrow()
+        {
+            if (!ReadUtf16IsEndArray())
+            {
+                ThrowJsonParserException(JsonParserException.ParserError.ExpectedEndArray);
+            }
+        }
+
         public DateTime ReadUtf16DateTime()
         {
             var span = ReadUtf16StringSpan();
@@ -651,6 +660,20 @@ namespace SpanJson
             SkipWhitespaceUtf16();
             ref var pos = ref _pos;
             if (_chars[pos] == JsonUtf16Constant.EndObject)
+            {
+                pos++;
+                return true;
+            }
+
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool ReadUtf16IsEndArray()
+        {
+            SkipWhitespaceUtf16();
+            ref var pos = ref _pos;
+            if (_chars[pos] == JsonUtf16Constant.EndArray)
             {
                 pos++;
                 return true;

@@ -175,6 +175,40 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ReadEndObjectOrThrow()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                ReadUtf16EndObjectOrThrow();
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                ReadUtf8EndObjectOrThrow();
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ReadEndArrayOrThrow()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                ReadUtf16EndArrayOrThrow();
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                ReadUtf8EndArrayOrThrow();
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<TSymbol> ReadStringSpan()
         {
             if (typeof(TSymbol) == typeof(char))
@@ -225,25 +259,7 @@ namespace SpanJson
             ThrowNotSupportedException();
             return default;
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string ReadString()
-        {
-            if (typeof(TSymbol) == typeof(char))
-            {
-                return ReadUtf16String();
-            }
-
-            if (typeof(TSymbol) == typeof(byte))
-            {
-                return ReadUtf8String();
-            }
-
-            ThrowNotSupportedException();
-            return default;
-        }
-
-
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public JsonToken ReadNextToken()
         {
@@ -278,21 +294,5 @@ namespace SpanJson
             return default;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool ReadBoolean()
-        {
-            if (typeof(TSymbol) == typeof(char))
-            {
-                return ReadUtf16Boolean();
-            }
-
-            if (typeof(TSymbol) == typeof(byte))
-            {
-                return ReadUtf8Boolean();
-            }
-
-            ThrowNotSupportedException();
-            return default;
-        }
     }
 }

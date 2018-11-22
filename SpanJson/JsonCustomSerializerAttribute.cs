@@ -5,14 +5,14 @@ using SpanJson.Helpers;
 namespace SpanJson
 {
     /// <summary>
-    /// The serializer to use, needs to implement IJsonFormatter and needs to have a public static field Default returning an instance of it;
+    /// The serializer to use, needs to implement ICustomJsonFormatter and needs to have a public static field Default returning an instance of it;
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Struct | AttributeTargets.Class)]
     public class JsonCustomSerializerAttribute : Attribute
     {
         public Type Type { get; }
 
-        public object Arguments { get; set; }
+        public object Arguments { get; }
 
         public JsonCustomSerializerAttribute(Type type, object arguments) : this(type)
         {

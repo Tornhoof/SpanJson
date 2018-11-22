@@ -30,7 +30,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netcoreapp2.1\SpanJson.xml</DocumentationFile>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" PrivateAssets="All" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.0" />
@@ -45,20 +45,38 @@
     <None Update="Formatters\BclFormatter.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BclFormatter.cs</LastGenOutput>
-    </None>    
+    </None>
+    <None Update="JsonWriter.PrimitiveWrappers.tt">
+      <LastGenOutput>JsonWriter.PrimitiveWrappers.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="JsonReader.PrimitiveWrappers.tt">
+      <LastGenOutput>JsonReader.PrimitiveWrappers.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
     <None Update="JsonWriter.Utf8.WriteVerbatimIntegers.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>JsonWriter.Utf8.WriteVerbatimIntegers.cs</LastGenOutput>
     </None>
+    <Compile Update="Formatters\BclFormatter.cs">
+      <DependentUpon>BclFormatter.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="JsonReader.PrimitiveWrappers.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>JsonReader.PrimitiveWrappers.tt</DependentUpon>
+    </Compile>
     <Compile Update="JsonWriter.Utf8.WriteVerbatimIntegers.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>JsonWriter.Utf8.WriteVerbatimIntegers.tt</DependentUpon>
     </Compile>
-    <Compile Update="Formatters\BclFormatter.cs">
-      <DependentUpon>BclFormatter.tt</DependentUpon>
+    <Compile Update="JsonWriter.PrimitiveWrappers.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
+      <DependentUpon>JsonWriter.PrimitiveWrappers.tt</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>

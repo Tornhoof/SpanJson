@@ -242,25 +242,6 @@ namespace SpanJson
             }
         }
 
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteBoolean(bool value)
-        {
-            if (typeof(TSymbol) == typeof(char))
-            {
-                WriteUtf16Boolean(value);
-            }
-            else if (typeof(TSymbol) == typeof(byte))
-            {
-                WriteUtf8Boolean(value);
-            }
-            else
-            {
-                ThrowNotSupportedException();
-            }
-        }
-
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteIndentation(int count)
         {
