@@ -9,8 +9,7 @@ using SpanJson.Shared.Models;
 
 namespace SpanJson.Benchmarks
 {
-    [MemoryDiagnoser]
-    //[ShortRunJob]
+    [Config(typeof(MyConfig))]
     [DisassemblyDiagnoser(printIL: true, recursiveDepth: 2)]
     public class SelectedBenchmarks
     {
