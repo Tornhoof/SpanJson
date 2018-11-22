@@ -494,13 +494,19 @@ namespace SpanJson
 
             if (_isBuffered)
             {
-                SlideAndResize();
-                return ReadUtf16StringSpanInternal(out escapedCharsSize);
+                return SlideAndReadUtf16StringSpanInternal(out escapedCharsSize);
             }
 
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             escapedCharsSize = default;
             return null;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private ReadOnlySpan<char> SlideAndReadUtf16StringSpanInternal(out int escapedCharsSize)
+        {
+            SlideAndResize();
+            return ReadUtf16StringSpanInternal(out escapedCharsSize);
         }
 
         /// <summary>
@@ -530,13 +536,19 @@ namespace SpanJson
 
             if (_isBuffered)
             {
-                SlideAndResize();
-                return ReadUtf16StringSpanWithQuotes(out escapedCharsSize);
+                return SlideAndReadUtf16StringSpanWithQuotes(out escapedCharsSize);
             }
 
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             escapedCharsSize = default;
             return null;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private ReadOnlySpan<char> SlideAndReadUtf16StringSpanWithQuotes(out int escapedCharsSize)
+        {
+            SlideAndResize();
+            return ReadUtf16StringSpanWithQuotes(out escapedCharsSize);
         }
 
         public decimal ReadUtf16Decimal()
@@ -600,10 +612,10 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void HandleSlideAndSkipWhitespaceUtf16()
         {
-            if (SlideIfNecessary())
-            {
-                SkipWhitespaceUtf16();
-            }
+            //if (SlideIfNecessary())
+            //{
+            //    SkipWhitespaceUtf16();
+            //}
         }
 
 
@@ -930,11 +942,17 @@ namespace SpanJson
 
             if (_isBuffered)
             {
-                SlideAndResize();
-                return SkipUtf16String(ref pos);
+                return SlideAndSkipUtf16String(ref pos);
             }
 
             return false;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private bool SlideAndSkipUtf16String(ref int pos)
+        {
+            SlideAndResize();
+            return SkipUtf16String(ref pos);
         }
 
         public object ReadUtf16Dynamic()

@@ -469,13 +469,19 @@ namespace SpanJson
 
             if (_isBuffered)
             {
-                SlideAndResize();
-                return ReadUtf8StringSpanInternal(out escapedCharsSize);
+                return SlideAndReadUtf8StringSpanInternal(out escapedCharsSize);
             }
 
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             escapedCharsSize = default;
             return null;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private ReadOnlySpan<byte> SlideAndReadUtf8StringSpanInternal(out int escapedCharsSize)
+        {
+            SlideAndResize();
+            return ReadUtf8StringSpanInternal(out escapedCharsSize);
         }
 
         /// <summary>
@@ -505,13 +511,19 @@ namespace SpanJson
 
             if (_isBuffered)
             {
-                SlideAndResize();
-                return ReadUtf8StringSpanWithQuotes(out escapedCharsSize);
+                return SlideAndReadUtf8StringSpanWithQuotes(out escapedCharsSize);
             }
 
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             escapedCharsSize = default;
             return null;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private ReadOnlySpan<byte> SlideAndReadUtf8StringSpanWithQuotes(out int escapedCharsSize)
+        {
+            SlideAndResize();
+            return ReadUtf8StringSpanWithQuotes(out escapedCharsSize);
         }
 
         public decimal ReadUtf8Decimal()
@@ -922,11 +934,17 @@ namespace SpanJson
 
             if (_isBuffered)
             {
-                SlideAndResize();
-                return SkipUtf8String(ref pos);
+                return SlideAndSkipUtf8String(ref pos);
             }
 
             return false;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private bool SlideAndSkipUtf8String(ref int pos)
+        {
+            SlideAndResize();
+            return SkipUtf8String(ref pos);
         }
 
         public object ReadUtf8Dynamic()

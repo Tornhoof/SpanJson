@@ -1,8 +1,10 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Toolchains.InProcess;
 using SpanJson.Benchmarks.Serializers;
+using SpanJson.Formatters;
 using SpanJson.Resolvers;
 using SpanJson.Shared.Fixture;
 using SpanJson.Shared.Models;
@@ -69,29 +71,65 @@ namespace SpanJson.Benchmarks
         //    return JsonSerializer.Generic.Utf8.Deserialize<MobileBadgeAward>(MobileBadgeAwardSerializedByteArray);
         //}
 
+        //[Benchmark]
+        //public string SerializeAnswerWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(Answer);
+        //}
+
+        //[Benchmark]
+        //public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
+        //{
+        //    return JsonSerializer.Generic.Utf8.Serialize(Answer);
+        //}
+
+        //[Benchmark]
+        //public Answer DeserializeAnswerWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
+        //}
+
+        //[Benchmark]
+        //public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
+        //{
+        //    return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
+        //}
+
         [Benchmark]
-        public string SerializeAnswerWithSpanJsonSerializer()
+        public Answer DeserializeAnswerWithSpanJsonSerializerBufferReaderDirect()
         {
-            return SpanJsonSerializer.Serialize(Answer);
+            var jsonReader = new JsonReader<char>(AnswerSerializedString);
+            return ComplexClassFormatter<Answer, char, ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref jsonReader);
         }
 
         [Benchmark]
-        public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
+        public Answer DeserializeAnswerWithSpanJsonSerializerUtf8BufferReaderDirect()
         {
-            return JsonSerializer.Generic.Utf8.Serialize(Answer);
+            var jsonReader = new JsonReader<byte>(AnswerSerializedByteArray);
+            return ComplexClassFormatter<Answer, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref jsonReader);
         }
 
-        [Benchmark]
-        public Answer DeserializeAnswerWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
-        }
+        //[Benchmark]
+        //public Answer DeserializeAnswerWithSpanJsonSerializerBufferReader()
+        //{
+        //    using (var sr = new StringReader(AnswerSerializedString))
+        //    {
+        //        var bufferReader = new BufferReader<char>(sr);
+        //        var jsonReader = new JsonReader<char>(bufferReader);
+        //        return ComplexClassFormatter<Answer, char, ExcludeNullsOriginalCaseResolver<char>>.Default.Deserialize(ref jsonReader);
+        //    }
+        //}
 
-        [Benchmark]
-        public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
-        {
-            return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
-        }
+        //[Benchmark]
+        //public Answer DeserializeAnswerWithSpanJsonSerializerUtf8BufferReader()
+        //{
+        //    using (var sr = new MemoryStream(AnswerSerializedByteArray))
+        //    {
+        //        var bufferReader = new BufferReader<byte>(sr);
+        //        var jsonReader = new JsonReader<byte>(bufferReader);
+        //        return ComplexClassFormatter<Answer, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default.Deserialize(ref jsonReader);
+        //    }
+        //}
 
 
         //[Benchmark]

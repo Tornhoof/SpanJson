@@ -66,7 +66,7 @@ namespace SpanJson
         public void SlideWindow(ref int pos)
         {
             var remaining = Length - pos;
-            _buffer.AsSpan(pos, remaining).CopyTo(_buffer);
+            Array.Copy(_buffer, pos, _buffer, 0, remaining);
             pos = remaining;
             Length = pos;
             if (typeof(TSymbol) == typeof(byte))
