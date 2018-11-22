@@ -26,5 +26,6 @@ namespace SpanJson.Tests.Generated
             Assert.NotNull(deserialized);
             Assert.Equal(chars, deserialized);
         }
+
     }
 }

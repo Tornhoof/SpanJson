@@ -83,11 +83,62 @@ namespace SpanJson.Tests.Generated
             Assert.Equal(input, deserialized);
         }
 <# } #>
+
+        [Fact]
+        public void PrimitiveWrapperUtf8()
+        {
+            var value = Fixture.Create<<#= t.Name #>>();
+            var writer = new JsonWriter<byte>();
+            writer.Write<#= t.Name #>(value);
+            var output = writer.ToByteArray();
+
+            var reader = new JsonReader<byte>(output);
+            var deserialized = reader.Read<#= t.Name #>();
+            Assert.Equal(value, deserialized);
+        }
+
+        [Fact]
+        public void PrimitiveWrapperUtf16()
+        {
+            var value = Fixture.Create<<#= t.Name #>>();
+            var writer = new JsonWriter<char>();
+            writer.Write<#= t.Name #>(value);
+            var output = writer.ToString();
+
+            var reader = new JsonReader<char>(output);
+            var deserialized = reader.Read<#= t.Name #>();
+            Assert.Equal(value, deserialized);
+        }
     }
 <# } #>
 <# if(!t.IsValueType) { #>
     public partial class <#= t.Name #>Tests : ClassTestBase<<#= t.Name #>>
     {
+        [Fact]
+        public void PrimitiveWrapperUtf8()
+        {
+            var value = Fixture.Create<<#= t.Name #>>();
+            var writer = new JsonWriter<byte>();
+            writer.Write<#= t.Name #>(value);
+            var output = writer.ToByteArray();
+
+            var reader = new JsonReader<byte>(output);
+            var deserialized = reader.Read<#= t.Name #>();
+            Assert.Equal(value, deserialized);
+        }
+
+        [Fact]
+        public void PrimitiveWrapperUtf16()
+        {
+            var value = Fixture.Create<<#= t.Name #>>();
+            var writer = new JsonWriter<char>();
+            writer.Write<#= t.Name #>(value);
+            var output = writer.ToString();
+
+            var reader = new JsonReader<char>(output);
+            var deserialized = reader.Read<#= t.Name #>();
+            Assert.Equal(value, deserialized);
+        }
     }
 <# } #>
     public partial class <#= t.Name #>ListTests : ListTestBase<<#= t.Name #>>

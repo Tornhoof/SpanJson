@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Text;
 using SpanJson.Formatters;
 using Xunit;
@@ -172,6 +173,112 @@ namespace SpanJson.Tests
             {
                 return Int64Utf16Formatter.Default.Deserialize(ref reader) / (int) Arguments;
             }
+        }
+
+        [JsonCustomSerializer(typeof(TwcsCustomSerializer))]
+        public class TypeWithCustomSerializer : IEquatable<TypeWithCustomSerializer>
+        { 
+
+            public long Value { get; set; }
+
+            public bool Equals(TypeWithCustomSerializer other)
+            {
+                if (ReferenceEquals(null, other)) return false;
+                if (ReferenceEquals(this, other)) return true;
+                return Value == other.Value;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                return obj is TypeWithCustomSerializer twcs && Equals(twcs);
+            }
+
+            public override int GetHashCode()
+            {
+                // ReSharper disable once NonReadonlyMemberInGetHashCode
+                return Value.GetHashCode();
+            }
+        }
+
+        public sealed class TwcsCustomSerializer : ICustomJsonFormatter<TypeWithCustomSerializer>
+        {
+            public static readonly TwcsCustomSerializer Default = new TwcsCustomSerializer();
+
+            public object Arguments { get; set; }
+
+            private void SerializeInternal<TSymbol>(ref JsonWriter<TSymbol> writer, TypeWithCustomSerializer value) where TSymbol : struct
+            {
+                if (value == null)
+                {
+                    writer.WriteNull();
+                    return;
+                }
+
+                writer.WriteBeginObject();
+
+                writer.WriteName(nameof(TypeWithCustomSerializer.Value));
+                
+                writer.WriteUtf16Int64(value.Value);
+
+                writer.WriteEndObject();
+            }
+
+            public void Serialize(ref JsonWriter<byte> writer, TypeWithCustomSerializer value)
+            {
+                SerializeInternal(ref writer, value);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private TypeWithCustomSerializer DeserializeInternal<TSymbol>(ref JsonReader<TSymbol> reader) where TSymbol : struct
+            {
+                if (reader.ReadIsNull())
+                {
+                    return null;
+                }
+
+                reader.ReadBeginObjectOrThrow();
+                var result = new TypeWithCustomSerializer {Value = reader.ReadInt64()};
+                reader.ReadEndObjectOrThrow();
+                return result;
+            }
+
+            public TypeWithCustomSerializer Deserialize(ref JsonReader<byte> reader)
+            {
+                return DeserializeInternal(ref reader);
+            }
+
+            public void Serialize(ref JsonWriter<char> writer, TypeWithCustomSerializer value)
+            {
+                SerializeInternal(ref writer, value);
+            }
+
+            public TypeWithCustomSerializer Deserialize(ref JsonReader<char> reader)
+            {
+                return DeserializeInternal(ref reader);
+            }
+        }
+
+        [Fact]
+        public void SerializeDeserializeTwcsUtf16()
+        {
+            var test = new TypeWithCustomSerializer {Value = 100};
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(test);
+            Assert.Contains("\"Value\":100", serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<TypeWithCustomSerializer>(serialized);
+            Assert.Equal(test, deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeTwcsUtf8()
+        {
+            var test = new TypeWithCustomSerializer { Value = 100 };
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(test);
+            var stringEncoded = Encoding.UTF8.GetString(serialized);
+            Assert.Contains("\"Value\":100", stringEncoded);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<TypeWithCustomSerializer>(serialized);
+            Assert.Equal(test, deserialized);
         }
     }
 }

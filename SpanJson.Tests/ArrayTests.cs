@@ -98,5 +98,41 @@ namespace SpanJson.Tests
             Assert.Equal(JsonParserException.ParserError.InvalidArrayFormat, ex.Error);
         }
 
+        [Fact]
+        public void PrimitiveWrapperUtf8()
+        {
+            var jsonWriter = new JsonWriter<byte>();
+            jsonWriter.WriteBeginArray();
+            jsonWriter.WriteInt32(1);
+            jsonWriter.WriteEndArray();
+
+            var output = jsonWriter.ToByteArray();
+
+            var jsonReader = new JsonReader<byte>(output);
+            jsonReader.ReadBeginArrayOrThrow();
+            var value = jsonReader.ReadInt32();
+            jsonReader.ReadEndArrayOrThrow();
+
+            Assert.Equal(1, value);
+        }
+
+        [Fact]
+        public void PrimitiveWrapperUtf16()
+        {
+            var jsonWriter = new JsonWriter<char>();
+            jsonWriter.WriteBeginArray();
+            jsonWriter.WriteInt32(1);
+            jsonWriter.WriteEndArray();
+
+            var output = jsonWriter.ToString();
+
+            var jsonReader = new JsonReader<char>(output);
+            jsonReader.ReadBeginArrayOrThrow();
+            var value = jsonReader.ReadInt32();
+            jsonReader.ReadEndArrayOrThrow();
+
+            Assert.Equal(1, value);
+        }
+
     }
 }
