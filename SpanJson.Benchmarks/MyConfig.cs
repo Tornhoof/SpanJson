@@ -9,9 +9,9 @@ namespace SpanJson.Benchmarks
     {
         public MyConfig()
         {
-            Add(Job.Default);
+            Add(Job.Default.WithUnrollFactor(2));
             Add(MemoryDiagnoser.Default);
-            Set(new DefaultOrderProvider(SummaryOrderPolicy.Default, MethodOrderPolicy.Alphabetical));
+            Set(new DefaultOrderer(SummaryOrderPolicy.Default, MethodOrderPolicy.Alphabetical));
         }
     }
 }
