@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -7,6 +9,7 @@ using SpanJson.Helpers;
 
 namespace SpanJson
 {
+    [SuppressMessage("ReSharper", "PureAttributeOnVoidMethod")]
     public ref struct BufferReader<TSymbol> where TSymbol : struct
     {
         private readonly Stream _stream;
@@ -31,11 +34,14 @@ namespace SpanJson
 
         public int Length { get; private set; }
 
+        [Pure]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<TSymbol> GetSpan()
         {
             return _buffer;
         }
 
+        [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Fill()
         {
@@ -55,7 +61,7 @@ namespace SpanJson
             }
         }
 
-
+        [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SlideWindow(ref int pos)
         {
@@ -79,6 +85,7 @@ namespace SpanJson
             }
         }
 
+        [Pure]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Resize(ref int pos)
         {

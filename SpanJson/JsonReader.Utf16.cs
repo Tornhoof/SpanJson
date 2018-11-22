@@ -492,6 +492,12 @@ namespace SpanJson
                 }
             }
 
+            if (_isBuffered)
+            {
+                SlideAndResize();
+                return ReadUtf16StringSpanInternal(out escapedCharsSize);
+            }
+
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             escapedCharsSize = default;
             return null;
@@ -520,6 +526,12 @@ namespace SpanJson
                     pos += stringLength; // skip the doublequote too
                     return result;
                 }
+            }
+
+            if (_isBuffered)
+            {
+                SlideAndResize();
+                return ReadUtf16StringSpanWithQuotes(out escapedCharsSize);
             }
 
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
@@ -576,8 +588,21 @@ namespace SpanJson
                         continue;
                     }
                     default:
+                        if (_isBuffered)
+                        {
+                            HandleSlideAndSkipWhitespaceUtf16();
+                        }
                         return;
                 }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void HandleSlideAndSkipWhitespaceUtf16()
+        {
+            if (SlideIfNecessary())
+            {
+                SkipWhitespaceUtf16();
             }
         }
 
@@ -901,6 +926,12 @@ namespace SpanJson
             {
                 pos += stringLength; // skip the doublequote too
                 return true;
+            }
+
+            if (_isBuffered)
+            {
+                SlideAndResize();
+                return SkipUtf16String(ref pos);
             }
 
             return false;

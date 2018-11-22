@@ -6,9 +6,11 @@ namespace SpanJson
 {
     public ref partial struct JsonReader<TSymbol> where TSymbol : struct
     {
-        private readonly ReadOnlySpan<char> _chars;
-        private readonly ReadOnlySpan<byte> _bytes;
-        private readonly int _length;
+        private readonly BufferReader<TSymbol> _buffer;
+        private ReadOnlySpan<char> _chars;
+        private ReadOnlySpan<byte> _bytes;
+        private int _length;
+        private readonly bool _isBuffered;
 
         private int _pos;
 
@@ -17,7 +19,8 @@ namespace SpanJson
         {
             _length = input.Length;
             _pos = 0;
-
+            _buffer = default;
+            _isBuffered = default;
             if (typeof(TSymbol) == typeof(char))
             {
                 _chars = MemoryMarshal.Cast<TSymbol, char>(input);
@@ -26,6 +29,31 @@ namespace SpanJson
             else if (typeof(TSymbol) == typeof(byte))
             {
                 _bytes = MemoryMarshal.Cast<TSymbol, byte>(input);
+                _chars = null;
+            }
+            else
+            {
+                ThrowNotSupportedException();
+                _chars = default;
+                _bytes = default;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public JsonReader(BufferReader<TSymbol> buffer)
+        {
+            _buffer = buffer;
+            _length = _buffer.Length;
+            _pos = 0;
+            _isBuffered = true;
+            if (typeof(TSymbol) == typeof(char))
+            {
+                _chars = MemoryMarshal.Cast<TSymbol, char>(_buffer.GetSpan());
+                _bytes = null;
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                _bytes = MemoryMarshal.Cast<TSymbol, byte>(buffer.GetSpan());
                 _chars = null;
             }
             else
@@ -292,6 +320,42 @@ namespace SpanJson
 
             ThrowNotSupportedException();
             return default;
+        }
+
+        /// <summary>
+        /// we need to make sure that enough buffer is there for everything except dynamic length values
+        /// </summary>
+        private bool SlideIfNecessary()
+        {
+            if ((uint)_length - 50 < _pos)
+            {
+                _buffer.SlideWindow(ref _pos);
+                _length = _buffer.Length;
+                return true;
+            }
+
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void SlideAndResize()
+        {
+            _buffer.SlideWindow(ref _pos);
+            _buffer.Resize(ref _pos);
+            var newBuffer = _buffer.GetSpan();
+            _length = _buffer.Length;
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                _bytes = MemoryMarshal.Cast<TSymbol, byte>(newBuffer);
+            }
+            else if (typeof(TSymbol) == typeof(char))
+            {
+                _chars = MemoryMarshal.Cast<TSymbol, char>(newBuffer);
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
         }
 
     }
