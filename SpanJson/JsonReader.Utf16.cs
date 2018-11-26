@@ -342,6 +342,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ReadUtf16EscapedName()
         {
+            SkipWhitespaceUtf16();
             var span = ReadUtf16StringSpanInternal(out var escapedCharsSize);
             if (_chars[_pos++] != JsonUtf16Constant.NameSeparator)
             {
