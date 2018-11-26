@@ -316,5 +316,25 @@ namespace SpanJson.Tests
             Assert.NotNull(deserialized);
             Assert.Equal(customReadOnlyDictionary, deserialized);
         }
+
+        [Fact]
+        public void DeserializeWithWhitespaceUtf8()
+        {
+            var dict = JsonSerializer.Generic.Utf8.Deserialize<Dictionary<string, object>>(System.Text.Encoding.UTF8.GetBytes(@"{""a"": 1, ""b"": ""2""}"));
+            Assert.True(dict.TryGetValue("a", out dynamic first));
+            Assert.Equal(1, (int) first);
+            Assert.True(dict.TryGetValue("b", out dynamic second));
+            Assert.Equal("2", (string) second);
+        }
+
+        [Fact]
+        public void DeserializeWithWhitespaceUtf16()
+        {
+            var dict = JsonSerializer.Generic.Utf16.Deserialize<Dictionary<string, object>>(@"{""a"": 1, ""b"": ""2""}");
+            Assert.True(dict.TryGetValue("a", out dynamic first));
+            Assert.Equal(1, (int) first);
+            Assert.True(dict.TryGetValue("b", out dynamic second));
+            Assert.Equal("2", (string) second);
+        }
     }
 }
