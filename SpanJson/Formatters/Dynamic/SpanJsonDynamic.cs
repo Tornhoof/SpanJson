@@ -45,6 +45,8 @@ namespace SpanJson.Formatters.Dynamic
             throw new NotSupportedException();
         }
 
+        public virtual string ToJsonValue() => ToString();
+
         public override bool TryConvert(ConvertBinder binder, out object result)
         {
             return TryConvert(binder.ReturnType, out result);

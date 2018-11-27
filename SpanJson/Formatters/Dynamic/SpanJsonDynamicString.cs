@@ -106,5 +106,7 @@ namespace SpanJson.Formatters.Dynamic
 
             throw new NotSupportedException();
         }
+
+        public override string ToJsonValue() => base.ToString(); // take the parent version as this ToString removes the double quotes
     }
 }

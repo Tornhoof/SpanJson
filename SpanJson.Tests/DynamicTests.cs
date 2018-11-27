@@ -564,6 +564,47 @@ namespace SpanJson.Tests
             }
         }
 
+        [Fact]
+        public void ArrayToJsonValueUtf8()
+        {
+            var array = new object[] {"Hello", "World", 123};
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(array);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
+            Assert.IsType<SpanJsonDynamicArray<byte>>(deserialized);
+            Assert.Equal("[\"Hello\",\"World\",123]", deserialized.ToString());
+        }
+
+        [Fact]
+        public void ArrayToJsonValueUtf16()
+        {
+            var array = new object[] { "Hello", "World", 123 };
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(array);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
+            Assert.IsType<SpanJsonDynamicArray<char>>(deserialized);
+            Assert.Equal("[\"Hello\",\"World\",123]", deserialized.ToString());
+        }
+
+        [Fact]
+        public void ObjectToJsonValueUtf8()
+        {
+            var input = new {Key = "1", Value = 5};
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(input);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
+            Assert.IsType<SpanJsonDynamicObject>(deserialized);
+            Assert.Equal("{\"Key\":\"1\",\"Value\":5}", deserialized.ToString());
+        }
+
+        [Fact]
+        public void ObjectToJsonValueUtf16()
+        {
+            var input = new { Key = "1", Value = 5 };
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
+            Assert.IsType<SpanJsonDynamicObject>(deserialized);
+            Assert.Equal("{\"Key\":\"1\",\"Value\":5}", deserialized.ToString());
+        }
+
+
         public class NonDynamicParent
         {
             public class DynamicChild : DynamicObject

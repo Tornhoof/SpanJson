@@ -2,7 +2,7 @@
 
 namespace SpanJson.Formatters.Dynamic
 {
-    public interface ISpanJsonDynamicArray : IEnumerable<object>
-    {
+    public interface ISpanJsonDynamicArray : ISpanJsonDynamic, IEnumerable<object>
+    {       
     }
 }
