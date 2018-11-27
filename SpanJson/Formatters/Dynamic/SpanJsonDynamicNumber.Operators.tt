@@ -30,9 +30,9 @@ namespace SpanJson.Formatters.Dynamic
 <# foreach(var t in types) { #>
         public static explicit operator <#= t.Name #>(SpanJsonDynamicNumber<TSymbol> input)
         {
-            if (DynamicConverter.TryConvertTo(typeof(<#= t.Name #>), input.Symbols, out var value) && value is <#= t.Name #> output)
+            if (DynamicConverter.TryConvertTo(typeof(<#= t.Name #>), input.Symbols, out var value))
             {
-                return output;
+                return (<#= t.Name #>) value;
             }
             throw new InvalidCastException();
         }

@@ -7,65 +7,105 @@ namespace SpanJson.Formatters.Dynamic
     {
         public static explicit operator Char(SpanJsonDynamicString<TSymbol> input)
         {
-            if (DynamicConverter.TryConvertTo(typeof(Char), input.Symbols, out var value) && value is Char output)
+            if (DynamicConverter.TryConvertTo(typeof(Char), input.Symbols, out var value))
             {
-                return output;
+                return (Char) value;
+            }
+            throw new InvalidCastException();
+        }
+	    public static explicit operator Char?(SpanJsonDynamicString<TSymbol> input)
+        {
+            if (DynamicConverter.TryConvertTo(typeof(Char?), input.Symbols, out var value))
+            {
+				return (Char?) value;
             }
             throw new InvalidCastException();
         }
         public static explicit operator DateTime(SpanJsonDynamicString<TSymbol> input)
         {
-            if (DynamicConverter.TryConvertTo(typeof(DateTime), input.Symbols, out var value) && value is DateTime output)
+            if (DynamicConverter.TryConvertTo(typeof(DateTime), input.Symbols, out var value))
             {
-                return output;
+                return (DateTime) value;
+            }
+            throw new InvalidCastException();
+        }
+	    public static explicit operator DateTime?(SpanJsonDynamicString<TSymbol> input)
+        {
+            if (DynamicConverter.TryConvertTo(typeof(DateTime?), input.Symbols, out var value))
+            {
+				return (DateTime?) value;
             }
             throw new InvalidCastException();
         }
         public static explicit operator DateTimeOffset(SpanJsonDynamicString<TSymbol> input)
         {
-            if (DynamicConverter.TryConvertTo(typeof(DateTimeOffset), input.Symbols, out var value) && value is DateTimeOffset output)
+            if (DynamicConverter.TryConvertTo(typeof(DateTimeOffset), input.Symbols, out var value))
             {
-                return output;
+                return (DateTimeOffset) value;
+            }
+            throw new InvalidCastException();
+        }
+	    public static explicit operator DateTimeOffset?(SpanJsonDynamicString<TSymbol> input)
+        {
+            if (DynamicConverter.TryConvertTo(typeof(DateTimeOffset?), input.Symbols, out var value))
+            {
+				return (DateTimeOffset?) value;
             }
             throw new InvalidCastException();
         }
         public static explicit operator TimeSpan(SpanJsonDynamicString<TSymbol> input)
         {
-            if (DynamicConverter.TryConvertTo(typeof(TimeSpan), input.Symbols, out var value) && value is TimeSpan output)
+            if (DynamicConverter.TryConvertTo(typeof(TimeSpan), input.Symbols, out var value))
             {
-                return output;
+                return (TimeSpan) value;
+            }
+            throw new InvalidCastException();
+        }
+	    public static explicit operator TimeSpan?(SpanJsonDynamicString<TSymbol> input)
+        {
+            if (DynamicConverter.TryConvertTo(typeof(TimeSpan?), input.Symbols, out var value))
+            {
+				return (TimeSpan?) value;
             }
             throw new InvalidCastException();
         }
         public static explicit operator Guid(SpanJsonDynamicString<TSymbol> input)
         {
-            if (DynamicConverter.TryConvertTo(typeof(Guid), input.Symbols, out var value) && value is Guid output)
+            if (DynamicConverter.TryConvertTo(typeof(Guid), input.Symbols, out var value))
             {
-                return output;
+                return (Guid) value;
+            }
+            throw new InvalidCastException();
+        }
+	    public static explicit operator Guid?(SpanJsonDynamicString<TSymbol> input)
+        {
+            if (DynamicConverter.TryConvertTo(typeof(Guid?), input.Symbols, out var value))
+            {
+				return (Guid?) value;
             }
             throw new InvalidCastException();
         }
         public static explicit operator String(SpanJsonDynamicString<TSymbol> input)
         {
-            if (DynamicConverter.TryConvertTo(typeof(String), input.Symbols, out var value) && value is String output)
+            if (DynamicConverter.TryConvertTo(typeof(String), input.Symbols, out var value))
             {
-                return output;
+                return (String) value;
             }
             throw new InvalidCastException();
         }
         public static explicit operator Version(SpanJsonDynamicString<TSymbol> input)
         {
-            if (DynamicConverter.TryConvertTo(typeof(Version), input.Symbols, out var value) && value is Version output)
+            if (DynamicConverter.TryConvertTo(typeof(Version), input.Symbols, out var value))
             {
-                return output;
+                return (Version) value;
             }
             throw new InvalidCastException();
         }
         public static explicit operator Uri(SpanJsonDynamicString<TSymbol> input)
         {
-            if (DynamicConverter.TryConvertTo(typeof(Uri), input.Symbols, out var value) && value is Uri output)
+            if (DynamicConverter.TryConvertTo(typeof(Uri), input.Symbols, out var value))
             {
-                return output;
+                return (Uri) value;
             }
             throw new InvalidCastException();
         }

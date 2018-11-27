@@ -25,7 +25,7 @@ namespace SpanJson.Formatters.Dynamic
                     if (Converters.TryGetValue(destinationType, out var del))
                     {
                         var reader = new JsonReader<TSymbol>(span);
-                        value = del(reader);
+                        value = del(ref reader);
                         return true;
                     }
                 }
