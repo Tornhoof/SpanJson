@@ -9,7 +9,7 @@
     <Company />
     <Description>SpanJson is a JSON serializer for .NET Core 2.1+</Description>
     <Copyright>SpanJson Contributors</Copyright>
-    <PackageLicenseUrl>https://github.com/Tornhoof/SpanJson/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Tornhoof/SpanJson</PackageProjectUrl>
     <RepositoryUrl>git://github.com/Tornhoof/SpanJson</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

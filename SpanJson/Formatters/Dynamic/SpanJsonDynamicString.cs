@@ -36,7 +36,7 @@ namespace SpanJson.Formatters.Dynamic
                         return true;
                     }
 
-                    if (destinationType.IsEnum)
+                    if (destinationType.IsEnum || (destinationType = Nullable.GetUnderlyingType(destinationType)) != null)
                     {
                         var data = reader.ReadString();
                         if (Enum.TryParse(destinationType, data, out var enumValue))
