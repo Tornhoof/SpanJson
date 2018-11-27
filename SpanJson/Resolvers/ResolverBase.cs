@@ -102,7 +102,7 @@ namespace SpanJson.Resolvers
             // ReSharper disable ConvertClosureToMethodGroup
             if (memberInfo.CustomSerializer != null)
             {
-                var formatter = (IJsonFormatter) GetDefaultOrCreate(memberInfo.CustomSerializer);
+                var formatter = GetDefaultOrCreate(memberInfo.CustomSerializer);
                 if (formatter is ICustomJsonFormatter csf && memberInfo.CustomSerializerArguments != null)
                 {
                     csf.Arguments = memberInfo.CustomSerializerArguments;
@@ -296,7 +296,7 @@ namespace SpanJson.Resolvers
                 return GetDefaultOrCreate(typeof(DynamicMetaObjectProviderFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
             }
 
-            if (type.TryGetTypeOfGenericInterface(typeof(IDictionary<,>), out var dictArgumentTypes) && !IsBadDictionary(type))
+            if (type.TryGetTypeOfGenericInterface(typeof(IDictionary<,>), out var dictArgumentTypes) && HasApplicableCtor(type))
             {
                 if (dictArgumentTypes.Length != 2 || dictArgumentTypes[0] != typeof(string))
                 {
@@ -317,7 +317,7 @@ namespace SpanJson.Resolvers
                     typeof(ReadOnlyDictionaryFormatter<,,,>).MakeGenericType(type, rodictArgumentTypes[1], typeof(TSymbol), typeof(TResolver)));
             }
 
-            if (type.TryGetTypeOfGenericInterface(typeof(IList<>), out var listArgumentTypes) && !IsBadList(type))
+            if (type.TryGetTypeOfGenericInterface(typeof(IList<>), out var listArgumentTypes) && HasApplicableCtor(type))
             {
                 return GetDefaultOrCreate(typeof(ListFormatter<,,,>).MakeGenericType(type, listArgumentTypes.Single(), typeof(TSymbol), typeof(TResolver)));
             }
@@ -344,28 +344,23 @@ namespace SpanJson.Resolvers
             return GetDefaultOrCreate(typeof(ComplexClassFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
         }
 
-        protected virtual bool IsBadDictionary(Type type)
+        /// <summary>
+        /// Either standard ctor or ctor with constructor for proper values
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        protected virtual bool HasApplicableCtor(Type type)
         {
             // ReadOnlyDictionary is kinda broken, it implements IDictionary<T> too, but without any standard ctor
             // Make sure this is using the ReadOnlyDictionaryFormatter
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ReadOnlyDictionary<,>))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        protected virtual bool IsBadList(Type type)
-        {
-            // ReadOnlyCollection is kinda broken, it implements IList<T> too, but without any standard ctor
+            // ReadOnlyCollection is kinda broken, it implements ICollection<T> too, but without any standard ctor
             // Make sure this is using the EnumerableFormatter
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ReadOnlyCollection<>))
+            if (type.IsInterface)
             {
-                return true;
+                return true; // late checking with fallback
             }
 
-            return false;
+            return type.GetConstructor(Type.EmptyTypes) != null;
         }
 
         private static IJsonFormatter GetIntegrated(Type type)
@@ -467,16 +462,31 @@ namespace SpanJson.Resolvers
         {
             var inputType = typeof(T);
             var convertedType = typeof(TConverted);
-
+            var paramExpression = Expression.Parameter(inputType, "input");
             if (convertedType.IsAssignableFrom(inputType))
             {
-                var pExpression = Expression.Parameter(inputType, "input");
-                return Expression.Lambda<Func<T, TConverted>>(Expression.Convert(pExpression, convertedType), pExpression).Compile();
+                return Expression.Lambda<Func<T, TConverted>>(Expression.Convert(paramExpression, convertedType), paramExpression).Compile();
             }
 
             if (IsUnsupportedEnumerable(convertedType))
             {
                 return _ => throw new NotSupportedException($"{typeof(TConverted).Name} is not supported.");
+            }
+
+            // not a nice way, but I don't find another good way to solve this, without adding either a dependency to immutable collection
+            // or another nuget package and plugin code.
+            if (convertedType.Namespace == "System.Collections.Immutable")
+            {
+                var emptyField = convertedType.GetField("Empty", BindingFlags.Public | BindingFlags.Static);
+                var addRangeMethod = convertedType.GetMethods(BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(a =>
+                    a.Name == "AddRange" && a.GetParameters().Length == 1 && a.GetParameters().Single().ParameterType.IsAssignableFrom(paramExpression.Type));
+                if (emptyField == null || addRangeMethod == null)
+                {
+                    return _ => throw new NotSupportedException($"{typeof(TConverted).Name} has no supported Immutable Collections (Immutable.Empty.AddRange) pattern.");
+                }
+
+                return Expression.Lambda<Func<T, TConverted>>(Expression.Call(Expression.Field(null, emptyField), addRangeMethod, paramExpression),
+                    paramExpression).Compile();
             }
 
             if (convertedType.IsInterface)
@@ -488,7 +498,6 @@ namespace SpanJson.Resolvers
                 }
             }
 
-            var paramExpression = Expression.Parameter(inputType, "input");
             var ci = convertedType.GetConstructors().FirstOrDefault(a =>
                 a.GetParameters().Length == 1 && a.GetParameters().Single().ParameterType.IsAssignableFrom(paramExpression.Type));
             if (ci == null)

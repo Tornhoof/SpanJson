@@ -9,7 +9,7 @@ namespace SpanJson.Formatters
     /// Used for types which are not built-in
     /// </summary>
     public sealed class DictionaryFormatter<TDictionary, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TDictionary, TSymbol>
-        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : class, IDictionary<string, T>
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : IDictionary<string, T>
     {
         private static readonly Func<TDictionary> CreateFunctor = StandardResolvers.GetResolver<TSymbol, TResolver>().GetCreateFunctor<TDictionary>();
         public static readonly DictionaryFormatter<TDictionary, T, TSymbol, TResolver> Default = new DictionaryFormatter<TDictionary, T, TSymbol, TResolver>();
@@ -20,7 +20,7 @@ namespace SpanJson.Formatters
         {
             if (reader.ReadIsNull())
             {
-                return null;
+                return default;
             }
 
             reader.ReadBeginObjectOrThrow();
