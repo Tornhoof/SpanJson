@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace SpanJson.Formatters.Dynamic
 {
-    public abstract class SpanJsonDynamicString<TSymbol> : SpanJsonDynamic<TSymbol> where TSymbol : struct
+    public abstract partial class SpanJsonDynamicString<TSymbol> : SpanJsonDynamic<TSymbol> where TSymbol : struct
     {
         private static readonly DynamicTypeConverter DynamicConverter = new DynamicTypeConverter();
 
@@ -24,7 +26,7 @@ namespace SpanJson.Formatters.Dynamic
                     var reader = new JsonReader<TSymbol>(span);
                     if (Converters.TryGetValue(destinationType, out var del))
                     {
-                        value = del(reader);
+                        value = del(ref reader);
                         return true;
                     }
 
@@ -34,7 +36,7 @@ namespace SpanJson.Formatters.Dynamic
                         return true;
                     }
 
-                    if (destinationType.IsEnum)
+                    if (destinationType.IsEnum || (destinationType = Nullable.GetUnderlyingType(destinationType)) != null)
                     {
                         var data = reader.ReadString();
                         if (Enum.TryParse(destinationType, data, out var enumValue))
@@ -83,5 +85,28 @@ namespace SpanJson.Formatters.Dynamic
                 return BuildDelegates(allowedTypes);
             }
         }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override string ToString()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                var temp = Symbols;
+                var chars = Unsafe.As<TSymbol[], char[]>(ref temp);
+                return new string(chars, 1, chars.Length - 2);
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                var temp = Symbols;
+                var bytes = Unsafe.As<TSymbol[], byte[]>(ref temp);
+                return Encoding.UTF8.GetString(bytes, 1, bytes.Length - 2);
+            }
+
+            throw new NotSupportedException();
+        }
+
+        public override string ToJsonValue() => base.ToString(); // take the parent version as this ToString removes the double quotes
     }
 }

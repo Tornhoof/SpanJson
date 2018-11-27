@@ -84,12 +84,23 @@ namespace SpanJson.Formatters.Dynamic
                     var lambda = Expression.Lambda<ConvertDelegate>(
                         Expression.Convert(Expression.Call(parameter, method), typeof(object)), parameter);
                     result.Add(allowedType, lambda.Compile());
+
+                    if (allowedType.IsValueType)
+                    {
+                        var methodIsNull = typeof(JsonReader<TSymbol>).GetMethod($"Read{utfType}IsNull");
+                        var conditionExpression = Expression.Condition(Expression.IsTrue(Expression.Call(parameter, methodIsNull)),
+                            Expression.Constant(null),
+                            Expression.Convert(Expression.Call(parameter, method), typeof(object)));
+                        lambda = Expression.Lambda<ConvertDelegate>(conditionExpression, parameter);
+                        result.Add(typeof(Nullable<>).MakeGenericType(allowedType), lambda.Compile());
+                    }
                 }
+
             }
 
             return result;
         }
 
-        protected delegate object ConvertDelegate(in JsonReader<TSymbol> reader);
+        protected delegate object ConvertDelegate(ref JsonReader<TSymbol> reader);
     }
 }

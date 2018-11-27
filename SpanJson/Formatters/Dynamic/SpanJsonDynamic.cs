@@ -21,8 +21,7 @@ namespace SpanJson.Formatters.Dynamic
 
         public bool TryConvert(Type outputType, out object result)
         {
-            var returnType = Nullable.GetUnderlyingType(outputType) ?? outputType;
-            return Converter.TryConvertTo(returnType, Symbols, out result);
+            return Converter.TryConvertTo(outputType, Symbols, out result);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -44,6 +43,8 @@ namespace SpanJson.Formatters.Dynamic
 
             throw new NotSupportedException();
         }
+
+        public virtual string ToJsonValue() => ToString();
 
         public override bool TryConvert(ConvertBinder binder, out object result)
         {

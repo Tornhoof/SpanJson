@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SpanJson.Formatters.Dynamic
 {
-    public abstract class SpanJsonDynamicNumber<TSymbol> : SpanJsonDynamic<TSymbol> where TSymbol : struct
+    public abstract partial class SpanJsonDynamicNumber<TSymbol> : SpanJsonDynamic<TSymbol> where TSymbol : struct
     {
         private static readonly DynamicTypeConverter DynamicConverter = new DynamicTypeConverter();
 
@@ -25,7 +25,7 @@ namespace SpanJson.Formatters.Dynamic
                     if (Converters.TryGetValue(destinationType, out var del))
                     {
                         var reader = new JsonReader<TSymbol>(span);
-                        value = del(reader);
+                        value = del(ref reader);
                         return true;
                     }
                 }

@@ -15,7 +15,7 @@ namespace SpanJson.Formatters.Dynamic
 
         public override string ToString()
         {
-            return $"{{{string.Join(", ", _dictionary.Select(a => $"\"{a.Key}\": {a.Value}"))}}}";
+            return $"{{{string.Join(",", _dictionary.Select(a => $"\"{a.Key}\":{a.Value.ToJsonValue()}"))}}}";
         }
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)

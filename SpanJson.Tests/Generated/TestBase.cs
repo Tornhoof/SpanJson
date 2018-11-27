@@ -51,6 +51,24 @@ namespace SpanJson.Tests.Generated
 
             return result;
         }
+
+        [Fact]
+        public void DynamicCastUtf8()
+        {
+            var value = Fixture.Create<T>();
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(value);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
+            Assert.Equal(value, (T) deserialized);
+        }
+
+        [Fact]
+        public void DynamicCastUtf16()
+        {
+            var value = Fixture.Create<T>();
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(value);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
+            Assert.Equal(value, (T) deserialized);
+        }
     }
 
     public abstract class ListTestBase<T> : TestBase
@@ -274,6 +292,41 @@ namespace SpanJson.Tests.Generated
             var serialized = JsonSerializer.Generic.Utf8.Serialize<T?>(null);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<T?>(serialized);
             Assert.Null(deserialized);
+        }
+
+
+        [Fact]
+        public void DynamicCastNullableNullUtf8()
+        {
+            var serialized = JsonSerializer.Generic.Utf8.Serialize((T?)null);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
+            Assert.Null((T?)deserialized);
+        }
+
+        [Fact]
+        public void DynamicCastNullableNullUtf16()
+        {
+            var serialized = JsonSerializer.Generic.Utf16.Serialize((T?)null);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
+            Assert.Null((T?) deserialized);
+        }
+
+        [Fact]
+        public void DynamicCastNullableUtf8()
+        {
+            var value = Fixture.Create<T>();
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(value);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<dynamic>(serialized);
+            Assert.Equal(value, (T?)deserialized);
+        }
+
+        [Fact]
+        public void DynamicCastNullableUtf16()
+        {
+            var value = Fixture.Create<T>();
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(value);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
+            Assert.Equal(value, (T?)deserialized);
         }
     }
 }

@@ -79,8 +79,10 @@ namespace SpanJson.Formatters.Dynamic
 
         public override string ToString()
         {
-            return $"[{string.Join(", ", _input.Select(a => a == null ? "null" : a.ToString()))}]";
+            return $"[{string.Join(",", _input.Select(a => a == null ? "null" : a.ToJsonValue()))}]";
         }
+
+        public string ToJsonValue() => ToString();
 
         private static Func<object[], ICountableEnumerable> CreateEnumerable(Type type)
         {
