@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic;
+using SpanJson.Formatters.Dynamic;
 using Xunit;
 
 namespace SpanJson.Tests
@@ -335,6 +336,47 @@ namespace SpanJson.Tests
             Assert.Equal(1, (int) first);
             Assert.True(dict.TryGetValue("b", out dynamic second));
             Assert.Equal("2", (string) second);
+        }
+
+        [Fact]
+        public void SerializeDeserializeDictionaryDynamicUtf16()
+        {
+            var dictionary = new Dictionary<string, object>
+            {
+                {"Key1", 1},
+                {"Key2", "2"},
+            };
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(dictionary);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Dictionary<string, object>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.True(deserialized.TryGetValue("Key1", out var value1));
+            Assert.True(deserialized.TryGetValue("Key2", out var value2));
+            Assert.IsType<SpanJsonDynamicUtf16Number>(value1);
+            Assert.IsType<SpanJsonDynamicUtf16String>(value2);
+            Assert.Equal("1", value1.ToString());
+            Assert.Equal("2", value2.ToString());
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeDictionaryDynamicUtf8()
+        {
+            var dictionary = new Dictionary<string, object>
+            {
+                {"Key1", 1},
+                {"Key2", "2"},
+            };
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(dictionary);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<Dictionary<string, object>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.True(deserialized.TryGetValue("Key1", out var value1));
+            Assert.True(deserialized.TryGetValue("Key2", out var value2));
+            Assert.IsType<SpanJsonDynamicUtf8Number>(value1);
+            Assert.IsType<SpanJsonDynamicUtf8String>(value2);
+            Assert.Equal("1", value1.ToString());
+            Assert.Equal("2", value2.ToString());
         }
     }
 }

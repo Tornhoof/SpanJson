@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace SpanJson.Formatters.Dynamic
 {
@@ -82,6 +84,27 @@ namespace SpanJson.Formatters.Dynamic
                 };
                 return BuildDelegates(allowedTypes);
             }
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public override string ToString()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                var temp = Symbols;
+                var chars = Unsafe.As<TSymbol[], char[]>(ref temp);
+                return new string(chars, 1, chars.Length - 2);
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                var temp = Symbols;
+                var bytes = Unsafe.As<TSymbol[], byte[]>(ref temp);
+                return Encoding.UTF8.GetString(bytes, 1, bytes.Length - 2);
+            }
+
+            throw new NotSupportedException();
         }
     }
 }
