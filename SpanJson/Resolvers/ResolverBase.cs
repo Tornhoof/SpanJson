@@ -462,16 +462,31 @@ namespace SpanJson.Resolvers
         {
             var inputType = typeof(T);
             var convertedType = typeof(TConverted);
-
+            var paramExpression = Expression.Parameter(inputType, "input");
             if (convertedType.IsAssignableFrom(inputType))
             {
-                var pExpression = Expression.Parameter(inputType, "input");
-                return Expression.Lambda<Func<T, TConverted>>(Expression.Convert(pExpression, convertedType), pExpression).Compile();
+                return Expression.Lambda<Func<T, TConverted>>(Expression.Convert(paramExpression, convertedType), paramExpression).Compile();
             }
 
             if (IsUnsupportedEnumerable(convertedType))
             {
                 return _ => throw new NotSupportedException($"{typeof(TConverted).Name} is not supported.");
+            }
+
+            // not a nice way, but I don't find another good way to solve this, without adding either a dependency to immutable collection
+            // or another nuget package and plugin code.
+            if (convertedType.Namespace == "System.Collections.Immutable")
+            {
+                var emptyField = convertedType.GetField("Empty", BindingFlags.Public | BindingFlags.Static);
+                var addRangeMethod = convertedType.GetMethods(BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(a =>
+                    a.Name == "AddRange" && a.GetParameters().Length == 1 && a.GetParameters().Single().ParameterType.IsAssignableFrom(paramExpression.Type));
+                if (emptyField == null || addRangeMethod == null)
+                {
+                    return _ => throw new NotSupportedException($"{typeof(TConverted).Name} has no supported Immutable Collections (Immutable.Empty.AddRange) pattern.");
+                }
+
+                return Expression.Lambda<Func<T, TConverted>>(Expression.Call(Expression.Field(null, emptyField), addRangeMethod, paramExpression),
+                    paramExpression).Compile();
             }
 
             if (convertedType.IsInterface)
@@ -483,7 +498,6 @@ namespace SpanJson.Resolvers
                 }
             }
 
-            var paramExpression = Expression.Parameter(inputType, "input");
             var ci = convertedType.GetConstructors().FirstOrDefault(a =>
                 a.GetParameters().Length == 1 && a.GetParameters().Single().ParameterType.IsAssignableFrom(paramExpression.Type));
             if (ci == null)

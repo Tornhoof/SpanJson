@@ -12,7 +12,6 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 ``UInt16``, ``UInt32``, ``UInt64``, ``Single``, ``Double``,
 ``decimal``, ``bool``, ``char``, ``DateTime``, ``DateTimeOffset``,
 ``TimeSpan``, ``Guid``, ``string``, ``Version``, ``Uri``, ``Tuple<,>``,``ValueTuple<,>``, ``KeyValuePair<,>``
-
 - Public Properties and Fields are considered for serialization/deserialization
 - DateTime{Offset} is in ISO8601 mode  
 - Dynamics
@@ -24,6 +23,7 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 - Support for ``[IgnoreDataMember]`` to ignore a specific member
 - Support for ``ShouldSerializeXXX`` pattern to decide at runtime if a member should be serialized
 - Support for ``[EnumMember]`` to specify the string value of the enum value
+- Support for Immutable Collections, full Serialization/Deserialization for ``ImmutableList``, ``ImmutableArray``, ``ImmutableDictionary``, ``ImmutableSortedDictionary``. ImmutableStack is not supported
 - Pretty printing JSON
 - Support for tuples currently excludes the last type with 8 arguments (TRest)
 - Support for annotating a constructor with ``[JsonConstructor]`` to use that one instead of assigning members during deserialization
