@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SpanJson.Formatters.Dynamic
 {
-    public abstract class SpanJsonDynamicNumber<TSymbol> : SpanJsonDynamic<TSymbol> where TSymbol : struct
+    public abstract partial class SpanJsonDynamicNumber<TSymbol> : SpanJsonDynamic<TSymbol> where TSymbol : struct
     {
         private static readonly DynamicTypeConverter DynamicConverter = new DynamicTypeConverter();
 

@@ -46,6 +46,14 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BclFormatter.cs</LastGenOutput>
     </None>
+    <None Update="Formatters\Dynamic\SpanJsonDynamicString.Operators.tt">
+      <LastGenOutput>SpanJsonDynamicString.Operators.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Update="Formatters\Dynamic\SpanJsonDynamicNumber.Operators.tt">
+      <LastGenOutput>SpanJsonDynamicNumber.Operators.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
     <None Update="JsonWriter.PrimitiveWrappers.tt">
       <LastGenOutput>JsonWriter.PrimitiveWrappers.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -60,6 +68,16 @@
     </None>
     <Compile Update="Formatters\BclFormatter.cs">
       <DependentUpon>BclFormatter.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Formatters\Dynamic\SpanJsonDynamicString.Operators.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SpanJsonDynamicString.Operators.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Formatters\Dynamic\SpanJsonDynamicNumber.Operators.cs">
+      <DependentUpon>SpanJsonDynamicNumber.Operators.tt</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
