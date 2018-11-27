@@ -6,7 +6,7 @@ using SpanJson.Resolvers;
 namespace SpanJson.Formatters
 {
     public class ReadOnlyDictionaryFormatter<TDictionary, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TDictionary, TSymbol>
-        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : class, IReadOnlyDictionary<string, T>
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : IReadOnlyDictionary<string, T>
     {
         private static readonly Func<Dictionary<string, T>, TDictionary> Converter =
             StandardResolvers.GetResolver<TSymbol, TResolver>().GetEnumerableConvertFunctor<Dictionary<string, T>, TDictionary>();
@@ -21,7 +21,7 @@ namespace SpanJson.Formatters
         {
             if (reader.ReadIsNull())
             {
-                return null;
+                return default;
             }
 
             reader.ReadBeginObjectOrThrow();

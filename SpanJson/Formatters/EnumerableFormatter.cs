@@ -9,7 +9,7 @@ namespace SpanJson.Formatters
     /// Used for types which are not built-in
     /// </summary>
     public sealed class EnumerableFormatter<TEnumerable, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TEnumerable, TSymbol>
-        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TEnumerable : class, IEnumerable<T>
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TEnumerable : IEnumerable<T>
 
     {
         private static readonly Func<T[], TEnumerable> Converter =
@@ -25,7 +25,7 @@ namespace SpanJson.Formatters
         {
             if (reader.ReadIsNull())
             {
-                return null;
+                return default;
             }
 
             var array = ArrayFormatter<T, TSymbol, TResolver>.Default.Deserialize(ref reader);

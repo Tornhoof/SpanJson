@@ -102,7 +102,7 @@ namespace SpanJson.Resolvers
             // ReSharper disable ConvertClosureToMethodGroup
             if (memberInfo.CustomSerializer != null)
             {
-                var formatter = (IJsonFormatter) GetDefaultOrCreate(memberInfo.CustomSerializer);
+                var formatter = GetDefaultOrCreate(memberInfo.CustomSerializer);
                 if (formatter is ICustomJsonFormatter csf && memberInfo.CustomSerializerArguments != null)
                 {
                     csf.Arguments = memberInfo.CustomSerializerArguments;
@@ -296,7 +296,7 @@ namespace SpanJson.Resolvers
                 return GetDefaultOrCreate(typeof(DynamicMetaObjectProviderFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
             }
 
-            if (type.TryGetTypeOfGenericInterface(typeof(IDictionary<,>), out var dictArgumentTypes) && !IsBadDictionary(type))
+            if (type.TryGetTypeOfGenericInterface(typeof(IDictionary<,>), out var dictArgumentTypes) && HasApplicableCtor(type))
             {
                 if (dictArgumentTypes.Length != 2 || dictArgumentTypes[0] != typeof(string))
                 {
@@ -317,7 +317,7 @@ namespace SpanJson.Resolvers
                     typeof(ReadOnlyDictionaryFormatter<,,,>).MakeGenericType(type, rodictArgumentTypes[1], typeof(TSymbol), typeof(TResolver)));
             }
 
-            if (type.TryGetTypeOfGenericInterface(typeof(IList<>), out var listArgumentTypes) && !IsBadList(type))
+            if (type.TryGetTypeOfGenericInterface(typeof(IList<>), out var listArgumentTypes) && HasApplicableCtor(type))
             {
                 return GetDefaultOrCreate(typeof(ListFormatter<,,,>).MakeGenericType(type, listArgumentTypes.Single(), typeof(TSymbol), typeof(TResolver)));
             }
@@ -344,28 +344,23 @@ namespace SpanJson.Resolvers
             return GetDefaultOrCreate(typeof(ComplexClassFormatter<,,>).MakeGenericType(type, typeof(TSymbol), typeof(TResolver)));
         }
 
-        protected virtual bool IsBadDictionary(Type type)
+        /// <summary>
+        /// Either standard ctor or ctor with constructor for proper values
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        protected virtual bool HasApplicableCtor(Type type)
         {
             // ReadOnlyDictionary is kinda broken, it implements IDictionary<T> too, but without any standard ctor
             // Make sure this is using the ReadOnlyDictionaryFormatter
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ReadOnlyDictionary<,>))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        protected virtual bool IsBadList(Type type)
-        {
-            // ReadOnlyCollection is kinda broken, it implements IList<T> too, but without any standard ctor
+            // ReadOnlyCollection is kinda broken, it implements ICollection<T> too, but without any standard ctor
             // Make sure this is using the EnumerableFormatter
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ReadOnlyCollection<>))
+            if (type.IsInterface)
             {
-                return true;
+                return true; // late checking with fallback
             }
 
-            return false;
+            return type.GetConstructor(Type.EmptyTypes) != null;
         }
 
         private static IJsonFormatter GetIntegrated(Type type)
