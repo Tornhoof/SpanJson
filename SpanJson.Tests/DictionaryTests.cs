@@ -378,5 +378,32 @@ namespace SpanJson.Tests
             Assert.Equal("1", value1.ToString());
             Assert.Equal("2", value2.ToString());
         }
+
+        public enum DictionaryKey
+        {
+            Key1,
+            Key2
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeEnumKeyDictionaryUtf8()
+        {
+            var input = new Dictionary<DictionaryKey, int> {{DictionaryKey.Key1, 1}, {DictionaryKey.Key2, 2}};
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<Dictionary<DictionaryKey, int>>(serialized);
+            Assert.NotNull(deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeEnumKeyDictionaryUtf16()
+        {
+            var input = new Dictionary<DictionaryKey, int> { { DictionaryKey.Key1, 1 }, { DictionaryKey.Key2, 2 } };
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Dictionary<DictionaryKey, int>>(serialized);
+            Assert.NotNull(deserialized);
+        }
     }
 }

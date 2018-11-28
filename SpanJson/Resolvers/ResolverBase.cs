@@ -298,23 +298,23 @@ namespace SpanJson.Resolvers
 
             if (type.TryGetTypeOfGenericInterface(typeof(IDictionary<,>), out var dictArgumentTypes) && HasApplicableCtor(type))
             {
-                if (dictArgumentTypes.Length != 2 || dictArgumentTypes[0] != typeof(string))
+                if (dictArgumentTypes.Length != 2 || !(dictArgumentTypes[0] == typeof(string) || dictArgumentTypes[0].IsEnum))
                 {
                     throw new NotImplementedException($"{dictArgumentTypes[0]} is not supported a Key for Dictionary.");
                 }
 
-                return GetDefaultOrCreate(typeof(DictionaryFormatter<,,,>).MakeGenericType(type, dictArgumentTypes[1], typeof(TSymbol), typeof(TResolver)));
+                return GetDefaultOrCreate(typeof(DictionaryFormatter<,,,,>).MakeGenericType(type, dictArgumentTypes[0], dictArgumentTypes[1], typeof(TSymbol), typeof(TResolver)));
             }
 
             if (type.TryGetTypeOfGenericInterface(typeof(IReadOnlyDictionary<,>), out var rodictArgumentTypes))
             {
-                if (rodictArgumentTypes.Length != 2 || rodictArgumentTypes[0] != typeof(string))
+                if (rodictArgumentTypes.Length != 2 || !(rodictArgumentTypes[0] == typeof(string) || rodictArgumentTypes[0].IsEnum))
                 {
                     throw new NotImplementedException($"{rodictArgumentTypes[0]} is not supported a Key for Dictionary.");
                 }
 
                 return GetDefaultOrCreate(
-                    typeof(ReadOnlyDictionaryFormatter<,,,>).MakeGenericType(type, rodictArgumentTypes[1], typeof(TSymbol), typeof(TResolver)));
+                    typeof(DictionaryFormatter<,,,,>).MakeGenericType(type, rodictArgumentTypes[0], rodictArgumentTypes[1], typeof(TSymbol), typeof(TResolver)));
             }
 
             if (type.TryGetTypeOfGenericInterface(typeof(IList<>), out var listArgumentTypes) && HasApplicableCtor(type))
