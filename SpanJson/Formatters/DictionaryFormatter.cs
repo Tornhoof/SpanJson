@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -14,23 +15,48 @@ namespace SpanJson.Formatters
     /// <summary>
     /// Used for types which are not built-in
     /// </summary>
-    public sealed class DictionaryFormatter<TDictionary, TKey, TValue, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TDictionary, TSymbol>
+    public sealed class DictionaryFormatter<TDictionary, TWritableDictionary, TKey, TValue, TSymbol, TResolver> : BaseFormatter,
+        IJsonFormatter<TDictionary, TSymbol>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : IEnumerable<KeyValuePair<TKey, TValue>>
     {
-        private static readonly Func<TDictionary> CreateFunctor = StandardResolvers.GetResolver<TSymbol, TResolver>().GetCreateFunctor<TDictionary>();
+        private static readonly Func<TWritableDictionary> CreateFunctor =
+            StandardResolvers.GetResolver<TSymbol, TResolver>().GetCreateFunctor<TWritableDictionary>();
+
         private static readonly Func<TDictionary, int> CountFunctor = BuildCountFunctor();
         private static readonly KeyToNameDelegate KeyToNameFunctor = BuildKeyToNameFunctor();
         private static readonly NameToKeyDelegate NameToKeyFunctor = BuildNameToKeyFunctor();
+        private static readonly AssignKvpDelegate AssignKvpFunctor = BuildAssignKvpFunctor();
 
-        public static readonly DictionaryFormatter<TDictionary, TKey, TValue, TSymbol, TResolver> Default = new DictionaryFormatter<TDictionary, TKey, TValue, TSymbol, TResolver>();
+        public static readonly DictionaryFormatter<TDictionary, TWritableDictionary, TKey, TValue, TSymbol, TResolver> Default =
+            new DictionaryFormatter<TDictionary, TWritableDictionary, TKey, TValue, TSymbol, TResolver>();
+
         private static readonly IJsonFormatter<TValue, TSymbol> ElementFormatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<TValue>();
+
+        private static readonly Func<TWritableDictionary, TDictionary> Converter =
+            StandardResolvers.GetResolver<TSymbol, TResolver>().GetEnumerableConvertFunctor<TWritableDictionary, TDictionary>();
+
         private static readonly bool IsRecursionCandidate = RecursionCandidate<TValue>.IsRecursionCandidate;
 
         private static Func<TDictionary, int> BuildCountFunctor()
         {
             var paramExpression = Expression.Parameter(typeof(TDictionary), "input");
-            var propertyExpression = Expression.Property(paramExpression, nameof(IDictionary<string, string>.Count));
+            var propertyInfo = paramExpression.Type.GetPublicProperties().First(x => x.Name == nameof(ICollection.Count));
+            var propertyExpression = Expression.Property(paramExpression, propertyInfo);
             return Expression.Lambda<Func<TDictionary, int>>(propertyExpression, paramExpression).Compile();
+        }
+
+        private static AssignKvpDelegate BuildAssignKvpFunctor()
+        {
+            var dictionaryParameterExpression = Expression.Parameter(typeof(TWritableDictionary), "dictionary");
+            var keyParameterExpression = Expression.Parameter(typeof(TKey), "key");
+            var valueParameterExpression = Expression.Parameter(typeof(TValue), "value");
+
+            var indexerProperty = dictionaryParameterExpression.Type.GetProperty("Item", valueParameterExpression.Type, new[] {keyParameterExpression.Type});
+
+            var lambda = Expression.Lambda<AssignKvpDelegate>(
+                Expression.Assign(Expression.Property(dictionaryParameterExpression, indexerProperty, keyParameterExpression), valueParameterExpression),
+                dictionaryParameterExpression, keyParameterExpression, valueParameterExpression);
+            return lambda.Compile();
         }
 
         private static NameToKeyDelegate BuildNameToKeyFunctor()
@@ -39,10 +65,27 @@ namespace SpanJson.Formatters
             {
                 return input => Unsafe.As<string, TKey>(ref input);
             }
+
             if (typeof(TKey).IsEnum)
             {
-                return input => Enum.p
+                var paramExpression = Expression.Parameter(typeof(string), "input");
+                var switchResult = Expression.Variable(typeof(TKey), "switchResult");
+                var cases = new List<SwitchCase>();
+                foreach (var name in Enum.GetNames(typeof(TKey)))
+                {
+                    var switchValue = Expression.Constant(GetFormattedValue(name));
+                    var assignValue = Expression.Constant(Enum.Parse(typeof(TKey), name));
+                    var switchCase = Expression.SwitchCase(Expression.Assign(switchResult, assignValue), switchValue);
+                    cases.Add(switchCase);
+                }
+
+                var switchExpression = Expression.Switch(typeof(void), paramExpression,
+                    Expression.Throw(Expression.Constant(new InvalidOperationException())), null, cases.ToArray());
+                var body = Expression.Block(new[] {switchResult}, switchExpression, switchResult);
+                return Expression.Lambda<NameToKeyDelegate>(body, paramExpression).Compile();
             }
+
+            throw new NotSupportedException();
         }
 
         private static KeyToNameDelegate BuildKeyToNameFunctor()
@@ -60,9 +103,9 @@ namespace SpanJson.Formatters
                 var cases = new List<SwitchCase>();
                 foreach (var name in Enum.GetNames(typeof(TKey)))
                 {
-                    var valueConstant = Expression.Constant(GetFormattedValue(name));
-                    var value = Enum.Parse(typeof(TKey), name);
-                    var switchCase = Expression.SwitchCase(Expression.Assign(switchResult, valueConstant), Expression.Constant(value));
+                    var assignValue = Expression.Constant(GetFormattedValue(name));
+                    var switchValue = Expression.Constant(Enum.Parse(typeof(TKey), name));
+                    var switchCase = Expression.SwitchCase(Expression.Assign(switchResult, assignValue), switchValue);
                     cases.Add(switchCase);
                 }
 
@@ -92,12 +135,12 @@ namespace SpanJson.Formatters
             var count = 0;
             while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
             {
-                var key = reader.ReadEscapedName();
+                var key = NameToKeyFunctor(reader.ReadEscapedName());
                 var value = ElementFormatter.Deserialize(ref reader);
-                //result[key] = value;
+                AssignKvpFunctor(result, key, value);
             }
 
-            return result;
+            return Converter(result);
         }
 
         public void Serialize(ref JsonWriter<TSymbol> writer, TDictionary value)
@@ -112,6 +155,7 @@ namespace SpanJson.Formatters
             {
                 writer.IncrementDepth();
             }
+
             var valueLength = CountFunctor(value);
             writer.WriteBeginObject();
             if (valueLength > 0)
@@ -127,14 +171,19 @@ namespace SpanJson.Formatters
                     }
                 }
             }
+
             if (IsRecursionCandidate)
             {
                 writer.DecrementDepth();
             }
+
             writer.WriteEndObject();
         }
 
         private delegate string KeyToNameDelegate(TKey input);
+
         private delegate TKey NameToKeyDelegate(string input);
+
+        private delegate void AssignKvpDelegate(TWritableDictionary dictionary, TKey key, TValue value);
     }
 }

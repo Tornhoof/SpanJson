@@ -6,6 +6,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using SpanJson.Formatters;
 using SpanJson.Helpers;
@@ -303,7 +304,9 @@ namespace SpanJson.Resolvers
                     throw new NotImplementedException($"{dictArgumentTypes[0]} is not supported a Key for Dictionary.");
                 }
 
-                return GetDefaultOrCreate(typeof(DictionaryFormatter<,,,,>).MakeGenericType(type, dictArgumentTypes[0], dictArgumentTypes[1], typeof(TSymbol), typeof(TResolver)));
+                var writableType = type.IsInterface ? GetFunctorFallBackType(type) : type;
+                return GetDefaultOrCreate(typeof(DictionaryFormatter<,,,,,>).MakeGenericType(type, writableType, dictArgumentTypes[0], dictArgumentTypes[1],
+                    typeof(TSymbol), typeof(TResolver)));
             }
 
             if (type.TryGetTypeOfGenericInterface(typeof(IReadOnlyDictionary<,>), out var rodictArgumentTypes))
@@ -313,8 +316,10 @@ namespace SpanJson.Resolvers
                     throw new NotImplementedException($"{rodictArgumentTypes[0]} is not supported a Key for Dictionary.");
                 }
 
+                var writableType = typeof(Dictionary<,>).MakeGenericType(rodictArgumentTypes);
                 return GetDefaultOrCreate(
-                    typeof(DictionaryFormatter<,,,,>).MakeGenericType(type, rodictArgumentTypes[0], rodictArgumentTypes[1], typeof(TSymbol), typeof(TResolver)));
+                    typeof(DictionaryFormatter<,,,,,>).MakeGenericType(type, writableType, rodictArgumentTypes[0], rodictArgumentTypes[1], typeof(TSymbol),
+                        typeof(TResolver)));
             }
 
             if (type.TryGetTypeOfGenericInterface(typeof(IList<>), out var listArgumentTypes) && HasApplicableCtor(type))
@@ -444,6 +449,11 @@ namespace SpanJson.Resolvers
                 return typeof(Dictionary<,>).MakeGenericType(dictArgumentTypes);
             }
 
+            if (type.TryGetTypeOfGenericInterface(typeof(IReadOnlyDictionary<,>), out var rodictArgumentTypes))
+            {
+                return typeof(Dictionary<,>).MakeGenericType(rodictArgumentTypes);
+            }
+
             if (type.TryGetTypeOfGenericInterface(typeof(IList<>), out var listArgumentTypes))
             {
                 return typeof(List<>).MakeGenericType(listArgumentTypes);
@@ -462,6 +472,10 @@ namespace SpanJson.Resolvers
         {
             var inputType = typeof(T);
             var convertedType = typeof(TConverted);
+            if (typeof(T) == typeof(TConverted))
+            {
+                return arg => Unsafe.As<T, TConverted>(ref arg);
+            }
             var paramExpression = Expression.Parameter(inputType, "input");
             if (convertedType.IsAssignableFrom(inputType))
             {
