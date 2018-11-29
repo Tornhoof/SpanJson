@@ -135,9 +135,9 @@ namespace SpanJson.Formatters
             var count = 0;
             while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
             {
-                var key = NameToKeyFunctor(reader.ReadEscapedName());
+                var key = NameToKeyFunctor(reader.ReadEscapedName()); // enum keys get converted from strings
                 var value = ElementFormatter.Deserialize(ref reader);
-                AssignKvpFunctor(result, key, value);
+                AssignKvpFunctor(result, key, value); // No shared interface for IReadOnlyDictionary and IDictionary to set the value via indexer (to make sure that for duplicated keys, we use the last one)
             }
 
             return Converter(result);
@@ -156,14 +156,14 @@ namespace SpanJson.Formatters
                 writer.IncrementDepth();
             }
 
-            var valueLength = CountFunctor(value);
+            var valueLength = CountFunctor(value); // IReadOnlyDictionary and IDictionary don't share the same interface with .Count, use expression trees to optimize it
             writer.WriteBeginObject();
             if (valueLength > 0)
             {
                 var counter = 0;
                 foreach (var kvp in value)
                 {
-                    writer.WriteName(KeyToNameFunctor(kvp.Key));
+                    writer.WriteName(KeyToNameFunctor(kvp.Key)); // Enum Keys need to be converted to strings first
                     SerializeRuntimeDecisionInternal<TValue, TSymbol, TResolver>(ref writer, kvp.Value, ElementFormatter);
                     if (counter++ < valueLength - 1)
                     {
