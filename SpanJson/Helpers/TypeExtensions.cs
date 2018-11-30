@@ -48,7 +48,7 @@ namespace SpanJson.Helpers
             argumentTypes = default;
             return false;
         }
-
+        // https://stackoverflow.com/questions/358835/getproperties-to-return-all-properties-for-an-interface-inheritance-hierarchy
         public static PropertyInfo[] GetPublicProperties(this Type type)
         {
             if (type.IsInterface)
