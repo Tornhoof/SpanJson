@@ -17,20 +17,20 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 - Dynamics
 - Enums (string and integer, for integer see section Custom Resolver), incl. Flags
 - Anonymous types
-- Dictionary<,> with string as key
+- ``Dictionary``, ``ConcurrentDictionary`` with string/enum as key, the enum is formatted as a string.
 - Serialization/Deserialization of most IEnumerable<T> types (Stack and ConcurrentStack are not supported)
 - Support for ``[DataMember(Name="MemberName")]`` to set field name
 - Support for ``[IgnoreDataMember]`` to ignore a specific member
 - Support for ``ShouldSerializeXXX`` pattern to decide at runtime if a member should be serialized
 - Support for ``[EnumMember]`` to specify the string value of the enum value
-- Support for Immutable Collections, full Serialization/Deserialization for ``ImmutableList``, ``ImmutableArray``, ``ImmutableDictionary``, ``ImmutableSortedDictionary``. ImmutableStack is not supported
-- Pretty printing JSON
+- Support for Immutable Collections, full Serialization/Deserialization for ``ImmutableList``, ``ImmutableArray``, ``ImmutableDictionary``, ``ImmutableSortedDictionary``. ImmutableStack is not supported.
+- Support for read-only collections, ``ReadOnlyCollection``, ``ReadOnlyDictionary``, they are deserialized into a writeable type (i.e. List or Dictionary), then the read-only version is created via an appropriate constructor overload.
 - Support for tuples currently excludes the last type with 8 arguments (TRest)
 - Support for annotating a constructor with ``[JsonConstructor]`` to use that one instead of assigning members during deserialization
 - Support for custom serializes with ``[JsonCustomSerializer]`` to use that one instead of the normal formatter, see example below
 - Support for annotating a IDictionary<string,object> with ``[JsonExtensionData]``. Serialization will write all values from the dictionary as additional attributes. Deserialization will deserialize all unknown attributes into it.
   This does not work together with the Dynamic Language Runtime (DLR) support or the ``[JsonConstructor]`` attribute. See Example below. The Dictionary will also honor the Case Setting (i.e. CamelCase) and null behaviour for the dictionary keys.
-
+- Pretty printing JSON
 - Different 'Resolvers' to control general behaviour:
   - Exclude Nulls with Camel Case: ``ExcludeNullsCamelCaseResolver``
   - Exclude Nulls with Original Case (default): ``ExcludeNullsOriginalCaseResolver``
