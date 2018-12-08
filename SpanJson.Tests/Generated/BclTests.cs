@@ -27,7 +27,6 @@ namespace SpanJson.Tests.Generated
             Assert.Equal(input, deserialized);
         }
 
-
         [Theory]
         [InlineData(SByte.MinValue)]
         [InlineData(SByte.MaxValue)]
@@ -36,6 +35,19 @@ namespace SpanJson.Tests.Generated
             var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<SByte>(serialized);
             Assert.Equal(input, deserialized);
+        }
+		[Fact]
+        public void SerializeDeserializeOverflowUtf8()
+        {
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(ulong.MaxValue);
+			Assert.Throws<OverflowException>( () => JsonSerializer.Generic.Utf8.Deserialize<SByte>(serialized));
+        }
+		
+		[Fact]
+        public void SerializeDeserializeOverflowUtf16()
+        {
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(ulong.MaxValue);
+            Assert.Throws<OverflowException>( () => JsonSerializer.Generic.Utf16.Deserialize<SByte>(serialized));
         }
 
         [Fact]
@@ -91,7 +103,6 @@ namespace SpanJson.Tests.Generated
             Assert.Equal(input, deserialized);
         }
 
-
         [Theory]
         [InlineData(Int16.MinValue)]
         [InlineData(Int16.MaxValue)]
@@ -100,6 +111,19 @@ namespace SpanJson.Tests.Generated
             var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Int16>(serialized);
             Assert.Equal(input, deserialized);
+        }
+		[Fact]
+        public void SerializeDeserializeOverflowUtf8()
+        {
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(ulong.MaxValue);
+			Assert.Throws<OverflowException>( () => JsonSerializer.Generic.Utf8.Deserialize<Int16>(serialized));
+        }
+		
+		[Fact]
+        public void SerializeDeserializeOverflowUtf16()
+        {
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(ulong.MaxValue);
+            Assert.Throws<OverflowException>( () => JsonSerializer.Generic.Utf16.Deserialize<Int16>(serialized));
         }
 
         [Fact]
@@ -155,7 +179,6 @@ namespace SpanJson.Tests.Generated
             Assert.Equal(input, deserialized);
         }
 
-
         [Theory]
         [InlineData(Int32.MinValue)]
         [InlineData(Int32.MaxValue)]
@@ -164,6 +187,19 @@ namespace SpanJson.Tests.Generated
             var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Int32>(serialized);
             Assert.Equal(input, deserialized);
+        }
+		[Fact]
+        public void SerializeDeserializeOverflowUtf8()
+        {
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(ulong.MaxValue);
+			Assert.Throws<OverflowException>( () => JsonSerializer.Generic.Utf8.Deserialize<Int32>(serialized));
+        }
+		
+		[Fact]
+        public void SerializeDeserializeOverflowUtf16()
+        {
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(ulong.MaxValue);
+            Assert.Throws<OverflowException>( () => JsonSerializer.Generic.Utf16.Deserialize<Int32>(serialized));
         }
 
         [Fact]
@@ -219,7 +255,6 @@ namespace SpanJson.Tests.Generated
             Assert.Equal(input, deserialized);
         }
 
-
         [Theory]
         [InlineData(Int64.MinValue)]
         [InlineData(Int64.MaxValue)]
@@ -228,6 +263,19 @@ namespace SpanJson.Tests.Generated
             var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Int64>(serialized);
             Assert.Equal(input, deserialized);
+        }
+		[Fact]
+        public void SerializeDeserializeOverflowUtf8()
+        {
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(ulong.MaxValue);
+			Assert.Throws<OverflowException>( () => JsonSerializer.Generic.Utf8.Deserialize<Int64>(serialized));
+        }
+		
+		[Fact]
+        public void SerializeDeserializeOverflowUtf16()
+        {
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(ulong.MaxValue);
+            Assert.Throws<OverflowException>( () => JsonSerializer.Generic.Utf16.Deserialize<Int64>(serialized));
         }
 
         [Fact]
@@ -283,7 +331,6 @@ namespace SpanJson.Tests.Generated
             Assert.Equal(input, deserialized);
         }
 
-
         [Theory]
         [InlineData(Byte.MinValue)]
         [InlineData(Byte.MaxValue)]
@@ -292,6 +339,19 @@ namespace SpanJson.Tests.Generated
             var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Byte>(serialized);
             Assert.Equal(input, deserialized);
+        }
+		[Fact]
+        public void SerializeDeserializeOverflowUtf8()
+        {
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(ulong.MaxValue);
+			Assert.Throws<OverflowException>( () => JsonSerializer.Generic.Utf8.Deserialize<Byte>(serialized));
+        }
+		
+		[Fact]
+        public void SerializeDeserializeOverflowUtf16()
+        {
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(ulong.MaxValue);
+            Assert.Throws<OverflowException>( () => JsonSerializer.Generic.Utf16.Deserialize<Byte>(serialized));
         }
 
         [Fact]
@@ -347,7 +407,6 @@ namespace SpanJson.Tests.Generated
             Assert.Equal(input, deserialized);
         }
 
-
         [Theory]
         [InlineData(UInt16.MinValue)]
         [InlineData(UInt16.MaxValue)]
@@ -356,6 +415,19 @@ namespace SpanJson.Tests.Generated
             var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<UInt16>(serialized);
             Assert.Equal(input, deserialized);
+        }
+		[Fact]
+        public void SerializeDeserializeOverflowUtf8()
+        {
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(ulong.MaxValue);
+			Assert.Throws<OverflowException>( () => JsonSerializer.Generic.Utf8.Deserialize<UInt16>(serialized));
+        }
+		
+		[Fact]
+        public void SerializeDeserializeOverflowUtf16()
+        {
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(ulong.MaxValue);
+            Assert.Throws<OverflowException>( () => JsonSerializer.Generic.Utf16.Deserialize<UInt16>(serialized));
         }
 
         [Fact]
@@ -411,7 +483,6 @@ namespace SpanJson.Tests.Generated
             Assert.Equal(input, deserialized);
         }
 
-
         [Theory]
         [InlineData(UInt32.MinValue)]
         [InlineData(UInt32.MaxValue)]
@@ -420,6 +491,19 @@ namespace SpanJson.Tests.Generated
             var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<UInt32>(serialized);
             Assert.Equal(input, deserialized);
+        }
+		[Fact]
+        public void SerializeDeserializeOverflowUtf8()
+        {
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(ulong.MaxValue);
+			Assert.Throws<OverflowException>( () => JsonSerializer.Generic.Utf8.Deserialize<UInt32>(serialized));
+        }
+		
+		[Fact]
+        public void SerializeDeserializeOverflowUtf16()
+        {
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(ulong.MaxValue);
+            Assert.Throws<OverflowException>( () => JsonSerializer.Generic.Utf16.Deserialize<UInt32>(serialized));
         }
 
         [Fact]
@@ -474,7 +558,6 @@ namespace SpanJson.Tests.Generated
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<UInt64>(serialized);
             Assert.Equal(input, deserialized);
         }
-
 
         [Theory]
         [InlineData(UInt64.MinValue)]
@@ -714,7 +797,6 @@ namespace SpanJson.Tests.Generated
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<Char>(serialized);
             Assert.Equal(input, deserialized);
         }
-
 
         [Theory]
         [InlineData(Char.MinValue)]

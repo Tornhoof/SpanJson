@@ -14,17 +14,17 @@ namespace SpanJson
     {
         public sbyte ReadUtf8SByte()
         {
-            return (sbyte) ReadUtf8NumberInt64();
+            return checked((sbyte) ReadUtf8NumberInt64());
         }
 
         public short ReadUtf8Int16()
         {
-            return (short) ReadUtf8NumberInt64();
+            return checked((short) ReadUtf8NumberInt64());
         }
 
         public int ReadUtf8Int32()
         {
-            return (int) ReadUtf8NumberInt64();
+            return checked((int) ReadUtf8NumberInt64());
         }
 
         public long ReadUtf8Int64()
@@ -34,17 +34,17 @@ namespace SpanJson
 
         public byte ReadUtf8Byte()
         {
-            return (byte) ReadUtf8NumberUInt64();
+            return checked((byte) ReadUtf8NumberUInt64());
         }
 
         public ushort ReadUtf8UInt16()
         {
-            return (ushort) ReadUtf8NumberUInt64();
+            return checked((ushort) ReadUtf8NumberUInt64());
         }
 
         public uint ReadUtf8UInt32()
         {
-            return (uint) ReadUtf8NumberUInt64();
+            return checked((uint) ReadUtf8NumberUInt64());
         }
 
         public ulong ReadUtf8UInt64()
@@ -115,8 +115,8 @@ namespace SpanJson
                 }
             }
 
-            var result = (long) ReadUtf8NumberDigits(ref b, ref _pos);
-            return neg ? unchecked(-result) : result;
+            var result = ReadUtf8NumberDigits(ref b, ref _pos);
+            return neg ? unchecked(-(long)result) : checked((long)result);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
