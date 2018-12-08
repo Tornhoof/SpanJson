@@ -11,14 +11,14 @@ namespace SpanJson.Tests.Generated
         [Fact]
         public void SerializeDeserializeOverflowUtf8()
         {
-            // ulong.MaxValue +1
+            // ulong.MaxValue+1
             Assert.Throws<OverflowException>(() => JsonSerializer.Generic.Utf8.Deserialize<UInt64>(Encoding.UTF8.GetBytes("18446744073709551616")));
         }
 
         [Fact]
         public void SerializeDeserializeOverflowUtf16()
         {
-            // ulong.MaxValue +1
+            // ulong.MaxValue+1
             Assert.Throws<OverflowException>(() => JsonSerializer.Generic.Utf16.Deserialize<UInt64>("18446744073709551616"));
         }
     }
