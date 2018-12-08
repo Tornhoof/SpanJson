@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using SpanJson.Resolvers;
 using Xunit;
 
@@ -201,6 +202,20 @@ namespace SpanJson.Tests
             var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<string>(serialized);
             Assert.Equal(input, deserialized);
+        }
+
+        class A
+        {
+            public string X;
+
+            [IgnoreDataMember]
+            public ReadOnlySpan<char> SubX => X.Substring(2);
+        }
+
+        [Fact]
+        public void SerializeDeserializeStructWithByRefProperty()
+        {
+            var result = JsonSerializer.Generic.Utf8.Deserialize<A>(System.Text.Encoding.UTF8.GetBytes(@"{""X"":""001"", ""SubX"":""2""}"));
         }
     }
 }
