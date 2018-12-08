@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 
 namespace SpanJson.Helpers
 {
@@ -45,7 +46,7 @@ namespace SpanJson.Helpers
                 foreach (var memberInfo in members)
                 {
                     var memberType = memberInfo is PropertyInfo pi ? pi.PropertyType : memberInfo is FieldInfo fi ? fi.FieldType : null;
-                    if (memberType == null)
+                    if (memberType == null || memberInfo.GetCustomAttribute<IgnoreDataMemberAttribute>() != null)
                     {
                         continue;
                     }
