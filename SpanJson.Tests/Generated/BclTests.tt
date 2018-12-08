@@ -40,8 +40,8 @@
         typeof(UInt64),
         typeof(char),
     };
-	var overflowNumTypes = new []
-	{
+    var overflowNumTypes = new []
+    {
         typeof(sbyte),
         typeof(Int16),
         typeof(Int32),
@@ -49,7 +49,7 @@
         typeof(byte), 
         typeof(UInt16),
         typeof(UInt32),
-	};
+    };
 #>
 using System;
 using System.Collections.Generic;
@@ -93,14 +93,15 @@ namespace SpanJson.Tests.Generated
         }
 <# } #>
 <#  if(overflowNumTypes.Contains(t)) {#>
-		[Fact]
+
+        [Fact]
         public void SerializeDeserializeOverflowUtf8()
         {
             var serialized = JsonSerializer.Generic.Utf8.Serialize(ulong.MaxValue);
-			Assert.Throws<OverflowException>( () => JsonSerializer.Generic.Utf8.Deserialize<<#= t.Name #>>(serialized));
+            Assert.Throws<OverflowException>( () => JsonSerializer.Generic.Utf8.Deserialize<<#= t.Name #>>(serialized));
         }
-		
-		[Fact]
+        
+        [Fact]
         public void SerializeDeserializeOverflowUtf16()
         {
             var serialized = JsonSerializer.Generic.Utf16.Serialize(ulong.MaxValue);
