@@ -256,6 +256,11 @@ namespace SpanJson
             WriteUtf8DoubleQuote();
         }
 
+        public void WriteUtf8String(string value)
+        {
+            WriteUtf8String(value.AsSpan());
+        }
+
         /// <summary>
         ///     We know that for a pure ascii string all characters will fit if there are no escapes
         ///     We make sure that initially the buffer is large enough and an additional fully escaped char fits too
@@ -264,7 +269,7 @@ namespace SpanJson
         ///     That's all done to make sure we don't have resizing in the fast path (the ascii case)
         /// </summary>
         /// <param name="value"></param>
-        public void WriteUtf8String(string value)
+        public void WriteUtf8String(in ReadOnlySpan<char> value)
         {
             ref var pos = ref _pos;
             var sLength = Encoding.UTF8.GetMaxByteCount(value.Length) + 7; // assume that a fully escaped char fits too + 2 double quotes
@@ -274,19 +279,18 @@ namespace SpanJson
             }
 
             WriteUtf8DoubleQuote();
-            var span = value.AsSpan();
             var index = 0;
             var from = 0;
-            while (index < span.Length)
+            while (index < value.Length)
             {
-                ref readonly var c = ref span[index];
+                ref readonly var c = ref value[index];
                 if (c < 0x20 || c == JsonUtf8Constant.DoubleQuote || c == JsonUtf8Constant.Solidus || c == JsonUtf8Constant.ReverseSolidus)
                 {
                     var length = index - from;
-                    pos += Encoding.UTF8.GetBytes(span.Slice(from, length), _bytes.Slice(pos));
+                    pos += Encoding.UTF8.GetBytes(value.Slice(from, length), _bytes.Slice(pos));
                     WriteEscapedUtf8CharInternal(c);
                     index++;
-                    var remaining = 5 + span.Length - index; // make sure that all characters and an extra 5 for a full escape still fit
+                    var remaining = 5 + value.Length - index; // make sure that all characters and an extra 5 for a full escape still fit
                     if (pos > _bytes.Length - remaining)
                     {
                         Grow(remaining);
@@ -301,9 +305,9 @@ namespace SpanJson
             }
 
             // Still chars to encode
-            if (from < span.Length)
+            if (from < value.Length)
             {
-                pos += Encoding.UTF8.GetBytes(span.Slice(from), _bytes.Slice(pos));
+                pos += Encoding.UTF8.GetBytes(value.Slice(from), _bytes.Slice(pos));
             }
 
             WriteUtf8DoubleQuote();
