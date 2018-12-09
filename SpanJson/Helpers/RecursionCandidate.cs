@@ -40,10 +40,9 @@ namespace SpanJson.Helpers
             while (queue.Count > 0)
             {
                 var current = queue.Dequeue();
-                var members = current.GetProperties(BindingFlags.Public | BindingFlags.Instance).Cast<MemberInfo>()
-                    .Concat(current.GetFields(BindingFlags.Public | BindingFlags.Instance).Cast<MemberInfo>());
+                var publicMembers = current.SerializableMembers();
 
-                foreach (var memberInfo in members)
+                foreach (var memberInfo in publicMembers)
                 {
                     var memberType = memberInfo is PropertyInfo pi ? pi.PropertyType : memberInfo is FieldInfo fi ? fi.FieldType : null;
                     if (memberType == null || memberInfo.GetCustomAttribute<IgnoreDataMemberAttribute>() != null)
