@@ -207,6 +207,23 @@ namespace SpanJson
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteString(in ReadOnlySpan<char> value)
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                WriteUtf16String(value);
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                WriteUtf8String(value);
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteVerbatim(in ReadOnlySpan<TSymbol> values)
