@@ -250,6 +250,7 @@ namespace SpanJson.Tests
             }
         }
 
+
         [Fact]
         public void SerializeDeserializeByRefUtf16()
         {
