@@ -87,5 +87,13 @@ namespace SpanJson.Helpers
             return type.GetProperties(BindingFlags.FlattenHierarchy
                                       | BindingFlags.Public | BindingFlags.Instance);
         }
+
+        public static IEnumerable<MemberInfo> SerializableMembers(this Type type)
+        {
+            var publicMembers = type.GetFields(BindingFlags.Public | BindingFlags.Instance)
+                .Where(a => !a.IsLiteral && !a.FieldType.IsByRefLike).Cast<MemberInfo>().Concat(
+                    type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(a => !a.PropertyType.IsByRefLike && !a.GetIndexParameters().Any()));
+            return publicMembers;
+        }
     }
 }

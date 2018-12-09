@@ -158,9 +158,7 @@ namespace SpanJson.Resolvers
 
         protected virtual JsonObjectDescription BuildMembers(Type type)
         {
-            var publicMembers = type.GetFields(BindingFlags.Public | BindingFlags.Instance)
-                .Where(a => !a.IsLiteral).Cast<MemberInfo>().Concat(
-                    type.GetProperties(BindingFlags.Public | BindingFlags.Instance));
+            var publicMembers = type.SerializableMembers();
             var result = new List<JsonMemberInfo>();
             JsonExtensionMemberInfo extensionMemberInfo = null;
             var excludeNulls = _spanJsonOptions.NullOption == NullOptions.ExcludeNulls;

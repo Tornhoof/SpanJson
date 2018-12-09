@@ -204,11 +204,10 @@ namespace SpanJson.Tests
             Assert.Equal(input, deserialized);
         }
 
-        class A
+        struct A
         {
             public string X;
 
-            [IgnoreDataMember]
             public ReadOnlySpan<char> SubX => X.Substring(2);
         }
 
@@ -216,6 +215,61 @@ namespace SpanJson.Tests
         public void SerializeDeserializeStructWithByRefProperty()
         {
             var result = JsonSerializer.Generic.Utf8.Deserialize<A>(System.Text.Encoding.UTF8.GetBytes(@"{""X"":""001"", ""SubX"":""2""}"));
+            Assert.Equal("001", result.X);
+        }
+
+
+        public class ByRefTestObject
+        {
+            public Span<int> Property
+            {
+                get => default;
+                set => throw new NotImplementedException();
+            }
+
+            public Span<int> this[int i]
+            {
+                get => default;
+                set => throw new NotImplementedException();
+            }
+
+
+            public MyRefStruct Second
+            {
+                get => default;
+            }
+
+            public ref struct MyRefStruct
+            {
+                public MyRefStruct(string value)
+                {
+                    Value = value;
+                }
+
+                public string Value { get; set; }
+            }
+        }
+
+
+        [Fact]
+        public void SerializeDeserializeByRefUtf16()
+        {
+            var byRef = new ByRefTestObject();
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(byRef);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<ByRefTestObject>(serialized);
+            Assert.NotNull(deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeByRefUtf8()
+        {
+            var byRef = new ByRefTestObject();
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(byRef);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<ByRefTestObject>(serialized);
+            Assert.NotNull(deserialized);
         }
     }
+
 }
