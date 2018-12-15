@@ -153,32 +153,16 @@ namespace SpanJson
             pos += bytesWritten;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf8Boolean(bool value)
         {
-            const int trueLength = 4;
-            const int falseLength = 5;
-            if (_pos > _bytes.Length - falseLength)
-            {
-                Grow(falseLength);
-            }
-
-            var span = _bytes.Slice(_pos);
             if (value)
             {
-                span[3] = (byte) 'e';
-                span[2] = (byte) 'u';
-                span[1] = (byte) 'r';
-                span[0] = JsonUtf8Constant.True;
-                _pos += trueLength;
+                WriteUtf8Verbatim(0x65757274); // True
             }
             else
             {
-                span[4] = (byte) 'e';
-                span[3] = (byte) 's';
-                span[2] = (byte) 'l';
-                span[1] = (byte) 'a';
-                span[0] = JsonUtf8Constant.False;
-                _pos += falseLength;
+                WriteUtf8Verbatim(0x736C6166, 0x65); // False
             }
         }
 
@@ -572,17 +556,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf8Null()
         {
-            ref var pos = ref _pos;
-            const int nullLength = 4;
-            if (pos > _bytes.Length - nullLength)
-            {
-                Grow(nullLength);
-            }
-
-            _bytes[pos++] = JsonUtf8Constant.Null;
-            _bytes[pos++] = (byte) 'u';
-            _bytes[pos++] = (byte) 'l';
-            _bytes[pos++] = (byte) 'l';
+            WriteUtf8Verbatim(0x6C6C756E);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

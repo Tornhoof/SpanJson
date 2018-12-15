@@ -385,7 +385,7 @@ namespace SpanJson
         public void WriteUtf16String(in ReadOnlySpan<char> value)
         {
             ref var pos = ref _pos;
-            var sLength = value.Length + 7; // assume that a fully escaped char fits too
+            var sLength = value.Length + 7; // assume that a fully escaped char fits too (5 + two double quotes)
             if (pos > _chars.Length - sLength)
             {
                 Grow(sLength);
