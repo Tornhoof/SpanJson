@@ -477,20 +477,24 @@ namespace SpanJson
         private void WriteUtf8SingleEscapedChar(char toEscape)
         {
             ref var pos = ref _pos;
-            _bytes[pos++] = JsonUtf8Constant.ReverseSolidus;
-            _bytes[pos++] = (byte) toEscape;
+            var span = _bytes.Slice(pos);
+            span[1] = (byte) toEscape;
+            span[0] = JsonUtf8Constant.ReverseSolidus;
+            pos += 2;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void WriteUtf8DoubleEscapedChar(char firstToEscape, char secondToEscape)
         {
             ref var pos = ref _pos;
-            _bytes[pos++] = JsonUtf8Constant.ReverseSolidus;
-            _bytes[pos++] = (byte) 'u';
-            _bytes[pos++] = (byte) '0';
-            _bytes[pos++] = (byte) '0';
-            _bytes[pos++] = (byte) firstToEscape;
-            _bytes[pos++] = (byte) secondToEscape;
+            var span = _bytes.Slice(pos);
+            span[5] = (byte) secondToEscape;
+            span[4] = (byte) firstToEscape;
+            span[3] = (byte) '0';
+            span[2] = (byte) '0';
+            span[1] = (byte) 'u';
+            span[0] = JsonUtf8Constant.ReverseSolidus;
+            pos += 6;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
