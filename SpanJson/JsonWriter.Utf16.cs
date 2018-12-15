@@ -385,7 +385,7 @@ namespace SpanJson
         public void WriteUtf16String(in ReadOnlySpan<char> value)
         {
             ref var pos = ref _pos;
-            var sLength = value.Length + 7; // assume that a fully escaped char fits too
+            var sLength = value.Length + 7; // assume that a fully escaped char fits too (5 + two double quotes)
             if (pos > _chars.Length - sLength)
             {
                 Grow(sLength);
@@ -455,8 +455,10 @@ namespace SpanJson
         private void WriteUtf16SingleEscapedChar(char toEscape)
         {
             ref var pos = ref _pos;
-            _chars[pos++] = JsonUtf16Constant.ReverseSolidus;
-            _chars[pos++] = toEscape;
+            var span = _chars.Slice(pos);
+            span[1] = toEscape;
+            span[0] = JsonUtf16Constant.ReverseSolidus;
+            pos += 2;
         }
 
 
@@ -464,12 +466,14 @@ namespace SpanJson
         private void WriteUtf16DoubleEscapedChar(char firstToEscape, char secondToEscape)
         {
             ref var pos = ref _pos;
-            _chars[pos++] = JsonUtf16Constant.ReverseSolidus;
-            _chars[pos++] = 'u';
-            _chars[pos++] = '0';
-            _chars[pos++] = '0';
-            _chars[pos++] = firstToEscape;
-            _chars[pos++] = secondToEscape;
+            var span = _chars.Slice(pos);
+            span[5] = secondToEscape;
+            span[4] = firstToEscape;
+            span[3] = '0';
+            span[2] = '0';
+            span[1] = 'u';
+            span[0] = JsonUtf16Constant.ReverseSolidus;
+            pos += 6;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -543,10 +547,12 @@ namespace SpanJson
                 Grow(nullLength);
             }
 
-            _chars[pos++] = JsonUtf16Constant.Null;
-            _chars[pos++] = 'u';
-            _chars[pos++] = 'l';
-            _chars[pos++] = 'l';
+            var span = _chars.Slice(pos);
+            span[3] = 'l';
+            span[2] = 'l';
+            span[1] = 'u';
+            span[0] = JsonUtf16Constant.Null;
+            pos += 4;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

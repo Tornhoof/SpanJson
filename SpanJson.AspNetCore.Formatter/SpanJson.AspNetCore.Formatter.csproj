@@ -4,12 +4,12 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.3.0</Version>
+    <Version>2.0.0</Version>
     <Authors>SpanJson Contributors</Authors>
     <Company />
     <Description>SpanJson ASP.NET Core Formatter is the ASP.NET Core formatter package for SpanJson for ASP.NET Core 2.1+</Description>
     <Copyright>SpanJson Contributors</Copyright>
-    <PackageLicenseUrl>https://github.com/Tornhoof/SpanJson/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Tornhoof/SpanJson</PackageProjectUrl>
     <RepositoryUrl>git://github.com/Tornhoof/SpanJson</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

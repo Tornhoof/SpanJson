@@ -534,5 +534,26 @@ namespace SpanJson.Benchmarks
         //    var reader = new JsonReader<char>("true");
         //    return reader.ReadUtf16Boolean();
         //}
+
+        //[Benchmark]
+        //public void WriteUtf16Null()
+        //{
+        //    var writer = new JsonWriter<Char>(32);
+        //    writer.WriteUtf16Null();
+        //}
+
+        //[Benchmark]
+        //public void WriteUtf8Null()
+        //{
+        //    var writer = new JsonWriter<byte>(32);
+        //    writer.WriteUtf8Null();
+        //}
+
+        //[Benchmark]
+        //public void WriteUtf8Boolean()
+        //{
+        //    var writer = new JsonWriter<Byte>(32);
+        //    writer.WriteUtf8Boolean(true);
+        //}
     }
 }

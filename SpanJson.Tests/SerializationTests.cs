@@ -203,14 +203,14 @@ namespace SpanJson.Tests
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<string>(serialized);
             Assert.Equal(input, deserialized);
         }
-
+#pragma warning disable 649
         struct A
-        {
+        { 
             public string X;
 
             public ReadOnlySpan<char> SubX => X.Substring(2);
         }
-
+#pragma warning restore 649
         [Fact]
         public void SerializeDeserializeStructWithByRefProperty()
         {
