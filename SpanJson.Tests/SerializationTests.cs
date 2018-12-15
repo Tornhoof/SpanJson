@@ -205,7 +205,7 @@ namespace SpanJson.Tests
         }
 
         struct A
-        {
+        { 
             public string X;
 
             public ReadOnlySpan<char> SubX => X.Substring(2);
@@ -214,6 +214,8 @@ namespace SpanJson.Tests
         [Fact]
         public void SerializeDeserializeStructWithByRefProperty()
         {
+            var x = new A();
+            x.X = null;
             var result = JsonSerializer.Generic.Utf8.Deserialize<A>(System.Text.Encoding.UTF8.GetBytes(@"{""X"":""001"", ""SubX"":""2""}"));
             Assert.Equal("001", result.X);
         }
