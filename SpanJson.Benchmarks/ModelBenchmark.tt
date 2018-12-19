@@ -12,6 +12,7 @@
     var serializers = new []
     {
         new {ResultType = typeof(string), Name = "JilSerializer"},
+		new {ResultType = typeof(string), Name = "JsonNetSerializer"},
         new {ResultType = typeof(string), Name = "SpanJsonSerializer"},
         new {ResultType = typeof(byte[]), Name = "SpanJsonUtf8Serializer"},
         new {ResultType = typeof(byte[]), Name = "Utf8JsonSerializer"},
