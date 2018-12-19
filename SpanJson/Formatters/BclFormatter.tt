@@ -158,7 +158,7 @@ namespace SpanJson.Formatters
         utfName = "Utf8";
     }
 #>
-    public sealed class <#= t.Name #><#= utfName #>Formatter : IJsonFormatter<<#= t.Name #>, <#= symbol.Name #>> 
+    public sealed class <#= t.Name #><#= utfName #>Formatter : IJsonFormatter<<#= t.Name #>, <#= symbol.Name #>>
     {
         public static readonly <#= t.Name #><#= utfName #>Formatter Default = new <#= t.Name #><#= utfName #>Formatter();
 
@@ -180,7 +180,7 @@ namespace SpanJson.Formatters
         }
     }
 <# if(t.IsValueType) { #>
-    public sealed class Nullable<#= t.Name #><#= utfName #>Formatter : IJsonFormatter<<#= t.Name #>?, <#= symbol.Name #>> 
+    public sealed class Nullable<#= t.Name #><#= utfName #>Formatter : IJsonFormatter<<#= t.Name #>?, <#= symbol.Name #>>
     {
         public static readonly Nullable<#= t.Name #><#= utfName #>Formatter Default = new Nullable<#= t.Name #><#= utfName #>Formatter();
         private static readonly <#= t.Name #><#= utfName #>Formatter ElementFormatter = <#= t.Name #><#= utfName #>Formatter.Default;
@@ -206,7 +206,7 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class Nullable<#= t.Name #><#= utfName #>ArrayFormatter : IJsonFormatter<<#= t.Name #>?[], <#= symbol.Name #>> 
+    public sealed class Nullable<#= t.Name #><#= utfName #>ArrayFormatter : IJsonFormatter<<#= t.Name #>?[], <#= symbol.Name #>>
     {
         public static readonly Nullable<#= t.Name #><#= utfName #>ArrayFormatter Default = new Nullable<#= t.Name #><#= utfName #>ArrayFormatter();
         private static readonly Nullable<#= t.Name #><#= utfName #>Formatter ElementFormatter = Nullable<#= t.Name #><#= utfName #>Formatter.Default;
@@ -225,7 +225,7 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class Nullable<#= t.Name #><#= utfName #>ListFormatter : IJsonFormatter<List<<#= t.Name #>?>, <#= symbol.Name #>> 
+    public sealed class Nullable<#= t.Name #><#= utfName #>ListFormatter : IJsonFormatter<List<<#= t.Name #>?>, <#= symbol.Name #>>
     {
         public static readonly Nullable<#= t.Name #><#= utfName #>ListFormatter Default = new Nullable<#= t.Name #><#= utfName #>ListFormatter();
         private static readonly Nullable<#= t.Name #><#= utfName #>Formatter ElementFormatter = Nullable<#= t.Name #><#= utfName #>Formatter.Default;
@@ -246,7 +246,7 @@ namespace SpanJson.Formatters
     }
 <# } #>
 
-    public sealed class <#= t.Name #><#= utfName #>ArrayFormatter : IJsonFormatter<<#= t.Name #>[], <#= symbol.Name #>> 
+    public sealed class <#= t.Name #><#= utfName #>ArrayFormatter : IJsonFormatter<<#= t.Name #>[], <#= symbol.Name #>>
     {
         public static readonly <#= t.Name #><#= utfName #>ArrayFormatter Default = new <#= t.Name #><#= utfName #>ArrayFormatter();
         private static readonly <#= t.Name #><#= utfName #>Formatter ElementFormatter = <#= t.Name #><#= utfName #>Formatter.Default;
@@ -265,7 +265,7 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class <#= t.Name #><#= utfName #>ListFormatter : IJsonFormatter<List<<#= t.Name #>>, <#= symbol.Name #>> 
+    public sealed class <#= t.Name #><#= utfName #>ListFormatter : IJsonFormatter<List<<#= t.Name #>>, <#= symbol.Name #>>
     {
         public static readonly <#= t.Name #><#= utfName #>ListFormatter Default = new <#= t.Name #><#= utfName #>ListFormatter();
         private static readonly <#= t.Name #><#= utfName #>Formatter ElementFormatter = <#= t.Name #><#= utfName #>Formatter.Default;

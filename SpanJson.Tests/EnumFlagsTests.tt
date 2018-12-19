@@ -11,7 +11,7 @@
         typeof(Int16),
         typeof(Int32),
         typeof(Int64),
-        typeof(byte), 
+        typeof(byte),
         typeof(UInt16),
         typeof(UInt32),
         typeof(UInt64),
@@ -27,16 +27,16 @@ namespace SpanJson.Tests
     public class EnumFlagsTests
     {
 <# foreach(var t in types) {  #>
-		
-		[Flags]
-		public enum <#= t.Name#>Enum : <#= t.Name #>
-		{
-			MinValue = <#= t.Name #>.MinValue,
-			Two = 2,
-			Four = 4,
-			Eight = 8,
-			MaxValue = <#= t.Name #>.MaxValue
-		}
+
+        [Flags]
+        public enum <#= t.Name#>Enum : <#= t.Name #>
+        {
+            MinValue = <#= t.Name #>.MinValue,
+            Two = 2,
+            Four = 4,
+            Eight = 8,
+            MaxValue = <#= t.Name #>.MaxValue
+        }
 
 
         [Theory]
@@ -45,9 +45,9 @@ namespace SpanJson.Tests
 <# if(Convert.ToBoolean(t.GetField("MinValue").GetValue(null))) {  #>
         [InlineData(<#= t.Name #>Enum.MinValue | <#= t.Name #>Enum.MaxValue)]
 <# } #>
-		[InlineData(<#= t.Name #>Enum.Two)]
-		[InlineData(<#= t.Name #>Enum.Two | <#= t.Name #>Enum.Four)]
-		[InlineData(<#= t.Name #>Enum.Two | <#= t.Name #>Enum.Four | <#= t.Name #>Enum.Eight)]
+        [InlineData(<#= t.Name #>Enum.Two)]
+        [InlineData(<#= t.Name #>Enum.Two | <#= t.Name #>Enum.Four)]
+        [InlineData(<#= t.Name #>Enum.Two | <#= t.Name #>Enum.Four | <#= t.Name #>Enum.Eight)]
         public void SerializeDeserialize<#= t.Name#>EnumUtf8(<#= t.Name #>Enum input)
         {
             var serialized = JsonSerializer.Generic.Utf8.Serialize(input);
@@ -61,9 +61,9 @@ namespace SpanJson.Tests
 <# if(Convert.ToBoolean(t.GetField("MinValue").GetValue(null))) {  #>
         [InlineData(<#= t.Name #>Enum.MinValue | <#= t.Name #>Enum.MaxValue)]
 <# } #>
-		[InlineData(<#= t.Name #>Enum.Two)]
-		[InlineData(<#= t.Name #>Enum.Two | <#= t.Name #>Enum.Four)]
-		[InlineData(<#= t.Name #>Enum.Two | <#= t.Name #>Enum.Four | <#= t.Name #>Enum.Eight)]
+        [InlineData(<#= t.Name #>Enum.Two)]
+        [InlineData(<#= t.Name #>Enum.Two | <#= t.Name #>Enum.Four)]
+        [InlineData(<#= t.Name #>Enum.Two | <#= t.Name #>Enum.Four | <#= t.Name #>Enum.Eight)]
         public void SerializeDeserialize<#= t.Name#>EnumUtf16(<#= t.Name #>Enum input)
         {
             var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
@@ -77,9 +77,9 @@ namespace SpanJson.Tests
 <# if(Convert.ToBoolean(t.GetField("MinValue").GetValue(null))) {  #>
         [InlineData(<#= t.Name #>Enum.MinValue | <#= t.Name #>Enum.MaxValue)]
 <# } #>
-		[InlineData(<#= t.Name #>Enum.Two)]
-		[InlineData(<#= t.Name #>Enum.Two | <#= t.Name #>Enum.Four)]
-		[InlineData(<#= t.Name #>Enum.Two | <#= t.Name #>Enum.Four | <#= t.Name #>Enum.Eight)]
+        [InlineData(<#= t.Name #>Enum.Two)]
+        [InlineData(<#= t.Name #>Enum.Two | <#= t.Name #>Enum.Four)]
+        [InlineData(<#= t.Name #>Enum.Two | <#= t.Name #>Enum.Four | <#= t.Name #>Enum.Eight)]
         public void SerializeDeserializeInteger<#= t.Name#>EnumUtf8(<#= t.Name #>Enum input)
         {
             var serialized = JsonSerializer.Generic.Utf8.Serialize<<#= t.Name #>Enum, ExcludeNullCamelCaseIntegerEnumResolver<byte>>(input);
@@ -93,9 +93,9 @@ namespace SpanJson.Tests
 <# if(Convert.ToBoolean(t.GetField("MinValue").GetValue(null))) {  #>
         [InlineData(<#= t.Name #>Enum.MinValue | <#= t.Name #>Enum.MaxValue)]
 <# } #>
-		[InlineData(<#= t.Name #>Enum.Two)]
-		[InlineData(<#= t.Name #>Enum.Two | <#= t.Name #>Enum.Four)]
-		[InlineData(<#= t.Name #>Enum.Two | <#= t.Name #>Enum.Four | <#= t.Name #>Enum.Eight)]
+        [InlineData(<#= t.Name #>Enum.Two)]
+        [InlineData(<#= t.Name #>Enum.Two | <#= t.Name #>Enum.Four)]
+        [InlineData(<#= t.Name #>Enum.Two | <#= t.Name #>Enum.Four | <#= t.Name #>Enum.Eight)]
         public void SerializeDeserializeInteger<#= t.Name#>EnumUtf16(<#= t.Name #>Enum input)
         {
             var serialized = JsonSerializer.Generic.Utf16.Serialize<<#= t.Name #>Enum, ExcludeNullCamelCaseIntegerEnumResolver<char>>(input);

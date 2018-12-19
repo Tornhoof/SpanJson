@@ -34,11 +34,11 @@ namespace SpanJson.Formatters.Dynamic
             throw new InvalidCastException();
         }
 <# if(t.IsValueType) { #>
-	    public static explicit operator <#= t.Name #>?(SpanJsonDynamicString<TSymbol> input)
+        public static explicit operator <#= t.Name #>?(SpanJsonDynamicString<TSymbol> input)
         {
             if (DynamicConverter.TryConvertTo(typeof(<#= t.Name #>?), input.Symbols, out var value))
             {
-				return (<#= t.Name #>?) value;
+                return (<#= t.Name #>?) value;
             }
             throw new InvalidCastException();
         }

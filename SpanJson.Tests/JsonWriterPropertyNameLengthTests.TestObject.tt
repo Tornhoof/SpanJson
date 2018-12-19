@@ -50,7 +50,7 @@ namespace SpanJson.Tests
                 }
 
 <#
-        }       
+        }
 #>              return true;
             }
         }
