@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -9,6 +10,14 @@ namespace SpanJson.Formatters
         protected static MethodInfo FindPublicInstanceMethod(Type type, string name, params Type[] args)
         {
             return args?.Length > 0 ? type.GetMethod(name, args) : type.GetMethod(name);
+        }
+
+        protected static MethodInfo FindGenericMethod(Type type, string name, BindingFlags bindingFlags, Type genericType, Type parameterType)
+        {
+            var myMethod = type
+                .GetMethods(bindingFlags)
+                .Single(m => m.Name == name && m.IsGenericMethodDefinition && m.GetParameters().Single().ParameterType.GetGenericTypeDefinition() == parameterType);
+            return myMethod.MakeGenericMethod(genericType);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
