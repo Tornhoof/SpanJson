@@ -343,8 +343,8 @@ namespace SpanJson.Formatters
             if (typeof(TSymbol) == typeof(char))
             {
                 // For utf16 we need to convert the attribute name to bytes to feed it to the matching logic
-                Expression<Action> functor = () => MemoryMarshal.AsBytes(new ReadOnlySpan<char>());
-                var asBytesMethodInfo = (functor.Body as MethodCallExpression).Method;
+                var asBytesMethodInfo = FindGenericMethod(typeof(MemoryMarshal), nameof(MemoryMarshal.AsBytes), BindingFlags.Public | BindingFlags.Static,
+                    typeof(char), typeof(ReadOnlySpan<>));
                 nameSpanExpression = Expression.Call(null, asBytesMethodInfo, assignNameSpan);
                 assignNameSpan = Expression.Assign(byteNameSpan, nameSpanExpression);
                 parameters.Add(byteNameSpan);
