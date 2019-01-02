@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>8.0</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>2.0.0</Version>
     <Authors>SpanJson Contributors</Authors>
@@ -21,6 +21,7 @@
     <SourceLinkCreate>true</SourceLinkCreate>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\SpanJson.snk</AssemblyOriginatorKeyFile>
+    <NullableReferenceTypes>true</NullableReferenceTypes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

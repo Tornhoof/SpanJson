@@ -44,7 +44,7 @@ namespace SpanJson.Formatters
             {
                 writer.IncrementDepth();
             }
-            IEnumerator<T> enumerator = null;
+            IEnumerator<T>? enumerator = null;
             try
             {
                 enumerator = value.GetEnumerator();

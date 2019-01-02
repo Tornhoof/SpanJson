@@ -8,23 +8,23 @@ namespace SpanJson.Formatters
     /// <summary>
     /// Used for types which are not built-in
     /// </summary>
-    public sealed class ArrayFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T[], TSymbol>
-        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+    public sealed class ArrayFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T?[]?, TSymbol>
+        where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where T : class
     {
         public static readonly ArrayFormatter<T, TSymbol, TResolver> Default = new ArrayFormatter<T, TSymbol, TResolver>();
 
-        private static readonly IJsonFormatter<T, TSymbol> ElementFormatter =
-            StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
+        private static readonly IJsonFormatter<T?, TSymbol> ElementFormatter =
+            StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T?>();
 
         private static readonly bool IsRecursionCandidate = RecursionCandidate<T>.IsRecursionCandidate;
 
-        public T[] Deserialize(ref JsonReader<TSymbol> reader)
+        public T?[]? Deserialize(ref JsonReader<TSymbol> reader)
         {
-            T[] temp = null;
-            T[] result;
+            T?[]? temp = null;
+            T?[] result;
             try
             {
-                temp = ArrayPool<T>.Shared.Rent(4);
+                temp = ArrayPool<T?>.Shared.Rent(4);
                 reader.ReadBeginArrayOrThrow();
                 var count = 0;
                 while (!reader.TryReadIsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
@@ -37,20 +37,20 @@ namespace SpanJson.Formatters
                     temp[count - 1] = ElementFormatter.Deserialize(ref reader);
                 }
 
-                result = count == 0 ? Array.Empty<T>() : FormatterUtils.CopyArray(temp, count);
+                result = count == 0 ? Array.Empty<T?>() : FormatterUtils.CopyArray(temp, count);
             }
             finally
             {
                 if (temp != null)
                 {
-                    ArrayPool<T>.Shared.Return(temp);
+                    ArrayPool<T?>.Shared.Return(temp);
                 }
             }
 
             return result;
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T[] value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T?[]? value)
         {
             if (value == null)
             {
@@ -66,11 +66,11 @@ namespace SpanJson.Formatters
             writer.WriteBeginArray();
             if (valueLength > 0)
             {
-                SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0], ElementFormatter);
+                SerializeRuntimeDecisionInternal<T?, TSymbol, TResolver>(ref writer, value[0], ElementFormatter);
                 for (var i = 1; i < valueLength; i++)
                 {
                     writer.WriteValueSeparator();
-                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i], ElementFormatter);
+                    SerializeRuntimeDecisionInternal<T?, TSymbol, TResolver>(ref writer, value[i], ElementFormatter);
                 }
             }
             if (IsRecursionCandidate)

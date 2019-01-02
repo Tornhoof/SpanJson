@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -98,7 +99,7 @@ namespace SpanJson.Resolvers
             Formatters.AddOrUpdate(type, GetDefaultOrCreate(formatterType), (t, formatter) => GetDefaultOrCreate(formatterType));
         }
 
-        public IJsonFormatter GetFormatter(JsonMemberInfo memberInfo, Type overrideMemberType = null)
+        public IJsonFormatter GetFormatter(JsonMemberInfo memberInfo, Type? overrideMemberType = null)
         {
             // ReSharper disable ConvertClosureToMethodGroup
             if (memberInfo.CustomSerializer != null)
@@ -108,6 +109,7 @@ namespace SpanJson.Resolvers
                 {
                     csf.Arguments = memberInfo.CustomSerializerArguments;
                 }
+                Debug.Assert(formatter != null);
                 return formatter;
             }
 

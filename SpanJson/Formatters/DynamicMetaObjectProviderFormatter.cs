@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -90,6 +91,7 @@ namespace SpanJson.Formatters
             }
             else
             {
+                Debug.Assert(value != null);
                 var memberInfos = Resolver.GetDynamicObjectDescription(value);
                 var counter = 0;
                 writer.WriteBeginObject();

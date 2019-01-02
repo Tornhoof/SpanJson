@@ -7,7 +7,7 @@ using SpanJson.Helpers;
 namespace SpanJson.Formatters
 {
     public sealed class EnumStringFlagsFormatter<T, TEnumBase, TSymbol, TResolver> : BaseEnumStringFormatter<T, TSymbol>, IJsonFormatter<T, TSymbol>
-        where T : Enum
+        where T : struct, Enum
         where TEnumBase : struct, IComparable, IFormattable
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
         where TSymbol : struct, IEquatable<TSymbol>

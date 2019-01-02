@@ -61,7 +61,7 @@ namespace SpanJson.Formatters
             {
                 var memberInfo = memberInfos[i];
                 var formatterType = resolver.GetFormatter(memberInfo).GetType();
-                Expression serializerInstance = null;
+                Expression? serializerInstance = null;
                 MethodInfo serializeMethodInfo;
                 Expression memberExpression = Expression.PropertyOrField(valueParameter, memberInfo.MemberName);
                 var parameterExpressions = new List<Expression> {writerParameter, memberExpression};
@@ -143,11 +143,10 @@ namespace SpanJson.Formatters
                                 Expression.Call(writerParameter, separatorWriteMethodInfo))
                         ));
                 }
-
                 valueExpressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo, writeNameExpressions));
                 valueExpressions.Add(Expression.Call(serializerInstance, serializeMethodInfo, parameterExpressions));
                 valueExpressions.Add(Expression.Assign(writeSeparator, Expression.Constant(true)));
-                Expression testNullExpression = null;
+                Expression? testNullExpression = null;
                 if (memberInfo.ExcludeNull)
                 {
                     if (memberInfo.MemberType.IsClass)
@@ -166,7 +165,7 @@ namespace SpanJson.Formatters
                 var shouldSerializeExpression = memberInfo.ShouldSerialize != null
                     ? Expression.IsTrue(Expression.Call(valueParameter, memberInfo.ShouldSerialize))
                     : null;
-                Expression testExpression = null;
+                Expression? testExpression = null;
                 if (testNullExpression != null && shouldSerializeExpression != null)
                 {
                     testExpression = Expression.AndAlso(testNullExpression, shouldSerializeExpression);
@@ -252,7 +251,7 @@ namespace SpanJson.Formatters
 
             if (memberInfos.Count == 0 && objectDescription.ExtensionMemberInfo == null)
             {
-                Expression createExpression = null;
+                Expression? createExpression = null;
                 if (typeof(T).IsClass)
                 {
                     var ci = typeof(T).GetConstructor(Type.EmptyTypes);
@@ -266,7 +265,7 @@ namespace SpanJson.Formatters
                 {
                     createExpression = Expression.Default(typeof(T));
                 }
-
+                Debug.Assert(createExpression != null);
                 return Expression.Lambda<DeserializeDelegate<T, TSymbol>>(createExpression, readerParameter).Compile();
             }
 
@@ -294,7 +293,7 @@ namespace SpanJson.Formatters
 
             // We need to decide during generation if we handle constructors or normal member assignment, the difference is done in the functor below
             Func<JsonMemberInfo, Expression> matchExpressionFunctor;
-            Expression[] constructorParameterExpressions = null;
+            Expression[]? constructorParameterExpressions = null;
             if (objectDescription.Constructor != null)
             {
                 // If we want to use the constructor we serialize into an array of variables internally and then create the object from that
@@ -453,7 +452,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            string key = null;
+            string key;
             if (typeof(TSymbol) == typeof(char))
             {
                 key = Encoding.Unicode.GetString(nameSpan);
@@ -464,7 +463,7 @@ namespace SpanJson.Formatters
             }
             else
             {
-                ThrowNotSupportedException();
+                ThrowNotSupportedException(); // works if I throw here instead of my helper method
             }
 
             dictionary[key] = value;
@@ -498,7 +497,7 @@ namespace SpanJson.Formatters
                     var name = kvp.Key;
                     if (namingConvention == NamingConventions.CamelCase && char.IsUpper(name[0]))
                     {
-                        char[] array = null;
+                        char[]? array = null;
                         try
                         {
                             array = ArrayPool<char>.Shared.Rent(name.Length);

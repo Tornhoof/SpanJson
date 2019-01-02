@@ -252,3 +252,4 @@ paket-files/
 *.sln.iml
 /MetroHash.Benchmark/BenchmarkDotNet.Artifacts/results
 /SpanJson.Benchmarks/BenchmarkDotNet.Artifacts/results
+/SpanJson.Benchmarks/BenchmarkDotNet.Artifacts/results_2.2
