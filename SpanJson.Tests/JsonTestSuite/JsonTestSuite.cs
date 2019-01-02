@@ -11,6 +11,8 @@ namespace SpanJson.Tests.JsonTestSuite
 {
     /// <summary>
     ///     https://github.com/nst/JSONTestSuite
+    ///     Copyright (c) 2016 Nicolas Seriot
+    ///     See THIRD_PARTY_NOTICES for license
     ///     The json files are zipped, VS/Resharper wants to analyze the json content too much and half of them are invalid
     /// </summary>
     public class JsonTestSuite

@@ -11,7 +11,7 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public abstract class BaseEnumStringFormatter<T, TSymbol> : BaseFormatter where T : Enum
+    public abstract class BaseEnumStringFormatter<T, TSymbol> : BaseFormatter where T : struct, Enum
         where TSymbol : struct
     {
         protected static SerializeDelegate BuildSerializeDelegate(Func<string, string> escapeFunctor)

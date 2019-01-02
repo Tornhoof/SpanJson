@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
 using Microsoft.Extensions.Options;
 using Moq;
-using SpanJson.Resolvers;
 using Xunit;
 
 namespace SpanJson.AspNetCore.Formatter.Tests

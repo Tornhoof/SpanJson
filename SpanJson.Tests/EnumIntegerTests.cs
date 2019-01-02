@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using System.Text;
-using Newtonsoft.Json;
-using SpanJson.Resolvers;
 using Xunit;
 
 namespace SpanJson.Tests

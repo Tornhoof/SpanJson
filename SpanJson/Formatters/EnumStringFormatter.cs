@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace SpanJson.Formatters
 {
-    public sealed class EnumStringFormatter<T, TSymbol, TResolver> : BaseEnumStringFormatter<T, TSymbol>, IJsonFormatter<T, TSymbol> where T : Enum
+    public sealed class EnumStringFormatter<T, TSymbol, TResolver> : BaseEnumStringFormatter<T, TSymbol>, IJsonFormatter<T, TSymbol> where T : struct, Enum
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
         where TSymbol : struct
     {
