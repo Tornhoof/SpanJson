@@ -8,6 +8,7 @@ namespace SpanJson.Helpers
     ///     Largely based on
     ///     https://raw.githubusercontent.com/dotnet/corefx/f5d31619f821e7b4a0bcf7f648fe1dc2e4e2f09f/src/System.Memory/src/System/Buffers/Text/Utf8Parser/Utf8Parser.Date.O.cs
     ///     Copyright (c) .NET Foundation and Contributors
+    ///     See THIRD_PARTY_NOTICES for license
     ///     Modified to work for char and removed the 7 fractions requirement
     ///     Non-UTC is slow, as it needs to go through the timezone stuff to get the right offset
     /// </summary>
