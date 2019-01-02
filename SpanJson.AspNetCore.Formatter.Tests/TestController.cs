@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Mvc;
-using SpanJson.Shared.Models;
-using Xunit;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace SpanJson.AspNetCore.Formatter.Tests
 {

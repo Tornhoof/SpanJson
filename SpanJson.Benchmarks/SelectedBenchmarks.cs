@@ -1,9 +1,6 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Toolchains.InProcess;
 using SpanJson.Benchmarks.Serializers;
-using SpanJson.Resolvers;
 using SpanJson.Shared.Fixture;
 using SpanJson.Shared.Models;
 

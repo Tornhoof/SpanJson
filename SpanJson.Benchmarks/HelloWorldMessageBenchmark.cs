@@ -1,11 +1,8 @@
-﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
+﻿using System.Buffers;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
-using SpanJson.Formatters;
 
 namespace SpanJson.Benchmarks
 {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using SpanJson.Shared;
+﻿using SpanJson.Shared;
 using SpanJson.Shared.Fixture;
 using Xunit;
 

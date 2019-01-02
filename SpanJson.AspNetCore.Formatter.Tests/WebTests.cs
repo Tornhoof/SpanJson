@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using SpanJson.Resolvers;
-using SpanJson.Shared;
 using SpanJson.Shared.Fixture;
-using SpanJson.Shared.Models;
 using Xunit;
 
 namespace SpanJson.AspNetCore.Formatter.Tests

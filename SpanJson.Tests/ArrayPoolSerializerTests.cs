@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections.Generic;
-using System.Text;
 using SpanJson.Shared;
 using SpanJson.Shared.Fixture;
 using SpanJson.Shared.Models;
