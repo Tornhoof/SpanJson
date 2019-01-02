@@ -4,6 +4,13 @@ using System.Runtime.CompilerServices;
 
 namespace SpanJson.Helpers
 {
+    /// <summary>
+    ///     Largely based on
+    ///     https://raw.githubusercontent.com/dotnet/corefx/f5d31619f821e7b4a0bcf7f648fe1dc2e4e2f09f/src/System.Memory/src/System/Buffers/Text/Utf8Parser/Utf8Parser.Date.O.cs
+    ///     Copyright (c) .NET Foundation and Contributors
+    ///     Modified to work for char and removed the 7 fractions requirement
+    ///     Non-UTC is slow, as it needs to go through the timezone stuff to get the right offset
+    /// </summary>
     public static partial class DateTimeParser
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -80,12 +87,12 @@ namespace SpanJson.Helpers
         ///     2017-06-12 (local)
         /// </summary>
         private static bool TryParseDate(in ReadOnlySpan<char> source, out Date value,
-            out int charsConsumed)
+            out int bytesConsumed)
         {
             if (source.Length < 10)
             {
                 value = default;
-                charsConsumed = 0;
+                bytesConsumed = 0;
                 return false;
             }
 
@@ -99,7 +106,7 @@ namespace SpanJson.Helpers
                 if (digit1 > 9 || digit2 > 9 || digit3 > 9 || digit4 > 9)
                 {
                     value = default;
-                    charsConsumed = 0;
+                    bytesConsumed = 0;
                     return false;
                 }
 
@@ -109,7 +116,7 @@ namespace SpanJson.Helpers
             if (source[4] != '-')
             {
                 value = default;
-                charsConsumed = 0;
+                bytesConsumed = 0;
                 return false;
             }
 
@@ -121,7 +128,7 @@ namespace SpanJson.Helpers
                 if (digit1 > 9 || digit2 > 9)
                 {
                     value = default;
-                    charsConsumed = 0;
+                    bytesConsumed = 0;
                     return false;
                 }
 
@@ -131,7 +138,7 @@ namespace SpanJson.Helpers
             if (source[7] != '-')
             {
                 value = default;
-                charsConsumed = 0;
+                bytesConsumed = 0;
                 return false;
             }
 
@@ -143,7 +150,7 @@ namespace SpanJson.Helpers
                 if (digit1 > 9 || digit2 > 9)
                 {
                     value = default;
-                    charsConsumed = 0;
+                    bytesConsumed = 0;
                     return false;
                 }
 
@@ -153,14 +160,14 @@ namespace SpanJson.Helpers
             if (source.Length == 10)
             {
                 value = new Date(year, month, day, 0, 0, 0, 0, DateTimeKind.Local, TimeSpan.Zero);
-                charsConsumed = 10;
+                bytesConsumed = 10;
                 return true;
             }
 
             if (source[10] != 'T')
             {
                 value = default;
-                charsConsumed = 0;
+                bytesConsumed = 0;
                 return false;
             }
 
@@ -172,7 +179,7 @@ namespace SpanJson.Helpers
                 if (digit1 > 9 || digit2 > 9)
                 {
                     value = default;
-                    charsConsumed = 0;
+                    bytesConsumed = 0;
                     return false;
                 }
 
@@ -182,7 +189,7 @@ namespace SpanJson.Helpers
             if (source[13] != ':')
             {
                 value = default;
-                charsConsumed = 0;
+                bytesConsumed = 0;
                 return false;
             }
 
@@ -194,7 +201,7 @@ namespace SpanJson.Helpers
                 if (digit1 > 9 || digit2 > 9)
                 {
                     value = default;
-                    charsConsumed = 0;
+                    bytesConsumed = 0;
                     return false;
                 }
 
@@ -204,7 +211,7 @@ namespace SpanJson.Helpers
             if (source[16] != ':')
             {
                 value = default;
-                charsConsumed = 0;
+                bytesConsumed = 0;
                 return false;
             }
 
@@ -216,7 +223,7 @@ namespace SpanJson.Helpers
                 if (digit1 > 9 || digit2 > 9)
                 {
                     value = default;
-                    charsConsumed = 0;
+                    bytesConsumed = 0;
                     return false;
                 }
 
@@ -234,7 +241,7 @@ namespace SpanJson.Helpers
                 if (temp > 9)
                 {
                     value = default;
-                    charsConsumed = 0;
+                    bytesConsumed = 0;
                     return false;
                 }
 
@@ -293,14 +300,14 @@ namespace SpanJson.Helpers
             if (offsetChar != 'Z' && offsetChar != '+' && offsetChar != '-')
             {
                 value = new Date(year, month, day, hour, minute, second, fraction, DateTimeKind.Local, TimeSpan.Zero);
-                charsConsumed = currentOffset;
+                bytesConsumed = currentOffset;
                 return true;
             }
 
             if (offsetChar == 'Z')
             {
                 value = new Date(year, month, day, hour, minute, second, fraction, DateTimeKind.Utc, TimeSpan.Zero);
-                charsConsumed = currentOffset;
+                bytesConsumed = currentOffset;
                 return true;
             }
 
@@ -313,7 +320,7 @@ namespace SpanJson.Helpers
                 if (digit1 > 9 || digit2 > 9)
                 {
                     value = default;
-                    charsConsumed = 0;
+                    bytesConsumed = 0;
                     return false;
                 }
 
@@ -323,7 +330,7 @@ namespace SpanJson.Helpers
             if (source[currentOffset++] != ':')
             {
                 value = default;
-                charsConsumed = 0;
+                bytesConsumed = 0;
                 return false;
             }
 
@@ -335,7 +342,7 @@ namespace SpanJson.Helpers
                 if (digit1 > 9 || digit2 > 9)
                 {
                     value = default;
-                    charsConsumed = 0;
+                    bytesConsumed = 0;
                     return false;
                 }
 
@@ -352,7 +359,7 @@ namespace SpanJson.Helpers
                 ? new Date(year, month, day, hour, minute, second, fraction, DateTimeKind.Utc, timeSpan)
                 : new Date(year, month, day, hour, minute, second, fraction, DateTimeKind.Unspecified, timeSpan);
 
-            charsConsumed = currentOffset;
+            bytesConsumed = currentOffset;
             return true;
         }
     }

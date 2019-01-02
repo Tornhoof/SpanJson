@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SpanJson.Helpers
+﻿namespace SpanJson.Helpers
 {
     public static partial class DateTimeFormatter
     {

@@ -20,18 +20,21 @@ namespace SpanJson.Benchmarks
 
         private const string Message = "Hello, World!";
 
+        private static readonly JsonMessage JsonMessageInput = new JsonMessage {message = Message};
 
 
         [Benchmark]
         public byte[] SerializeUtf8()
         {
-            return JsonSerializer.Generic.Utf8.Serialize(Message);
+            var message = JsonMessageInput;
+            return JsonSerializer.Generic.Utf8.Serialize(message);
         }
 
         [Benchmark]
         public void SerializeUtf8Unsafe()
         {
-            var buffer = JsonSerializer.Generic.Utf8.SerializeToArrayPool(Message);
+            var message = JsonMessageInput;
+            var buffer = JsonSerializer.Generic.Utf8.SerializeToArrayPool(message);
             ArrayPool<byte>.Shared.Return(buffer.Array);
         }
 
@@ -39,25 +42,29 @@ namespace SpanJson.Benchmarks
         [Benchmark]
         public Task SerializeUtf8Async()
         {
-            return JsonSerializer.Generic.Utf8.SerializeAsync(Message, Stream.Null).AsTask();
+            var message = JsonMessageInput;
+            return JsonSerializer.Generic.Utf8.SerializeAsync(message, Stream.Null).AsTask();
         }
 
         [Benchmark]
         public Task SerializeUtf8JsonAsync()
         {
-            return Utf8Json.JsonSerializer.SerializeAsync(Stream.Null, Message);
+            var message = JsonMessageInput;
+            return Utf8Json.JsonSerializer.SerializeAsync(Stream.Null, message);
         }
 
         [Benchmark]
         public void SerializeUtf8JsonUnsafe()
         {
-            Utf8Json.JsonSerializer.SerializeUnsafe(Message);
+            var message = JsonMessageInput;
+            Utf8Json.JsonSerializer.SerializeUnsafe(message);
         }
 
         [Benchmark]
         public void SerializeUtf8Json()
         {
-            Utf8Json.JsonSerializer.Serialize(Message);
+            var message = JsonMessageInput;
+            Utf8Json.JsonSerializer.Serialize(message);
         }
 
 

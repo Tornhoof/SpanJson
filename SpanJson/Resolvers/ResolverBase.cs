@@ -83,7 +83,7 @@ namespace SpanJson.Resolvers
 
         /// <summary>
         /// Override a formatter on global scale, additionally we might need to register array versions etc
-        /// Only register primitive types here, no arrays etc. this create weird problems.
+        /// Only register primitive types here, no arrays etc. this creates weird problems.
         /// </summary>
         protected void RegisterGlobalCustomFormatter<T, TFormatter>() where TFormatter : ICustomJsonFormatter<T>
         {
