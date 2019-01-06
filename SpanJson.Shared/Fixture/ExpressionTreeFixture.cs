@@ -8,16 +8,19 @@ namespace SpanJson.Shared.Fixture
 {
     public class ExpressionTreeFixture
     {
+        private readonly int? _seed;
+
         private readonly ConcurrentDictionary<Type, Func<int, int, object>> _functorCache =
             new ConcurrentDictionary<Type, Func<int, int, object>>();
 
         private readonly Dictionary<Type, IValueFixture> _valueFixtures = new Dictionary<Type, IValueFixture>();
 
-        public ExpressionTreeFixture()
+        public ExpressionTreeFixture(int? seed = null)
         {
-            var stringFixture = new StringValueFixture();
+            _seed = seed;
+            var stringFixture = new StringValueFixture(seed);
             _valueFixtures.Add(stringFixture.Type, stringFixture);
-            var intFixture = new IntValueFixture();
+            var intFixture = new IntValueFixture(seed);
             _valueFixtures.Add(intFixture.Type, intFixture);
             var guidFixture = new GuidValueFixture();
             _valueFixtures.Add(guidFixture.Type, guidFixture);
@@ -25,35 +28,35 @@ namespace SpanJson.Shared.Fixture
             _valueFixtures.Add(dtoFixture.Type, dtoFixture);
             var dtFixture = new DateTimeValueFixture();
             _valueFixtures.Add(dtFixture.Type, dtFixture);
-            var boolFixture = new BooleanValueFixture();
+            var boolFixture = new BooleanValueFixture(seed);
             _valueFixtures.Add(boolFixture.Type, boolFixture);
-            var decimalFixture = new DecimalValueFixture();
+            var decimalFixture = new DecimalValueFixture(seed);
             _valueFixtures.Add(decimalFixture.Type, decimalFixture);
-            var longFixture = new LongValueFixture();
+            var longFixture = new LongValueFixture(seed);
             _valueFixtures.Add(longFixture.Type, longFixture);
-            var floatFixture = new FloatValueFixture();
+            var floatFixture = new FloatValueFixture(seed);
             _valueFixtures.Add(floatFixture.Type, floatFixture);
-            var doubleFixture = new DoubleValueFixture();
+            var doubleFixture = new DoubleValueFixture(seed);
             _valueFixtures.Add(doubleFixture.Type, doubleFixture);
-            var byteFixture = new ByteValueFixture();
+            var byteFixture = new ByteValueFixture(seed);
             _valueFixtures.Add(byteFixture.Type, byteFixture);
-            var shortFixture = new ShortValueFixture();
+            var shortFixture = new ShortValueFixture(seed);
             _valueFixtures.Add(shortFixture.Type, shortFixture);
             var versionFixture = new VersionFixture();
             _valueFixtures.Add(versionFixture.Type, versionFixture);
             var uriFixture = new UriFixture();
             _valueFixtures.Add(uriFixture.Type, uriFixture);
-            var sbyteFixture = new SByteValueFixture();
+            var sbyteFixture = new SByteValueFixture(seed);
             _valueFixtures.Add(sbyteFixture.Type, sbyteFixture);
-            var uintFixture = new UintValueFixture();
+            var uintFixture = new UintValueFixture(seed);
             _valueFixtures.Add(uintFixture.Type, uintFixture);
-            var ushortFixture = new UshortValueFixture();
+            var ushortFixture = new UshortValueFixture(seed);
             _valueFixtures.Add(ushortFixture.Type, ushortFixture);
-            var ulongFixture = new UlongValueFixture();
+            var ulongFixture = new UlongValueFixture(seed);
             _valueFixtures.Add(ulongFixture.Type, ulongFixture);
             var timespanFixture = new TimespanFixture();
             _valueFixtures.Add(timespanFixture.Type, timespanFixture);
-            var charFixture = new CharValueFixture();
+            var charFixture = new CharValueFixture(seed);
             _valueFixtures.Add(charFixture.Type, charFixture);
         }
 
@@ -228,7 +231,7 @@ namespace SpanJson.Shared.Fixture
             {
                 if (!_valueFixtures.TryGetValue(type, out valueFixture))
                 {
-                    valueFixture = new EnumValueFixture(type);
+                    valueFixture = new EnumValueFixture(type, _seed);
                     _valueFixtures.Add(valueFixture.Type, valueFixture);
                 }
 

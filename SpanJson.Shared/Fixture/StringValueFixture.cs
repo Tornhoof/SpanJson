@@ -4,16 +4,20 @@ namespace SpanJson.Shared.Fixture
 {
     public class StringValueFixture : IValueFixture
     {
-        private readonly Random _prng = new Random();
+        private readonly Random _prng;
         private const string AlphaNumeric = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         private const string MixedSymbols = AlphaNumeric + " \t칱칳칶칹칼캠츧";
-        private const string Multiplane = MixedSymbols + "💩🎼😁😷";
+        private const string MultiPlane = MixedSymbols + "💩🎼😁😷";
+        public StringValueFixture(int? seed = null)
+        {
+            _prng = seed != null ? new Random(seed.Value) : new Random();
+        }
 
         public Type Type { get; } = typeof(string);
 
         public object Generate()
         {
-            return Generate(8, Multiplane);
+            return Generate(8, MultiPlane);
         }
 
         internal string GenerateAlphaNumeric()

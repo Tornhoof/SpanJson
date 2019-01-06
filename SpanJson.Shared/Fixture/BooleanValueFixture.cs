@@ -4,8 +4,13 @@ namespace SpanJson.Shared.Fixture
 {
     public class BooleanValueFixture : IValueFixture
     {
-        private readonly Random _prng = new Random();
+        private readonly Random _prng;
         public Type Type { get; } = typeof(bool);
+
+        public BooleanValueFixture(int? seed = null)
+        {
+            _prng = seed != null ? new Random(seed.Value) : new Random();
+        }
 
         public object Generate()
         {

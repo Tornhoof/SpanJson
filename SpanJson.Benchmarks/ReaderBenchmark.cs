@@ -9,7 +9,7 @@ namespace SpanJson.Benchmarks
   [Config(typeof(MyConfig))]
   public class ReaderBenchmark
   {
-    private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
+    private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture(12345);
     private static readonly SByte SByteInput = ExpressionTreeFixture.Create<SByte>();
     private static readonly byte[] SByteInputUtf8 = JsonSerializer.Generic.Utf8.Serialize(SByteInput);
     private static readonly string SByteInputUtf16 = JsonSerializer.Generic.Utf16.Serialize(SByteInput);

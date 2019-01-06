@@ -32,7 +32,7 @@ namespace SpanJson.Benchmarks
   [Config(typeof(MyConfig))]
   public partial class ModelBenchmark
   {
-    private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
+    private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture(12345);
 <#
     foreach(var serializer in serializers)
     {
