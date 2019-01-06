@@ -41,7 +41,7 @@ namespace SpanJson.Benchmarks
   [Config(typeof(MyConfig))]
   public class ReaderBenchmark
   {
-    private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
+    private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture(12345);
 <#
     foreach(var model in bclTypes)
     {

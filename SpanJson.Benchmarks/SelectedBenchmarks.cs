@@ -10,7 +10,7 @@ namespace SpanJson.Benchmarks
     [DisassemblyDiagnoser(printIL: true, recursiveDepth: 2)]
     public class SelectedBenchmarks
     {
-        private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
+        private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture(12345);
         //private static readonly AccessToken AccessToken = ExpressionTreeFixture.Create<AccessToken>();
 
         private static readonly SpanJsonSerializer SpanJsonSerializer = new SpanJsonSerializer();

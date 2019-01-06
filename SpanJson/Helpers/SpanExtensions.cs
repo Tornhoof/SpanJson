@@ -6,7 +6,8 @@ namespace SpanJson.Helpers
     public static class SpanExtensions
     {
         /// <summary>
-        /// This based on https://github.com/dotnet/corefx/blob/master/src/Common/src/CoreLib/System/MemoryExtensions.cs
+        /// This is based on https://github.com/dotnet/corefx/blob/master/src/Common/src/CoreLib/System/MemoryExtensions.cs
+        /// Copyright (c) .NET Foundation and Contributors
         /// It just handles both bytes and chars.
         /// </summary>
         public static ReadOnlySpan<T> Trim<T>(this ReadOnlySpan<T> input) where T : struct

@@ -4,8 +4,13 @@ namespace SpanJson.Shared.Fixture
 {
     public class LongValueFixture : IValueFixture
     {
-        private readonly Random _prng = new Random();
+        private readonly Random _prng;
         public Type Type { get; } = typeof(long);
+
+        public LongValueFixture(int? seed = null)
+        {
+            _prng = seed != null ? new Random(seed.Value) : new Random();
+        }
 
         public object Generate()
         {

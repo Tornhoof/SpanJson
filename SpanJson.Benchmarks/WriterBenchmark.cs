@@ -9,7 +9,7 @@ namespace SpanJson.Benchmarks
   [Config(typeof(MyConfig))]
   public class WriterBenchmark
   {
-    private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
+    private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture(12345);
     private static readonly SByte SByteInput = ExpressionTreeFixture.Create<SByte>();
     private static readonly Int16 Int16Input = ExpressionTreeFixture.Create<Int16>();
     private static readonly Int32 Int32Input = ExpressionTreeFixture.Create<Int32>();

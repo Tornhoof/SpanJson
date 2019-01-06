@@ -10,7 +10,7 @@ namespace SpanJson.Benchmarks
   [Config(typeof(MyConfig))]
   public partial class ModelBenchmark
   {
-    private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture();
+    private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture(12345);
     private static readonly JilSerializer JilSerializer = new JilSerializer();
     private static readonly SpanJsonSerializer SpanJsonSerializer = new SpanJsonSerializer();
     private static readonly SpanJsonUtf8Serializer SpanJsonUtf8Serializer = new SpanJsonUtf8Serializer();
