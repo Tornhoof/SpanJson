@@ -30,18 +30,6 @@ namespace SpanJson.Benchmarks
         private static readonly byte[] AnswerSerializedByteArray = Encoding.UTF8.GetBytes(AnswerSerializedString);
 
 
-        //        private static readonly JilSerializer JilSerializer = new JilSerializer();
-
-        private static readonly StringBuilder StringBuilder = new StringBuilder();
-
-
-        private static readonly Utf8JsonSerializer Utf8JsonSerializer = new Utf8JsonSerializer();
-
-        private static readonly MobileBadgeAward MobileBadgeAwardInput = ExpressionTreeFixture.Create<MobileBadgeAward>();
-
-        private static readonly string MobileBadgeAwardSerializedString = JsonSerializer.Generic.Utf16.Serialize(MobileBadgeAwardInput);
-        private static readonly byte[] MobileBadgeAwardSerializedByteArray = JsonSerializer.Generic.Utf8.Serialize(MobileBadgeAwardInput);
-
         //[Benchmark]
         //public string SerializeMobileBadgeAwardWithSpanJsonSerializer()
         //{
@@ -66,17 +54,17 @@ namespace SpanJson.Benchmarks
         //    return JsonSerializer.Generic.Utf8.Deserialize<MobileBadgeAward>(MobileBadgeAwardSerializedByteArray);
         //}
 
-        [Benchmark]
-        public string SerializeAnswerWithSpanJsonSerializer()
-        {
-            return SpanJsonSerializer.Serialize(Answer);
-        }
+        //[Benchmark]
+        //public string SerializeAnswerWithSpanJsonSerializer()
+        //{
+        //    return SpanJsonSerializer.Serialize(Answer);
+        //}
 
-        [Benchmark]
-        public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
-        {
-            return JsonSerializer.Generic.Utf8.Serialize(Answer);
-        }
+        //[Benchmark]
+        //public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
+        //{
+        //    return JsonSerializer.Generic.Utf8.Serialize(Answer);
+        //}
 
         [Benchmark]
         public Answer DeserializeAnswerWithSpanJsonSerializer()
@@ -87,7 +75,7 @@ namespace SpanJson.Benchmarks
         [Benchmark]
         public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
         {
-            return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
+            return SpanJsonUtf8Serializer.Deserialize<Answer>(AnswerSerializedByteArray);
         }
 
 
