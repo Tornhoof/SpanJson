@@ -54,6 +54,10 @@
       <LastGenOutput>SpanJsonDynamicNumber.Operators.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
     </None>
+    <None Update="Helpers\MemberComparisonHelper.Matchers.tt">
+      <LastGenOutput>MemberComparisonHelper.Matchers.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
     <None Update="JsonWriter.PrimitiveWrappers.tt">
       <LastGenOutput>JsonWriter.PrimitiveWrappers.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -78,6 +82,11 @@
     </Compile>
     <Compile Update="Formatters\Dynamic\SpanJsonDynamicNumber.Operators.cs">
       <DependentUpon>SpanJsonDynamicNumber.Operators.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Helpers\MemberComparisonHelper.Matchers.cs">
+      <DependentUpon>MemberComparisonHelper.Matchers.tt</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>

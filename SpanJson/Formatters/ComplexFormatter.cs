@@ -333,13 +333,11 @@ namespace SpanJson.Formatters
             }
 
             var nameSpan = Expression.Variable(typeof(ReadOnlySpan<TSymbol>), "nameSpan");
-            var lengthParameter = Expression.Variable(typeof(int), "length");
             var endOfBlockLabel = Expression.Label();
             var nameSpanExpression = Expression.Call(readerParameter, nameSpanMethodInfo);
             var assignNameSpan = Expression.Assign(nameSpan, nameSpanExpression);
-            var lengthExpression = Expression.Assign(lengthParameter, Expression.PropertyOrField(nameSpan, "Length"));
             var byteNameSpan = Expression.Variable(typeof(ReadOnlySpan<byte>), "byteNameSpan");
-            var parameters = new List<ParameterExpression> {nameSpan, lengthParameter};
+            var parameters = new List<ParameterExpression> {nameSpan};
             if (typeof(TSymbol) == typeof(char))
             {
                 // For utf16 we need to convert the attribute name to bytes to feed it to the matching logic
@@ -393,9 +391,8 @@ namespace SpanJson.Formatters
             if (memberInfos.Count > 0)
             {
                 expressions.Add(assignNameSpan);
-                expressions.Add(lengthExpression);
                 expressions.Add(
-                    MemberComparisonBuilder.Build<TSymbol>(memberInfos, 0, lengthParameter, byteNameSpan, endOfBlockLabel, matchExpressionFunctor));
+                    MemberComparisonBuilder.Build<TSymbol>(memberInfos, byteNameSpan, endOfBlockLabel, matchExpressionFunctor));
                 expressions.Add(skipCall);
                 expressions.Add(Expression.Label(endOfBlockLabel));
             }

@@ -40,60 +40,31 @@ namespace SpanJson.Helpers
         /// The speed for both is practically the same with this method
         /// It also simplifies the code if the member name is actually multibyte utf8 (e.g. chinese)
         /// </summary>
-        public static Expression Build<TSymbol>(List<JsonMemberInfo> memberInfos, int index, ParameterExpression lengthParameter,
-            ParameterExpression nameSpanExpression, LabelTarget endOfBlockLabel,
+        public static Expression Build<TSymbol>(List<JsonMemberInfo> memberInfos, ParameterExpression nameSpanExpression, LabelTarget endOfBlockLabel,
             Func<JsonMemberInfo, Expression> matchExpressionFunctor) where TSymbol : struct
         {
-            var symbolSize = GetSymbolSize<TSymbol>();
-            var grouping = memberInfos.Where(a => a.CanRead && GetLength<TSymbol>(a.Name) >= index).GroupBy(a => CalculateKey<TSymbol>(a.Name, index))
-                .OrderByDescending(a => a.Key.Key).ToList();
-            if (!grouping.Any())
-            {
-                throw new InvalidOperationException(); // should never happen
-            }
-
             var expressions = new List<Expression>();
-            foreach (var group in grouping)
+            foreach (var memberInfo in memberInfos)
             {
-                if (group.Count() == 1) // need to check remaining values too 
-                {
-                    var memberInfo = group.Single();
-                    var length = index + group.Key.offset;
-                    var matchExpression = matchExpressionFunctor(memberInfo);
-                    matchExpression = Expression.Block(matchExpression, Expression.Goto(endOfBlockLabel));
-                    Expression comparisonExpression = null;
-                    if (group.Key.Key != 0 || group.Key.offset != 0)
-                    {
-                        comparisonExpression = Expression.Equal(GetReadMethod(nameSpanExpression, group.Key.intType, Expression.Constant(index * symbolSize)),
-                            GetConstantExpressionForGroupKey(group.Key.Key, group.Key.intType));
-                        var nameLength = GetLength<TSymbol>(memberInfo.Name);
-                        while (length < nameLength)
-                        {
-                            var subKey = CalculateKey<TSymbol>(memberInfo.Name, length);
-                            comparisonExpression = Expression.AndAlso(comparisonExpression,
-                                Expression.Equal(GetReadMethod(nameSpanExpression, subKey.intType, Expression.Constant(length * symbolSize)),
-                                    GetConstantExpressionForGroupKey(subKey.Key, subKey.intType)));
-                            length += subKey.offset;
-                        }
-                    }
-
-                    var lengthExpression = Expression.Equal(lengthParameter, Expression.Constant(length));
-                    var ifExpression = comparisonExpression == null ? lengthExpression : Expression.AndAlso(lengthExpression, comparisonExpression);
-                    expressions.Add(Expression.IfThen(ifExpression, matchExpression));
-                }
-                else
-                {
-                    var nextLength = index + group.Key.offset;
-                    var ifExpression = Expression.AndAlso(Expression.GreaterThanOrEqual(lengthParameter, Expression.Constant(nextLength)),
-                        Expression.Equal(GetReadMethod(nameSpanExpression, group.Key.intType, Expression.Constant(index * symbolSize)),
-                            GetConstantExpressionForGroupKey(group.Key.Key, group.Key.intType)));
-                    var subBlock = Build<TSymbol>(group.ToList(), nextLength, lengthParameter, nameSpanExpression,
-                        endOfBlockLabel, matchExpressionFunctor);
-                    expressions.Add(Expression.IfThen(ifExpression, subBlock));
-                }
+                var matchExpression = matchExpressionFunctor(memberInfo);
+                matchExpression = Expression.Block(matchExpression, Expression.Goto(endOfBlockLabel));
+                var keys = CalculateKeys<TSymbol>(memberInfo.MemberName);
+                var mi = FindMatcherForKeySizes(keys);
+                var argExpressions = new List<Expression> {nameSpanExpression};
+                argExpressions.AddRange(keys.Select(a => GetConstantExpressionForGroupKey(a.key, a.intType)));
+                var ifExpression = Expression.Call(null, mi, argExpressions);
+                expressions.Add(Expression.IfThen(ifExpression, matchExpression));
             }
-
             return Expression.Block(expressions);
+        }
+
+        private static MethodInfo FindMatcherForKeySizes(List<(ulong key, Type inType, int offset)> keys)
+        {
+            var types = new List<Type> {typeof(ReadOnlySpan<byte>).MakeByRefType()};
+            types.AddRange(keys.Select(a => a.inType));
+            var mi = typeof(MemberComparisonHelper).GetMethod(nameof(MemberComparisonHelper.IsMatch), BindingFlags.Static | BindingFlags.Public, null,
+                types.ToArray(), null);
+            return mi;
         }
 
         private static int GetLength<TSymbol>(string name)
@@ -136,35 +107,19 @@ namespace SpanJson.Helpers
             throw new NotSupportedException();
         }
 
-        private static Expression GetReadMethod(ParameterExpression nameSpanExpression, Type intType, Expression offsetParameter)
+        private static List<(ulong key, Type intType, int offset)> CalculateKeys<TSymbol>(string memberName)
         {
-            string methodName;
-            if (intType == typeof(byte))
+            var result = new List<(ulong key, Type inType, int offset)>();
+            var nameLength = GetLength<TSymbol>(memberName);
+            int length = 0;
+            while (length < nameLength)
             {
-                methodName = nameof(SpanHelper.ReadByte);
+                var tuple = CalculateKey<TSymbol>(memberName, length);
+                result.Add(tuple);
+                length += tuple.offset;
             }
 
-            else if (intType == typeof(ushort))
-            {
-                methodName = nameof(SpanHelper.ReadUInt16);
-            }
-
-            else if (intType == typeof(uint))
-            {
-                methodName = nameof(SpanHelper.ReadUInt32);
-            }
-
-            else if (intType == typeof(ulong))
-            {
-                methodName = nameof(SpanHelper.ReadUInt64);
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
-
-            var methodInfo = typeof(SpanHelper).GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
-            return Expression.Call(methodInfo, nameSpanExpression, offsetParameter);
+            return result;
         }
 
         private static (ulong Key, Type intType, int offset) CalculateKey<TSymbol>(string memberName, int index)

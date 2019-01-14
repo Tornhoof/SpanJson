@@ -9,7 +9,7 @@ namespace SpanJson.Benchmarks
     {
         public MyConfig()
         {
-            Add(Job.Default.WithUnrollFactor(2));
+            Add(Job.Default.WithUnrollFactor(2).With(BenchmarkDotNet.Toolchains.CsProj.CsProjCoreToolchain.NetCoreApp30));
             Add(MemoryDiagnoser.Default);
             Set(new DefaultOrderer(SummaryOrderPolicy.Default, MethodOrderPolicy.Alphabetical));
         }

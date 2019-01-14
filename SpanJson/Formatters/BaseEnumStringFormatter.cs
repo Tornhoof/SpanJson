@@ -72,12 +72,10 @@ namespace SpanJson.Formatters
         {
             var nameSpan = Expression.Variable(typeof(ReadOnlySpan<TSymbol>), "nameSpan");
             var returnValue = Expression.Variable(typeof(TReturn), "returnValue");
-            var lengthParameter = Expression.Variable(typeof(int), "length");
             var endOfBlockLabel = Expression.Label();
             var assignNameSpan = Expression.Assign(nameSpan, nameSpanExpression);
-            var lengthExpression = Expression.Assign(lengthParameter, Expression.PropertyOrField(nameSpan, "Length"));
             var byteNameSpan = Expression.Variable(typeof(ReadOnlySpan<byte>), "byteNameSpan");
-            var parameters = new List<ParameterExpression> { nameSpan, lengthParameter, returnValue };
+            var parameters = new List<ParameterExpression> { nameSpan, returnValue };
             if (typeof(TSymbol) == typeof(char))
             {
                 var asBytesMethodInfo = FindGenericMethod(typeof(MemoryMarshal), nameof(MemoryMarshal.AsBytes), BindingFlags.Public | BindingFlags.Static,
@@ -112,8 +110,7 @@ namespace SpanJson.Formatters
             var expressions = new List<Expression>
             {
                 assignNameSpan,
-                lengthExpression,
-                MemberComparisonBuilder.Build<TSymbol>(memberInfos, 0, lengthParameter, byteNameSpan, endOfBlockLabel, MatchExpressionFunctor),
+                MemberComparisonBuilder.Build<TSymbol>(memberInfos, byteNameSpan, endOfBlockLabel, MatchExpressionFunctor),
                 Expression.Throw(Expression.Constant(new InvalidOperationException())),
                 Expression.Label(endOfBlockLabel),
                 returnLabel
