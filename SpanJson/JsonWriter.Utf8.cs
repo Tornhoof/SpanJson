@@ -109,6 +109,11 @@ namespace SpanJson
 
         public void WriteUtf8Single(float value)
         {
+            if (!float.IsNormal(value))
+            {
+                ThrowArgumentException("Invalid float value for JSON", nameof(value));
+                return;
+            }
             Span<char> span = stackalloc char[JsonSharedConstant.MaxNumberBufferSize];
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
@@ -125,6 +130,11 @@ namespace SpanJson
 
         public void WriteUtf8Double(double value)
         {
+            if (!double.IsNormal(value))
+            {
+                ThrowArgumentException("Invalid double value for JSON", nameof(value));
+                return;
+            }
             Span<char> span = stackalloc char[JsonSharedConstant.MaxNumberBufferSize];
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
