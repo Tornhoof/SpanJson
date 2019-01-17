@@ -50,7 +50,6 @@ namespace SpanJson.Helpers
         var arguments = string.Join(", ", values);
 		var total = sizes.Sum();
 #>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, <#=arguments#>)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);

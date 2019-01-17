@@ -7,7 +7,6 @@ namespace SpanJson.Helpers
 {
     public static partial class MemberComparisonHelper
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, byte a)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -15,7 +14,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 0)) == a;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ushort a)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -23,7 +21,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref bStart, 0)) == a;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ushort a, byte b)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -32,7 +29,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 2)) == b;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, uint a)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -40,7 +36,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref bStart, 0)) == a;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, uint a, byte b)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -49,7 +44,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 4)) == b;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, uint a, ushort b)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -58,7 +52,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref bStart, 4)) == b;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, uint a, ushort b, byte c)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -68,7 +61,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 6)) == c;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -76,7 +68,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref bStart, 0)) == a;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, byte b)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -85,7 +76,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 8)) == b;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ushort b)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -94,7 +84,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref bStart, 8)) == b;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ushort b, byte c)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -104,7 +93,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 10)) == c;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, uint b)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -113,7 +101,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref bStart, 8)) == b;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, uint b, byte c)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -123,7 +110,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 12)) == c;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, uint b, ushort c)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -133,7 +119,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref bStart, 12)) == c;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, uint b, ushort c, byte d)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -144,7 +129,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 14)) == d;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -153,7 +137,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref bStart, 8)) == b;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, byte c)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -163,7 +146,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 16)) == c;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ushort c)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -173,7 +155,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref bStart, 16)) == c;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ushort c, byte d)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -184,7 +165,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 18)) == d;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, uint c)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -194,7 +174,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref bStart, 16)) == c;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, uint c, byte d)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -205,7 +184,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 20)) == d;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, uint c, ushort d)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -216,7 +194,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref bStart, 20)) == d;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, uint c, ushort d, byte e)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -228,7 +205,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 22)) == e;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -238,7 +214,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref bStart, 16)) == c;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, byte d)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -249,7 +224,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 24)) == d;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ushort d)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -260,7 +234,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref bStart, 24)) == d;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ushort d, byte e)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -272,7 +245,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 26)) == e;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, uint d)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -283,7 +255,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref bStart, 24)) == d;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, uint d, byte e)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -295,7 +266,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 28)) == e;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, uint d, ushort e)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -307,7 +277,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref bStart, 28)) == e;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, uint d, ushort e, byte f)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -320,7 +289,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 30)) == f;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -331,7 +299,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref bStart, 24)) == d;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, byte e)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -343,7 +310,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 32)) == e;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ushort e)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -355,7 +321,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref bStart, 32)) == e;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ushort e, byte f)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -368,7 +333,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 34)) == f;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, uint e)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -380,7 +344,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref bStart, 32)) == e;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, uint e, byte f)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -393,7 +356,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 36)) == f;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, uint e, ushort f)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -406,7 +368,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref bStart, 36)) == f;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, uint e, ushort f, byte g)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -420,7 +381,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 38)) == g;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -432,7 +392,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref bStart, 32)) == e;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, byte f)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -445,7 +404,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 40)) == f;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ushort f)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -458,7 +416,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref bStart, 40)) == f;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ushort f, byte g)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -472,7 +429,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 42)) == g;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, uint f)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -485,7 +441,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref bStart, 40)) == f;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, uint f, byte g)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -499,7 +454,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 44)) == g;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, uint f, ushort g)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -513,7 +467,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref bStart, 44)) == g;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, uint f, ushort g, byte h)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -528,7 +481,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 46)) == h;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ulong f)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -541,7 +493,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref bStart, 40)) == f;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ulong f, byte g)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -555,7 +506,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 48)) == g;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ulong f, ushort g)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -569,7 +519,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref bStart, 48)) == g;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ulong f, ushort g, byte h)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -584,7 +533,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 50)) == h;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ulong f, uint g)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -598,7 +546,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref bStart, 48)) == g;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ulong f, uint g, byte h)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -613,7 +560,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 52)) == h;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ulong f, uint g, ushort h)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -628,7 +574,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref bStart, 52)) == h;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ulong f, uint g, ushort h, byte i)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -644,7 +589,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 54)) == i;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ulong f, ulong g)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -658,7 +602,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ulong>(ref Unsafe.Add(ref bStart, 48)) == g;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ulong f, ulong g, byte h)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -673,7 +616,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 56)) == h;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ulong f, ulong g, ushort h)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -688,7 +630,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref bStart, 56)) == h;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ulong f, ulong g, ushort h, byte i)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -704,7 +645,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 58)) == i;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ulong f, ulong g, uint h)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -719,7 +659,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<uint>(ref Unsafe.Add(ref bStart, 56)) == h;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ulong f, ulong g, uint h, byte i)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -735,7 +674,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 60)) == i;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ulong f, ulong g, uint h, ushort i)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -751,7 +689,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref bStart, 60)) == i;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ulong f, ulong g, uint h, ushort i, byte j)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
@@ -768,7 +705,6 @@ namespace SpanJson.Helpers
                 && Unsafe.ReadUnaligned<byte>(ref Unsafe.Add(ref bStart, 62)) == j;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMatch(in ReadOnlySpan<byte> span, ulong a, ulong b, ulong c, ulong d, ulong e, ulong f, ulong g, ulong h)
         {
             ref var bStart = ref MemoryMarshal.GetReference(span);
