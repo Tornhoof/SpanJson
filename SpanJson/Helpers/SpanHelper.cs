@@ -9,7 +9,7 @@ namespace SpanJson.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static byte ReadByte(in ReadOnlySpan<byte> span, int offset)
         {
-            return span[offset];
+            return Unsafe.Add(ref MemoryMarshal.GetReference(span), offset);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

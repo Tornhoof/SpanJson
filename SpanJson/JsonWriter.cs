@@ -371,5 +371,10 @@ namespace SpanJson
                 throw new InvalidOperationException($"Nesting Limit of {JsonSharedConstant.NestingLimit} exceeded.");
             }
         }
+
+        private void ThrowArgumentException(string message, string paramName)
+        {
+            throw new ArgumentException(message, paramName);
+        }
     }
 }
