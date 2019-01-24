@@ -627,24 +627,36 @@ namespace SpanJson.Tests
     public sealed class AnnotatedCustomStructFormatter : ICustomJsonFormatter<CustomSerializerTests.AnnotatedCustomStruct>
     {
         public static readonly AnnotatedCustomStructFormatter Default = new AnnotatedCustomStructFormatter();
+
+        private static CustomSerializerTests.AnnotatedCustomStruct DeserializeInternal<TSymbol>(ref JsonReader<TSymbol> reader) where TSymbol : struct
+        {
+            return new CustomSerializerTests.AnnotatedCustomStruct { Value = reader.ReadInt32() };
+        }
+
+        private static void SerializeInternal<TSymbol>(ref JsonWriter<TSymbol> writer, CustomSerializerTests.AnnotatedCustomStruct value) where TSymbol : struct
+        {
+            writer.WriteInt32(value.Value);
+        }
+
+
         public void Serialize(ref JsonWriter<byte> writer, CustomSerializerTests.AnnotatedCustomStruct value)
         {
-            writer.WriteUtf8Int32(value.Value);
+            SerializeInternal(ref writer, value);
         }
 
         public CustomSerializerTests.AnnotatedCustomStruct Deserialize(ref JsonReader<byte> reader)
         {
-            return new CustomSerializerTests.AnnotatedCustomStruct {Value = reader.ReadUtf8Int32()};
+            return DeserializeInternal(ref reader);
         }
 
         public void Serialize(ref JsonWriter<char> writer, CustomSerializerTests.AnnotatedCustomStruct value)
         {
-            writer.WriteUtf16Int32(value.Value);
+            SerializeInternal(ref writer, value);
         }
 
         public CustomSerializerTests.AnnotatedCustomStruct Deserialize(ref JsonReader<char> reader)
         {
-            return new CustomSerializerTests.AnnotatedCustomStruct { Value = reader.ReadUtf16Int32() };
+            return DeserializeInternal(ref reader);
         }
 
         public object Arguments { get; set; }
