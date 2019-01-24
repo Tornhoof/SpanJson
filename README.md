@@ -27,7 +27,7 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 - Support for read-only collections, ``ReadOnlyCollection``, ``ReadOnlyDictionary``, they are deserialized into a writeable type (i.e. List or Dictionary), then the read-only version is created via an appropriate constructor overload.
 - Support for tuples currently excludes the last type with 8 arguments (TRest)
 - Support for annotating a constructor with ``[JsonConstructor]`` to use that one instead of assigning members during deserialization
-- Support for custom serializes with ``[JsonCustomSerializer]`` to use that one instead of the normal formatter, see example below
+- Support for custom serializers with ``[JsonCustomSerializer]`` to use that one instead of the normal formatter, see examples below
 - Support for annotating a IDictionary<string,object> with ``[JsonExtensionData]``. Serialization will write all values from the dictionary as additional attributes. Deserialization will deserialize all unknown attributes into it.
   This does not work together with the Dynamic Language Runtime (DLR) support or the ``[JsonConstructor]`` attribute. See Example below. The Dictionary will also honor the Case Setting (i.e. CamelCase) and null behaviour for the dictionary keys.
 - Pretty printing JSON
@@ -190,6 +190,75 @@ public sealed class LongAsStringFormatter : ICustomJsonFormatter<long>
         }
 
         throw new InvalidOperationException("Invalid value.");
+    }
+}
+```
+
+```csharp
+// It's possible to annotate custom types a custom formatter to always use the custom formatter 
+[JsonCustomSerializer(typeof(TwcsCustomSerializer))]
+public class TypeWithCustomSerializer : IEquatable<TypeWithCustomSerializer>
+{
+    public long Value { get; set; }
+}
+
+// Instead of copying the implementation of for serialize/deserialize for utf8/utf16
+// it is possible to use the writer/reader methods which support both, there is no or only a very minor performance difference
+public sealed class TwcsCustomSerializer : ICustomJsonFormatter<TypeWithCustomSerializer>
+{
+    public static readonly TwcsCustomSerializer Default = new TwcsCustomSerializer();
+
+    public object Arguments { get; set; }
+
+    private void SerializeInternal<TSymbol>(ref JsonWriter<TSymbol> writer, TypeWithCustomSerializer value) where TSymbol : struct
+    {
+        if (value == null)
+        {
+            writer.WriteNull();
+            return;
+        }
+
+        writer.WriteBeginObject();
+
+        writer.WriteName(nameof(TypeWithCustomSerializer.Value));
+
+        writer.WriteUtf16Int64(value.Value);
+
+        writer.WriteEndObject();
+    }
+
+    public void Serialize(ref JsonWriter<byte> writer, TypeWithCustomSerializer value)
+    {
+        SerializeInternal(ref writer, value);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private TypeWithCustomSerializer DeserializeInternal<TSymbol>(ref JsonReader<TSymbol> reader) where TSymbol : struct
+    {
+        if (reader.ReadIsNull())
+        {
+            return null;
+        }
+
+        reader.ReadBeginObjectOrThrow();
+        var result = new TypeWithCustomSerializer {Value = reader.ReadInt64()};
+        reader.ReadEndObjectOrThrow();
+        return result;
+    }
+
+    public TypeWithCustomSerializer Deserialize(ref JsonReader<byte> reader)
+    {
+        return DeserializeInternal(ref reader);
+    }
+
+    public void Serialize(ref JsonWriter<char> writer, TypeWithCustomSerializer value)
+    {
+        SerializeInternal(ref writer, value);
+    }
+
+    public TypeWithCustomSerializer Deserialize(ref JsonReader<char> reader)
+    {
+        return DeserializeInternal(ref reader);
     }
 }
 ```
