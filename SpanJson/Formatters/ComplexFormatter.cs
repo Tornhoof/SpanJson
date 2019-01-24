@@ -69,8 +69,8 @@ namespace SpanJson.Formatters
                 if (IsNoRuntimeDecisionRequired(memberInfo.MemberType))
                 {
                     var underlyingType = Nullable.GetUnderlyingType(memberInfo.MemberType);
-                    // if it's nullable and we don't need the null, we call the underlying provider directly
-                    if (memberInfo.ExcludeNull && underlyingType != null)
+                    // if it's nullable and we don't need the null and we don't have a custom formatter, we call the underlying provider directly
+                    if (memberInfo.ExcludeNull && underlyingType != null && !typeof(ICustomJsonFormatter).IsAssignableFrom(formatterType))
                     {
                         formatterType = resolver.GetFormatter(memberInfo, underlyingType).GetType();
                         fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
