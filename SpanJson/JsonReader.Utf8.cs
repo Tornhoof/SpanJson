@@ -331,7 +331,17 @@ namespace SpanJson
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
-            return escapedCharsSize == 0 ? span : MemoryMarshal.AsBytes(UnescapeUtf8(span, escapedCharsSize).AsSpan());
+
+            if (escapedCharsSize == 0)
+            {
+                return span;
+            }
+            else
+            {
+                var unescaped = UnescapeUtf8(span, escapedCharsSize);
+                var result = Encoding.UTF8.GetBytes(unescaped);
+                return result;
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -450,6 +460,91 @@ namespace SpanJson
             return result;
         }
 
+        /// <summary>
+        ///     This is simply said pretty much twice as slow as the Utf16 version
+        /// </summary>
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private ReadOnlySpan<byte> UnescapeUtf8Bytes(in ReadOnlySpan<byte> span, int escapedCharsSize)
+        {
+            var unescapedLength = Encoding.UTF8.GetCharCount(span) - escapedCharsSize;
+            var result = new string('\0', unescapedLength);
+            var charOffset = 0;
+            // We create a writeable span of the chars in the string (currently there is no string.create overload taking a span as state so this the solution for now).
+            var writeableSpan = MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(result.AsSpan()), unescapedLength);
+            var from = 0;
+            var index = 0;
+            while (index < span.Length)
+            {
+                ref readonly var current = ref span[index];
+                if (current == JsonUtf8Constant.ReverseSolidus)
+                {
+                    // We copy everything up to the escaped char as utf8 to the string
+                    charOffset += Encoding.UTF8.GetChars(span.Slice(from, index - from), writeableSpan.Slice(charOffset));
+                    index++;
+                    current = ref span[index++];
+                    byte unescaped = default;
+                    switch (current)
+                    {
+                        case JsonUtf8Constant.DoubleQuote:
+                            unescaped = JsonUtf8Constant.DoubleQuote;
+                            break;
+                        case JsonUtf8Constant.ReverseSolidus:
+                            unescaped = JsonUtf8Constant.ReverseSolidus;
+                            break;
+                        case JsonUtf8Constant.Solidus:
+                            unescaped = JsonUtf8Constant.Solidus;
+                            break;
+                        case (byte)'b':
+                            unescaped = '\b';
+                            break;
+                        case (byte)'f':
+                            unescaped = '\f';
+                            break;
+                        case (byte)'n':
+                            unescaped = '\n';
+                            break;
+                        case (byte)'r':
+                            unescaped = '\r';
+                            break;
+                        case (byte)'t':
+                            unescaped = '\t';
+                            break;
+                        case (byte)'u':
+                            {
+                                if (Utf8Parser.TryParse(span.Slice(index, 4), out uint value, out var bytesConsumed, 'X'))
+                                {
+                                    index += bytesConsumed;
+                                    unescaped = (char)value;
+                                    break;
+                                }
+
+                                ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
+                                break;
+                            }
+                        default:
+                            {
+                                ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
+                                break;
+                            }
+                    }
+
+                    writeableSpan[charOffset++] = unescaped;
+                    from = index;
+                }
+                else
+                {
+                    index++;
+                }
+            }
+
+            if (from < span.Length) // still data to copy
+            {
+                Encoding.UTF8.GetChars(span.Slice(from), writeableSpan.Slice(charOffset));
+            }
+
+            return result;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<byte> ReadUtf8StringSpan()
         {
@@ -458,7 +553,16 @@ namespace SpanJson
                 return JsonUtf8Constant.NullTerminator;
             }
 
-            return ReadUtf8StringSpanInternal(out _);
+            var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
+            if (escapedCharsSize == 0)
+            {
+                return span;
+            }
+            else
+            {
+                var unescaped = UnescapeUtf8(span, escapedCharsSize);
+                return MemoryMarshal.AsBytes(unescaped.AsSpan());
+            }
         }
         private ReadOnlySpan<byte> ReadUtf8StringSpanInternal(out int escapedCharsSize)
         {
