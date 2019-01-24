@@ -26,6 +26,37 @@ namespace SpanJson.Tests
 
         [Theory]
         [MemberData(nameof(GetModels))]
+        public void CanSerializeDeserializeAllFullyEscapedUtf16(Type modelType)
+        {
+            var fixture = new ExpressionTreeFixture();
+            var model = fixture.Create(modelType);
+            var serialized = JsonSerializer.NonGeneric.Utf16.Serialize(model);
+            var encoded = EscapeHelper.FullyEscape(serialized);
+            Assert.NotNull(encoded);
+            var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(encoded, modelType);
+            Assert.NotNull(deserialized);
+            Assert.IsType(modelType, deserialized);
+            Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetModels))]
+        public void CanSerializeDeserializeAllFullyEscapedUtf8(Type modelType)
+        {
+            var fixture = new ExpressionTreeFixture();
+            var model = fixture.Create(modelType);
+            var serialized = JsonSerializer.NonGeneric.Utf16.Serialize(model);
+            var encoded = EscapeHelper.FullyEscape(serialized);
+            Assert.NotNull(encoded);
+            var encodedBytes = Encoding.UTF8.GetBytes(encoded);
+            var deserialized = JsonSerializer.NonGeneric.Utf8.Deserialize(encodedBytes, modelType);
+            Assert.NotNull(deserialized);
+            Assert.IsType(modelType, deserialized);
+            Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetModels))]
         public void CanSerializeDeserializeAllUtf8(Type modelType)
         {
             var fixture = new ExpressionTreeFixture();

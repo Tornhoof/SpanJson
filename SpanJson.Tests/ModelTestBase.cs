@@ -15,5 +15,7 @@ namespace SpanJson.Tests
                 .ToList();
             return models.Where(a => a != null).Select(a => new object[] {a});
         }
+
+
     }
 }

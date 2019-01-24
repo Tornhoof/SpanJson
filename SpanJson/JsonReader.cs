@@ -141,6 +141,42 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<TSymbol> ReadEscapedNameSpan()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return MemoryMarshal.Cast<char, TSymbol>(ReadUtf16EscapedNameSpan());
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                return MemoryMarshal.Cast<byte, TSymbol>(ReadUtf8EscapedNameSpan());
+            }
+
+            ThrowNotSupportedException();
+            return default;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<TSymbol> ReadVerbatimNameSpan()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                SkipWhitespaceUtf16();
+                return MemoryMarshal.Cast<char, TSymbol>(ReadUtf16VerbatimNameSpan());
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                SkipWhitespaceUtf8();
+                return MemoryMarshal.Cast<byte, TSymbol>(ReadUtf8VerbatimNameSpan());
+            }
+
+            ThrowNotSupportedException();
+            return default;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryReadIsEndObjectOrValueSeparator(ref int count)
         {
             if (typeof(TSymbol) == typeof(char))
@@ -225,6 +261,27 @@ namespace SpanJson
             return default;
         }
 
+        /// <summary>
+        /// Doesn't skip whitespace, just for copying around in a token loop
+        /// </summary>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<TSymbol> ReadVerbatimStringSpan()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return MemoryMarshal.Cast<char, TSymbol>(ReadUtf16StringSpanInternal(out _));
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                return MemoryMarshal.Cast<byte, TSymbol>(ReadUtf8StringSpanInternal(out _));
+            }
+
+            ThrowNotSupportedException();
+            return default;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SkipNextSegment()
         {
@@ -240,24 +297,6 @@ namespace SpanJson
             {
                 ThrowNotSupportedException();
             }
-        }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ReadOnlySpan<TSymbol> ReadNameSpan()
-        {
-            if (typeof(TSymbol) == typeof(char))
-            {
-                return MemoryMarshal.Cast<char, TSymbol>(ReadUtf16NameSpan());
-            }
-
-            if (typeof(TSymbol) == typeof(byte))
-            {
-                return MemoryMarshal.Cast<byte, TSymbol>(ReadUtf8NameSpan());
-            }
-
-            ThrowNotSupportedException();
-            return default;
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

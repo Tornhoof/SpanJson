@@ -55,7 +55,7 @@ namespace SpanJson
                             }
 
                             writer.WriteIndentation(indent + 2);
-                            writer.WriteNameSpan(reader.ReadNameSpan());
+                            writer.WriteVerbatimNameSpan(reader.ReadVerbatimNameSpan());
                             writer.WriteIndentation(1);
                             Print(ref reader, ref writer, indent + 2);
                         }
@@ -96,7 +96,7 @@ namespace SpanJson
                     }
                     case JsonToken.String:
                     {
-                        var span = reader.ReadStringSpan();
+                        var span = reader.ReadVerbatimStringSpan();
                         writer.WriteDoubleQuote();
                         writer.WriteVerbatim(span);
                         writer.WriteDoubleQuote();
