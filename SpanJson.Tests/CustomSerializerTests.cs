@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
 using SpanJson.Formatters;
+using SpanJson.Resolvers;
 using Xunit;
 
 namespace SpanJson.Tests
@@ -71,7 +72,7 @@ namespace SpanJson.Tests
         [Fact]
         public void SerializeDeserializeUtf8()
         {
-            var test = new TestDTO {Enum = TestDTO.TestEnum.First, Name = "Hello World", Value = 12345678, Multiplied = 200 };
+            var test = new TestDTO {Enum = TestDTO.TestEnum.First, Name = "Hello World", Value = 12345678, Multiplied = 200};
             var serialized = JsonSerializer.Generic.Utf8.Serialize(test);
             var stringEncoded = Encoding.UTF8.GetString(serialized);
             Assert.Contains("\"Value\":\"12345678\"", stringEncoded);
@@ -177,7 +178,7 @@ namespace SpanJson.Tests
 
         [JsonCustomSerializer(typeof(TwcsCustomSerializer))]
         public class TypeWithCustomSerializer : IEquatable<TypeWithCustomSerializer>
-        { 
+        {
 
             public long Value { get; set; }
 
@@ -219,7 +220,7 @@ namespace SpanJson.Tests
                 writer.WriteBeginObject();
 
                 writer.WriteName(nameof(TypeWithCustomSerializer.Value));
-                
+
                 writer.WriteUtf16Int64(value.Value);
 
                 writer.WriteEndObject();
@@ -273,12 +274,379 @@ namespace SpanJson.Tests
         [Fact]
         public void SerializeDeserializeTwcsUtf8()
         {
-            var test = new TypeWithCustomSerializer { Value = 100 };
+            var test = new TypeWithCustomSerializer {Value = 100};
             var serialized = JsonSerializer.Generic.Utf8.Serialize(test);
             var stringEncoded = Encoding.UTF8.GetString(serialized);
             Assert.Contains("\"Value\":100", stringEncoded);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<TypeWithCustomSerializer>(serialized);
             Assert.Equal(test, deserialized);
         }
+
+        [Fact]
+        public void EnclosingNullableFormatterExcludeNullsUtf16()
+        {
+            var input = new EnclosingNullable
+            {
+                S = new CustomStruct
+                {
+                    Value = 1,
+                }
+            };
+
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<EnclosingNullable, ExcludeNullsOriginalCaseResolver<char>>(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<EnclosingNullable, ExcludeNullsOriginalCaseResolver<char>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(input.S, deserialized.S);
+        }
+
+        [Fact]
+        public void EnclosingNullableFormatterExcludeNullsUtf8()
+        {
+            var input = new EnclosingNullable
+            {
+                S = new CustomStruct
+                {
+                    Value = 1,
+                }
+            };
+
+            var serialized = JsonSerializer.Generic.Utf8.Serialize<EnclosingNullable, ExcludeNullsOriginalCaseResolver<byte>>(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<EnclosingNullable, ExcludeNullsOriginalCaseResolver<byte>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(input.S, deserialized.S);
+        }
+
+        [Fact]
+        public void EnclosingNullableFormatterIncludeNullsUtf16()
+        {
+            var input = new EnclosingNullable
+            {
+                S = new CustomStruct
+                {
+                    Value = 1,
+                }
+            };
+
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<EnclosingNullable, IncludeNullsOriginalCaseResolver<char>>(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<EnclosingNullable, IncludeNullsOriginalCaseResolver<char>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(input.S, deserialized.S);
+        }
+
+        [Fact]
+        public void EnclosingNullableFormatterIncludeNullsUtf8()
+        {
+            var input = new EnclosingNullable
+            {
+                S = new CustomStruct
+                {
+                    Value = 1,
+                }
+            };
+
+            var serialized = JsonSerializer.Generic.Utf8.Serialize<EnclosingNullable, IncludeNullsOriginalCaseResolver<byte>>(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<EnclosingNullable, IncludeNullsOriginalCaseResolver<byte>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(input.S, deserialized.S);
+        }
+
+
+        [Fact]
+        public void EnclosingNullableFormatterNullValueExcludeNullsUtf16()
+        {
+            var input = new EnclosingNullable
+            {
+                S = null
+            };
+
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<EnclosingNullable, ExcludeNullsOriginalCaseResolver<char>>(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<EnclosingNullable, ExcludeNullsOriginalCaseResolver<char>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(input.S, deserialized.S);
+        }
+
+        [Fact]
+        public void EnclosingNullableFormatterNullValueExcludeNullsUtf8()
+        {
+            var input = new EnclosingNullable
+            {
+                S = null
+            };
+
+            var serialized = JsonSerializer.Generic.Utf8.Serialize<EnclosingNullable, ExcludeNullsOriginalCaseResolver<byte>>(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<EnclosingNullable, ExcludeNullsOriginalCaseResolver<byte>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(input.S, deserialized.S);
+        }
+
+        [Fact]
+        public void EnclosingNullableFormatterNullValueIncludeNullsUtf16()
+        {
+            var input = new EnclosingNullable
+            {
+                S = null
+            };
+
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<EnclosingNullable, IncludeNullsOriginalCaseResolver<char>>(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<EnclosingNullable, IncludeNullsOriginalCaseResolver<char>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(input.S, deserialized.S);
+        }
+
+        [Fact]
+        public void EnclosingNullableFormatterNullValueIncludeNullsUtf8()
+        {
+            var input = new EnclosingNullable
+            {
+                S = null
+            };
+
+            var serialized = JsonSerializer.Generic.Utf8.Serialize<EnclosingNullable, IncludeNullsOriginalCaseResolver<byte>>(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<EnclosingNullable, IncludeNullsOriginalCaseResolver<byte>>(serialized);
+            Assert.NotNull(deserialized);
+            Assert.Equal(input.S, deserialized.S);
+        }
+
+
+
+        public class EnclosingNullable
+        {
+            [JsonCustomSerializer(typeof(NullableCustomStructFormatter))]
+            public CustomStruct? S;
+        }
+
+        public struct CustomStruct
+        {
+            public int Value;
+        }
+
+        public sealed class NullableCustomStructFormatter : ICustomJsonFormatter<CustomStruct?>
+        {
+            public static readonly NullableCustomStructFormatter Default = new NullableCustomStructFormatter();
+
+            public void Serialize(ref JsonWriter<byte> writer, CustomStruct? value)
+            {
+                if (value is null)
+                {
+                    writer.WriteNull();
+                    return;
+                }
+
+                Int32Utf8Formatter.Default.Serialize(ref writer, value.GetValueOrDefault().Value);
+            }
+
+            public CustomStruct? Deserialize(ref JsonReader<byte> reader)
+            {
+                if (reader.ReadIsNull())
+                {
+                    return null;
+                }
+
+                var v = Int32Utf8Formatter.Default.Deserialize(ref reader);
+                return new CustomStruct {Value = v};
+            }
+
+            public void Serialize(ref JsonWriter<char> writer, CustomStruct? value)
+            {
+                if (value is null)
+                {
+                    writer.WriteNull();
+                    return;
+                }
+
+                Int32Utf16Formatter.Default.Serialize(ref writer, value.GetValueOrDefault().Value);
+            }
+
+            public CustomStruct? Deserialize(ref JsonReader<char> reader)
+            {
+                if (reader.ReadIsNull())
+                {
+                    return null;
+                }
+
+                var v = Int32Utf16Formatter.Default.Deserialize(ref reader);
+                return new CustomStruct {Value = v};
+            }
+
+            public object Arguments { get; set; }
+        }
+
+
+
+        public class AnnotatedCustomStructHelper
+        {
+            public AnnotatedCustomStruct? S;
+        }
+
+        [JsonCustomSerializer(typeof(AnnotatedCustomStructFormatter))]
+        public struct AnnotatedCustomStruct
+        {
+            public int Value;
+        }
+
+        [Fact]
+        public void AnnotatedCustomStructFormatterExcludeNullsUtf16()
+        {
+            var input = new AnnotatedCustomStructHelper
+            {
+                S = new AnnotatedCustomStruct
+                {
+                    Value = 1,
+                }
+            };
+
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<AnnotatedCustomStructHelper, ExcludeNullsOriginalCaseResolver<char>>(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<AnnotatedCustomStructHelper, ExcludeNullsOriginalCaseResolver<char>>(serialized);
+            Assert.Equal(input.S, deserialized.S);
+        }
+
+        [Fact]
+        public void AnnotatedCustomStructFormatterExcludeNullsUtf8()
+        {
+            var input = new AnnotatedCustomStructHelper
+            {
+                S = new AnnotatedCustomStruct
+                {
+                    Value = 1,
+                }
+            };
+
+            var serialized = JsonSerializer.Generic.Utf8.Serialize<AnnotatedCustomStructHelper, ExcludeNullsOriginalCaseResolver<byte>>(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<AnnotatedCustomStructHelper, ExcludeNullsOriginalCaseResolver<byte>>(serialized);
+            Assert.Equal(input.S, deserialized.S);
+        }
+
+        [Fact]
+        public void AnnotatedCustomStructFormatterIncludeNullsUtf16()
+        {
+            var input = new AnnotatedCustomStructHelper
+            {
+                S = new AnnotatedCustomStruct
+                {
+                    Value = 1,
+                }
+            };
+
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<AnnotatedCustomStructHelper, IncludeNullsOriginalCaseResolver<char>>(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<AnnotatedCustomStructHelper, IncludeNullsOriginalCaseResolver<char>>(serialized);
+            Assert.Equal(input.S, deserialized.S);
+        }
+
+        [Fact]
+        public void AnnotatedCustomStructFormatterIncludeNullsUtf8()
+        {
+            var input = new AnnotatedCustomStructHelper
+            {
+                S = new AnnotatedCustomStruct
+                {
+                    Value = 1,
+                }
+            };
+
+            var serialized = JsonSerializer.Generic.Utf8.Serialize<AnnotatedCustomStructHelper, IncludeNullsOriginalCaseResolver<byte>>(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<AnnotatedCustomStructHelper, IncludeNullsOriginalCaseResolver<byte>>(serialized);
+            Assert.Equal(input.S, deserialized.S);
+        }
+
+        [Fact]
+        public void AnnotatedCustomStructFormatterNullValueExcludeNullsUtf16()
+        {
+            var input = new AnnotatedCustomStructHelper
+            {
+                S = null
+            };
+
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<AnnotatedCustomStructHelper, ExcludeNullsOriginalCaseResolver<char>>(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<AnnotatedCustomStructHelper, ExcludeNullsOriginalCaseResolver<char>>(serialized);
+            Assert.Equal(input.S, deserialized.S);
+        }
+
+        [Fact]
+        public void AnnotatedCustomStructFormatterNullValueExcludeNullsUtf8()
+        {
+            var input = new AnnotatedCustomStructHelper
+            {
+                S = null
+            };
+
+            var serialized = JsonSerializer.Generic.Utf8.Serialize<AnnotatedCustomStructHelper, ExcludeNullsOriginalCaseResolver<byte>>(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<AnnotatedCustomStructHelper, ExcludeNullsOriginalCaseResolver<byte>>(serialized);
+            Assert.Equal(input.S, deserialized.S);
+        }
+
+        [Fact]
+        public void AnnotatedCustomStructFormatterNullValueIncludeNullsUtf16()
+        {
+            var input = new AnnotatedCustomStructHelper
+            {
+                S = null
+            };
+
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<AnnotatedCustomStructHelper, IncludeNullsOriginalCaseResolver<char>>(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<AnnotatedCustomStructHelper, IncludeNullsOriginalCaseResolver<char>>(serialized);
+            Assert.Equal(input.S, deserialized.S);
+        }
+
+        [Fact]
+        public void AnnotatedCustomStructFormatterNullValueIncludeNullsUtf8()
+        {
+            var input = new AnnotatedCustomStructHelper
+            {
+                S = null
+            };
+
+            var serialized = JsonSerializer.Generic.Utf8.Serialize<AnnotatedCustomStructHelper, IncludeNullsOriginalCaseResolver<byte>>(input);
+            Assert.NotNull(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<AnnotatedCustomStructHelper, IncludeNullsOriginalCaseResolver<byte>>(serialized);
+            Assert.Equal(input.S, deserialized.S);
+        }
+
+    }
+
+    [JsonCustomSerializer(typeof(AnnotatedCustomStructFormatter))]
+    public struct AnnotatedCustomStruct
+    {
+        public int Value;
+    }
+
+    public sealed class AnnotatedCustomStructFormatter : ICustomJsonFormatter<CustomSerializerTests.AnnotatedCustomStruct>
+    {
+        public static readonly AnnotatedCustomStructFormatter Default = new AnnotatedCustomStructFormatter();
+        public void Serialize(ref JsonWriter<byte> writer, CustomSerializerTests.AnnotatedCustomStruct value)
+        {
+            writer.WriteUtf8Int32(value.Value);
+        }
+
+        public CustomSerializerTests.AnnotatedCustomStruct Deserialize(ref JsonReader<byte> reader)
+        {
+            return new CustomSerializerTests.AnnotatedCustomStruct {Value = reader.ReadUtf8Int32()};
+        }
+
+        public void Serialize(ref JsonWriter<char> writer, CustomSerializerTests.AnnotatedCustomStruct value)
+        {
+            writer.WriteUtf16Int32(value.Value);
+        }
+
+        public CustomSerializerTests.AnnotatedCustomStruct Deserialize(ref JsonReader<char> reader)
+        {
+            return new CustomSerializerTests.AnnotatedCustomStruct { Value = reader.ReadUtf16Int32() };
+        }
+
+        public object Arguments { get; set; }
     }
 }
