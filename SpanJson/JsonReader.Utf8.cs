@@ -327,7 +327,7 @@ namespace SpanJson
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }            
-            return escapedCharsSize == 0 ? span : UnescapeUtf8Bytes(span, escapedCharsSize);
+            return escapedCharsSize == 0 ? span : UnescapeUtf8Bytes(span);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -447,11 +447,11 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private ReadOnlySpan<byte> UnescapeUtf8Bytes(in ReadOnlySpan<byte> span, int escapedCharsSize)
+        private ReadOnlySpan<byte> UnescapeUtf8Bytes(in ReadOnlySpan<byte> span)
         {
             // not necessarily correct, just needs to be a good upper bound
-            // this gets too high for \u1234 encoded chars, because we already count each of those as 4, but now it's basically 12
-            var unescapedLength = span.Length + escapedCharsSize;
+            // this gets slightly too high, as the normal escapes are two bytes, and the \u1234 escapes are 6 bytes, but we only need 4
+            var unescapedLength = span.Length;
             var byteOffset = 0;
             Span<byte> result = new byte[unescapedLength];
             var from = 0;
@@ -544,7 +544,7 @@ namespace SpanJson
             }
 
             var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
-            return escapedCharsSize == 0 ? span : UnescapeUtf8Bytes(span, escapedCharsSize);
+            return escapedCharsSize == 0 ? span : UnescapeUtf8Bytes(span);
         }
 
         private ReadOnlySpan<byte> ReadUtf8StringSpanInternal(out int escapedCharsSize)
@@ -579,7 +579,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf8();
             var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
-            return escapedCharsSize == 0 ? span : UnescapeUtf8Bytes(span, escapedCharsSize);
+            return escapedCharsSize == 0 ? span : UnescapeUtf8Bytes(span);
         }
 
         /// <summary>
