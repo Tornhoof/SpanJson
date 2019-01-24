@@ -221,7 +221,7 @@ namespace SpanJson.Tests
 
                 writer.WriteName(nameof(TypeWithCustomSerializer.Value));
 
-                writer.WriteUtf16Int64(value.Value);
+                writer.WriteInt64(value.Value);
 
                 writer.WriteEndObject();
             }
