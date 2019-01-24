@@ -18,7 +18,7 @@ namespace SpanJson.Tests
             var count = 0;
             while (!reader.TryReadUtf16IsEndObjectOrValueSeparator(ref count))
             {
-                var name = reader.ReadUtf16NameSpan();
+                var name = reader.ReadUtf16EscapedNameSpan();
                 if (name.ToString() == "Test")
                 {
                     var value = reader.ReadUtf16String();
@@ -45,7 +45,7 @@ namespace SpanJson.Tests
             var count = 0;
             while (!reader.TryReadUtf8IsEndObjectOrValueSeparator(ref count))
             {
-                var name = Encoding.UTF8.GetString(reader.ReadUtf8NameSpan());
+                var name = Encoding.UTF8.GetString(reader.ReadUtf8EscapedNameSpan());
                 if (name == "Test")
                 {
                     var value = reader.ReadUtf8String();

@@ -320,7 +320,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteNameSpan(in ReadOnlySpan<TSymbol> values)
+        public void WriteVerbatimNameSpan(in ReadOnlySpan<TSymbol> values)
         {
             var remaining = values.Length + 3;
             if (typeof(TSymbol) == typeof(char))

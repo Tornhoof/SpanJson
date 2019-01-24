@@ -278,7 +278,8 @@ namespace SpanJson
 
         public DateTime ReadUtf16DateTime()
         {
-            var span = ReadUtf16StringSpan();
+            SkipWhitespaceUtf16();
+            var span = ReadUtf16StringSpanInternal(out _);
             if (DateTimeParser.TryParseDateTime(span, out var value, out var charsConsumed) && charsConsumed == span.Length)
             {
                 return value;
@@ -290,7 +291,8 @@ namespace SpanJson
 
         public DateTimeOffset ReadUtf16DateTimeOffset()
         {
-            var span = ReadUtf16StringSpan();
+            SkipWhitespaceUtf16();
+            var span = ReadUtf16StringSpanInternal(out _);
             if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var charsConsumed) && charsConsumed == span.Length)
             {
                 return value;
@@ -302,7 +304,8 @@ namespace SpanJson
 
         public TimeSpan ReadUtf16TimeSpan()
         {
-            var span = ReadUtf16StringSpan();
+            SkipWhitespaceUtf16();
+            var span = ReadUtf16StringSpanInternal(out _);
             Span<byte> byteSpan = stackalloc byte[26];
             for (int i = 0; i < span.Length; i++)
             {
@@ -320,7 +323,8 @@ namespace SpanJson
 
         public Guid ReadUtf16Guid()
         {
-            var span = ReadUtf16StringSpan();
+            SkipWhitespaceUtf16();
+            var span = ReadUtf16StringSpanInternal(out _);
             Span<byte> byteSpan = stackalloc byte[36]; // easy way
             for (var i = 0; i < span.Length; i++)
             {
@@ -334,18 +338,6 @@ namespace SpanJson
 
             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(Guid));
             return default;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ReadOnlySpan<char> ReadUtf16NameSpan()
-        {
-            var span = ReadUtf16StringSpan();
-            if (_chars[_pos++] != JsonUtf16Constant.NameSeparator)
-            {
-                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
-            }
-
-            return span;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -469,12 +461,23 @@ namespace SpanJson
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<char> ReadUtf16StringSpan()
+        {
+            if (ReadUtf16IsNull())
+            {
+                return JsonUtf16Constant.NullTerminator;
+            }
+
+            var span = ReadUtf16StringSpanInternal(out var escapedCharSize);
+            return escapedCharSize == 0 ? span : UnescapeUtf16(span, escapedCharSize);
+        }
 
         /// <summary>
         ///     Not escaped
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ReadOnlySpan<char> ReadUtf16StringSpan()
+        public ReadOnlySpan<char> ReadUtf16VerbatimStringSpan()
         {
             if (ReadUtf16IsNull())
             {
@@ -962,13 +965,7 @@ namespace SpanJson
                     var dictionary = new Dictionary<string, object>();
                     while (!TryReadUtf16IsEndObjectOrValueSeparator(ref count))
                     {
-                        var nameSpan = ReadUtf16NameSpan();
-                        if (nameSpan.SequenceEqual(JsonUtf16Constant.NullTerminator))
-                        {
-                            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
-                        }
-
-                        var name = nameSpan.ToString();
+                        var name = ReadUtf16EscapedName();
                         var value = ReadUtf16Dynamic(stack + 1);
                         dictionary[name] = value; // take last one
                     }

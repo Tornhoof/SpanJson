@@ -208,7 +208,8 @@ namespace SpanJson
 
         public char ReadUtf8Char()
         {
-            var span = ReadUtf8StringSpan();
+            SkipWhitespaceUtf8();
+            var span = ReadUtf8StringSpanInternal(out _);
             return ReadUtf8CharInternal(span);
         }
 
@@ -258,7 +259,8 @@ namespace SpanJson
 
         public DateTime ReadUtf8DateTime()
         {
-            var span = ReadUtf8StringSpan();
+            SkipWhitespaceUtf8();
+            var span = ReadUtf8StringSpanInternal(out _);
             if (DateTimeParser.TryParseDateTime(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
@@ -270,7 +272,8 @@ namespace SpanJson
 
         public DateTimeOffset ReadUtf8DateTimeOffset()
         {
-            var span = ReadUtf8StringSpan();
+            SkipWhitespaceUtf8();
+            var span = ReadUtf8StringSpanInternal(out _);
             if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
@@ -282,7 +285,8 @@ namespace SpanJson
 
         public TimeSpan ReadUtf8TimeSpan()
         {
-            var span = ReadUtf8StringSpan();
+            SkipWhitespaceUtf8();
+            var span = ReadUtf8StringSpanInternal(out _);
             if (Utf8Parser.TryParse(span, out TimeSpan result, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return result;
@@ -294,7 +298,8 @@ namespace SpanJson
 
         public Guid ReadUtf8Guid()
         {
-            var span = ReadUtf8StringSpan();
+            SkipWhitespaceUtf8();
+            var span = ReadUtf8StringSpanInternal(out _);
             if (Utf8Parser.TryParse(span, out Guid result, out _))
             {
                 return result;
@@ -302,18 +307,6 @@ namespace SpanJson
 
             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(Guid));
             return default;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ReadOnlySpan<byte> ReadUtf8NameSpan()
-        {
-            var span = ReadUtf8StringSpan();
-            if (_bytes[_pos++] != JsonUtf8Constant.NameSeparator)
-            {
-                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
-            }
-
-            return span;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -330,7 +323,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string ReadUtf8EscapedNameSpan()
+        public ReadOnlySpan<byte> ReadUtf8EscapedNameSpan()
         {
             SkipWhitespaceUtf8();
             var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
@@ -338,8 +331,7 @@ namespace SpanJson
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
-
-            return escapedCharsSize == 0 ? ConvertToString(span) : UnescapeUtf8(span, escapedCharsSize);
+            return escapedCharsSize == 0 ? span : MemoryMarshal.AsBytes(UnescapeUtf8(span, escapedCharsSize).AsSpan());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -363,7 +355,7 @@ namespace SpanJson
         /// <summary>
         ///     This is simply said pretty much twice as slow as the Utf16 version
         /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private string UnescapeUtf8(in ReadOnlySpan<byte> span, int escapedCharsSize)
         {
             var unescapedLength = Encoding.UTF8.GetCharCount(span) - escapedCharsSize;
@@ -445,11 +437,22 @@ namespace SpanJson
             return result;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<byte> ReadUtf8StringSpan()
+        {
+            if (ReadUtf8IsNull())
+            {
+                return JsonUtf8Constant.NullTerminator;
+            }
+
+            return ReadUtf8StringSpanInternal(out _);
+        }
+
         /// <summary>
         ///     Not escaped
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ReadOnlySpan<byte> ReadUtf8StringSpan()
+        public ReadOnlySpan<byte> ReadUtf8VerbatimStringSpan()
         {
             if (ReadUtf8IsNull())
             {
@@ -953,13 +956,7 @@ namespace SpanJson
                     var dictionary = new Dictionary<string, object>();
                     while (!TryReadUtf8IsEndObjectOrValueSeparator(ref count))
                     {
-                        var nameSpan = ReadUtf8NameSpan();
-                        if (nameSpan.SequenceEqual(JsonUtf8Constant.NullTerminator))
-                        {
-                            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
-                        }
-
-                        var name = ConvertToString(nameSpan);
+                        var name = ReadUtf8EscapedName();
                         var value = ReadUtf8Dynamic(stack + 1);
                         dictionary[name] = value; // take last one
                     }
