@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using Xunit;
 
 namespace SpanJson.Tests
 {
-    public class Utf8EscapeTests
+    public class UnicodeEscapeTests
     {
         public class Person
         {
@@ -76,7 +74,7 @@ namespace SpanJson.Tests
                 数 = Numbers.三,
             };
             var serialized = JsonSerializer.Generic.Utf16.Serialize(person);
-            var encoded = System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(serialized).Replace(@"\u0022", "\"");
+            var encoded = EscapeHelper.FullyEscape(serialized);
             Assert.NotNull(encoded);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Person>(encoded);
             Assert.NotNull(deserialized);
@@ -95,7 +93,7 @@ namespace SpanJson.Tests
                 数 = Numbers.三,
             };
             var serialized = JsonSerializer.Generic.Utf16.Serialize(person);
-            var encoded = System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(serialized).Replace(@"\u0022", "\"");
+            var encoded = EscapeHelper.FullyEscape(serialized);
             Assert.NotNull(encoded);
             var bytes = Encoding.UTF8.GetBytes(encoded);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<Person>(bytes);
