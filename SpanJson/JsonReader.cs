@@ -162,12 +162,14 @@ namespace SpanJson
         {
             if (typeof(TSymbol) == typeof(char))
             {
-                return MemoryMarshal.Cast<char, TSymbol>(ReadUtf16VerbatimStringSpan());
+                SkipWhitespaceUtf16();
+                return MemoryMarshal.Cast<char, TSymbol>(ReadUtf16VerbatimNameSpan());
             }
 
             if (typeof(TSymbol) == typeof(byte))
             {
-                return MemoryMarshal.Cast<byte, TSymbol>(ReadUtf8VerbatimStringSpan());
+                SkipWhitespaceUtf8();
+                return MemoryMarshal.Cast<byte, TSymbol>(ReadUtf8VerbatimNameSpan());
             }
 
             ThrowNotSupportedException();
@@ -259,17 +261,21 @@ namespace SpanJson
             return default;
         }
 
+        /// <summary>
+        /// Doesn't skip whitespace, just for copying around in a token loop
+        /// </summary>
+        /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ReadOnlySpan<TSymbol> ReadVerbatimStringSpan()
         {
             if (typeof(TSymbol) == typeof(char))
             {
-                return MemoryMarshal.Cast<char, TSymbol>(ReadUtf16VerbatimStringSpan());
+                return MemoryMarshal.Cast<char, TSymbol>(ReadUtf16StringSpanInternal(out _));
             }
 
             if (typeof(TSymbol) == typeof(byte))
             {
-                return MemoryMarshal.Cast<byte, TSymbol>(ReadUtf8VerbatimStringSpan());
+                return MemoryMarshal.Cast<byte, TSymbol>(ReadUtf8StringSpanInternal(out _));
             }
 
             ThrowNotSupportedException();

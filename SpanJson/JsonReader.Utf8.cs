@@ -335,6 +335,19 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<byte> ReadUtf8VerbatimNameSpan()
+        {
+            SkipWhitespaceUtf8();
+            var span = ReadUtf8StringSpanInternal(out _);
+            if (_bytes[_pos++] != JsonUtf8Constant.NameSeparator)
+            {
+                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
+            }
+
+            return span;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ReadUtf8String()
         {
             if (ReadUtf8IsNull())
@@ -447,21 +460,6 @@ namespace SpanJson
 
             return ReadUtf8StringSpanInternal(out _);
         }
-
-        /// <summary>
-        ///     Not escaped
-        /// </summary>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ReadOnlySpan<byte> ReadUtf8VerbatimStringSpan()
-        {
-            if (ReadUtf8IsNull())
-            {
-                return JsonUtf8Constant.NullTerminator;
-            }
-
-            return ReadUtf8StringSpanInternal(out _);
-        }
-
         private ReadOnlySpan<byte> ReadUtf8StringSpanInternal(out int escapedCharsSize)
         {
             ref var pos = ref _pos;
