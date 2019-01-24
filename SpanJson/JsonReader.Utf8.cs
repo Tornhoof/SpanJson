@@ -330,6 +330,19 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public string ReadUtf8EscapedNameSpan()
+        {
+            SkipWhitespaceUtf8();
+            var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
+            if (_bytes[_pos++] != JsonUtf8Constant.NameSeparator)
+            {
+                ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
+            }
+
+            return escapedCharsSize == 0 ? ConvertToString(span) : UnescapeUtf8(span, escapedCharsSize);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ReadUtf8String()
         {
             if (ReadUtf8IsNull())
