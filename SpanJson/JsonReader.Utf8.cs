@@ -202,7 +202,7 @@ namespace SpanJson
                 }
             }
 
-            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(bool));
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.Bool);
             return false;
         }
 
@@ -265,7 +265,7 @@ namespace SpanJson
                 return value;
             }
 
-            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(DateTime));
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateTime);
             return default;
         }
 
@@ -277,7 +277,7 @@ namespace SpanJson
                 return value;
             }
 
-            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(DateTimeOffset));
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateTimeOffset);
             return default;
         }
 
@@ -289,7 +289,7 @@ namespace SpanJson
                 return result;
             }
 
-            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(TimeSpan));
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.TimeSpan);
             return default;
         }
 
@@ -301,7 +301,7 @@ namespace SpanJson
                 return result;
             }
 
-            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, typeof(Guid));
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.Guid);
             return default;
         }
 
@@ -967,7 +967,7 @@ namespace SpanJson
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool TryFindEndOfUtf8String(ref byte bStart, int length, ref int stringLength, out int escapedCharsSize)
+        private static bool TryFindEndOfUtf8String(ref byte bStart, int length, ref int stringLength, out int escapedCharsSize)
         {
             escapedCharsSize = 0;
             while (stringLength < length)
