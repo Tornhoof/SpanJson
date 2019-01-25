@@ -67,6 +67,7 @@ namespace SpanJson
             }
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private static void ThrowNotSupportedException()
         {
             throw new NotSupportedException();
