@@ -19,19 +19,28 @@ namespace SpanJson
             NestingTooDeep,
         }
 
+        public enum ValueType
+        {
+            Bool,
+            DateTime,
+            DateTimeOffset,
+            TimeSpan,
+            Guid,
+        }
+
         public JsonParserException(ParserError error, int position) : base($"Error Reading JSON data: '{error}' at position: '{position}'.")
         {
             Error = error;
             Position = position;
         }
 
-        public JsonParserException(ParserError error, Type type, int position) : base(
-            $"Error Reading JSON data for type '{type.Name}': '{error}' at position: '{position}'.")
+        public JsonParserException(ParserError error, ValueType type, int position) : base(
+            $"Error Reading JSON data for type '{type}': '{error}' at position: '{position}'.")
         {
             Type = type;
         }
 
-        public Type Type { get; }
+        public ValueType Type { get; }
         public ParserError Error { get; }
         public int Position { get; }
     }

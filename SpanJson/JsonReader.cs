@@ -39,7 +39,7 @@ namespace SpanJson
         public int Position => _pos;
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private void ThrowJsonParserException(JsonParserException.ParserError error, Type type)
+        private void ThrowJsonParserException(JsonParserException.ParserError error, JsonParserException.ValueType type)
         {
             throw new JsonParserException(error, type, _pos);
         }
@@ -67,6 +67,7 @@ namespace SpanJson
             }
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private static void ThrowNotSupportedException()
         {
             throw new NotSupportedException();

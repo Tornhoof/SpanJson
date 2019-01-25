@@ -353,6 +353,7 @@ namespace SpanJson
             }
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private static void ThrowNotSupportedException()
         {
             throw new NotSupportedException();
@@ -372,6 +373,7 @@ namespace SpanJson
             }
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private void ThrowArgumentException(string message, string paramName)
         {
             throw new ArgumentException(message, paramName);
