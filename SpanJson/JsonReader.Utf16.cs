@@ -75,7 +75,7 @@ namespace SpanJson
             }
 
             ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
-            return null;
+            return default;
         }
 
 
@@ -497,7 +497,7 @@ namespace SpanJson
 
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             escapedCharsSize = default;
-            return null;
+            return default;
         }
 
 
@@ -535,7 +535,7 @@ namespace SpanJson
             }
 
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
-            return null;
+            return default;
         }
 
         public decimal ReadUtf16Decimal()
