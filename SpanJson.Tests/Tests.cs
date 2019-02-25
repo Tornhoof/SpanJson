@@ -63,7 +63,6 @@ namespace SpanJson.Tests
             var model = fixture.Create(modelType);
             var serialized = JsonSerializer.NonGeneric.Utf8.Serialize(model);
             Assert.NotNull(serialized);
-            var encoded = Encoding.UTF8.GetString(serialized);
             var deserialized = JsonSerializer.NonGeneric.Utf8.Deserialize(serialized, modelType);
             Assert.NotNull(deserialized);
             Assert.IsType(modelType, deserialized);
@@ -211,6 +210,40 @@ namespace SpanJson.Tests
             Assert.NotNull(deserialized);
             Assert.IsType(modelType, deserialized);
             Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
+        }
+
+
+        [Theory]
+        [MemberData(nameof(GetModels))]
+        public void CanSerializeDeserializeAllMinifiedUtf16(Type modelType)
+        {
+            var fixture = new ExpressionTreeFixture();
+            var model = fixture.Create(modelType);
+            var serialized = JsonSerializer.NonGeneric.Utf16.Serialize(model);
+            var prettyPrinted = JsonSerializer.PrettyPrinter.Print(serialized);
+            Assert.NotNull(prettyPrinted);
+            var minified = JsonSerializer.Minifier.Minify(prettyPrinted);
+            Assert.NotNull(minified);
+            Assert.DoesNotContain("\r\n", minified);
+            Assert.DoesNotContain(": ", minified);
+            Assert.Equal(serialized, minified);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetModels))]
+        public void CanSerializeDeserializeAllMinifiedUtf8(Type modelType)
+        {
+            var fixture = new ExpressionTreeFixture();
+            var model = fixture.Create(modelType);
+            var serialized = JsonSerializer.NonGeneric.Utf8.Serialize(model);
+            var prettyPrinted = JsonSerializer.PrettyPrinter.Print(serialized);
+            Assert.NotNull(prettyPrinted);
+            var minified = JsonSerializer.Minifier.Minify(prettyPrinted);
+            Assert.NotNull(minified);
+            var minifiedAsString = Encoding.UTF8.GetString(minified);
+            Assert.DoesNotContain("\r\n", minifiedAsString);
+            Assert.DoesNotContain(": ", minifiedAsString);
+            Assert.Equal(serialized, minified);
         }
     }
 }
