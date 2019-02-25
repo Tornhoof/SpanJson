@@ -31,6 +31,7 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 - Support for annotating a IDictionary<string,object> with ``[JsonExtensionData]``. Serialization will write all values from the dictionary as additional attributes. Deserialization will deserialize all unknown attributes into it.
   This does not work together with the Dynamic Language Runtime (DLR) support or the ``[JsonConstructor]`` attribute. See Example below. The Dictionary will also honor the Case Setting (i.e. CamelCase) and null behaviour for the dictionary keys.
 - Pretty printing JSON
+- Minify JSON
 - Different 'Resolvers' to control general behaviour:
   - Exclude Nulls with Camel Case: ``ExcludeNullsCamelCaseResolver``
   - Exclude Nulls with Original Case (default): ``ExcludeNullsOriginalCaseResolver``
@@ -78,6 +79,9 @@ var serialized = JsonSerializer.NonGeneric.Utf16.Serialize<Input, IncludeNullsOr
 Pretty Printing:
 
 var pretty = JsonSerializer.PrettyPrinter.Print(serialized); // this works by reading the JSON and writing it out again with spaces and line breaks
+
+Minify:
+var minified = JsonSerializer.Minifier.Minify(serialized); // this works by reading the JSON and writing it out again without spaces and line breaks
 
 ```
 

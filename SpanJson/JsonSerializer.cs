@@ -118,5 +118,109 @@ namespace SpanJson
                 }
             }
         }
+
+        /// <summary>
+        /// Minifies JSON
+        /// </summary>
+        public static class Minifier
+        {
+            /// <summary>
+            ///     Minifies the input
+            /// </summary>
+            /// <param name="input">Input</param>
+            /// <returns>String</returns>
+            public static string Minify(in ReadOnlySpan<char> input)
+            {
+                var reader = new JsonReader<char>(input);
+                var writer = new JsonWriter<char>();
+                Minify(ref reader, ref writer);
+                return writer.ToString();
+            }
+
+            /// <summary>
+            ///     Minifies the input
+            /// </summary>
+            /// <param name="input">Input</param>
+            /// <returns>Byte array</returns>
+            public static byte[] Minify(in ReadOnlySpan<byte> input)
+            {
+                var reader = new JsonReader<byte>(input);
+                var writer = new JsonWriter<byte>();
+                Minify(ref reader, ref writer);
+                return writer.ToByteArray();
+            }
+
+            private static void Minify<TSymbol>(ref JsonReader<TSymbol> reader, ref JsonWriter<TSymbol> writer) where TSymbol : struct
+            {
+                var token = reader.ReadNextToken();
+                switch (token)
+                {
+                    case JsonToken.BeginObject:
+                        {
+                            reader.ReadBeginObjectOrThrow();
+                            writer.WriteBeginObject();
+                            var c = 0;
+                            while (!reader.TryReadIsEndObjectOrValueSeparator(ref c))
+                            {
+                                if (c != 1)
+                                {
+                                    writer.WriteValueSeparator();
+                                }
+
+                                writer.WriteVerbatimNameSpan(reader.ReadVerbatimNameSpan());
+
+                                Minify(ref reader, ref writer);
+                            }
+                            writer.WriteEndObject();
+                            break;
+                        }
+                    case JsonToken.BeginArray:
+                        {
+                            reader.ReadBeginArrayOrThrow();
+                            writer.WriteBeginArray();
+                            var c = 0;
+                            while (!reader.TryReadIsEndArrayOrValueSeparator(ref c))
+                            {
+                                if (c != 1)
+                                {
+                                    writer.WriteValueSeparator();
+                                }
+
+                                Minify(ref reader, ref writer);
+                            }
+
+                            writer.WriteEndArray();
+                            break;
+                        }
+                    case JsonToken.Number:
+                        {
+                            var span = reader.ReadNumberSpan();
+                            writer.WriteVerbatim(span);
+                            break;
+                        }
+                    case JsonToken.String:
+                        {
+                            var span = reader.ReadVerbatimStringSpan();
+                            writer.WriteDoubleQuote();
+                            writer.WriteVerbatim(span);
+                            writer.WriteDoubleQuote();
+                            break;
+                        }
+                    case JsonToken.True:
+                    case JsonToken.False:
+                        {
+                            var value = reader.ReadBoolean();
+                            writer.WriteBoolean(value);
+                            break;
+                        }
+                    case JsonToken.Null:
+                        {
+                            reader.ReadIsNull();
+                            writer.WriteNull();
+                            break;
+                        }
+                }
+            }
+        }
     }
 }
