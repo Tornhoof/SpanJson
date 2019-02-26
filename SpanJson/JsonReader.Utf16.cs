@@ -332,6 +332,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf16();
             var span = ReadUtf16StringSpanInternal(out var escapedCharsSize);
+            SkipWhitespaceUtf16();
             if (_chars[_pos++] != JsonUtf16Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
@@ -345,6 +346,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf16();
             var span = ReadUtf16StringSpanInternal(out _);
+            SkipWhitespaceUtf16();
             if (_chars[_pos++] != JsonUtf16Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
@@ -358,6 +360,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf16();
             var span = ReadUtf16StringSpanInternal(out var escapedCharsSize);
+            SkipWhitespaceUtf16();
             if (_chars[_pos++] != JsonUtf16Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);

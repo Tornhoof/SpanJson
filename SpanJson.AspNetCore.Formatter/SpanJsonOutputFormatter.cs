@@ -18,7 +18,8 @@ namespace SpanJson.AspNetCore.Formatter
         {
             if (context.Object != null)
             {
-                return JsonSerializer.NonGeneric.Utf8.SerializeAsync<TResolver>(context.Object, context.HttpContext.Response.Body).AsTask();
+                var valueTask = JsonSerializer.NonGeneric.Utf8.SerializeAsync<TResolver>(context.Object, context.HttpContext.Response.Body);
+                return valueTask.IsCompletedSuccessfully ? Task.CompletedTask : valueTask.AsTask();
             }
 
             return Task.CompletedTask;

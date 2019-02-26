@@ -310,6 +310,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf8();
             var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
+            SkipWhitespaceUtf8();
             if (_bytes[_pos++] != JsonUtf8Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
@@ -323,6 +324,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf8();
             var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
+            SkipWhitespaceUtf8();
             if (_bytes[_pos++] != JsonUtf8Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
@@ -335,6 +337,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf8();
             var span = ReadUtf8StringSpanInternal(out _);
+            SkipWhitespaceUtf8();
             if (_bytes[_pos++] != JsonUtf8Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
