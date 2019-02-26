@@ -187,6 +187,10 @@ namespace SpanJson.Tests
             serialized = JsonSerializer.PrettyPrinter.Print(serialized);
             Assert.Contains("\r\n", serialized);
             Assert.Contains(": ", serialized);
+            serialized = serialized.Replace(": ", " : "); // make sure we have even more whitespaces in
+            serialized = serialized.Replace(",", " ,");
+            serialized = serialized.Replace("]", " ]");
+            serialized = serialized.Replace("[", " [");
             Assert.NotNull(serialized);
             var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(serialized, modelType);
             Assert.NotNull(deserialized);
@@ -206,6 +210,11 @@ namespace SpanJson.Tests
             var serializedAsString = Encoding.UTF8.GetString(serialized);
             Assert.Contains("\r\n", serializedAsString);
             Assert.Contains(": ", serializedAsString);
+            serializedAsString = serializedAsString.Replace(": ", " : ");
+            serializedAsString = serializedAsString.Replace(",", " ,");
+            serializedAsString = serializedAsString.Replace("]", " ]");
+            serializedAsString = serializedAsString.Replace("[", " [");
+            serialized = Encoding.UTF8.GetBytes(serializedAsString);
             var deserialized = JsonSerializer.NonGeneric.Utf8.Deserialize(serialized, modelType);
             Assert.NotNull(deserialized);
             Assert.IsType(modelType, deserialized);

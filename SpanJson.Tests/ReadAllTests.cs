@@ -15,9 +15,9 @@ namespace SpanJson.Tests
 
         private static readonly string HelloWorld = "{ \"message\": \"Hello, World!\" }";
 
-        private static readonly string PrettyPrinted1 = "{\r\n  \"First\": 1,\r\n  \"Value\": null,\r\n  \"Child\": null\r\n}";
-        private static readonly string PrettyPrinted2 = "{\r\n\t\"First\"\t:\t1,\r\n\t\"Second\":\true\t,\r\n\t\"Third\":\tnull\t\r\n}";
-        private static readonly string PrettyPrinted3 = "{\r\n  \"First\" : 1 , \r\n  \"Second\" : \tfalse\",\r\n  \"Third\": null \r\n }";
+        private static readonly string PrettyPrinted1 = "{\r\n  \"First\": null,\r\n  \"Second\": null,\r\n  \"Third\": null\r\n}";
+        private static readonly string PrettyPrinted2 = "{\r\n\t\"First\"\t:\t1,\r\n\t\"Second\":\ttrue\t,\r\n\t\"Third\":\tnull\t\r\n}";
+        private static readonly string PrettyPrinted3 = "{\r\n  \"First\" : 1 , \r\n  \"Second\" : \tfalse,\r\n  \"Third\": \"t\" \r\n }";
 
         [Theory]
         [MemberData(nameof(GetUtf8Data))]
@@ -43,6 +43,22 @@ namespace SpanJson.Tests
             }
         }
 
+        [Theory]
+        [MemberData(nameof(GetUtf8DataPretty))]
+        public void ReadAllUtf8PrettyType(byte[] input)
+        {
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<PrettyType>(input);
+            Assert.NotNull(deserialized);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetUtf16DataPretty))]
+        public void ReadAllUtf16PrettyType(string input)
+        {
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<PrettyType>(input);
+            Assert.NotNull(deserialized);
+        }
+
         public static IEnumerable<object[]> GetUtf16Data()
         {
             yield return new object[] {HeavyNestedJson};
@@ -52,14 +68,34 @@ namespace SpanJson.Tests
             yield return new object[] {PrettyPrinted3};
         }
 
-
         public static IEnumerable<object[]> GetUtf8Data()
         {
-            yield return new object[] {Encoding.UTF8.GetBytes(HeavyNestedJson)};
-            yield return new object[] {Encoding.UTF8.GetBytes(HelloWorld)};
+            yield return new object[] { Encoding.UTF8.GetBytes(HeavyNestedJson) };
+            yield return new object[] { Encoding.UTF8.GetBytes(HelloWorld) };
+            yield return new object[] { Encoding.UTF8.GetBytes(PrettyPrinted1) };
+            yield return new object[] { Encoding.UTF8.GetBytes(PrettyPrinted2) };
+            yield return new object[] { Encoding.UTF8.GetBytes(PrettyPrinted3) };
+        }
+
+        public static IEnumerable<object[]> GetUtf8DataPretty()
+        {
             yield return new object[] {Encoding.UTF8.GetBytes(PrettyPrinted1)};
             yield return new object[] {Encoding.UTF8.GetBytes(PrettyPrinted2)};
             yield return new object[] {Encoding.UTF8.GetBytes(PrettyPrinted3)};
+        }
+
+        public static IEnumerable<object[]> GetUtf16DataPretty()
+        {
+            yield return new object[] { PrettyPrinted1 };
+            yield return new object[] { PrettyPrinted2 };
+            yield return new object[] { PrettyPrinted3 };
+        }
+
+        public class PrettyType
+        {
+            public int? First { get; set; }
+            public bool? Second { get; set; }
+            public string Third { get; set; }
         }
     }
 }
