@@ -19,10 +19,10 @@ namespace SpanJson.Helpers
             public readonly int Hour;
             public readonly int Minute;
             public readonly int Second;
-            public readonly int Fraction;
+            public readonly long Fraction;
             public readonly DateTimeKind Kind;
             public readonly TimeSpan Offset;
-
+            
             public Date(int year, int month, int day, int hour, int minute, int second, int fraction, DateTimeKind kind,
                 TimeSpan offset)
             {
@@ -35,6 +35,11 @@ namespace SpanJson.Helpers
                 Fraction = fraction;
                 Kind = kind;
                 Offset = offset;
+                if (hour == 24 && minute == 0 && second == 0) // if T24:00:00, then it's basically the next day with 
+                {
+                    Hour = 0;
+                    Fraction += TimeSpan.TicksPerDay;
+                }
             }
         }
     }
