@@ -24,20 +24,13 @@ namespace SpanJson.Helpers
                     // for local/unspecified we go through datetime to make sure we get the offsets correct
                     case DateTimeKind.Local:
                     {
-                        value = new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second,
-                            date.Kind).AddTicks(date.Fraction);
-                        return true;
-                    }
-                    case DateTimeKind.Unspecified:
-                    {
-                        value = new DateTimeOffset(new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second,
-                            date.Kind).AddTicks(date.Fraction), date.Offset);
+                        value = new DateTime(date.Ticks, date.Kind);
                         return true;
                     }
                     case DateTimeKind.Utc:
+                    case DateTimeKind.Unspecified:
                     {
-                        value = new DateTimeOffset(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second,
-                            date.Offset).AddTicks(date.Fraction);
+                        value = new DateTimeOffset(date.Ticks, date.Offset);
                         return true;
                     }
                 }
@@ -53,8 +46,7 @@ namespace SpanJson.Helpers
         {
             if (TryParseDate(source, out var date, out bytesConsumed))
             {
-                value = new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second, date.Kind)
-                    .AddTicks(date.Fraction);
+                value = new DateTime(date.Ticks, date.Kind);
                 switch (date.Kind)
                 {
                     case DateTimeKind.Unspecified:
