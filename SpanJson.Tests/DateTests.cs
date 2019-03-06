@@ -1,7 +1,6 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 using System.Globalization;
-using System.Runtime.InteropServices;
 using System.Text;
 using SpanJson.Helpers;
 using SpanJson.Shared.Fixture;
@@ -124,63 +123,62 @@ namespace SpanJson.Tests
             Assert.Equal(dto, dtoValue);
         }
 
-
-        [Fact]
-        public void DigitChecking()
+        public static IEnumerable<object[]> GenerateValuesForDigitChecking()
         {
-            var startDate = TimeSpan.FromDays(12345).Ticks;
+            var startDate = new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks;
 
             for (int i = 1; i < 13; i++)
             {
-                var dt = new DateTime(startDate + TimeSpan.FromDays(30).Ticks * i);
-                AssertDigitCheckingUtf16(dt);
-                AssertDigitCheckingUtf8(dt);
+                yield return new object[] {new DateTime(startDate + TimeSpan.FromDays(31).Ticks * i)};
             }
 
             for (int i = 1; i < 31; i++)
             {
-                var dt = new DateTime(startDate + TimeSpan.FromDays(i).Ticks);
-                AssertDigitCheckingUtf16(dt);
-                AssertDigitCheckingUtf8(dt);
+                yield return new object[] {new DateTime(startDate + TimeSpan.FromDays(i).Ticks)};
             }
 
             for (int i = 0; i < 24; i++)
             {
-                var dt = new DateTime(startDate + TimeSpan.FromHours(i).Ticks);
-                AssertDigitCheckingUtf16(dt);
-                AssertDigitCheckingUtf8(dt);
+                yield return new object[] {new DateTime(startDate + TimeSpan.FromHours(i).Ticks)};
             }
 
             for (int i = 0; i < 60; i++)
             {
-                var dt = new DateTime(startDate + TimeSpan.FromMinutes(i).Ticks);
-                AssertDigitCheckingUtf16(dt);
-                AssertDigitCheckingUtf8(dt);
+                yield return new object[] {new DateTime(startDate + TimeSpan.FromMinutes(i).Ticks)};
             }
 
             for (int i = 0; i < 60; i++)
             {
-                var dt = new DateTime(startDate + TimeSpan.FromSeconds(i).Ticks);
-                AssertDigitCheckingUtf16(dt);
-                AssertDigitCheckingUtf8(dt);
+                yield return new object[] {new DateTime(startDate + TimeSpan.FromSeconds(i).Ticks)};
             }
         }
 
-        private static void AssertDigitCheckingUtf16(DateTime dt)
+        [Theory]
+        [MemberData(nameof(GenerateValuesForDigitChecking))]
+        public void DigitChecking(DateTime dt)
         {
             Span<char> outputChars = stackalloc char[50];
             Assert.True(DateTimeFormatter.TryFormat(dt, outputChars, out var written));
             Assert.True(DateTimeParser.TryParseDateTime(outputChars, out var outputDt, out var consumed));
             Assert.Equal(dt, outputDt);
             Assert.Equal(written, consumed);
-        }
 
-        private static void AssertDigitCheckingUtf8(DateTime dt)
-        {
             Span<byte> outputBytes = stackalloc byte[50];
-            Assert.True(DateTimeFormatter.TryFormat(dt, outputBytes, out var written));
-            Assert.True(DateTimeParser.TryParseDateTime(outputBytes, out var outputDt, out var consumed));
+            Assert.True(DateTimeFormatter.TryFormat(dt, outputBytes, out written));
+            Assert.True(DateTimeParser.TryParseDateTime(outputBytes, out outputDt, out consumed));
             Assert.Equal(dt, outputDt);
+            Assert.Equal(written, consumed);
+
+            var dto = new DateTimeOffset(dt);
+
+            Assert.True(DateTimeFormatter.TryFormat(dto, outputChars, out written));
+            Assert.True(DateTimeParser.TryParseDateTime(outputChars, out var outputdto, out consumed));
+            Assert.Equal(dto, outputdto);
+            Assert.Equal(written, consumed);
+
+            Assert.True(DateTimeFormatter.TryFormat(dto, outputBytes, out written));
+            Assert.True(DateTimeParser.TryParseDateTime(outputBytes, out outputdto, out consumed));
+            Assert.Equal(dto, outputdto);
             Assert.Equal(written, consumed);
         }
 
