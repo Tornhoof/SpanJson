@@ -18,8 +18,6 @@ namespace SpanJson.Tests
         [InlineData("2017-06-12T05:30:45.768Z", 24, 2017, 6, 12, 5, 30, 45, 7680000, false, 0, 0, DateTimeKind.Utc)]
         [InlineData("2017-06-12T05:30:45.768", 23, 2017, 6, 12, 5, 30, 45, 7680000, false, 0, 0, DateTimeKind.Unspecified)]
         [InlineData("2017-06-12T05:30:45+01:00", 25, 2017, 6, 12, 5, 30, 45, 0, false, 1, 0, DateTimeKind.Local)]
-        [InlineData("2017-06-12T05:30:45+0100", 24, 2017, 6, 12, 5, 30, 45, 0, false, 1, 0, DateTimeKind.Local)]
-        [InlineData("2017-06-12T05:30:45+01", 22, 2017, 6, 12, 5, 30, 45, 0, false, 1, 0, DateTimeKind.Local)]
         [InlineData("2017-06-12T05:30:45Z", 20, 2017, 6, 12, 5, 30, 45, 0, false, 0, 0, DateTimeKind.Utc)]
         [InlineData("2017-06-12T05:30:45", 19, 2017, 6, 12, 5, 30, 45, 0, false, 0, 0, DateTimeKind.Unspecified)]
         [InlineData("2017-06-12T05:30", 16, 2017, 6, 12, 5, 30, 0, 0, false, 0, 0, DateTimeKind.Unspecified)]

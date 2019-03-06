@@ -342,15 +342,16 @@ namespace SpanJson.Helpers
 
                 offsetHours = (int) (digit1 * 10 + digit2);
             }
-            int offsetMinutes = 0;
-            if (source.Length > currentOffset)
+            if (source[currentOffset++] != ':')
+            {
+                value = default;
+                bytesConsumed = 0;
+                return false;
+            }
+
+            int offsetMinutes;
             {
                 var digit1 = source[currentOffset++] - 48U;
-                if (digit1 == 10) // ':'
-                {
-                    digit1 = source[currentOffset++] - 48U;
-                }
-
                 var digit2 = source[currentOffset++] - 48U;
 
                 if (digit1 > 6 || digit2 > 9)
