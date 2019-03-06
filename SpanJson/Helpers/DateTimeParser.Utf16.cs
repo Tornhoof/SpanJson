@@ -310,13 +310,15 @@ namespace SpanJson.Helpers
                 fraction = (int) temp;
             }
 
-            var offsetChar = source.Length <= currentOffset ? default : source[currentOffset++];
+            var offsetChar = source.Length <= currentOffset ? default : source[currentOffset];
             if (offsetChar != 'Z' && offsetChar != '+' && offsetChar != '-')
             {
                 value = new Date(year, month, day, hour, minute, second, fraction, DateTimeKind.Local, TimeSpan.Zero);
                 bytesConsumed = currentOffset;
                 return true;
             }
+
+            currentOffset++;
 
             if (offsetChar == 'Z')
             {
@@ -340,17 +342,15 @@ namespace SpanJson.Helpers
 
                 offsetHours = (int) (digit1 * 10 + digit2);
             }
-
-            if (source[currentOffset++] != ':')
-            {
-                value = default;
-                bytesConsumed = 0;
-                return false;
-            }
-
-            int offsetMinutes;
+            int offsetMinutes = 0;
+            if (source.Length > currentOffset)
             {
                 var digit1 = source[currentOffset++] - 48U;
+                if (digit1 == 10) // ':'
+                {
+                    digit1 = source[currentOffset++] - 48U;
+                }
+
                 var digit2 = source[currentOffset++] - 48U;
 
                 if (digit1 > 6 || digit2 > 9)
@@ -362,13 +362,9 @@ namespace SpanJson.Helpers
 
                 offsetMinutes = (int) (digit1 * 10 + digit2);
             }
-            if (offsetChar == '-')
-            {
-                offsetHours = -offsetHours;
-                offsetMinutes = -offsetMinutes;
-            }
 
-            var timeSpan = new TimeSpan(offsetHours, offsetMinutes, 0);
+            var offsetTicks = (offsetHours * 3600 + offsetMinutes * 60) * TimeSpan.TicksPerSecond;
+            var timeSpan = new TimeSpan(offsetChar == '-' ? -offsetTicks : offsetTicks);
             value = timeSpan == TimeSpan.Zero
                 ? new Date(year, month, day, hour, minute, second, fraction, DateTimeKind.Utc, timeSpan)
                 : new Date(year, month, day, hour, minute, second, fraction, DateTimeKind.Unspecified, timeSpan);
