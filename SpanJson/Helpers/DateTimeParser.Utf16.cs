@@ -24,20 +24,13 @@ namespace SpanJson.Helpers
                     // for local/unspecified we go through datetime to make sure we get the offsets correct
                     case DateTimeKind.Local:
                     {
-                        value = new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second,
-                            date.Kind).AddTicks(date.Fraction);
-                        return true;
-                    }
-                    case DateTimeKind.Unspecified:
-                    {
-                        value = new DateTimeOffset(new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second,
-                            date.Kind).AddTicks(date.Fraction), date.Offset);
+                        value = new DateTime(date.Ticks, date.Kind);
                         return true;
                     }
                     case DateTimeKind.Utc:
+                    case DateTimeKind.Unspecified:
                     {
-                        value = new DateTimeOffset(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second,
-                            date.Offset).AddTicks(date.Fraction);
+                        value = new DateTimeOffset(date.Ticks, date.Offset);
                         return true;
                     }
                 }
@@ -53,8 +46,7 @@ namespace SpanJson.Helpers
         {
             if (TryParseDate(source, out var date, out charsConsumed))
             {
-                value = new DateTime(date.Year, date.Month, date.Day, date.Hour, date.Minute, date.Second, date.Kind)
-                    .AddTicks(date.Fraction);
+                value = new DateTime(date.Ticks, date.Kind);
                 switch (date.Kind)
                 {
                     case DateTimeKind.Unspecified:
@@ -126,7 +118,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[5] - 48U;
                 var digit2 = source[6] - 48U;
 
-                if (digit1 > 9 || digit2 > 9)
+                if (digit1 > 2 || digit2 > 9)
                 {
                     value = default;
                     bytesConsumed = 0;
@@ -148,7 +140,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[8] - 48U;
                 var digit2 = source[9] - 48U;
 
-                if (digit1 > 9 || digit2 > 9)
+                if (digit1 > 3 || digit2 > 9)
                 {
                     value = default;
                     bytesConsumed = 0;
@@ -177,7 +169,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[11] - 48U;
                 var digit2 = source[12] - 48U;
 
-                if (digit1 > 9 || digit2 > 9)
+                if (digit1 > 2 || digit2 > 9)
                 {
                     value = default;
                     bytesConsumed = 0;
@@ -185,6 +177,13 @@ namespace SpanJson.Helpers
                 }
 
                 hour = (int) (digit1 * 10 + digit2);
+            }
+
+            if (source.Length == 13)
+            {
+                value = new Date(year, month, day, hour, 0, 0, 0, DateTimeKind.Local, TimeSpan.Zero);
+                bytesConsumed = 13;
+                return true;
             }
 
             if (source[13] != ':')
@@ -199,7 +198,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[14] - 48U;
                 var digit2 = source[15] - 48U;
 
-                if (digit1 > 9 || digit2 > 9)
+                if (digit1 > 6 || digit2 > 9)
                 {
                     value = default;
                     bytesConsumed = 0;
@@ -207,6 +206,13 @@ namespace SpanJson.Helpers
                 }
 
                 minute = (int) (digit1 * 10 + digit2);
+            }
+
+            if (source.Length == 16)
+            {
+                value = new Date(year, month, day, hour, minute, 0, 0, DateTimeKind.Local, TimeSpan.Zero);
+                bytesConsumed = 16;
+                return true;
             }
 
             if (source[16] != ':')
@@ -221,7 +227,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[17] - 48U;
                 var digit2 = source[18] - 48U;
 
-                if (digit1 > 9 || digit2 > 9)
+                if (digit1 > 6 || digit2 > 9)
                 {
                     value = default;
                     bytesConsumed = 0;
@@ -229,6 +235,13 @@ namespace SpanJson.Helpers
                 }
 
                 second = (int) (digit1 * 10 + digit2);
+            }
+
+            if (source.Length == 19)
+            {
+                value = new Date(year, month, day, hour, minute, second, 0, DateTimeKind.Local, TimeSpan.Zero);
+                bytesConsumed = 19;
+                return true;
             }
 
             var currentOffset = 19; // up until here everything is fixed
@@ -297,13 +310,15 @@ namespace SpanJson.Helpers
                 fraction = (int) temp;
             }
 
-            var offsetChar = source.Length <= currentOffset ? default : source[currentOffset++];
+            var offsetChar = source.Length <= currentOffset ? default : source[currentOffset];
             if (offsetChar != 'Z' && offsetChar != '+' && offsetChar != '-')
             {
                 value = new Date(year, month, day, hour, minute, second, fraction, DateTimeKind.Local, TimeSpan.Zero);
                 bytesConsumed = currentOffset;
                 return true;
             }
+
+            currentOffset++;
 
             if (offsetChar == 'Z')
             {
@@ -318,7 +333,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[currentOffset++] - 48U;
                 var digit2 = source[currentOffset++] - 48U;
 
-                if (digit1 > 9 || digit2 > 9)
+                if (digit1 > 2 || digit2 > 9)
                 {
                     value = default;
                     bytesConsumed = 0;
@@ -327,7 +342,6 @@ namespace SpanJson.Helpers
 
                 offsetHours = (int) (digit1 * 10 + digit2);
             }
-
             if (source[currentOffset++] != ':')
             {
                 value = default;
@@ -340,7 +354,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[currentOffset++] - 48U;
                 var digit2 = source[currentOffset++] - 48U;
 
-                if (digit1 > 9 || digit2 > 9)
+                if (digit1 > 6 || digit2 > 9)
                 {
                     value = default;
                     bytesConsumed = 0;
@@ -349,13 +363,9 @@ namespace SpanJson.Helpers
 
                 offsetMinutes = (int) (digit1 * 10 + digit2);
             }
-            if (offsetChar == '-')
-            {
-                offsetHours = -offsetHours;
-                offsetMinutes = -offsetMinutes;
-            }
 
-            var timeSpan = new TimeSpan(offsetHours, offsetMinutes, 0);
+            var offsetTicks = (offsetHours * 3600 + offsetMinutes * 60) * TimeSpan.TicksPerSecond;
+            var timeSpan = new TimeSpan(offsetChar == '-' ? -offsetTicks : offsetTicks);
             value = timeSpan == TimeSpan.Zero
                 ? new Date(year, month, day, hour, minute, second, fraction, DateTimeKind.Utc, timeSpan)
                 : new Date(year, month, day, hour, minute, second, fraction, DateTimeKind.Unspecified, timeSpan);

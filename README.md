@@ -13,7 +13,7 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 ``decimal``, ``bool``, ``char``, ``DateTime``, ``DateTimeOffset``,
 ``TimeSpan``, ``Guid``, ``string``, ``Version``, ``Uri``, ``Tuple<,>``,``ValueTuple<,>``, ``KeyValuePair<,>``
 - Public Properties and Fields are considered for serialization/deserialization
-- DateTime{Offset} is in ISO8601 mode  
+- DateTime{Offset} is in ISO8601 mode with profile https://www.w3.org/TR/NOTE-datetime
 - Dynamics
 - Enums (string and integer, for integer see section Custom Resolver), incl. Flags
 - Anonymous types

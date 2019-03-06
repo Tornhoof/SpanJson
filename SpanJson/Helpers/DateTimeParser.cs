@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography;
 
 namespace SpanJson.Helpers
 {
@@ -13,29 +14,27 @@ namespace SpanJson.Helpers
     {
         private readonly ref struct Date
         {
-            public readonly int Year;
-            public readonly int Month;
-            public readonly int Day;
-            public readonly int Hour;
-            public readonly int Minute;
-            public readonly int Second;
-            public readonly int Fraction;
+            public readonly long Ticks;
             public readonly DateTimeKind Kind;
             public readonly TimeSpan Offset;
 
             public Date(int year, int month, int day, int hour, int minute, int second, int fraction, DateTimeKind kind,
                 TimeSpan offset)
             {
-                Year = year;
-                Month = month;
-                Day = day;
-                Hour = hour;
-                Minute = minute;
-                Second = second;
-                Fraction = fraction;
+                var days = DateTime.IsLeapYear(year) ? DaysToMonth366 : DaysToMonth365;
+                var yearMinusOne = year - 1;
+                var totalDays = yearMinusOne * 365 + yearMinusOne / 4 - yearMinusOne / 100 + yearMinusOne / 400 + days[month - 1] + day - 1;
+                var ticks = totalDays * TimeSpan.TicksPerDay;
+                var totalSeconds = hour * 3600 + minute * 60 + second;
+                ticks += totalSeconds * TimeSpan.TicksPerSecond;
+                ticks += fraction;
+                Ticks = ticks;
                 Kind = kind;
                 Offset = offset;
             }
+
+            private static readonly int[] DaysToMonth365 = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365};
+            private static readonly int[] DaysToMonth366 = {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366};
         }
     }
 }
