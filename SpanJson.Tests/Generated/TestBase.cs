@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using SpanJson.Shared.Fixture;
 using Xunit;
 
@@ -68,6 +69,17 @@ namespace SpanJson.Tests.Generated
             var serialized = JsonSerializer.Generic.Utf16.Serialize(value);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<dynamic>(serialized);
             Assert.Equal(value, (T) deserialized);
+        }
+
+        protected static byte[] EscapeMore(byte[] input)
+        {
+            return Encoding.UTF8.GetBytes(EscapeMore(Encoding.UTF8.GetString(input)));
+        }
+
+
+        protected static string EscapeMore(string input)
+        {
+            return EscapeHelper.EscapeMore(input);
         }
     }
 
