@@ -324,7 +324,7 @@ namespace SpanJson
         public void WriteUtf16DateTime(DateTime value)
         {
             ref var pos = ref _pos;
-            const int dtSize = 35; // Form o + two JsonUtf16Constant.DoubleQuote
+            const int dtSize = JsonSharedConstant.MaxDateTimeLength; // Form o + two JsonUtf16Constant.DoubleQuote
             if (pos > _chars.Length - dtSize)
             {
                 Grow(dtSize);
@@ -339,7 +339,7 @@ namespace SpanJson
         public void WriteUtf16DateTimeOffset(DateTimeOffset value)
         {
             ref var pos = ref _pos;
-            const int dtSize = 35; // Form o + two JsonUtf16Constant.DoubleQuote
+            const int dtSize = JsonSharedConstant.MaxDateTimeOffsetLength; // Form o + two JsonUtf16Constant.DoubleQuote
             if (pos > _chars.Length - dtSize)
             {
                 Grow(dtSize);
@@ -354,7 +354,7 @@ namespace SpanJson
         public void WriteUtf16TimeSpan(TimeSpan value)
         {
             ref var pos = ref _pos;
-            const int tsSize = 28; // Form c + two JsonUtf16Constant.DoubleQuote
+            const int tsSize = JsonSharedConstant.MaxTimespanLength; // Form c + two JsonUtf16Constant.DoubleQuote
             if (pos > _chars.Length - tsSize)
             {
                 Grow(tsSize);
@@ -375,7 +375,7 @@ namespace SpanJson
         public void WriteUtf16Guid(Guid value)
         {
             ref var pos = ref _pos;
-            const int guidSize = 42; // Format D + two JsonUtf16Constant.DoubleQuote;
+            const int guidSize = JsonSharedConstant.MaxGuidLength; // Format D + two JsonUtf16Constant.DoubleQuote;
             if (pos > _chars.Length - guidSize)
             {
                 Grow(guidSize);
