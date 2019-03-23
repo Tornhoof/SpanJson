@@ -7,6 +7,10 @@ namespace SpanJson
         public const int MaxNumberBufferSize = 32;
         public const int MaxVersionLength = 45; // 4 * int + 3 . + 2 double quote
         public const int NestingLimit = 256;
+        public const int MaxDateTimeOffsetLength = 35; // o + 2 double quotes
+        public const int MaxDateTimeLength = 35; // o + 2 double quotes
+        public const int MaxTimespanLength = 27; // c + 2 double quotes
+        public const int MaxGuidLength = 42; // d + 2 double quotes
     }
 
     public static class JsonUtf8Constant
