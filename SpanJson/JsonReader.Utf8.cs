@@ -415,8 +415,16 @@ namespace SpanJson
             if (_bytes[_pos++] != JsonUtf8Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
-            }            
-            return escapedCharsSize == 0 ? span : UnescapeUtf8Bytes(span);
+            }
+            return escapedCharsSize == 0 ? span : UnescapeSlowAllocating(span);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static ReadOnlySpan<byte> UnescapeSlowAllocating(in ReadOnlySpan<byte> span)
+        {
+            var buffer = new byte[span.Length].AsSpan(); // TODO: this is unfortunate, but if we need to escape the string we need to modify it
+            UnescapeUtf8Bytes(span, ref buffer);
+            return buffer;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -633,7 +641,7 @@ namespace SpanJson
             }
 
             var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
-            return escapedCharsSize == 0 ? span : UnescapeUtf8Bytes(span);
+            return escapedCharsSize == 0 ? span : UnescapeSlowAllocating(span);
         }
 
         private ReadOnlySpan<byte> ReadUtf8StringSpanInternal(out int escapedCharsSize)
@@ -661,14 +669,6 @@ namespace SpanJson
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             escapedCharsSize = default;
             return default;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ReadOnlySpan<byte> ReadUtf8EscapedStringSpanInternal()
-        {
-            SkipWhitespaceUtf8();
-            var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
-            return escapedCharsSize == 0 ? span : UnescapeUtf8Bytes(span);
         }
 
         /// <summary>
