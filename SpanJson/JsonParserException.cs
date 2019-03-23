@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace SpanJson
 {
@@ -34,8 +35,32 @@ namespace SpanJson
             Position = position;
         }
 
+        public JsonParserException(ParserError error, in ReadOnlySpan<byte> value) : base(
+            $"Error Reading JSON data: '{error}' at value: '{Encoding.UTF8.GetString(value)}'.")
+        {
+            Error = error;
+        }
+
+        public JsonParserException(ParserError error, in ReadOnlySpan<char> value) : base($"Error Reading JSON data: '{error}' at value: '{value.ToString()}'.")
+        {
+            Error = error;
+        }
+
         public JsonParserException(ParserError error, ValueType type, int position) : base(
             $"Error Reading JSON data for type '{type}': '{error}' at position: '{position}'.")
+        {
+            Type = type;
+        }
+
+
+        public JsonParserException(ParserError error, ValueType type, in ReadOnlySpan<byte> value) : base(
+            $"Error Reading JSON data for type '{type}': '{error}' at value: '{Encoding.UTF8.GetString(value)}'.")
+        {
+            Type = type;
+        }
+
+        public JsonParserException(ParserError error, ValueType type, in ReadOnlySpan<char> value) : base(
+            $"Error Reading JSON data for type '{type}': '{error}' at value: '{value.ToString()}'.")
         {
             Type = type;
         }

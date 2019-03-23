@@ -294,7 +294,7 @@ namespace SpanJson
         public TimeSpan ReadUtf16TimeSpan()
         {
             var span = ReadUtf16EscapedStringSpanInternal();
-            Span<byte> byteSpan = stackalloc byte[26];
+            Span<byte> byteSpan = stackalloc byte[JsonSharedConstant.MaxTimespanLength];
             for (int i = 0; i < span.Length; i++)
             {
                 byteSpan[i] = (byte) span[i];
@@ -312,7 +312,7 @@ namespace SpanJson
         public Guid ReadUtf16Guid()
         {
             var span = ReadUtf16EscapedStringSpanInternal();
-            Span<byte> byteSpan = stackalloc byte[36]; // easy way
+            Span<byte> byteSpan = stackalloc byte[JsonSharedConstant.MaxGuidLength]; // easy way
             for (var i = 0; i < span.Length; i++)
             {
                 byteSpan[i] = (byte) span[i];
@@ -382,7 +382,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private string UnescapeUtf16(in ReadOnlySpan<char> span, int escapedCharSize)
+        private static string UnescapeUtf16(in ReadOnlySpan<char> span, int escapedCharSize)
         {
             var unescapedLength = span.Length - escapedCharSize;
             var result = new string('\0', unescapedLength);
@@ -437,12 +437,12 @@ namespace SpanJson
                                 break;
                             }
 
-                            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
+                            ThrowJsonParserExceptionKnownBuffer(JsonParserException.ParserError.InvalidSymbol, span.Slice(index, 4));
                             break;
                         }
                         default:
                         {
-                            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
+                            ThrowJsonParserExceptionKnownBuffer(JsonParserException.ParserError.InvalidSymbol, span.Slice(index-1, 1));
                             break;
                         }
                     }

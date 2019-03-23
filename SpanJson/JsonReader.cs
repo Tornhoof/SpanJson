@@ -50,15 +50,31 @@ namespace SpanJson
             throw new JsonParserException(error, _pos);
         }
 
-        /// <summary>
-        /// This is not really clean, as we technically could know the position if we keep it around
-        /// </summary>
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void ThrowJsonParserExceptionUnknownPosition(JsonParserException.ParserError error)
+        private static void ThrowJsonParserExceptionKnownBuffer(JsonParserException.ParserError error, JsonParserException.ValueType type,
+            in ReadOnlySpan<char> buffer)
         {
-            throw new JsonParserException(error, -1);
+            throw new JsonParserException(error, type, buffer);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowJsonParserExceptionKnownBuffer(JsonParserException.ParserError error, JsonParserException.ValueType type,
+            in ReadOnlySpan<byte> buffer)
+        {
+            throw new JsonParserException(error, type, buffer);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowJsonParserExceptionKnownBuffer(JsonParserException.ParserError error, in ReadOnlySpan<char> buffer)
+        {
+            throw new JsonParserException(error, buffer);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowJsonParserExceptionKnownBuffer(JsonParserException.ParserError error, in ReadOnlySpan<byte> buffer)
+        {
+            throw new JsonParserException(error, buffer);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void ReadBeginArrayOrThrow()
@@ -309,7 +325,7 @@ namespace SpanJson
                 ThrowNotSupportedException();
             }
         }
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public JsonToken ReadNextToken()
         {
