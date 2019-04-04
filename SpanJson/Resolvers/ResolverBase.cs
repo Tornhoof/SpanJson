@@ -146,7 +146,7 @@ namespace SpanJson.Resolvers
             return BuildMembers(typeof(T)); // no need to cache that
         }
 
-        private static string MakeCamelCase(string name)
+        public static string MakeCamelCase(string name)
         {
             if (char.IsLower(name[0]))
             {
@@ -156,7 +156,7 @@ namespace SpanJson.Resolvers
             return string.Concat(char.ToLowerInvariant(name[0]), name.Substring(1));
         }
 
-        protected JsonObjectDescription BuildMembers(Type type)
+        protected virtual JsonObjectDescription BuildMembers(Type type)
         {
             var publicMembers = type.SerializableMembers();
             var result = new List<JsonMemberInfo>();
