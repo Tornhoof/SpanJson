@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using SpanJson.Formatters;
 using SpanJson.Helpers;
+// ReSharper disable VirtualMemberNeverOverridden.Global
 
 namespace SpanJson.Resolvers
 {
@@ -73,7 +74,7 @@ namespace SpanJson.Resolvers
             _spanJsonOptions = spanJsonOptions;
         }
 
-        public IJsonFormatter GetFormatter(Type type)
+        public virtual IJsonFormatter GetFormatter(Type type)
         {
             // ReSharper disable ConvertClosureToMethodGroup
             return Formatters.GetOrAdd(type, x => BuildFormatter(x));
@@ -97,7 +98,7 @@ namespace SpanJson.Resolvers
             Formatters.AddOrUpdate(type, GetDefaultOrCreate(formatterType), (t, formatter) => GetDefaultOrCreate(formatterType));
         }
 
-        public IJsonFormatter GetFormatter(JsonMemberInfo memberInfo, Type overrideMemberType = null)
+        public virtual IJsonFormatter GetFormatter(JsonMemberInfo memberInfo, Type overrideMemberType = null)
         {
             // ReSharper disable ConvertClosureToMethodGroup
             if (memberInfo.CustomSerializer != null)
@@ -115,7 +116,7 @@ namespace SpanJson.Resolvers
             // ReSharper restore ConvertClosureToMethodGroup
         }
 
-        public JsonObjectDescription GetDynamicObjectDescription(IDynamicMetaObjectProvider provider)
+        public virtual JsonObjectDescription GetDynamicObjectDescription(IDynamicMetaObjectProvider provider)
         {
             var metaObject = provider.GetMetaObject(DynamicMetaObjectParameterExpression);
             var members = metaObject.GetDynamicMemberNames();
@@ -135,12 +136,12 @@ namespace SpanJson.Resolvers
             return new JsonObjectDescription(null, null, result.ToArray(), null);
         }
 
-        public IJsonFormatter<T, TSymbol> GetFormatter<T>()
+        public virtual IJsonFormatter<T, TSymbol> GetFormatter<T>()
         {
             return (IJsonFormatter<T, TSymbol>) GetFormatter(typeof(T));
         }
 
-        public JsonObjectDescription GetObjectDescription<T>()
+        public virtual JsonObjectDescription GetObjectDescription<T>()
         {
             return BuildMembers(typeof(T)); // no need to cache that
         }
@@ -196,7 +197,7 @@ namespace SpanJson.Resolvers
             return new JsonObjectDescription(constructor, attribute, result.ToArray(), extensionMemberInfo);
         }
 
-        private void TryGetAnnotatedAttributeConstructor(Type type, out ConstructorInfo constructor, out JsonConstructorAttribute attribute)
+        protected virtual void TryGetAnnotatedAttributeConstructor(Type type, out ConstructorInfo constructor, out JsonConstructorAttribute attribute)
         {
             constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
                 .FirstOrDefault(a => a.GetCustomAttribute<JsonConstructorAttribute>() != null);
