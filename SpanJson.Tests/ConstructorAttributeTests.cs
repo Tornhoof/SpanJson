@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using SpanJson.Resolvers;
 using SpanJson.Shared.Fixture;
 using Xunit;
@@ -312,6 +314,64 @@ namespace SpanJson.Tests
 
                     yield return new object[] {Activator.CreateInstance(closedType, args)};
                 }
+            }
+        }
+
+        public class PrivateConstructorTest
+        {
+            public int Value { get; }
+
+            [JsonConstructor]
+            private PrivateConstructorTest(int value)
+            {
+                Value = value;
+            }
+        }
+
+        [Fact]
+        public void TestPrivateConstructorUtf16()
+        {
+            var input = "{\"Value\":5}";
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<PrivateConstructorTest, CustomResolver<char>>(input);
+            Assert.Equal(5, deserialized.Value);
+        }
+
+
+        [Fact]
+        public void TestPrivateConstructorUtf8()
+        {
+            var input = "{\"Value\":5}";
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<PrivateConstructorTest, CustomResolver<byte>>(Encoding.UTF8.GetBytes(input));
+            Assert.Equal(5, deserialized.Value);
+        }
+
+        public sealed class CustomResolver<TSymbol> : ResolverBase<TSymbol, CustomResolver<TSymbol>> where TSymbol : struct
+        {
+            public CustomResolver() : base(new SpanJsonOptions())
+            {
+              
+            }
+
+            protected override void TryGetAnnotatedAttributeConstructor(Type type, out ConstructorInfo constructor, out JsonConstructorAttribute attribute)
+            {
+                constructor = type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
+                    .FirstOrDefault(a => a.GetCustomAttribute<JsonConstructorAttribute>() != null);
+                if (constructor != null)
+                {
+                    attribute = constructor.GetCustomAttribute<JsonConstructorAttribute>();
+                    return;
+                }
+
+                if (TryGetBaseClassJsonConstructorAttribute(type, out attribute))
+                {
+                    // We basically take the one with the most parameters, this needs to match the dictionary // TODO find better method
+                    constructor = type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).OrderByDescending(a => a.GetParameters().Length)
+                        .FirstOrDefault();
+                    return;
+                }
+
+                constructor = default;
+                attribute = default;
             }
         }
     }

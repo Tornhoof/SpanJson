@@ -28,6 +28,25 @@ namespace SpanJson.Tests.Generated
             Assert.Equal(input.ToString(CultureInfo.InvariantCulture), deserialized.ToString(CultureInfo.InvariantCulture));
         }
 
+
+        [Fact]
+        public void SerializeDeserializeZeroUtf8()
+        {
+            var singleValue = 0.0f;
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(singleValue);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<Single>(serialized);
+            Assert.Equal(singleValue, deserialized);
+        }
+
+        [Fact]
+        public void SerializeDeserializeZeroUtf16()
+        {
+            var singleValue = 0.0f;
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(singleValue);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<Single>(serialized);
+            Assert.Equal(singleValue, deserialized);
+        }
+
         [Theory]
         [InlineData(float.NaN)]
         [InlineData(float.NegativeInfinity)]

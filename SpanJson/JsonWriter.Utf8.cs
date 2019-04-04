@@ -109,7 +109,7 @@ namespace SpanJson
 
         public void WriteUtf8Single(float value)
         {
-            if (!float.IsNormal(value))
+            if (!float.IsFinite(value))
             {
                 ThrowArgumentException("Invalid float value for JSON", nameof(value));
                 return;
@@ -130,7 +130,7 @@ namespace SpanJson
 
         public void WriteUtf8Double(double value)
         {
-            if (!double.IsNormal(value))
+            if (!double.IsFinite(value))
             {
                 ThrowArgumentException("Invalid double value for JSON", nameof(value));
                 return;
