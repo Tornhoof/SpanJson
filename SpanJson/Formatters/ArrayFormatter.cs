@@ -27,7 +27,7 @@ namespace SpanJson.Formatters
                 temp = ArrayPool<T>.Shared.Rent(4);
                 if (reader.ReadIsNull())
                 {
-                    return default;
+                    return null;
                 }
                 reader.ReadBeginArrayOrThrow();
                 var count = 0;
