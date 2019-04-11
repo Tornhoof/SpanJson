@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using Xunit;
 
 namespace SpanJson.Tests
@@ -134,5 +135,23 @@ namespace SpanJson.Tests
             Assert.Equal(1, value);
         }
 
+        [Fact]
+        public void NullObjectArrayUtf8()
+        {
+            var nullObjects = JsonSerializer.Generic.Utf8.Deserialize<NullObject[]>(Encoding.UTF8.GetBytes("null"));
+            Assert.Null(nullObjects);
+        }
+
+        [Fact]
+        public void NullObjectArrayUtf16()
+        {
+            var nullObjects = JsonSerializer.Generic.Utf16.Deserialize<NullObject[]>("null");
+            Assert.Null(nullObjects);
+        }
+
+        public class NullObject
+        {
+            public string Value => null;
+        }
     }
 }
