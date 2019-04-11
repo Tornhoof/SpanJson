@@ -25,6 +25,10 @@ namespace SpanJson.Formatters
             try
             {
                 temp = ArrayPool<T>.Shared.Rent(4);
+                if (reader.ReadIsNull())
+                {
+                    return default;
+                }
                 reader.ReadBeginArrayOrThrow();
                 var count = 0;
                 while (!reader.TryReadIsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators

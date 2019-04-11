@@ -79,6 +79,10 @@ namespace SpanJson.Formatters
             SByte?[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<SByte?>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -190,6 +194,10 @@ namespace SpanJson.Formatters
             SByte[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<SByte>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -340,6 +348,10 @@ namespace SpanJson.Formatters
             SByte?[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<SByte?>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -451,6 +463,10 @@ namespace SpanJson.Formatters
             SByte[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<SByte>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -601,6 +617,10 @@ namespace SpanJson.Formatters
             Int16?[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Int16?>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -712,6 +732,10 @@ namespace SpanJson.Formatters
             Int16[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Int16>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -862,6 +886,10 @@ namespace SpanJson.Formatters
             Int16?[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Int16?>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -973,6 +1001,10 @@ namespace SpanJson.Formatters
             Int16[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Int16>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -1123,6 +1155,10 @@ namespace SpanJson.Formatters
             Int32?[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Int32?>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -1234,6 +1270,10 @@ namespace SpanJson.Formatters
             Int32[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Int32>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -1384,6 +1424,10 @@ namespace SpanJson.Formatters
             Int32?[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Int32?>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -1495,6 +1539,10 @@ namespace SpanJson.Formatters
             Int32[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Int32>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -1645,6 +1693,10 @@ namespace SpanJson.Formatters
             Int64?[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Int64?>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -1756,6 +1808,10 @@ namespace SpanJson.Formatters
             Int64[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Int64>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -1906,6 +1962,10 @@ namespace SpanJson.Formatters
             Int64?[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Int64?>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -2017,6 +2077,10 @@ namespace SpanJson.Formatters
             Int64[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Int64>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -2167,6 +2231,10 @@ namespace SpanJson.Formatters
             Byte?[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Byte?>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -2278,6 +2346,10 @@ namespace SpanJson.Formatters
             Byte[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Byte>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -2428,6 +2500,10 @@ namespace SpanJson.Formatters
             Byte?[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Byte?>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -2539,6 +2615,10 @@ namespace SpanJson.Formatters
             Byte[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Byte>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -2689,6 +2769,10 @@ namespace SpanJson.Formatters
             UInt16?[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<UInt16?>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -2800,6 +2884,10 @@ namespace SpanJson.Formatters
             UInt16[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<UInt16>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -2950,6 +3038,10 @@ namespace SpanJson.Formatters
             UInt16?[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<UInt16?>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -3061,6 +3153,10 @@ namespace SpanJson.Formatters
             UInt16[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<UInt16>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -3211,6 +3307,10 @@ namespace SpanJson.Formatters
             UInt32?[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<UInt32?>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -3322,6 +3422,10 @@ namespace SpanJson.Formatters
             UInt32[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<UInt32>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -3472,6 +3576,10 @@ namespace SpanJson.Formatters
             UInt32?[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<UInt32?>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -3583,6 +3691,10 @@ namespace SpanJson.Formatters
             UInt32[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<UInt32>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -3733,6 +3845,10 @@ namespace SpanJson.Formatters
             UInt64?[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<UInt64?>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -3844,6 +3960,10 @@ namespace SpanJson.Formatters
             UInt64[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<UInt64>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -3994,6 +4114,10 @@ namespace SpanJson.Formatters
             UInt64?[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<UInt64?>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -4105,6 +4229,10 @@ namespace SpanJson.Formatters
             UInt64[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<UInt64>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -4255,6 +4383,10 @@ namespace SpanJson.Formatters
             Single?[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Single?>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -4366,6 +4498,10 @@ namespace SpanJson.Formatters
             Single[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Single>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -4516,6 +4652,10 @@ namespace SpanJson.Formatters
             Single?[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Single?>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -4627,6 +4767,10 @@ namespace SpanJson.Formatters
             Single[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Single>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -4777,6 +4921,10 @@ namespace SpanJson.Formatters
             Double?[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Double?>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -4888,6 +5036,10 @@ namespace SpanJson.Formatters
             Double[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Double>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -5038,6 +5190,10 @@ namespace SpanJson.Formatters
             Double?[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Double?>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -5149,6 +5305,10 @@ namespace SpanJson.Formatters
             Double[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Double>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -5299,6 +5459,10 @@ namespace SpanJson.Formatters
             Decimal?[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Decimal?>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -5410,6 +5574,10 @@ namespace SpanJson.Formatters
             Decimal[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Decimal>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -5560,6 +5728,10 @@ namespace SpanJson.Formatters
             Decimal?[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Decimal?>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -5671,6 +5843,10 @@ namespace SpanJson.Formatters
             Decimal[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Decimal>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -5821,6 +5997,10 @@ namespace SpanJson.Formatters
             Boolean?[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Boolean?>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -5932,6 +6112,10 @@ namespace SpanJson.Formatters
             Boolean[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Boolean>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -6082,6 +6266,10 @@ namespace SpanJson.Formatters
             Boolean?[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Boolean?>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -6193,6 +6381,10 @@ namespace SpanJson.Formatters
             Boolean[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Boolean>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -6343,6 +6535,10 @@ namespace SpanJson.Formatters
             Char?[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Char?>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -6454,6 +6650,10 @@ namespace SpanJson.Formatters
             Char[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Char>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -6604,6 +6804,10 @@ namespace SpanJson.Formatters
             Char?[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Char?>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -6715,6 +6919,10 @@ namespace SpanJson.Formatters
             Char[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Char>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -6865,6 +7073,10 @@ namespace SpanJson.Formatters
             DateTime?[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<DateTime?>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -6976,6 +7188,10 @@ namespace SpanJson.Formatters
             DateTime[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<DateTime>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -7126,6 +7342,10 @@ namespace SpanJson.Formatters
             DateTime?[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<DateTime?>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -7237,6 +7457,10 @@ namespace SpanJson.Formatters
             DateTime[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<DateTime>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -7387,6 +7611,10 @@ namespace SpanJson.Formatters
             DateTimeOffset?[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<DateTimeOffset?>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -7498,6 +7726,10 @@ namespace SpanJson.Formatters
             DateTimeOffset[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<DateTimeOffset>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -7648,6 +7880,10 @@ namespace SpanJson.Formatters
             DateTimeOffset?[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<DateTimeOffset?>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -7759,6 +7995,10 @@ namespace SpanJson.Formatters
             DateTimeOffset[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<DateTimeOffset>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -7909,6 +8149,10 @@ namespace SpanJson.Formatters
             TimeSpan?[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<TimeSpan?>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -8020,6 +8264,10 @@ namespace SpanJson.Formatters
             TimeSpan[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<TimeSpan>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -8170,6 +8418,10 @@ namespace SpanJson.Formatters
             TimeSpan?[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<TimeSpan?>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -8281,6 +8533,10 @@ namespace SpanJson.Formatters
             TimeSpan[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<TimeSpan>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -8431,6 +8687,10 @@ namespace SpanJson.Formatters
             Guid?[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Guid?>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -8542,6 +8802,10 @@ namespace SpanJson.Formatters
             Guid[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Guid>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -8692,6 +8956,10 @@ namespace SpanJson.Formatters
             Guid?[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Guid?>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -8803,6 +9071,10 @@ namespace SpanJson.Formatters
             Guid[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Guid>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -8933,6 +9205,10 @@ namespace SpanJson.Formatters
             String[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<String>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -9063,6 +9339,10 @@ namespace SpanJson.Formatters
             String[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<String>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -9193,6 +9473,10 @@ namespace SpanJson.Formatters
             Version[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Version>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -9323,6 +9607,10 @@ namespace SpanJson.Formatters
             Version[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Version>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;
@@ -9453,6 +9741,10 @@ namespace SpanJson.Formatters
             Uri[] result;
             try
             {
+			    if (reader.ReadUtf16IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Uri>.Shared.Rent(4);
                 reader.ReadUtf16BeginArrayOrThrow();
                 var count = 0;
@@ -9583,6 +9875,10 @@ namespace SpanJson.Formatters
             Uri[] result;
             try
             {
+			    if (reader.ReadUtf8IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<Uri>.Shared.Rent(4);
                 reader.ReadUtf8BeginArrayOrThrow();
                 var count = 0;

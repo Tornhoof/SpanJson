@@ -150,17 +150,17 @@ namespace SpanJson.Tests.Generated
         public void SerializeDeserializeNullUtf16()
         {
             const string input = "null";
-            var serialized = JsonSerializer.Generic.Utf16.Serialize<List<T>>(null);
+            var serialized = JsonSerializer.Generic.Utf16.Serialize<T[]>(null);
             Assert.Equal(input, serialized);
-            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<List<T>>(input);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<T[]>(input);
             Assert.Null(deserialized);
         }
 
         [Fact]
         public void SerializeDeserializeNullUtf8()
         {
-            var serialized = JsonSerializer.Generic.Utf8.Serialize<List<T>>(null);
-            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<List<T>>(serialized);
+            var serialized = JsonSerializer.Generic.Utf8.Serialize<T[]>(null);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<T[]>(serialized);
             Assert.Null(deserialized);
         }
 

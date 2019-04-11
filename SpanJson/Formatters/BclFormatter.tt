@@ -76,6 +76,10 @@ void GenerateArrayDeserializeCode(string typeName, string utfName)
             <#= typeName #>[] result;
             try
             {
+			    if (reader.Read<#= utfName #>IsNull())
+                {
+                    return default;
+                }
                 temp = ArrayPool<<#= typeName #>>.Shared.Rent(4);
                 reader.Read<#= utfName #>BeginArrayOrThrow();
                 var count = 0;
