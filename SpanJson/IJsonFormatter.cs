@@ -1,4 +1,7 @@
-﻿namespace SpanJson
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace SpanJson
 {
     public interface IJsonFormatter
     {
@@ -17,5 +20,12 @@
     {
         void Serialize(ref JsonWriter<TSymbol> writer, T value);
         T Deserialize(ref JsonReader<TSymbol> reader);
+    }
+
+
+    public interface IAsyncJsonFormatter<T, TSymbol> : IJsonFormatter<T, TSymbol> where TSymbol : struct
+    {
+        ValueTask SerializeAsync(AsyncJsonWriter<TSymbol> asyncWriter, T value, CancellationToken cancellationToken = default);
+        ValueTask<T> DeserializeAsync(AsyncJsonReader<TSymbol> asyncReader, CancellationToken cancellationToken = default);
     }
 }

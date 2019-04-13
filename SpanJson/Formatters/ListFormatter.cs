@@ -8,7 +8,7 @@ namespace SpanJson.Formatters
     /// <summary>
     /// Used for types which are not built-in
     /// </summary>
-    public sealed class ListFormatter<TList, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TList, TSymbol>
+    public sealed partial class ListFormatter<TList, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TList, TSymbol>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TList : class, IList<T>
 
     {
