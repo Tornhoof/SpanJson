@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,11 +10,14 @@ using SpanJson.Formatters;
 using SpanJson.Resolvers;
 using SpanJson.Shared;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace SpanJson.Tests
 {
     public class AsyncTests
     {
+        private readonly ITestOutputHelper _outputHelper;
+
         public class AsyncTestObject : IEquatable<AsyncTestObject>
         {
             public string Text { get; set; }
@@ -37,6 +41,11 @@ namespace SpanJson.Tests
             {
                 return 0;
             }
+        }
+
+        public AsyncTests(ITestOutputHelper outputHelper)
+        {
+            _outputHelper = outputHelper;
         }
 
         [Fact]
@@ -204,12 +213,30 @@ namespace SpanJson.Tests
             {
                 values.Add(i);
             }
-
-            var formatter = ListFormatter<List<int>, int, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default;
-            using (var ms = new MemoryStream())
+            Stopwatch sw = new Stopwatch();
+            for (int i = 0; i < 10; i++)
             {
-                var asyncJsonWriter = new AsyncJsonWriter<byte>(new YieldStream(ms));
-                await formatter.SerializeAsync(asyncJsonWriter, values, CancellationToken.None).ConfigureAwait(false);
+                sw.Restart();
+                var formatter = ListFormatter<List<int>, int, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default;
+                using (var ms = new MemoryStream())
+                {
+                    var asyncJsonWriter = new AsyncJsonWriter<byte>(new YieldStream(ms));
+                    await formatter.SerializeAsync(asyncJsonWriter, values, CancellationToken.None).ConfigureAwait(false);
+                }
+                sw.Stop();
+                _outputHelper.WriteLine($"{sw.Elapsed.TotalMilliseconds}");
+            }
+
+            _outputHelper.WriteLine("Next");
+            for (int i = 0; i < 10; i++)
+            {
+                sw.Restart();
+                using (var ms = new MemoryStream())
+                {
+                    await JsonSerializer.Generic.Utf8.SerializeAsync(values, ms);
+                }
+                sw.Stop();
+                _outputHelper.WriteLine($"{sw.Elapsed.TotalMilliseconds}");
             }
         }
     }
