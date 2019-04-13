@@ -200,7 +200,7 @@ namespace SpanJson.Tests
         public async Task WriteAsyncTest()
         {
             List<int> values = new List<int>(10000);
-            for (int i = 0; i < 10000; i++)
+            for (int i = 0; i < 100000; i++)
             {
                 values.Add(i);
             }
