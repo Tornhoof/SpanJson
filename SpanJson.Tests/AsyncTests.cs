@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using SpanJson.Formatters;
+using SpanJson.Resolvers;
+using SpanJson.Shared;
 using Xunit;
 
 namespace SpanJson.Tests
@@ -189,6 +193,23 @@ namespace SpanJson.Tests
                 {
                     _stream.Dispose();
                 }
+            }
+        }
+
+        [Fact]
+        public async Task WriteAsyncTest()
+        {
+            List<int> values = new List<int>(10000);
+            for (int i = 0; i < 10000; i++)
+            {
+                values.Add(i);
+            }
+
+            var formatter = ListFormatter<List<int>, int, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default;
+            using (var ms = new MemoryStream())
+            {
+                var asyncJsonWriter = new AsyncJsonWriter<byte>(new YieldStream(ms));
+                await formatter.SerializeAsync(asyncJsonWriter, values, CancellationToken.None).ConfigureAwait(false);
             }
         }
     }

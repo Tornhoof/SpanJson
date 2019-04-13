@@ -15,28 +15,22 @@ namespace SpanJson
         private readonly Stream _outputStream;
         private readonly TextWriter _outputWriter;
         private TSymbol[] _data;
-        private int _pos;
-        private int _depth;
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AsyncJsonWriter(Stream outputStream)
         {
             _outputStream = outputStream;
             _data = ArrayPool<TSymbol>.Shared.Rent(4096);
-            _pos = 0;
-            _depth = 0;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AsyncJsonWriter(TextWriter outputWriter)
         {
             _outputWriter = outputWriter;
             _data = ArrayPool<TSymbol>.Shared.Rent(4096);
-            _pos = 0;
-            _depth = 0;
         }
 
         public JsonWriter<TSymbol> Create()
         {
-            return new JsonWriter<TSymbol>(_data, _pos, _depth);
+            return new JsonWriter<TSymbol>(_data, 0, 0);
         }
 
         public void Dispose()
@@ -48,22 +42,18 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ValueTask FlushAsync(CancellationToken cancellationToken = default)
+        public Task FlushAsync(int length, CancellationToken cancellationToken = default)
         {
             if (typeof(TSymbol) == typeof(char))
             {
-                var oldPosition = _pos;
-                _pos = 0;
                 var chars = Unsafe.As<TSymbol[], char[]>(ref _data);
-                return new ValueTask(_outputWriter.WriteAsync(chars, 0, oldPosition));
+                return _outputWriter.WriteAsync(chars, 0, length);
             }
 
             if (typeof(TSymbol) == typeof(byte))
             {
-                var oldPosition = _pos;
-                _pos = 0;
                 var bytes = Unsafe.As<TSymbol[], byte[]>(ref _data);
-                return new ValueTask(_outputStream.WriteAsync(bytes, 0, oldPosition, cancellationToken));
+                return _outputStream.WriteAsync(bytes, 0, length, cancellationToken);
             }
 
             ThrowNotSupportedException();

@@ -25,7 +25,7 @@ namespace SpanJson
 
     public interface IAsyncJsonFormatter<T, TSymbol> : IJsonFormatter<T, TSymbol> where TSymbol : struct
     {
-        ValueTask SerializeAsync(AsyncJsonWriter<TSymbol> asyncWriter, T value, CancellationToken cancellationToken = default);
-        ValueTask<T> DeserializeAsync(AsyncJsonReader<TSymbol> asyncReader, CancellationToken cancellationToken = default);
+        Task SerializeAsync(AsyncJsonWriter<TSymbol> asyncWriter, T value, CancellationToken cancellationToken = default);
+        Task<T> DeserializeAsync(AsyncJsonReader<TSymbol> asyncReader, CancellationToken cancellationToken = default);
     }
 }
