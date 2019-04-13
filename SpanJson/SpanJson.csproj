@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <PackageReference Include="SourceLink.Create.CommandLine" Version="2.8.3" PrivateAssets="All" />
+    <PackageReference Include="System.IO.Pipelines" Version="4.6.0-preview4.19164.7" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.5.0" />
     <DotNetCliToolReference Include="dotnet-sourcelink" Version="2.8.1" />
   </ItemGroup>
