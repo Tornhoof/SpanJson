@@ -39,23 +39,20 @@ namespace SpanJson.Formatters
                 }
             }
 
-            Task WriteNull(AsyncJsonWriter<TSymbol> aasyncWriter, CancellationToken ccancellationToken = default)
+            // ReSharper disable VariableHidesOuterVariable
+            static Task WriteNull(AsyncJsonWriter<TSymbol> asyncWriter, CancellationToken cancellationToken = default)
             {
-                var writer = aasyncWriter.Create();
+                var writer = asyncWriter.Create();
                 writer.WriteNull();
-                return aasyncWriter.FlushAsync(writer.Position, ccancellationToken);
+                return asyncWriter.FlushAsync(writer.Position, cancellationToken);
             }
         }
 
-        private static Task WriteElement(AsyncJsonWriter<TSymbol> asyncWriter,  ref JsonWriter<TSymbol> writer, T value, CancellationToken cancellationToken = default)
+        private static Task WriteElement(AsyncJsonWriter<TSymbol> asyncWriter, ref JsonWriter<TSymbol> writer, T value,
+            CancellationToken cancellationToken = default)
         {
             SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value, ElementFormatter);
-            if (writer.Position >= asyncWriter.MaxSafeWriteSize)
-            {
-                return asyncWriter.FlushAsync(writer.Position, cancellationToken);
-            }
-
-            return Task.CompletedTask;
+            return asyncWriter.FlushAsync(writer.Position, cancellationToken);
         }
 
         private static (Task, int) WriteElements(AsyncJsonWriter<TSymbol> asyncWriter, TList value, int index, CancellationToken cancellationToken = default)

@@ -19,13 +19,13 @@ namespace SpanJson
         public AsyncJsonWriter(Stream outputStream)
         {
             _outputStream = outputStream;
-            _data = ArrayPool<TSymbol>.Shared.Rent(62000);
+            _data = ArrayPool<TSymbol>.Shared.Rent(4000);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AsyncJsonWriter(TextWriter outputWriter)
         {
             _outputWriter = outputWriter;
-            _data = ArrayPool<TSymbol>.Shared.Rent(62000);
+            _data = ArrayPool<TSymbol>.Shared.Rent(4000);
         }
 
         public JsonWriter<TSymbol> Create()
@@ -44,20 +44,21 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Task FlushAsync(int length, CancellationToken cancellationToken = default)
         {
-            if (typeof(TSymbol) == typeof(char))
+            if (length > MaxSafeWriteSize)
             {
-                var chars = Unsafe.As<TSymbol[], char[]>(ref _data);
-                return _outputWriter.WriteAsync(chars, 0, length);
-            }
+                if (typeof(TSymbol) == typeof(char))
+                {
+                    var chars = Unsafe.As<TSymbol[], char[]>(ref _data);
+                    return _outputWriter.WriteAsync(chars, 0, length);
+                }
 
-            if (typeof(TSymbol) == typeof(byte))
-            {
-                var bytes = Unsafe.As<TSymbol[], byte[]>(ref _data);
-                return _outputStream.WriteAsync(bytes, 0, length, cancellationToken);
+                if (typeof(TSymbol) == typeof(byte))
+                {
+                    var bytes = Unsafe.As<TSymbol[], byte[]>(ref _data);
+                    return _outputStream.WriteAsync(bytes, 0, length, cancellationToken);
+                }
             }
-
-            ThrowNotSupportedException();
-            return default;
+            return Task.CompletedTask;
         }
 
         private static void ThrowNotSupportedException()
@@ -65,7 +66,7 @@ namespace SpanJson
             throw new NotSupportedException();
         }
 
-        public int MaxSafeWriteSize => _data.Length - 128;
+        private int MaxSafeWriteSize => _data.Length - 128;
     }
 
     public class AsyncJsonReader<TSymbol> where TSymbol : struct
