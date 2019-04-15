@@ -208,11 +208,18 @@ namespace SpanJson.Tests
         [Fact]
         public async Task WriteAsyncTest()
         {
-            List<int> values = new List<int>(10000);
-            for (int i = 0; i < 100000; i++)
+            int count = 10000000;
+            List<int> values = new List<int>(count);
+            for (int i = 0; i < count; i++)
             {
                 values.Add(i);
             }
+            //var formatter = ListFormatter<List<int>, int, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default;
+            //using (var ms = new MemoryStream())
+            //{
+            //    var asyncJsonWriter = new AsyncJsonWriter<byte>(new YieldStream(ms));
+            //    await formatter.SerializeAsync(asyncJsonWriter, values, CancellationToken.None).ConfigureAwait(false);
+            //}
             Stopwatch sw = new Stopwatch();
             for (int i = 0; i < 10; i++)
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,54 +10,41 @@ namespace SpanJson.Formatters
 {
     public sealed partial class ListFormatter<TList, T, TSymbol, TResolver> : IAsyncJsonFormatter<TList, TSymbol> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TList : class, IList<T>
     {
-        public Task SerializeAsync(AsyncJsonWriter<TSymbol> asyncWriter, TList value, CancellationToken cancellationToken = default)
+        public async Task SerializeAsync(AsyncJsonWriter<TSymbol> asyncWriter, TList value, CancellationToken cancellationToken = default)
         {
             // let it run sync until the serialized size hits ~32kb
             // if a single entity is
             // flushasync
             // new jsonwriter, start from pos 0
-
-            var writer = asyncWriter.Create();
             if (value == null)
             {
-                writer.WriteNull();
-                return asyncWriter.FlushAsync(writer.Position, cancellationToken);
+                await WriteNull(asyncWriter, cancellationToken);
+                return;
             }
-
-            if (IsRecursionCandidate)
-            {
-                writer.IncrementDepth();
-            }
-
+            Queue<(Task, int)> queue = new Queue<(Task, int)>();
+            queue.Enqueue((Task.CompletedTask, 0));
             var valueLength = value.Count;
-            writer.WriteBeginArray();
-            if (valueLength > 0)
+            while (queue.Count > 0)
             {
-                var task = WriteElement(asyncWriter, ref writer, value[0], cancellationToken);
-                if (!task.IsCompletedSuccessfully)
+                var (lastTask, index) = queue.Dequeue();
+                if (!lastTask.IsCompletedSuccessfully)
                 {
-                    return task.ContinueWith((Task t, object o) => WriteElements(asyncWriter, value, 1, cancellationToken), null,
-                        TaskContinuationOptions.AttachedToParent);
+                    await lastTask.ConfigureAwait(false);
                 }
-                for (var i = 1; i < valueLength; i++)
-                {
-                    writer.WriteValueSeparator();
-                    task = WriteElement(asyncWriter, ref writer, value[i], cancellationToken);
-                    if (!task.IsCompletedSuccessfully)
-                    {
-                        int i1 = i;
-                        return task.ContinueWith((Task t, object o) => WriteElements(asyncWriter, value, i1, cancellationToken), null,
-                            TaskContinuationOptions.AttachedToParent);
-                    }
-                }
-            }
-            if (IsRecursionCandidate)
-            {
-                writer.DecrementDepth();
-            }
-            writer.WriteEndArray();
-            return asyncWriter.FlushAsync(writer.Position, cancellationToken);
 
+                if (index < valueLength)
+                {
+                    var next = WriteElements(asyncWriter, value, index, cancellationToken);
+                    queue.Enqueue(next);
+                }
+            }
+
+            Task WriteNull(AsyncJsonWriter<TSymbol> aasyncWriter, CancellationToken ccancellationToken = default)
+            {
+                var writer = aasyncWriter.Create();
+                writer.WriteNull();
+                return aasyncWriter.FlushAsync(writer.Position, ccancellationToken);
+            }
         }
 
         private static Task WriteElement(AsyncJsonWriter<TSymbol> asyncWriter,  ref JsonWriter<TSymbol> writer, T value, CancellationToken cancellationToken = default)
@@ -70,27 +58,29 @@ namespace SpanJson.Formatters
             return Task.CompletedTask;
         }
 
-        private static Task WriteElements(AsyncJsonWriter<TSymbol> asyncWriter, TList value, int index, CancellationToken cancellationToken = default)
+        private static (Task, int) WriteElements(AsyncJsonWriter<TSymbol> asyncWriter, TList value, int index, CancellationToken cancellationToken = default)
         {
             var writer = asyncWriter.Create();
             var valueLength = value.Count;
+            if (index == 0)
+            {
+                writer.IncrementDepth(); // this is not correct, needs to be done in asyncwriter
+                writer.WriteBeginArray();
+            }
+
             for (var i = index; i < valueLength; i++)
             {
                 writer.WriteValueSeparator();
                 var task = WriteElement(asyncWriter, ref writer, value[i], cancellationToken);
                 if (!task.IsCompletedSuccessfully)
                 {
-                    int i1 = i;
-                    return task.ContinueWith((Task t, object o) => WriteElements(asyncWriter, value, i1, cancellationToken), null,
-                        TaskContinuationOptions.AttachedToParent);
+                    return (task, i + 1);
                 }
             }
-            if (IsRecursionCandidate)
-            {
-                writer.DecrementDepth();
-            }
+
+            writer.DecrementDepth();
             writer.WriteEndArray();
-            return asyncWriter.FlushAsync(writer.Position, cancellationToken);
+            return (asyncWriter.FlushAsync(writer.Position, cancellationToken), valueLength);
         }
 
         public Task<TList> DeserializeAsync(AsyncJsonReader<TSymbol> asyncReader, CancellationToken cancellationToken = default)

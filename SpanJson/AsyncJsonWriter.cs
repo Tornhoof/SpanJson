@@ -19,13 +19,13 @@ namespace SpanJson
         public AsyncJsonWriter(Stream outputStream)
         {
             _outputStream = outputStream;
-            _data = ArrayPool<TSymbol>.Shared.Rent(4096);
+            _data = ArrayPool<TSymbol>.Shared.Rent(62000);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public AsyncJsonWriter(TextWriter outputWriter)
         {
             _outputWriter = outputWriter;
-            _data = ArrayPool<TSymbol>.Shared.Rent(4096);
+            _data = ArrayPool<TSymbol>.Shared.Rent(62000);
         }
 
         public JsonWriter<TSymbol> Create()
