@@ -64,6 +64,8 @@ namespace SpanJson
 
         public TSymbol[] Data { get; private set; }
 
+        public void Reset() => _pos = 0;
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void Dispose()

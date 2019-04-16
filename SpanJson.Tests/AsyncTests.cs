@@ -227,7 +227,7 @@ namespace SpanJson.Tests
                 var formatter = ListFormatter<List<int>, int, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default;
                 using (var ms = new MemoryStream())
                 {
-                    var asyncJsonWriter = new AsyncJsonWriter<byte>(new YieldStream(ms));
+                    var asyncJsonWriter = new AsyncJsonWriter<byte>(ms);
                     await formatter.SerializeAsync(asyncJsonWriter, values, CancellationToken.None).ConfigureAwait(false);
                 }
                 sw.Stop();

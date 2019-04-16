@@ -42,23 +42,22 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Task FlushAsync(int length, CancellationToken cancellationToken = default)
+        public ValueTask FlushAsync(int length, CancellationToken cancellationToken = default)
         {
-            if (length > MaxSafeWriteSize)
+            if (typeof(TSymbol) == typeof(char))
             {
-                if (typeof(TSymbol) == typeof(char))
-                {
-                    var chars = Unsafe.As<TSymbol[], char[]>(ref _data);
-                    return _outputWriter.WriteAsync(chars, 0, length);
-                }
-
-                if (typeof(TSymbol) == typeof(byte))
-                {
-                    var bytes = Unsafe.As<TSymbol[], byte[]>(ref _data);
-                    return _outputStream.WriteAsync(bytes, 0, length, cancellationToken);
-                }
+                var chars = Unsafe.As<TSymbol[], char[]>(ref _data);
+                return new ValueTask(_outputWriter.WriteAsync(chars, 0, length));
             }
-            return Task.CompletedTask;
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                var bytes = Unsafe.As<TSymbol[], byte[]>(ref _data);
+                return new ValueTask(_outputStream.WriteAsync(bytes, 0, length, cancellationToken));
+            }
+
+            ThrowNotSupportedException();
+            return default;
         }
 
         private static void ThrowNotSupportedException()
@@ -66,7 +65,7 @@ namespace SpanJson
             throw new NotSupportedException();
         }
 
-        private int MaxSafeWriteSize => _data.Length - 128;
+        public int MaxSafeWriteSize => _data.Length - 128;
     }
 
     public class AsyncJsonReader<TSymbol> where TSymbol : struct

@@ -4,13 +4,12 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Sources;
 
 namespace SpanJson.Formatters
 {
     public sealed partial class ListFormatter<TList, T, TSymbol, TResolver> : IAsyncJsonFormatter<TList, TSymbol> where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TList : class, IList<T>
     {
-        public async Task SerializeAsync(AsyncJsonWriter<TSymbol> asyncWriter, TList value, CancellationToken cancellationToken = default)
+        public async ValueTask SerializeAsync(AsyncJsonWriter<TSymbol> asyncWriter, TList value, CancellationToken cancellationToken = default)
         {
             // let it run sync until the serialized size hits ~32kb
             // if a single entity is
@@ -18,29 +17,26 @@ namespace SpanJson.Formatters
             // new jsonwriter, start from pos 0
             if (value == null)
             {
-                await WriteNull(asyncWriter, cancellationToken);
+                await WriteNull(asyncWriter, cancellationToken).ConfigureAwait(false);
                 return;
             }
-            Queue<(Task, int)> queue = new Queue<(Task, int)>();
-            queue.Enqueue((Task.CompletedTask, 0));
+
+            int index = 0;
             var valueLength = value.Count;
-            while (queue.Count > 0)
+            do
             {
-                var (lastTask, index) = queue.Dequeue();
-                if (!lastTask.IsCompletedSuccessfully)
+
+                var (task, nextIndex) = WriteElements(asyncWriter, value, index, cancellationToken);
+                if (!task.IsCompletedSuccessfully)
                 {
-                    await lastTask.ConfigureAwait(false);
+                    await task.ConfigureAwait(false);
                 }
 
-                if (index < valueLength)
-                {
-                    var next = WriteElements(asyncWriter, value, index, cancellationToken);
-                    queue.Enqueue(next);
-                }
-            }
+                index = nextIndex;
+            } while (index < valueLength);
 
             // ReSharper disable VariableHidesOuterVariable
-            static Task WriteNull(AsyncJsonWriter<TSymbol> asyncWriter, CancellationToken cancellationToken = default)
+            static ValueTask WriteNull(AsyncJsonWriter<TSymbol> asyncWriter, CancellationToken cancellationToken = default)
             {
                 var writer = asyncWriter.Create();
                 writer.WriteNull();
@@ -48,14 +44,24 @@ namespace SpanJson.Formatters
             }
         }
 
-        private static Task WriteElement(AsyncJsonWriter<TSymbol> asyncWriter, ref JsonWriter<TSymbol> writer, T value,
+        private static ValueTask WriteElement(AsyncJsonWriter<TSymbol> asyncWriter, ref JsonWriter<TSymbol> writer, T value,
             CancellationToken cancellationToken = default)
         {
             SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value, ElementFormatter);
-            return asyncWriter.FlushAsync(writer.Position, cancellationToken);
+            if (writer.Position > asyncWriter.MaxSafeWriteSize)
+            {
+                var task = asyncWriter.FlushAsync(writer.Position, cancellationToken);
+                if (task.IsCompletedSuccessfully)
+                {
+                    writer.Reset();
+                }
+
+                return task;
+            }
+            return new ValueTask();
         }
 
-        private static (Task, int) WriteElements(AsyncJsonWriter<TSymbol> asyncWriter, TList value, int index, CancellationToken cancellationToken = default)
+        private static (ValueTask, int) WriteElements(AsyncJsonWriter<TSymbol> asyncWriter, TList value, int index, CancellationToken cancellationToken = default)
         {
             var writer = asyncWriter.Create();
             var valueLength = value.Count;
@@ -80,7 +86,7 @@ namespace SpanJson.Formatters
             return (asyncWriter.FlushAsync(writer.Position, cancellationToken), valueLength);
         }
 
-        public Task<TList> DeserializeAsync(AsyncJsonReader<TSymbol> asyncReader, CancellationToken cancellationToken = default)
+        public ValueTask<TList> DeserializeAsync(AsyncJsonReader<TSymbol> asyncReader, CancellationToken cancellationToken = default)
         {
             // only problem is string, we need to find the end of the string and buffer until we hit it
             return default;
