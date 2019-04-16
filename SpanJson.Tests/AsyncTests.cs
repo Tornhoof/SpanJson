@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Pipelines;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -225,11 +227,12 @@ namespace SpanJson.Tests
             {
                 sw.Restart();
                 var formatter = ListFormatter<List<int>, int, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default;
-                using (var ms = new MemoryStream())
-                {
-                    var asyncJsonWriter = new AsyncJsonWriter<byte>(ms);
-                    await formatter.SerializeAsync(asyncJsonWriter, values, CancellationToken.None).ConfigureAwait(false);
-                }
+                var options = new PipeOptions(useSynchronizationContext: false);
+                var pipe = new Pipe(options);
+                options.ReaderScheduler.Schedule(p => ReadFromPipe(p), pipe);
+                var asyncJsonWriter = new AsyncJsonWriter<byte>(pipe.Writer);
+                await formatter.SerializeAsync(asyncJsonWriter, values, CancellationToken.None).ConfigureAwait(false);
+                pipe.Writer.Complete();
                 sw.Stop();
                 _outputHelper.WriteLine($"{sw.Elapsed.TotalMilliseconds}");
             }
@@ -238,13 +241,40 @@ namespace SpanJson.Tests
             for (int i = 0; i < 10; i++)
             {
                 sw.Restart();
-                using (var ms = new MemoryStream())
+                using (var ms = Stream.Null)
                 {
                     await JsonSerializer.Generic.Utf8.SerializeAsync(values, ms);
                 }
                 sw.Stop();
                 _outputHelper.WriteLine($"{sw.Elapsed.TotalMilliseconds}");
             }
+        }
+
+        private static async Task ReadFromPipe(object pipe)
+        {
+            Exception err = null;
+            var reader = ((Pipe) pipe).Reader;
+            try
+            {
+                while (true)
+                {
+                    var result = await reader.ReadAsync().ConfigureAwait(false);
+                    ReadOnlySequence<byte> buffer;
+                    do
+                    {
+                        buffer = result.Buffer;
+                        reader.AdvanceTo(buffer.End);
+                    } while (!(buffer.IsEmpty && result.IsCompleted) && reader.TryRead(out result));
+
+                    if (result.IsCanceled || (buffer.IsEmpty && result.IsCompleted)) break;
+                }
+            }
+            catch (Exception ex)
+            {
+                err = ex;
+            }
+
+            reader.Complete(err);
         }
     }
 }

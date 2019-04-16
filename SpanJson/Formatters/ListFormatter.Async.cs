@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Pipelines;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +27,6 @@ namespace SpanJson.Formatters
             var valueLength = value.Count;
             do
             {
-
                 var (task, nextIndex) = WriteElements(asyncWriter, value, index, cancellationToken);
                 if (!task.IsCompletedSuccessfully)
                 {
@@ -36,32 +37,25 @@ namespace SpanJson.Formatters
             } while (index < valueLength);
 
             // ReSharper disable VariableHidesOuterVariable
-            static ValueTask WriteNull(AsyncJsonWriter<TSymbol> asyncWriter, CancellationToken cancellationToken = default)
+            static ValueTask<bool> WriteNull(AsyncJsonWriter<TSymbol> asyncWriter, CancellationToken cancellationToken = default)
             {
                 var writer = asyncWriter.Create();
                 writer.WriteNull();
                 return asyncWriter.FlushAsync(writer.Position, cancellationToken);
             }
+
+            await asyncWriter.FlushAsync(0, cancellationToken).ConfigureAwait(false);
         }
 
-        private static ValueTask WriteElement(AsyncJsonWriter<TSymbol> asyncWriter, ref JsonWriter<TSymbol> writer, T value,
+        private static ValueTask<bool> WriteElement(AsyncJsonWriter<TSymbol> asyncWriter, ref JsonWriter<TSymbol> writer, T value,
             CancellationToken cancellationToken = default)
         {
             SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value, ElementFormatter);
-            if (writer.Position > asyncWriter.MaxSafeWriteSize)
-            {
-                var task = asyncWriter.FlushAsync(writer.Position, cancellationToken);
-                if (task.IsCompletedSuccessfully)
-                {
-                    writer.Reset();
-                }
-
-                return task;
-            }
-            return new ValueTask();
+            return asyncWriter.FlushAsync(writer.Position, cancellationToken);
         }
 
-        private static (ValueTask, int) WriteElements(AsyncJsonWriter<TSymbol> asyncWriter, TList value, int index, CancellationToken cancellationToken = default)
+        private static (ValueTask<bool>, int) WriteElements(AsyncJsonWriter<TSymbol> asyncWriter, TList value, int index,
+            CancellationToken cancellationToken = default)
         {
             var writer = asyncWriter.Create();
             var valueLength = value.Count;
@@ -75,7 +69,14 @@ namespace SpanJson.Formatters
             {
                 writer.WriteValueSeparator();
                 var task = WriteElement(asyncWriter, ref writer, value[i], cancellationToken);
-                if (!task.IsCompletedSuccessfully)
+                if (task.IsCompletedSuccessfully)
+                {
+                    if (task.Result) // if it was flushed we create a new writer
+                    {
+                        writer = asyncWriter.Create();
+                    }
+                }
+                else
                 {
                     return (task, i + 1);
                 }
@@ -83,7 +84,7 @@ namespace SpanJson.Formatters
 
             writer.DecrementDepth();
             writer.WriteEndArray();
-            return (asyncWriter.FlushAsync(writer.Position, cancellationToken), valueLength);
+            return (new ValueTask<bool>(false), valueLength);
         }
 
         public ValueTask<TList> DeserializeAsync(AsyncJsonReader<TSymbol> asyncReader, CancellationToken cancellationToken = default)

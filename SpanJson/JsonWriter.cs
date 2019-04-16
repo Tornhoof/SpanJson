@@ -37,19 +37,19 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public JsonWriter(TSymbol[] data, int offset, int depth)
+        public JsonWriter(Span<TSymbol> data, int offset, int depth)
         {
-            Data = data;
+            Data = null;
             _pos = offset;
             _depth = depth;
             if (typeof(TSymbol) == typeof(char))
             {
-                _chars = MemoryMarshal.Cast<TSymbol, char>(Data);
+                _chars = MemoryMarshal.Cast<TSymbol, char>(data);
                 _bytes = null;
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                _bytes = MemoryMarshal.Cast<TSymbol, byte>(Data);
+                _bytes = MemoryMarshal.Cast<TSymbol, byte>(data);
                 _chars = null;
             }
             else
