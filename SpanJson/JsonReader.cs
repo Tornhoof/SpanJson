@@ -7,10 +7,7 @@ namespace SpanJson
     public ref partial struct JsonReader<TSymbol> where TSymbol : struct
     {
         private BufferReader<TSymbol> _bufferReader;
-        private ReadOnlySpan<char> _chars;
-        private ReadOnlySpan<byte> _bytes;
-        private int _length;
-
+        
         private int _pos;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -23,24 +20,23 @@ namespace SpanJson
         public JsonReader(BufferReader<TSymbol> bufferReader)
         {
             _bufferReader = bufferReader;
-            _length = bufferReader.Length;
             _pos = 0;
-            if (typeof(TSymbol) == typeof(char))
-            {
-                _chars = MemoryMarshal.Cast<TSymbol, char>(bufferReader.Data);
-                _bytes = null;
-            }
-            else if (typeof(TSymbol) == typeof(byte))
-            {
-                _bytes = MemoryMarshal.Cast<TSymbol, byte>(bufferReader.Data);
-                _chars = null;
-            }
-            else
-            {
-                ThrowNotSupportedException();
-                _chars = default;
-                _bytes = default;
-            }
+            //if (typeof(TSymbol) == typeof(char))
+            //{
+            //    _chars = MemoryMarshal.Cast<TSymbol, char>(bufferReader.Data);
+            //    _bytes = null;
+            //}
+            //else if (typeof(TSymbol) == typeof(byte))
+            //{
+            //    _bytes = MemoryMarshal.Cast<TSymbol, byte>(bufferReader.Data);
+            //    _chars = null;
+            //}
+            //else
+            //{
+            //    ThrowNotSupportedException();
+            //    _chars = default;
+            //    _bytes = default;
+            //}
         }
 
 
