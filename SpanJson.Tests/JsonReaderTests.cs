@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -229,5 +230,18 @@ namespace SpanJson.Tests
             reader.SkipNextUtf8Segment();
             Assert.Equal(serialized.Length, reader.Position);
         }
+
+        [Fact]
+        public void ReadSequence()
+        {
+
+            var input1 = "\"Hello";
+            var input2 = "\\nWorld\"";
+            var ros = ReadOnlySequenceFactory<char>.CreateSegments(Enumerable.Repeat(' ', 10).ToArray(), input1.ToCharArray(), input2.ToCharArray());
+            var bf = new BufferReader<char>(ros);
+            var jsonReader = new JsonReader<char>(bf);
+            jsonReader.ReadString();
+        }
+
     }
 }

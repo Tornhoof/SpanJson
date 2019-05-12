@@ -671,6 +671,8 @@ namespace SpanJson
                         return;
                 }
             }
+            _bufferReader.SlideWindow(pos);
+            pos = 0;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

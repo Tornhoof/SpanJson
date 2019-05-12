@@ -496,6 +496,11 @@ namespace SpanJson
                     pos += stringLength; // skip the doublequote too
                     return result;
                 }
+                else
+                {
+                    _bufferReader.EnlargeWindow(ref pos);
+                    return ReadUtf16StringSpanInternal(out escapedCharsSize);
+                }
             }
 
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
@@ -593,6 +598,7 @@ namespace SpanJson
                         return;
                 }
             }
+            _bufferReader.SlideWindow(ref pos);
         }
 
 
