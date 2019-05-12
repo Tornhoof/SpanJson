@@ -6,26 +6,33 @@ namespace SpanJson
 {
     public ref partial struct JsonReader<TSymbol> where TSymbol : struct
     {
-        private readonly ReadOnlySpan<char> _chars;
-        private readonly ReadOnlySpan<byte> _bytes;
-        private readonly int _length;
+        private BufferReader<TSymbol> _bufferReader;
+        private ReadOnlySpan<char> _chars;
+        private ReadOnlySpan<byte> _bytes;
+        private int _length;
 
         private int _pos;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public JsonReader(in ReadOnlySpan<TSymbol> input)
+        public JsonReader(in ReadOnlySpan<TSymbol> input) : this(new BufferReader<TSymbol>(input))
         {
-            _length = input.Length;
-            _pos = 0;
+        }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public JsonReader(BufferReader<TSymbol> bufferReader)
+        {
+            _bufferReader = bufferReader;
+            _length = bufferReader.Length;
+            _pos = 0;
             if (typeof(TSymbol) == typeof(char))
             {
-                _chars = MemoryMarshal.Cast<TSymbol, char>(input);
+                _chars = MemoryMarshal.Cast<TSymbol, char>(bufferReader.Data);
                 _bytes = null;
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                _bytes = MemoryMarshal.Cast<TSymbol, byte>(input);
+                _bytes = MemoryMarshal.Cast<TSymbol, byte>(bufferReader.Data);
                 _chars = null;
             }
             else
@@ -35,6 +42,7 @@ namespace SpanJson
                 _bytes = default;
             }
         }
+
 
         public int Position => _pos;
 
