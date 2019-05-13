@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using SpanJson.Helpers;
@@ -15,6 +16,7 @@ namespace SpanJson.Formatters
         private static readonly SerializeDelegate Serializer = BuildSerializeDelegate(s => s);
         private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
         private static readonly T[] Flags = BuildFlags();
+        private static readonly T? ZeroFlag = GetZeroFlag();
 
         public static readonly EnumStringFlagsFormatter<T, TEnumBase, TSymbol, TResolver> Default =
             new EnumStringFlagsFormatter<T, TEnumBase, TSymbol, TResolver>();
@@ -74,17 +76,26 @@ namespace SpanJson.Formatters
         public void Serialize(ref JsonWriter<TSymbol> writer, T value)
         {
             writer.WriteDoubleQuote();
-            using (var enumerator = GetFlags(value).GetEnumerator())
-            {
-                if (enumerator.MoveNext())
-                {
-                    Serializer(ref writer, enumerator.Current);
-                }
 
-                while (enumerator.MoveNext())
+            // Not sure if that's the best way, but it's easy
+            if (ZeroFlag.HasValue && ZeroFlag.GetValueOrDefault().Equals(value))
+            {
+                Serializer(ref writer, ZeroFlag.GetValueOrDefault());
+            }
+            else
+            {
+                using (var enumerator = GetFlags(value).GetEnumerator())
                 {
-                    writer.WriteValueSeparator();
-                    Serializer(ref writer, enumerator.Current);
+                    if (enumerator.MoveNext())
+                    {
+                        Serializer(ref writer, enumerator.Current);
+                    }
+
+                    while (enumerator.MoveNext())
+                    {
+                        writer.WriteValueSeparator();
+                        Serializer(ref writer, enumerator.Current);
+                    }
                 }
             }
 
@@ -98,17 +109,39 @@ namespace SpanJson.Formatters
             return BuildDeserializeDelegateExpressions<DeserializeDelegate, TEnumBase>(nameSpan, nameSpanExpression);
         }
 
+
+        private static T? GetZeroFlag()
+        {
+            var array = Enum.GetValues(typeof(T));
+            for (var i = 0; i < array.Length; i++)
+            {
+                var arrayValue = (T) array.GetValue(i);
+                if(((TEnumBase) Convert.ChangeType(arrayValue, typeof(TEnumBase))).Equals(0)) // looks so complicated because the enum values might be negative
+                { 
+                    return arrayValue;
+                }
+            }
+
+            return null;
+        }
+
         private static T[] BuildFlags()
         {
             var names = Enum.GetNames(typeof(T));
-            var result = new T[names.Length];
+            var result = new List<T>(names.Length);
+            // ReSharper disable once ForCanBeConvertedToForeach
+            // ReSharper disable once LoopCanBeConvertedToQuery
             for (var i = 0; i < names.Length; i++)
             {
-                var value = Enum.Parse(typeof(T), names[i]);
-                result[i] = (T) value;
+                var value = (T) Enum.Parse(typeof(T), names[i]);
+                if (((TEnumBase)Convert.ChangeType(value, typeof(TEnumBase))).Equals(0)) // looks so complicated because the enum values might be negative, we exclude it because it's handled separately
+                {
+                    continue;
+                }
+                result.Add(value);
             }
 
-            return result;
+            return result.ToArray();
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
