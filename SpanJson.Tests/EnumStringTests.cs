@@ -19,6 +19,7 @@ namespace SpanJson.Tests
         [Flags]
         public enum FlagsEnum
         {
+            Zero = 0,
             First = 1,
             Second = 2,
             Third = 4,
@@ -196,6 +197,32 @@ namespace SpanJson.Tests
         {
             var serialized = "{\"Value\":\"Unused\",\"AnotherValue\":1}";
             Assert.Throws<InvalidOperationException>(() => JsonSerializer.Generic.Utf16.Deserialize<TestDO>(serialized));
+        }
+
+        [Theory]
+        [InlineData(FlagsEnum.Zero, "\"Zero\"")]
+        [InlineData(FlagsEnum.First, "\"First\"")]
+        [InlineData(FlagsEnum.Zero | FlagsEnum.First | FlagsEnum.Second, "\"First,Second\"")]
+        public void SerializeDeserializeWithDefaultValueUtf16(FlagsEnum value, string output)
+        {
+            var serialized = JsonSerializer.Generic.Utf16.Serialize(value);
+            Assert.NotNull(serialized);
+            Assert.Equal(output, serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<FlagsEnum>(serialized);
+            Assert.Equal(value, deserialized);
+        }
+
+        [Theory]
+        [InlineData(FlagsEnum.Zero, "\"Zero\"")]
+        [InlineData(FlagsEnum.First, "\"First\"")]
+        [InlineData(FlagsEnum.Zero | FlagsEnum.First | FlagsEnum.Second, "\"First,Second\"")]
+        public void SerializeDeserializeWithDefaultValueUtf8(FlagsEnum value, string output)
+        {
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(value);
+            Assert.NotNull(serialized);
+            Assert.Equal(output, Encoding.UTF8.GetString(serialized));
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<FlagsEnum>(serialized);
+            Assert.Equal(value, deserialized);
         }
     }
 }
