@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using SpanJson.Formatters;
@@ -176,7 +177,7 @@ namespace SpanJson.Tests
             }
         }
 
-        [JsonCustomSerializer(typeof(TwcsCustomSerializer))]
+        [JsonCustomSerializer(typeof(TwcsCustomSerializer), "SpecialName")]
         public class TypeWithCustomSerializer : IEquatable<TypeWithCustomSerializer>
         {
 
@@ -218,8 +219,14 @@ namespace SpanJson.Tests
                 }
 
                 writer.WriteBeginObject();
-
-                writer.WriteName(nameof(TypeWithCustomSerializer.Value));
+                if (Arguments != null)
+                {
+                    writer.WriteName((string) Arguments);
+                }
+                else
+                {
+                    throw new InvalidOperationException();
+                }
 
                 writer.WriteInt64(value.Value);
 
@@ -240,6 +247,12 @@ namespace SpanJson.Tests
                 }
 
                 reader.ReadBeginObjectOrThrow();
+                var name = reader.ReadEscapedName();
+                if (Arguments == null || name != (string) Arguments)
+                {
+                    throw new InvalidDataException();
+                }
+
                 var result = new TypeWithCustomSerializer {Value = reader.ReadInt64()};
                 reader.ReadEndObjectOrThrow();
                 return result;
@@ -266,7 +279,7 @@ namespace SpanJson.Tests
         {
             var test = new TypeWithCustomSerializer {Value = 100};
             var serialized = JsonSerializer.Generic.Utf16.Serialize(test);
-            Assert.Contains("\"Value\":100", serialized);
+            Assert.Contains("\"SpecialName\":100", serialized);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<TypeWithCustomSerializer>(serialized);
             Assert.Equal(test, deserialized);
         }
@@ -277,7 +290,7 @@ namespace SpanJson.Tests
             var test = new TypeWithCustomSerializer {Value = 100};
             var serialized = JsonSerializer.Generic.Utf8.Serialize(test);
             var stringEncoded = Encoding.UTF8.GetString(serialized);
-            Assert.Contains("\"Value\":100", stringEncoded);
+            Assert.Contains("\"SpecialName\":100", stringEncoded);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<TypeWithCustomSerializer>(serialized);
             Assert.Equal(test, deserialized);
         }
