@@ -186,7 +186,6 @@ namespace SpanJson.Resolvers
                 }
                 else if (!IsIgnored(memberInfo))
                 {
-
                     var customSerializerAttr = memberInfo.GetCustomAttribute<JsonCustomSerializerAttribute>();
                     var shouldSerialize = type.GetMethod($"ShouldSerialize{memberInfo.Name}");
                     result.Add(new JsonMemberInfo(memberInfo.Name, memberType, shouldSerialize, name, excludeNulls, canRead, canWrite, customSerializerAttr?.Type, customSerializerAttr?.Arguments));
@@ -246,6 +245,17 @@ namespace SpanJson.Resolvers
             if (integrated != null)
             {
                 return integrated;
+            }
+
+            JsonCustomSerializerAttribute attr;
+            if ((attr = type.GetCustomAttribute<JsonCustomSerializerAttribute>()) != null)
+            {
+                var formatter = GetDefaultOrCreate(attr.Type);
+                if (formatter is ICustomJsonFormatter csf && attr.Arguments != null)
+                {
+                    csf.Arguments = attr.Arguments;
+                }
+                return formatter;
             }
 
             if (type == typeof(object))
@@ -373,7 +383,7 @@ namespace SpanJson.Resolvers
             {
                 if (candidate.TryGetTypeOfGenericInterface(typeof(ICustomJsonFormatter<>), out _))
                 {
-                    continue;
+                    continue; // if it's a custom formatter, we skip it
                 }
 
                 if (candidate.TryGetTypeOfGenericInterface(typeof(IJsonFormatter<,>), out var argumentTypes) && argumentTypes.Length == 2)
