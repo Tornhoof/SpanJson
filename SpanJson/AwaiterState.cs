@@ -13,7 +13,7 @@ namespace SpanJson
             Awaiter = awaiter;
         }
 
-        public int State { get; }
-        public ICriticalNotifyCompletion Awaiter { get; }
+        public int State;
+        public ICriticalNotifyCompletion Awaiter;
     }
 }

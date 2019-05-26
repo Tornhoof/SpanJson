@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,35 +9,72 @@ namespace SpanJson.Formatters
     {
         public ValueTask SerializeAsync(ref JsonWriter<TSymbol> writer, ref AwaiterState state, TList value, CancellationToken cancellationToken = default)
         {
-            int start = state.State;
-            if (value == null)
+            if (state.State == -1)
             {
-                writer.WriteNull();
-                return default;
-            } 
+                if (value == null)
+                {
+                    writer.WriteNull();
+                    return default;
+                }
 
-            if (IsRecursionCandidate)
-            {
-                writer.IncrementDepth();
+                if (IsRecursionCandidate)
+                {
+                    writer.IncrementDepth();
+                }
+
+                writer.WriteBeginArray();
             }
+
             var valueLength = value.Count;
-            writer.WriteBeginArray();
+
             if (valueLength > 0)
             {
-                var vTask = SerializeRuntimeDecisionInternalAsync(ref writer, ref state, value[0], ElementFormatter, cancellationToken).ConfigureAwait(false);
+                if (state.State == 0)
+                {
+                    var vTask = SerializeRuntimeDecisionInternalAsync(ref writer, ref state, value[0])
+                        .ConfigureAwait(false);
+                    var awaiter = vTask.GetAwaiter();
+                    if (!awaiter.IsCompleted)
+                    {
+                        return BuildStateMachine(ref state, value, cancellationToken);
+                    }
 
-                for (var i = start; i < valueLength; i++)
+                    state.State = 1;
+                }
+
+                ref var i = ref state.State;
+                for (; i < valueLength; i++)
                 {
                     writer.WriteValueSeparator();
-                    SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i], ElementFormatter);
+                    var vTask = SerializeRuntimeDecisionInternalAsync(ref writer, ref state, value[i])
+                        .ConfigureAwait(false);
+                    var awaiter = vTask.GetAwaiter();
+                    if (!awaiter.IsCompleted)
+                    {
+                        return BuildStateMachine(ref state, value, cancellationToken);
+                    }
                 }
             }
+
             if (IsRecursionCandidate)
             {
                 writer.DecrementDepth();
             }
+
             writer.WriteEndArray();
+            state.State = -1;
             return default;
+        }
+
+        private ValueTask BuildStateMachine(ref AwaiterState state, TList value, CancellationToken cancellationToken = default)
+        {
+            ListFormatterStateMachine stateMachine = default;
+            stateMachine.State = state;
+            stateMachine.Value = value;
+            stateMachine.CancellationToken = cancellationToken;
+            stateMachine.Builder = AsyncValueTaskMethodBuilder.Create();
+            stateMachine.Builder.Start(ref stateMachine);
+            return stateMachine.Builder.Task;
         }
 
         public ValueTask<TList> DeserializeAsync(ref JsonReader<TSymbol> reader, ref AwaiterState state, CancellationToken cancellationToken = default)
@@ -48,13 +83,36 @@ namespace SpanJson.Formatters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        ValueTask SerializeRuntimeDecisionInternalAsync(ref JsonWriter<TSymbol> writer, ref AwaiterState state, T value, IJsonFormatter<T, TSymbol> formatter, CancellationToken cancellationToken = default)
+        private ValueTask SerializeRuntimeDecisionInternalAsync(ref JsonWriter<TSymbol> writer, ref AwaiterState state, T value)
         {
-            if (state.Awaiter != null)
+            if (state.Awaiter != null) // this is flush
             {
-                SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0], ElementFormatter);
+                ((ValueTaskAwaiter) state.Awaiter).GetResult();
+                state.Awaiter = null;
             }
+            SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value, ElementFormatter);
             return default;
+        }
+
+        private struct ListFormatterStateMachine : IAsyncStateMachine
+        {
+            public AsyncValueTaskMethodBuilder Builder;
+            public AwaiterState State;
+            public CancellationToken CancellationToken;
+            public TList Value;
+            public void MoveNext()
+            {
+                var writer = new JsonWriter<TSymbol>();
+                var state = State;
+                var cancellationToken = CancellationToken;
+                var value = Value;
+                Default.SerializeAsync(ref writer, ref state, value, cancellationToken);
+            }
+
+            public void SetStateMachine(IAsyncStateMachine stateMachine)
+            {
+                Builder.SetStateMachine(stateMachine);
+            }
         }
     }
 }
