@@ -42,7 +42,7 @@ namespace SpanJson
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void Dispose()
+        public void Dispose()
         {
             var toReturn = Data;
             this = default; // for safety, to avoid using pooled array if this instance is erroneously appended to again

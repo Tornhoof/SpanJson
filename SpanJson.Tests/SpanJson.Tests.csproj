@@ -63,6 +63,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="System.IO.Pipelines">
+      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\system.io.pipelines\4.5.0\ref\netstandard1.3\System.IO.Pipelines.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 
