@@ -32,7 +32,7 @@ namespace SpanJson.Formatters
             {
                 if (state.State == 0)
                 {
-                    var vTask = SerializeRuntimeDecisionInternalAsync(ref writer, ref state, value[0])
+                    var vTask = SerializeRuntimeDecisionInternalAsync(ref writer, ref state, value[0], 0)
                         .ConfigureAwait(false);
                     var awaiter = vTask.GetAwaiter();
                     if (!awaiter.IsCompleted)
@@ -47,7 +47,7 @@ namespace SpanJson.Formatters
                 for (; i < valueLength; i++)
                 {
                     writer.WriteValueSeparator();
-                    var vTask = SerializeRuntimeDecisionInternalAsync(ref writer, ref state, value[i])
+                    var vTask = SerializeRuntimeDecisionInternalAsync(ref writer, ref state, value[i], i)
                         .ConfigureAwait(false);
                     var awaiter = vTask.GetAwaiter();
                     if (!awaiter.IsCompleted)
@@ -85,16 +85,27 @@ namespace SpanJson.Formatters
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ValueTask SerializeRuntimeDecisionInternalAsync(ref JsonWriter<TSymbol> writer, ref AwaiterState state, T value)
+        private ValueTask SerializeRuntimeDecisionInternalAsync(ref JsonWriter<TSymbol> writer, ref AwaiterState state, T value, int counter)
         {
-            //if (state.Awaiter != null) // this is flush
-            //{
-            //    ((ValueTaskAwaiter) state.Awaiter).GetResult();
-            //    state.Awaiter = null;
-            //}
+            if (state.Awaiter != null) // this is flush
+            {
+                ((ValueTaskAwaiter)state.Awaiter).GetResult();
+                state.Awaiter = null;
+            }
+
+            if (counter % 1000 == 0)
+            {
+                return new ValueTask(Yield());
+            }
+
 
             SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value, ElementFormatter);
             return default;
+        }
+
+        private async Task Yield()
+        {
+            await Task.Yield();
         }
 
         private struct ListFormatterStateMachine : IAsyncStateMachine
@@ -106,7 +117,7 @@ namespace SpanJson.Formatters
 
             public void MoveNext()
             {
-                var writer = new JsonWriter<TSymbol>();
+                var writer = new JsonWriter<TSymbol>(5000);
                 var state = State;
                 var cancellationToken = CancellationToken;
                 var value = Value;

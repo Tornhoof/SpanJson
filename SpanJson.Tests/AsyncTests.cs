@@ -247,7 +247,7 @@ namespace SpanJson.Tests
         private ValueTask Run(List<int> values)
         {
             var formatter = ListFormatter<List<int>, int, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default;
-            var writer = new JsonWriter<byte>(4096);
+            var writer = new JsonWriter<byte>(5000);
             var state = new AwaiterState(-1, null);
             return formatter.SerializeAsync(ref writer, ref state, values, CancellationToken.None);
         }
