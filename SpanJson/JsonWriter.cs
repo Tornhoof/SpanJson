@@ -320,6 +320,33 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteColon()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                if (_pos > _chars.Length - 1)
+                {
+                    Grow(1);
+                }
+
+                WriteUtf16Colon();
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                if (_pos > _bytes.Length - 1)
+                {
+                    Grow(1);
+                }
+
+                WriteUtf8Colon();
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteVerbatimNameSpan(in ReadOnlySpan<TSymbol> values)
         {
             var remaining = values.Length + 3;

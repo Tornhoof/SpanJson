@@ -579,6 +579,12 @@ namespace SpanJson
             _bytes[_pos++] = JsonUtf8Constant.String;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void WriteUtf8Colon()
+        {
+            _bytes[_pos++] = JsonUtf8Constant.Colon;
+        }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf8Version(Version value)

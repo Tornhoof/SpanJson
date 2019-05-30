@@ -55,10 +55,6 @@
       <LastGenOutput>SpanJsonDynamicNumber.Operators.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
     </None>
-    <None Update="Formatters\DictionaryFormatter.IntegerKeys.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>DictionaryFormatter.IntegerKeys.cs</LastGenOutput>
-    </None>
     <None Update="JsonWriter.PrimitiveWrappers.tt">
       <LastGenOutput>JsonWriter.PrimitiveWrappers.cs</LastGenOutput>
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -85,11 +81,6 @@
       <DependentUpon>SpanJsonDynamicNumber.Operators.tt</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Formatters\DictionaryFormatter.IntegerKeys.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>DictionaryFormatter.IntegerKeys.tt</DependentUpon>
     </Compile>
     <Compile Update="JsonReader.PrimitiveWrappers.cs">
       <DesignTime>True</DesignTime>
