@@ -95,5 +95,23 @@ namespace SpanJson.Helpers
                     type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(a => !a.PropertyType.IsByRefLike && !a.GetIndexParameters().Any()));
             return publicMembers;
         }
+
+        public static bool IsInteger(this Type type)
+        {
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.Byte:
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
+                case TypeCode.SByte:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                    return true;
+                default:
+                    return false;
+            }
+        }
     }
 }

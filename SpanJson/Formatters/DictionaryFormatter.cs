@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -14,7 +15,7 @@ namespace SpanJson.Formatters
     /// <summary>
     /// Used for types which are not built-in
     /// </summary>
-    public sealed class DictionaryFormatter<TDictionary, TWritableDictionary, TKey, TValue, TSymbol, TResolver> : BaseFormatter,
+    public sealed partial class DictionaryFormatter<TDictionary, TWritableDictionary, TKey, TValue, TSymbol, TResolver> : BaseFormatter,
         IJsonFormatter<TDictionary, TSymbol>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : IEnumerable<KeyValuePair<TKey, TValue>>
     {
@@ -22,8 +23,8 @@ namespace SpanJson.Formatters
             StandardResolvers.GetResolver<TSymbol, TResolver>().GetCreateFunctor<TWritableDictionary>();
 
         private static readonly Func<TDictionary, int> CountFunctor = BuildCountFunctor();
-        private static readonly KeyToNameDelegate KeyToNameFunctor = BuildKeyToNameFunctor();
-        private static readonly NameToKeyDelegate NameToKeyFunctor = BuildNameToKeyFunctor();
+        private static readonly KeyToNameDelegate KeyToNameFunctor = BuildKeyToNameDelegate();
+        private static readonly NameToKeyDelegate NameToKeyFunctor = BuildNameToKeyDelegate();
         private static readonly AssignKvpDelegate AssignKvpFunctor = BuildAssignKvpFunctor();
 
         public static readonly DictionaryFormatter<TDictionary, TWritableDictionary, TKey, TValue, TSymbol, TResolver> Default =
@@ -58,7 +59,7 @@ namespace SpanJson.Formatters
             return lambda.Compile();
         }
 
-        private static NameToKeyDelegate BuildNameToKeyFunctor()
+        private static NameToKeyDelegate BuildNameToKeyDelegate()
         {
             if (typeof(TKey) == typeof(string))
             {
@@ -84,10 +85,10 @@ namespace SpanJson.Formatters
                 return Expression.Lambda<NameToKeyDelegate>(body, paramExpression).Compile();
             }
 
-            throw new NotSupportedException();
+            return BuildIntegerNameToKeyDelegate();
         }
 
-        private static KeyToNameDelegate BuildKeyToNameFunctor()
+        private static KeyToNameDelegate BuildKeyToNameDelegate()
         {
 
             if (typeof(TKey) == typeof(string))
@@ -114,7 +115,7 @@ namespace SpanJson.Formatters
                 return Expression.Lambda<KeyToNameDelegate>(body, paramExpression).Compile();
             }
 
-            throw new NotSupportedException();
+            return BuildIntegerKeyToNameDelegate();
         }
 
         private static string GetFormattedValue(string enumValue)
