@@ -11,6 +11,7 @@
     <Copyright>SpanJson Contributors</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Tornhoof/SpanJson</PackageProjectUrl>
+    <PackageId>SpanJson</PackageId>
     <RepositoryUrl>git://github.com/Tornhoof/SpanJson</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>JSON</PackageTags>
