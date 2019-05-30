@@ -14,6 +14,7 @@ namespace SpanJson.Formatters
 {
     /// <summary>
     /// Used for types which are not built-in
+    /// The integer key part can be further optimized by adding some kind of WriteIntegerAsString and ReadIntegerFromString methods to the JsonWriter to get around string allocations
     /// </summary>
     public sealed partial class DictionaryFormatter<TDictionary, TWritableDictionary, TKey, TValue, TSymbol, TResolver> : BaseFormatter,
         IJsonFormatter<TDictionary, TSymbol>
