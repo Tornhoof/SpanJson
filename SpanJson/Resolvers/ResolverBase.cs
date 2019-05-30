@@ -56,6 +56,12 @@ namespace SpanJson.Resolvers
 
             return result;
         }
+
+        public static IJsonFormatter GetDefaultOrCreate(Type type)
+        {
+            return (IJsonFormatter)(type.GetField("Default", BindingFlags.Public | BindingFlags.Static)
+                                        ?.GetValue(null) ?? Activator.CreateInstance(type)); // leave the createinstance here, this helps with recursive types
+        }
     }
 
     public abstract class ResolverBase<TSymbol, TResolver> : ResolverBase, IJsonFormatterResolver<TSymbol, TResolver>
@@ -231,12 +237,6 @@ namespace SpanJson.Resolvers
         private static string GetAttributeName(MemberInfo memberInfo)
         {
             return memberInfo.GetCustomAttribute<DataMemberAttribute>()?.Name;
-        }
-
-        private static IJsonFormatter GetDefaultOrCreate(Type type)
-        {
-            return (IJsonFormatter) (type.GetField("Default", BindingFlags.Public | BindingFlags.Static)
-                                         ?.GetValue(null) ?? Activator.CreateInstance(type)); // leave the createinstance here, this helps with recursive types
         }
 
         private IJsonFormatter BuildFormatter(Type type)

@@ -334,5 +334,22 @@ namespace SpanJson
             return default;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ReadSymbolOrThrow(TSymbol symbol)
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                ReadUtf16SymbolOrThrow(Unsafe.As<TSymbol, char>(ref symbol));
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                ReadUtf8SymbolOrThrow(Unsafe.As<TSymbol, byte>(ref symbol));
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
     }
 }
