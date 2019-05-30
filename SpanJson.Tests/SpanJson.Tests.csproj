@@ -28,10 +28,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="DictionaryTests.IntegerKeys.tt">
+      <LastGenOutput>DictionaryTests.IntegerKeys.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
     <None Update="EnumFlagsTests.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>EnumFlagsTests.cs</LastGenOutput>
     </None>
+    <Compile Update="DictionaryTests.IntegerKeys.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DictionaryTests.IntegerKeys.tt</DependentUpon>
+    </Compile>
     <Compile Update="EnumFlagsTests.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
