@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
@@ -12,7 +11,6 @@ namespace SpanJson.Formatters
 {
     /// <summary>
     /// Used for types which are not built-in
-    /// The integer key part can be further optimized by adding some kind of WriteIntegerAsString and ReadIntegerFromString methods to the JsonWriter to get around string allocations
     /// </summary>
     public sealed class DictionaryFormatter<TDictionary, TWritableDictionary, TKey, TValue, TSymbol, TResolver> : BaseFormatter,
         IJsonFormatter<TDictionary, TSymbol>
@@ -78,7 +76,7 @@ namespace SpanJson.Formatters
         {
             if (typeof(TSymbol) == typeof(char))
             {
-                if (typeof(TKey).IsInteger()) // the integer values need to be quoted
+                if (typeof(TKey).IsInteger()) // the integer values are quoted
                 {
                     static TKey ReadIntegerKey(ref JsonReader<TSymbol> reader)
                     {

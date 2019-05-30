@@ -307,11 +307,6 @@ namespace SpanJson.Resolvers
 
             if (type.TryGetTypeOfGenericInterface(typeof(IDictionary<,>), out var dictArgumentTypes) && HasApplicableCtor(type))
             {
-                if (dictArgumentTypes.Length != 2 || !(dictArgumentTypes[0] == typeof(string) || dictArgumentTypes[0].IsInteger() || dictArgumentTypes[0].IsEnum))
-                {
-                    throw new NotImplementedException($"{dictArgumentTypes[0]} is not supported a Key for Dictionary.");
-                }
-
                 var writableType = type.IsInterface ? GetFunctorFallBackType(type) : type;
                 return GetDefaultOrCreate(typeof(DictionaryFormatter<,,,,,>).MakeGenericType(type, writableType, dictArgumentTypes[0], dictArgumentTypes[1],
                     typeof(TSymbol), typeof(TResolver)));
@@ -319,11 +314,6 @@ namespace SpanJson.Resolvers
 
             if (type.TryGetTypeOfGenericInterface(typeof(IReadOnlyDictionary<,>), out var rodictArgumentTypes))
             {
-                if (rodictArgumentTypes.Length != 2 || !(rodictArgumentTypes[0] == typeof(string) || dictArgumentTypes[0].IsInteger() || rodictArgumentTypes[0].IsEnum))
-                {
-                    throw new NotImplementedException($"{rodictArgumentTypes[0]} is not supported a Key for Dictionary.");
-                }
-
                 var writableType = typeof(Dictionary<,>).MakeGenericType(rodictArgumentTypes);
                 return GetDefaultOrCreate(
                     typeof(DictionaryFormatter<,,,,,>).MakeGenericType(type, writableType, rodictArgumentTypes[0], rodictArgumentTypes[1], typeof(TSymbol),
