@@ -571,6 +571,12 @@ namespace SpanJson
             _chars[_pos++] = JsonUtf16Constant.String;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void WriteUtf16Colon()
+        {
+            _chars[_pos++] = JsonUtf16Constant.Colon;
+        }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteUtf16Version(Version value)

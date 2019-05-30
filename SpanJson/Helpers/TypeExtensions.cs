@@ -98,6 +98,10 @@ namespace SpanJson.Helpers
 
         public static bool IsInteger(this Type type)
         {
+            if(type.IsEnum)
+            {
+                return false;
+            }
             switch (Type.GetTypeCode(type))
             {
                 case TypeCode.Byte:

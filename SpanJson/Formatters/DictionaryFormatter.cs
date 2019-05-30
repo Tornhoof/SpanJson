@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
@@ -14,9 +11,8 @@ namespace SpanJson.Formatters
 {
     /// <summary>
     /// Used for types which are not built-in
-    /// The integer key part can be further optimized by adding some kind of WriteIntegerAsString and ReadIntegerFromString methods to the JsonWriter to get around string allocations
     /// </summary>
-    public sealed partial class DictionaryFormatter<TDictionary, TWritableDictionary, TKey, TValue, TSymbol, TResolver> : BaseFormatter,
+    public sealed class DictionaryFormatter<TDictionary, TWritableDictionary, TKey, TValue, TSymbol, TResolver> : BaseFormatter,
         IJsonFormatter<TDictionary, TSymbol>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : IEnumerable<KeyValuePair<TKey, TValue>>
     {
@@ -24,19 +20,35 @@ namespace SpanJson.Formatters
             StandardResolvers.GetResolver<TSymbol, TResolver>().GetCreateFunctor<TWritableDictionary>();
 
         private static readonly Func<TDictionary, int> CountFunctor = BuildCountFunctor();
-        private static readonly KeyToNameDelegate KeyToNameFunctor = BuildKeyToNameDelegate();
-        private static readonly NameToKeyDelegate NameToKeyFunctor = BuildNameToKeyDelegate();
+        private static readonly WriteKeyDelegate WriteKeyFunctor = BuildKeyToNameDelegate();
+        private static readonly ReadKeyDelegate ReadKeyFunctor = BuildNameToKeyDelegate();
+
         private static readonly AssignKvpDelegate AssignKvpFunctor = BuildAssignKvpFunctor();
 
         public static readonly DictionaryFormatter<TDictionary, TWritableDictionary, TKey, TValue, TSymbol, TResolver> Default =
             new DictionaryFormatter<TDictionary, TWritableDictionary, TKey, TValue, TSymbol, TResolver>();
 
-        private static readonly IJsonFormatter<TValue, TSymbol> ElementFormatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<TValue>();
+        private static readonly IJsonFormatter<TKey, TSymbol> KeyFormatter = GetKeyFormatter();
+
+        private static readonly IJsonFormatter<TValue, TSymbol> ValueFormatter = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<TValue>();
 
         private static readonly Func<TWritableDictionary, TDictionary> Converter =
             StandardResolvers.GetResolver<TSymbol, TResolver>().GetEnumerableConvertFunctor<TWritableDictionary, TDictionary>();
 
         private static readonly bool IsRecursionCandidate = RecursionCandidate<TValue>.IsRecursionCandidate;
+
+
+        private static IJsonFormatter<TKey, TSymbol> GetKeyFormatter()
+        {
+            if (typeof(TKey).IsEnum)
+            {
+                return (IJsonFormatter<TKey, TSymbol>) ResolverBase.GetDefaultOrCreate(
+                    typeof(EnumStringFormatter<,,>).MakeGenericType(typeof(TKey), typeof(TSymbol), typeof(TResolver)));
+            }
+
+            return StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<TKey>();
+        }
+
 
         private static Func<TDictionary, int> BuildCountFunctor()
         {
@@ -60,68 +72,88 @@ namespace SpanJson.Formatters
             return lambda.Compile();
         }
 
-        private static NameToKeyDelegate BuildNameToKeyDelegate()
+        private static ReadKeyDelegate BuildNameToKeyDelegate()
         {
-            if (typeof(TKey) == typeof(string))
+            if (typeof(TSymbol) == typeof(char))
             {
-                return input => Unsafe.As<string, TKey>(ref input);
-            }
-
-            if (typeof(TKey).IsEnum)
-            {
-                var paramExpression = Expression.Parameter(typeof(string), "input");
-                var switchResult = Expression.Variable(typeof(TKey), "switchResult");
-                var cases = new List<SwitchCase>();
-                foreach (var name in Enum.GetNames(typeof(TKey)))
+                if (typeof(TKey).IsInteger()) // the integer values are quoted
                 {
-                    var switchValue = Expression.Constant(GetFormattedValue(name));
-                    var assignValue = Expression.Constant(Enum.Parse(typeof(TKey), name));
-                    var switchCase = Expression.SwitchCase(Expression.Assign(switchResult, assignValue), switchValue);
-                    cases.Add(switchCase);
+                    static TKey ReadIntegerKey(ref JsonReader<TSymbol> reader)
+                    {
+                        var colon = JsonUtf16Constant.Colon;
+                        var doubleQuote = JsonUtf16Constant.DoubleQuote;
+                        reader.ReadSymbolOrThrow(Unsafe.As<char, TSymbol>(ref doubleQuote));
+                        var key = KeyFormatter.Deserialize(ref reader);
+                        reader.ReadSymbolOrThrow(Unsafe.As<char, TSymbol>(ref doubleQuote));
+                        reader.ReadSymbolOrThrow(Unsafe.As<char, TSymbol>(ref colon));
+                        return key;
+                    }
+                    return ReadIntegerKey;
                 }
 
-                var switchExpression = Expression.Switch(typeof(void), paramExpression,
-                    Expression.Throw(Expression.Constant(new InvalidOperationException())), null, cases.ToArray());
-                var body = Expression.Block(new[] {switchResult}, switchExpression, switchResult);
-                return Expression.Lambda<NameToKeyDelegate>(body, paramExpression).Compile();
-            }
-
-            return BuildIntegerNameToKeyDelegate();
-        }
-
-        private static KeyToNameDelegate BuildKeyToNameDelegate()
-        {
-
-            if (typeof(TKey) == typeof(string))
-            {
-                return input => Unsafe.As<TKey, string>(ref input);
-            }
-
-            if (typeof(TKey).IsEnum)
-            {
-                var paramExpression = Expression.Parameter(typeof(TKey), "input");
-                var switchResult = Expression.Variable(typeof(string), "switchResult");
-                var cases = new List<SwitchCase>();
-                foreach (var name in Enum.GetNames(typeof(TKey)))
+                static TKey ReadStringKey(ref JsonReader<TSymbol> reader)
                 {
-                    var assignValue = Expression.Constant(GetFormattedValue(name));
-                    var switchValue = Expression.Constant(Enum.Parse(typeof(TKey), name));
-                    var switchCase = Expression.SwitchCase(Expression.Assign(switchResult, assignValue), switchValue);
-                    cases.Add(switchCase);
+                    var colon = JsonUtf16Constant.Colon;
+                    var key = KeyFormatter.Deserialize(ref reader);
+                    reader.ReadSymbolOrThrow(Unsafe.As<char, TSymbol>(ref colon));
+                    return key;
                 }
 
-                var switchExpression = Expression.Switch(typeof(void), paramExpression,
-                    Expression.Throw(Expression.Constant(new InvalidOperationException())), null, cases.ToArray());
-                var body = Expression.Block(new[] {switchResult}, switchExpression, switchResult);
-                return Expression.Lambda<KeyToNameDelegate>(body, paramExpression).Compile();
+                return ReadStringKey;
             }
 
-            return BuildIntegerKeyToNameDelegate();
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                if (typeof(TKey).IsInteger()) // the integer values need to be quoted
+                {
+                    static TKey ReadIntegerKey(ref JsonReader<TSymbol> reader)
+                    {
+                        var colon = JsonUtf8Constant.Colon;
+                        var doubleQuote = JsonUtf8Constant.DoubleQuote;
+                        reader.ReadSymbolOrThrow(Unsafe.As<byte, TSymbol>(ref doubleQuote));
+                        var key = KeyFormatter.Deserialize(ref reader);
+                        reader.ReadSymbolOrThrow(Unsafe.As<byte, TSymbol>(ref doubleQuote));
+                        reader.ReadSymbolOrThrow(Unsafe.As<byte, TSymbol>(ref colon));
+                        return key;
+                    }
+                    return ReadIntegerKey;
+                }
+
+                static TKey ReadStringKey(ref JsonReader<TSymbol> reader)
+                {
+                    var colon = JsonUtf8Constant.Colon;
+                    var key = KeyFormatter.Deserialize(ref reader);
+                    reader.ReadSymbolOrThrow(Unsafe.As<byte, TSymbol>(ref colon));
+                    return key;
+                }
+
+                return ReadStringKey;
+            }
+            throw new NotSupportedException();
         }
 
-        private static string GetFormattedValue(string enumValue)
+        private static WriteKeyDelegate BuildKeyToNameDelegate()
         {
-            return typeof(TKey).GetMember(enumValue)?.FirstOrDefault()?.GetCustomAttribute<EnumMemberAttribute>()?.Value ?? enumValue;
+            if (typeof(TKey).IsInteger()) // the integer values need to be quoted
+            {
+                static void WriteIntegerKey(ref JsonWriter<TSymbol> writer, TKey value)
+                {
+                    writer.WriteDoubleQuote();
+                    KeyFormatter.Serialize(ref writer, value);
+                    writer.WriteDoubleQuote();
+                    writer.WriteColon();
+                }
+
+                return WriteIntegerKey;
+            }
+
+            static void WriteStringKey(ref JsonWriter<TSymbol> writer, TKey value)
+            {
+                KeyFormatter.Serialize(ref writer, value);
+                writer.WriteColon();
+            }
+
+            return WriteStringKey;
         }
 
         public TDictionary Deserialize(ref JsonReader<TSymbol> reader)
@@ -136,8 +168,8 @@ namespace SpanJson.Formatters
             var count = 0;
             while (!reader.TryReadIsEndObjectOrValueSeparator(ref count))
             {
-                var key = NameToKeyFunctor(reader.ReadEscapedName()); // enum keys get converted from strings
-                var value = ElementFormatter.Deserialize(ref reader);
+                var key = ReadKeyFunctor(ref reader);
+                var value = ValueFormatter.Deserialize(ref reader);
                 AssignKvpFunctor(result, key, value); // No shared interface for IReadOnlyDictionary and IDictionary to set the value via indexer (to make sure that for duplicated keys, we use the last one)
             }
 
@@ -164,8 +196,8 @@ namespace SpanJson.Formatters
                 var counter = 0;
                 foreach (var kvp in value)
                 {
-                    writer.WriteName(KeyToNameFunctor(kvp.Key)); // Enum Keys need to be converted to strings first
-                    SerializeRuntimeDecisionInternal<TValue, TSymbol, TResolver>(ref writer, kvp.Value, ElementFormatter);
+                    WriteKeyFunctor(ref writer, kvp.Key);
+                    SerializeRuntimeDecisionInternal<TValue, TSymbol, TResolver>(ref writer, kvp.Value, ValueFormatter);
                     if (counter++ < valueLength - 1)
                     {
                         writer.WriteValueSeparator();
@@ -181,9 +213,9 @@ namespace SpanJson.Formatters
             writer.WriteEndObject();
         }
 
-        private delegate string KeyToNameDelegate(TKey input);
+        private delegate void WriteKeyDelegate(ref JsonWriter<TSymbol> writer, TKey input);
 
-        private delegate TKey NameToKeyDelegate(string input);
+        private delegate TKey ReadKeyDelegate(ref JsonReader<TSymbol> reader);
 
         private delegate void AssignKvpDelegate(TWritableDictionary dictionary, TKey key, TValue value);
     }

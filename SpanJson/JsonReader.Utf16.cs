@@ -746,6 +746,29 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void ReadUtf16SymbolOrThrow(char constant)
+        {
+            if (!ReadUtf16IsSymbol(constant))
+            {
+                ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool ReadUtf16IsSymbol(char constant)
+        {
+            SkipWhitespaceUtf16();
+            ref var pos = ref _pos;
+            if (_chars[pos] == constant)
+            {
+                pos++;
+                return true;
+            }
+
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SkipNextUtf16Segment()
         {
             SkipNextUtf16Segment(0);
