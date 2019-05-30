@@ -17,7 +17,7 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 - Dynamics
 - Enums (string and integer, for integer see section Custom Resolver), incl. Flags
 - Anonymous types
-- ``Dictionary``, ``ConcurrentDictionary`` with string/enum as key, the enum is formatted as a string.
+- ``Dictionary``, ``ConcurrentDictionary`` with string/int/enum as key, the enum is formatted as a string.
 - Serialization/Deserialization of most IEnumerable<T> types (Stack and ConcurrentStack are not supported)
 - Support for ``[DataMember(Name="MemberName")]`` to set field name
 - Support for ``[IgnoreDataMember]`` to ignore a specific member

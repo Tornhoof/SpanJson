@@ -10,7 +10,7 @@ using Xunit;
 
 namespace SpanJson.Tests
 {
-    public class DictionaryTests
+    public partial class DictionaryTests
     {
         public class DictionaryValue : IEquatable<DictionaryValue>
         {
