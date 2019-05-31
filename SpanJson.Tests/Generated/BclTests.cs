@@ -871,14 +871,14 @@ namespace SpanJson.Tests.Generated
             Assert.Equal(value, deserialized);
         }
 
-		[Fact]
+        [Fact]
         public void EscapedUtf8()
         {
             var value = Fixture.Create<DateTime>();
             var writer = new JsonWriter<byte>();
             writer.WriteDateTime(value);
             var output = writer.ToByteArray();
-			output = EscapeMore(output);
+            output = EscapeMore(output);
             var reader = new JsonReader<byte>(output);
             var deserialized = reader.ReadDateTime();
             Assert.Equal(value, deserialized);
@@ -891,7 +891,7 @@ namespace SpanJson.Tests.Generated
             var writer = new JsonWriter<char>();
             writer.WriteDateTime(value);
             var output = writer.ToString();
-			output = EscapeMore(output);
+            output = EscapeMore(output);
             var reader = new JsonReader<char>(output);
             var deserialized = reader.ReadDateTime();
             Assert.Equal(value, deserialized);
@@ -940,14 +940,14 @@ namespace SpanJson.Tests.Generated
             Assert.Equal(value, deserialized);
         }
 
-		[Fact]
+        [Fact]
         public void EscapedUtf8()
         {
             var value = Fixture.Create<DateTimeOffset>();
             var writer = new JsonWriter<byte>();
             writer.WriteDateTimeOffset(value);
             var output = writer.ToByteArray();
-			output = EscapeMore(output);
+            output = EscapeMore(output);
             var reader = new JsonReader<byte>(output);
             var deserialized = reader.ReadDateTimeOffset();
             Assert.Equal(value, deserialized);
@@ -960,7 +960,7 @@ namespace SpanJson.Tests.Generated
             var writer = new JsonWriter<char>();
             writer.WriteDateTimeOffset(value);
             var output = writer.ToString();
-			output = EscapeMore(output);
+            output = EscapeMore(output);
             var reader = new JsonReader<char>(output);
             var deserialized = reader.ReadDateTimeOffset();
             Assert.Equal(value, deserialized);
@@ -1009,14 +1009,14 @@ namespace SpanJson.Tests.Generated
             Assert.Equal(value, deserialized);
         }
 
-		[Fact]
+        [Fact]
         public void EscapedUtf8()
         {
             var value = Fixture.Create<TimeSpan>();
             var writer = new JsonWriter<byte>();
             writer.WriteTimeSpan(value);
             var output = writer.ToByteArray();
-			output = EscapeMore(output);
+            output = EscapeMore(output);
             var reader = new JsonReader<byte>(output);
             var deserialized = reader.ReadTimeSpan();
             Assert.Equal(value, deserialized);
@@ -1029,7 +1029,7 @@ namespace SpanJson.Tests.Generated
             var writer = new JsonWriter<char>();
             writer.WriteTimeSpan(value);
             var output = writer.ToString();
-			output = EscapeMore(output);
+            output = EscapeMore(output);
             var reader = new JsonReader<char>(output);
             var deserialized = reader.ReadTimeSpan();
             Assert.Equal(value, deserialized);
@@ -1078,14 +1078,14 @@ namespace SpanJson.Tests.Generated
             Assert.Equal(value, deserialized);
         }
 
-		[Fact]
+        [Fact]
         public void EscapedUtf8()
         {
             var value = Fixture.Create<Guid>();
             var writer = new JsonWriter<byte>();
             writer.WriteGuid(value);
             var output = writer.ToByteArray();
-			output = EscapeMore(output);
+            output = EscapeMore(output);
             var reader = new JsonReader<byte>(output);
             var deserialized = reader.ReadGuid();
             Assert.Equal(value, deserialized);
@@ -1098,7 +1098,7 @@ namespace SpanJson.Tests.Generated
             var writer = new JsonWriter<char>();
             writer.WriteGuid(value);
             var output = writer.ToString();
-			output = EscapeMore(output);
+            output = EscapeMore(output);
             var reader = new JsonReader<char>(output);
             var deserialized = reader.ReadGuid();
             Assert.Equal(value, deserialized);
