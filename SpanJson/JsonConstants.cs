@@ -11,7 +11,7 @@ namespace SpanJson
         public const int StackAllocCharMaxLength = StackAllocByteMaxLength / sizeof(char);
         public const int MaxDateTimeOffsetLength = 35; // o + 2 double quotes
         public const int MaxDateTimeLength = 35; // o + 2 double quotes
-        public const int MaxTimespanLength = 27; // c + 2 double quotes
+        public const int MaxTimeSpanLength = 27; // c + 2 double quotes
         public const int MaxGuidLength = 42; // d + 2 double quotes
     }
 
@@ -30,7 +30,6 @@ namespace SpanJson
         public const byte String = (byte) '"';
         public const byte True = (byte) 't';
         public const byte ValueSeparator = (byte) ',';
-        public const byte Colon = (byte) ':';
 
         public static ReadOnlySpan<byte> NewLine => new[] {(byte) '\r', (byte) '\n'};
         public static ReadOnlySpan<byte> NullTerminator => new byte[] {0};
@@ -51,7 +50,6 @@ namespace SpanJson
         public const char String = '"';
         public const char True = 't';
         public const char ValueSeparator = ',';
-        public const char Colon = ':';
 
         public static ReadOnlySpan<char> NewLine => new[] {'\r', '\n'};
         public static ReadOnlySpan<char> NullTerminator => new[] {'\0'};

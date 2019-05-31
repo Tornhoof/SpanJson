@@ -294,7 +294,7 @@ namespace SpanJson
         public TimeSpan ReadUtf16TimeSpan()
         {
             var span = ReadUtf16EscapedStringSpanInternal();
-            Span<byte> byteSpan = stackalloc byte[JsonSharedConstant.MaxTimespanLength];
+            Span<byte> byteSpan = stackalloc byte[JsonSharedConstant.MaxTimeSpanLength];
             for (int i = 0; i < span.Length; i++)
             {
                 byteSpan[i] = (byte) span[i];

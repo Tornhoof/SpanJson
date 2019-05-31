@@ -4,6 +4,7 @@ using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using SpanJson.Formatters.Dynamic;
 using SpanJson.Helpers;
@@ -259,7 +260,29 @@ namespace SpanJson
 
         public DateTime ReadUtf8DateTime()
         {
-            var span = ReadUtf8EscapedStringSpanInternal();
+            SkipWhitespaceUtf8();
+            var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
+            return escapedCharsSize == 0 ? ParseUtf8DateTime(span) : ParseUtf8DateTimeAllocating(span);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private DateTime ParseUtf8DateTime(in ReadOnlySpan<byte> span)
+        {
+            if (DateTimeParser.TryParseDateTime(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            {
+                return value;
+            }
+
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateTime);
+            return default;
+        }
+
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private DateTime ParseUtf8DateTimeAllocating(in ReadOnlySpan<byte> input)
+        {
+            Span<byte> span = stackalloc byte[JsonSharedConstant.MaxDateTimeLength];
+            UnescapeUtf8Bytes(input, ref span);
             if (DateTimeParser.TryParseDateTime(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
@@ -271,7 +294,29 @@ namespace SpanJson
 
         public DateTimeOffset ReadUtf8DateTimeOffset()
         {
-            var span = ReadUtf8EscapedStringSpanInternal();
+            SkipWhitespaceUtf8();
+            var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
+            return escapedCharsSize == 0 ? ParseUtf8DateTimeOffset(span) : ParseUtf8DateTimeOffsetAllocating(span);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private DateTimeOffset ParseUtf8DateTimeOffset(in ReadOnlySpan<byte> span)
+        {
+            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            {
+                return value;
+            }
+
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateTimeOffset);
+            return default;
+        }
+
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private DateTimeOffset ParseUtf8DateTimeOffsetAllocating(in ReadOnlySpan<byte> input)
+        {
+            Span<byte> span = stackalloc byte[JsonSharedConstant.MaxDateTimeOffsetLength];
+            UnescapeUtf8Bytes(input, ref span);
             if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
@@ -283,7 +328,29 @@ namespace SpanJson
 
         public TimeSpan ReadUtf8TimeSpan()
         {
-            var span = ReadUtf8EscapedStringSpanInternal();
+            SkipWhitespaceUtf8();
+            var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
+            return escapedCharsSize == 0 ? ParseUtf8TimeSpan(span) : ParseUtf8TimeSpanAllocating(span);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private TimeSpan ParseUtf8TimeSpan(in ReadOnlySpan<byte> span)
+        {
+            if (Utf8Parser.TryParse(span, out TimeSpan result, out var bytesConsumed) && span.Length == bytesConsumed)
+            {
+                return result;
+            }
+
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.TimeSpan);
+            return default;
+        }
+
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private TimeSpan ParseUtf8TimeSpanAllocating(in ReadOnlySpan<byte> input)
+        {
+            Span<byte> span = stackalloc byte[JsonSharedConstant.MaxTimeSpanLength];
+            UnescapeUtf8Bytes(input, ref span);
             if (Utf8Parser.TryParse(span, out TimeSpan result, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return result;
@@ -295,8 +362,30 @@ namespace SpanJson
 
         public Guid ReadUtf8Guid()
         {
-            var span = ReadUtf8EscapedStringSpanInternal();
-            if (Utf8Parser.TryParse(span, out Guid result, out _))
+            SkipWhitespaceUtf8();
+            var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
+            return escapedCharsSize == 0 ? ParseUtf8Guid(span) : ParseUtf8GuidAllocating(span);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Guid ParseUtf8Guid(in ReadOnlySpan<byte> span)
+        {
+            if (Utf8Parser.TryParse(span, out Guid result, out var bytesConsumed) && span.Length == bytesConsumed)
+            {
+                return result;
+            }
+
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.Guid);
+            return default;
+        }
+
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private Guid ParseUtf8GuidAllocating(in ReadOnlySpan<byte> input)
+        {
+            Span<byte> span = stackalloc byte[JsonSharedConstant.MaxGuidLength];
+            UnescapeUtf8Bytes(input, ref span);
+            if (Utf8Parser.TryParse(span, out Guid result, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return result;
             }
@@ -449,14 +538,20 @@ namespace SpanJson
             return result;
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private ReadOnlySpan<byte> UnescapeUtf8Bytes(in ReadOnlySpan<byte> span)
+        private static ReadOnlySpan<byte> UnescapeUtf8Bytes(in ReadOnlySpan<byte> span)
         {
             // not necessarily correct, just needs to be a good upper bound
             // this gets slightly too high, as the normal escapes are two bytes, and the \u1234 escapes are 6 bytes, but we only need 4
             var unescapedLength = span.Length;
-            var byteOffset = 0;
             Span<byte> result = new byte[unescapedLength];
+            UnescapeUtf8Bytes(span, ref result);
+            return result;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void UnescapeUtf8Bytes(in ReadOnlySpan<byte> span, ref Span<byte> result)
+        {
+            var byteOffset = 0;
             var from = 0;
             var index = 0;
             while (index < span.Length)
@@ -509,12 +604,12 @@ namespace SpanJson
                                     continue;
                                 }
 
-                                ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
+                                ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, index);
                                 break;
                             }
                         default:
                             {
-                                ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
+                                ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, index);
                                 break;
                             }
                     }
@@ -535,7 +630,8 @@ namespace SpanJson
                 byteOffset += sliceLength;
             }
 
-            return result.Slice(0, byteOffset);
+            result =  result.Slice(0, byteOffset);
+
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

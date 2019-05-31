@@ -223,7 +223,7 @@ namespace SpanJson
         public void WriteUtf8TimeSpan(TimeSpan value)
         {
             ref var pos = ref _pos;
-            const int tsSize = JsonSharedConstant.MaxTimespanLength; // Form o + two JsonUtf8Constant.DoubleQuote
+            const int tsSize = JsonSharedConstant.MaxTimeSpanLength; // Form o + two JsonUtf8Constant.DoubleQuote
             if (pos > _bytes.Length - tsSize)
             {
                 Grow(tsSize);
@@ -580,9 +580,9 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void WriteUtf8Colon()
+        private void WriteUtf8NameSeparator()
         {
-            _bytes[_pos++] = JsonUtf8Constant.Colon;
+            _bytes[_pos++] = JsonUtf8Constant.NameSeparator;
         }
 
 

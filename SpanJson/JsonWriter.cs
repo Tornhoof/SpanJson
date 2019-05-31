@@ -320,7 +320,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void WriteColon()
+        public void WriteNameSeparator()
         {
             if (typeof(TSymbol) == typeof(char))
             {
@@ -329,7 +329,7 @@ namespace SpanJson
                     Grow(1);
                 }
 
-                WriteUtf16Colon();
+                WriteUtf16NameSeparator();
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
@@ -338,7 +338,7 @@ namespace SpanJson
                     Grow(1);
                 }
 
-                WriteUtf8Colon();
+                WriteUtf8NameSeparator();
             }
             else
             {
