@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using SpanJson.Shared.Fixture;
 using Xunit;
 
@@ -50,6 +51,17 @@ namespace SpanJson.Tests.Generated
             }
 
             return result;
+        }
+
+        protected static byte[] EscapeMore(byte[] input)
+        {
+            return Encoding.UTF8.GetBytes(EscapeMore(Encoding.UTF8.GetString(input)));
+        }
+
+
+        protected static string EscapeMore(string input)
+        {
+            return EscapeHelper.EscapeMore(input);
         }
 
         [Fact]

@@ -31,7 +31,7 @@ namespace SpanJson.Tests
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
             var serialized = JsonSerializer.NonGeneric.Utf16.Serialize(model);
-            var encoded = EscapeHelper.FullyEscape(serialized);
+            var encoded = EscapeHelper.NonAsciiEscape(serialized);
             Assert.NotNull(encoded);
             var deserialized = JsonSerializer.NonGeneric.Utf16.Deserialize(encoded, modelType);
             Assert.NotNull(deserialized);
@@ -46,7 +46,7 @@ namespace SpanJson.Tests
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create(modelType);
             var serialized = JsonSerializer.NonGeneric.Utf16.Serialize(model);
-            var encoded = EscapeHelper.FullyEscape(serialized);
+            var encoded = EscapeHelper.NonAsciiEscape(serialized);
             Assert.NotNull(encoded);
             var encodedBytes = Encoding.UTF8.GetBytes(encoded);
             var deserialized = JsonSerializer.NonGeneric.Utf8.Deserialize(encodedBytes, modelType);

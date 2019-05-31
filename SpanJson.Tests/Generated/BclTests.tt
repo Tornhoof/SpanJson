@@ -50,6 +50,13 @@
         typeof(UInt16),
         typeof(UInt32),
     };
+    var escapeTestTypes = new []
+    {
+        typeof(DateTime),
+        typeof(DateTimeOffset),
+        typeof(TimeSpan),
+        typeof(Guid),
+    };
 #>
 using System;
 using System.Collections.Generic;
@@ -134,6 +141,34 @@ namespace SpanJson.Tests.Generated
             var deserialized = reader.Read<#= t.Name #>();
             Assert.Equal(value, deserialized);
         }
+<#  if(escapeTestTypes.Contains(t)) {#>
+
+        [Fact]
+        public void EscapedUtf8()
+        {
+            var value = Fixture.Create<<#= t.Name #>>();
+            var writer = new JsonWriter<byte>();
+            writer.Write<#= t.Name #>(value);
+            var output = writer.ToByteArray();
+            output = EscapeMore(output);
+            var reader = new JsonReader<byte>(output);
+            var deserialized = reader.Read<#= t.Name #>();
+            Assert.Equal(value, deserialized);
+        }
+
+        [Fact]
+        public void EscapedUtf16()
+        {
+            var value = Fixture.Create<<#= t.Name #>>();
+            var writer = new JsonWriter<char>();
+            writer.Write<#= t.Name #>(value);
+            var output = writer.ToString();
+            output = EscapeMore(output);
+            var reader = new JsonReader<char>(output);
+            var deserialized = reader.Read<#= t.Name #>();
+            Assert.Equal(value, deserialized);
+        }
+<# } #>
     }
 <# } #>
 <# if(!t.IsValueType) { #>

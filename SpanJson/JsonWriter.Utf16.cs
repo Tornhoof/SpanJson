@@ -113,6 +113,7 @@ namespace SpanJson
                 ThrowArgumentException("Invalid float value for JSON", nameof(value));
                 return;
             }
+
             Span<char> span = stackalloc char[JsonSharedConstant.MaxNumberBufferSize];
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
@@ -132,6 +133,7 @@ namespace SpanJson
                 ThrowArgumentException("Invalid double value for JSON", nameof(value));
                 return;
             }
+
             Span<char> span = stackalloc char[JsonSharedConstant.MaxNumberBufferSize];
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
@@ -324,7 +326,7 @@ namespace SpanJson
         public void WriteUtf16DateTime(DateTime value)
         {
             ref var pos = ref _pos;
-            const int dtSize = 35; // Form o + two JsonUtf16Constant.DoubleQuote
+            const int dtSize = JsonSharedConstant.MaxDateTimeLength; // Form o + two JsonUtf16Constant.DoubleQuote
             if (pos > _chars.Length - dtSize)
             {
                 Grow(dtSize);
@@ -339,7 +341,7 @@ namespace SpanJson
         public void WriteUtf16DateTimeOffset(DateTimeOffset value)
         {
             ref var pos = ref _pos;
-            const int dtSize = 35; // Form o + two JsonUtf16Constant.DoubleQuote
+            const int dtSize = JsonSharedConstant.MaxDateTimeOffsetLength; // Form o + two JsonUtf16Constant.DoubleQuote
             if (pos > _chars.Length - dtSize)
             {
                 Grow(dtSize);
@@ -354,7 +356,7 @@ namespace SpanJson
         public void WriteUtf16TimeSpan(TimeSpan value)
         {
             ref var pos = ref _pos;
-            const int tsSize = 28; // Form c + two JsonUtf16Constant.DoubleQuote
+            const int tsSize = JsonSharedConstant.MaxTimeSpanLength; // Form c + two JsonUtf16Constant.DoubleQuote
             if (pos > _chars.Length - tsSize)
             {
                 Grow(tsSize);
@@ -363,7 +365,7 @@ namespace SpanJson
             WriteUtf16DoubleQuote();
             Span<byte> byteSpan = stackalloc byte[tsSize];
             Utf8Formatter.TryFormat(value, byteSpan, out var bytesWritten);
-            for (int i = 0; i < byteSpan.Length; i++)
+            for (var i = 0; i < byteSpan.Length; i++)
             {
                 _chars[i + pos] = (char) byteSpan[i];
             }
@@ -375,7 +377,7 @@ namespace SpanJson
         public void WriteUtf16Guid(Guid value)
         {
             ref var pos = ref _pos;
-            const int guidSize = 42; // Format D + two JsonUtf16Constant.DoubleQuote;
+            const int guidSize = JsonSharedConstant.MaxGuidLength; // Format D + two JsonUtf16Constant.DoubleQuote;
             if (pos > _chars.Length - guidSize)
             {
                 Grow(guidSize);
@@ -572,9 +574,9 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void WriteUtf16Colon()
+        private void WriteUtf16NameSeparator()
         {
-            _chars[_pos++] = JsonUtf16Constant.Colon;
+            _chars[_pos++] = JsonUtf16Constant.NameSeparator;
         }
 
 

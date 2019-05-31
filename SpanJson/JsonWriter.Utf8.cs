@@ -114,6 +114,7 @@ namespace SpanJson
                 ThrowArgumentException("Invalid float value for JSON", nameof(value));
                 return;
             }
+
             Span<char> span = stackalloc char[JsonSharedConstant.MaxNumberBufferSize];
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
@@ -135,6 +136,7 @@ namespace SpanJson
                 ThrowArgumentException("Invalid double value for JSON", nameof(value));
                 return;
             }
+
             Span<char> span = stackalloc char[JsonSharedConstant.MaxNumberBufferSize];
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
@@ -193,7 +195,7 @@ namespace SpanJson
         public void WriteUtf8DateTime(DateTime value)
         {
             ref var pos = ref _pos;
-            const int dtSize = 35; // Form o + two JsonUtf8Constant.DoubleQuote
+            const int dtSize = JsonSharedConstant.MaxDateTimeLength; // Form o + two JsonUtf8Constant.DoubleQuote
             if (pos > _bytes.Length - dtSize)
             {
                 Grow(dtSize);
@@ -208,7 +210,7 @@ namespace SpanJson
         public void WriteUtf8DateTimeOffset(DateTimeOffset value)
         {
             ref var pos = ref _pos;
-            const int dtSize = 35; // Form o + two JsonUtf8Constant.DoubleQuote
+            const int dtSize = JsonSharedConstant.MaxDateTimeOffsetLength; // Form o + two JsonUtf8Constant.DoubleQuote
             if (pos > _bytes.Length - dtSize)
             {
                 Grow(dtSize);
@@ -223,10 +225,10 @@ namespace SpanJson
         public void WriteUtf8TimeSpan(TimeSpan value)
         {
             ref var pos = ref _pos;
-            const int dtSize = 20; // Form o + two JsonUtf8Constant.DoubleQuote
-            if (pos > _bytes.Length - dtSize)
+            const int tsSize = JsonSharedConstant.MaxTimeSpanLength; // Form o + two JsonUtf8Constant.DoubleQuote
+            if (pos > _bytes.Length - tsSize)
             {
-                Grow(dtSize);
+                Grow(tsSize);
             }
 
             WriteUtf8DoubleQuote();
@@ -238,7 +240,7 @@ namespace SpanJson
         public void WriteUtf8Guid(Guid value)
         {
             ref var pos = ref _pos;
-            const int guidSize = 42; // Format D + two JsonUtf8Constant.DoubleQuote;
+            const int guidSize = JsonSharedConstant.MaxGuidLength; // Format D + two JsonUtf8Constant.DoubleQuote;
             if (pos > _bytes.Length - guidSize)
             {
                 Grow(guidSize);
@@ -580,9 +582,9 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void WriteUtf8Colon()
+        private void WriteUtf8NameSeparator()
         {
-            _bytes[_pos++] = JsonUtf8Constant.Colon;
+            _bytes[_pos++] = JsonUtf8Constant.NameSeparator;
         }
 
 

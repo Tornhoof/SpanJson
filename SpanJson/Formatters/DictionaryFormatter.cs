@@ -80,12 +80,12 @@ namespace SpanJson.Formatters
                 {
                     static TKey ReadIntegerKey(ref JsonReader<TSymbol> reader)
                     {
-                        var colon = JsonUtf16Constant.Colon;
+                        var separator = JsonUtf16Constant.NameSeparator;
                         var doubleQuote = JsonUtf16Constant.DoubleQuote;
                         reader.ReadSymbolOrThrow(Unsafe.As<char, TSymbol>(ref doubleQuote));
                         var key = KeyFormatter.Deserialize(ref reader);
                         reader.ReadSymbolOrThrow(Unsafe.As<char, TSymbol>(ref doubleQuote));
-                        reader.ReadSymbolOrThrow(Unsafe.As<char, TSymbol>(ref colon));
+                        reader.ReadSymbolOrThrow(Unsafe.As<char, TSymbol>(ref separator));
                         return key;
                     }
                     return ReadIntegerKey;
@@ -93,9 +93,9 @@ namespace SpanJson.Formatters
 
                 static TKey ReadStringKey(ref JsonReader<TSymbol> reader)
                 {
-                    var colon = JsonUtf16Constant.Colon;
+                    var separator = JsonUtf16Constant.NameSeparator;
                     var key = KeyFormatter.Deserialize(ref reader);
-                    reader.ReadSymbolOrThrow(Unsafe.As<char, TSymbol>(ref colon));
+                    reader.ReadSymbolOrThrow(Unsafe.As<char, TSymbol>(ref separator));
                     return key;
                 }
 
@@ -108,12 +108,12 @@ namespace SpanJson.Formatters
                 {
                     static TKey ReadIntegerKey(ref JsonReader<TSymbol> reader)
                     {
-                        var colon = JsonUtf8Constant.Colon;
+                        var separator = JsonUtf8Constant.NameSeparator;
                         var doubleQuote = JsonUtf8Constant.DoubleQuote;
                         reader.ReadSymbolOrThrow(Unsafe.As<byte, TSymbol>(ref doubleQuote));
                         var key = KeyFormatter.Deserialize(ref reader);
                         reader.ReadSymbolOrThrow(Unsafe.As<byte, TSymbol>(ref doubleQuote));
-                        reader.ReadSymbolOrThrow(Unsafe.As<byte, TSymbol>(ref colon));
+                        reader.ReadSymbolOrThrow(Unsafe.As<byte, TSymbol>(ref separator));
                         return key;
                     }
                     return ReadIntegerKey;
@@ -121,9 +121,9 @@ namespace SpanJson.Formatters
 
                 static TKey ReadStringKey(ref JsonReader<TSymbol> reader)
                 {
-                    var colon = JsonUtf8Constant.Colon;
+                    var separator = JsonUtf8Constant.NameSeparator;
                     var key = KeyFormatter.Deserialize(ref reader);
-                    reader.ReadSymbolOrThrow(Unsafe.As<byte, TSymbol>(ref colon));
+                    reader.ReadSymbolOrThrow(Unsafe.As<byte, TSymbol>(ref separator));
                     return key;
                 }
 
@@ -141,7 +141,7 @@ namespace SpanJson.Formatters
                     writer.WriteDoubleQuote();
                     KeyFormatter.Serialize(ref writer, value);
                     writer.WriteDoubleQuote();
-                    writer.WriteColon();
+                    writer.WriteNameSeparator();
                 }
 
                 return WriteIntegerKey;
@@ -150,7 +150,7 @@ namespace SpanJson.Formatters
             static void WriteStringKey(ref JsonWriter<TSymbol> writer, TKey value)
             {
                 KeyFormatter.Serialize(ref writer, value);
-                writer.WriteColon();
+                writer.WriteNameSeparator();
             }
 
             return WriteStringKey;
