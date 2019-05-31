@@ -32,9 +32,7 @@ namespace SpanJson
 
         public byte[] ToByteArray()
         {
-            var result = _bytes.Slice(0, _pos).ToArray();
-            Dispose();
-            return result;
+            return _bytes.Slice(0, _pos).ToArray();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

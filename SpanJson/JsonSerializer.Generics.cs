@@ -38,82 +38,117 @@ namespace SpanJson
                 public static string InnerSerializeToString(T input)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
-                    Formatter.Serialize(ref jsonWriter, input);
-                    _lastSerializationSizeEstimate = jsonWriter.Data.Length;
-                    var result = jsonWriter.ToString(); // includes Dispose
-                    return result;
+                    try
+                    {
+                        Formatter.Serialize(ref jsonWriter, input);
+                        _lastSerializationSizeEstimate = jsonWriter.Data.Length;
+                        return jsonWriter.ToString();
+                    }
+                    finally
+                    {
+                        jsonWriter.Dispose();
+                    }
                 }
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static ArraySegment<char> InnerSerializeToCharArrayPool(T input)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
-                    Formatter.Serialize(ref jsonWriter, input);
-                    _lastSerializationSizeEstimate = jsonWriter.Data.Length;
-                    var temp = jsonWriter.Data;
-                    var data = Unsafe.As<TSymbol[], char[]>(ref temp);
-                    var result = new ArraySegment<char>(data, 0, jsonWriter.Position);
-                    return result;
+                    try
+                    {
+                        Formatter.Serialize(ref jsonWriter, input);
+                        _lastSerializationSizeEstimate = jsonWriter.Data.Length;
+                        var temp = jsonWriter.Data;
+                        var data = Unsafe.As<TSymbol[], char[]>(ref temp);
+                        return new ArraySegment<char>(data, 0, jsonWriter.Position);
+                    }
+                    catch
+                    {
+                        jsonWriter.Dispose();
+                        throw;
+                    }
                 }
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static byte[] InnerSerializeToByteArray(T input)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
-                    Formatter.Serialize(ref jsonWriter, input);
-                    _lastSerializationSizeEstimate = jsonWriter.Data.Length;
-                    var result = jsonWriter.ToByteArray();
-                    return result;
+                    try
+                    {
+                        Formatter.Serialize(ref jsonWriter, input);
+                        _lastSerializationSizeEstimate = jsonWriter.Data.Length;
+                        return jsonWriter.ToByteArray();
+                    }
+                    finally
+                    {
+                        jsonWriter.Dispose();
+                    }
                 }
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static ArraySegment<byte> InnerSerializeToByteArrayPool(T input)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
-                    Formatter.Serialize(ref jsonWriter, input);
-                    _lastSerializationSizeEstimate = jsonWriter.Data.Length;
-                    var temp = jsonWriter.Data;
-                    var data = Unsafe.As<TSymbol[], byte[]>(ref temp);
-                    var result = new ArraySegment<byte>(data, 0, jsonWriter.Position);
-                    return result;
+                    try
+                    {
+                        Formatter.Serialize(ref jsonWriter, input);
+                        _lastSerializationSizeEstimate = jsonWriter.Data.Length;
+                        var temp = jsonWriter.Data;
+                        var data = Unsafe.As<TSymbol[], byte[]>(ref temp);
+                        return new ArraySegment<byte>(data, 0, jsonWriter.Position);
+                    }
+                    catch
+                    {
+                        jsonWriter.Dispose();
+                        throw;
+                    }
                 }
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static ValueTask InnerSerializeAsync(T input, TextWriter writer, CancellationToken cancellationToken = default)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
-                    Formatter.Serialize(ref jsonWriter, input);
-                    _lastSerializationSizeEstimate = jsonWriter.Data.Length;
-                    var temp = jsonWriter.Data;
-                    var data = Unsafe.As<TSymbol[], char[]>(ref temp);
-                    var result = writer.WriteAsync(data, 0, jsonWriter.Position);
-                    if (result.IsCompletedSuccessfully)
+                    try
                     {
-                        // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
-                        ArrayPool<char>.Shared.Return(data);
-                        return new ValueTask();
+                        Formatter.Serialize(ref jsonWriter, input);
+                        _lastSerializationSizeEstimate = jsonWriter.Data.Length;
+                        var temp = jsonWriter.Data;
+                        var data = Unsafe.As<TSymbol[], char[]>(ref temp);
+                        var result = writer.WriteAsync(data, 0, jsonWriter.Position);
+                        if (result.IsCompletedSuccessfully)
+                        {
+                            return default;
+                        }
+                        return AwaitSerializeAsync(result);
                     }
-
-                    return AwaitSerializeAsync(result, data);
+                    finally
+                    {
+                        jsonWriter.Dispose();
+                    }
                 }
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static ValueTask InnerSerializeAsync(T input, Stream stream, CancellationToken cancellationToken = default)
                 {
                     var jsonWriter = new JsonWriter<TSymbol>(_lastSerializationSizeEstimate);
-                    Formatter.Serialize(ref jsonWriter, input);
-                    _lastSerializationSizeEstimate = jsonWriter.Data.Length;
-                    var temp = jsonWriter.Data;
-                    var data = Unsafe.As<TSymbol[], byte[]>(ref temp);
-                    var result = stream.WriteAsync(data, 0, jsonWriter.Position, cancellationToken);
-                    if (result.IsCompletedSuccessfully)
+                    try
                     {
-                        // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
-                        ArrayPool<byte>.Shared.Return(data);
-                        return new ValueTask();
-                    }
+                        Formatter.Serialize(ref jsonWriter, input);
+                        _lastSerializationSizeEstimate = jsonWriter.Data.Length;
+                        var temp = jsonWriter.Data;
+                        var data = Unsafe.As<TSymbol[], byte[]>(ref temp);
+                        var result = stream.WriteAsync(data, 0, jsonWriter.Position, cancellationToken);
+                        if (result.IsCompletedSuccessfully)
+                        {
+                            return default;
+                        }
 
-                    return AwaitSerializeAsync(result, data);
+                        return AwaitSerializeAsync(result);
+                    }
+                    finally
+                    {
+                        jsonWriter.Dispose();
+                    }
                 }
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -160,51 +195,71 @@ namespace SpanJson
                 private static async ValueTask<Memory<byte>> ReadStreamFullAsync(Stream stream, CancellationToken cancellationToken = default)
                 {
                     var buffer = ArrayPool<byte>.Shared.Rent((int) stream.Length);
-                    var read = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
-                    return new Memory<byte>(buffer, 0, read);
+                    try
+                    {
+
+                        var read = await stream.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+                        return new Memory<byte>(buffer, 0, read);
+                    }
+                    catch
+                    {
+                        if (buffer != null)
+                        {
+                            ArrayPool<byte>.Shared.Return(buffer);
+                        }
+
+                        throw;
+                    }
                 }
 
                 private static T InnerDeserialize(Memory<byte> memory)
                 {
-                    var result = InnerDeserialize(MemoryMarshal.Cast<byte, TSymbol>(memory.Span));
-                    if (MemoryMarshal.TryGetArray<byte>(memory, out var segment))
+                    try
                     {
-                        ArrayPool<byte>.Shared.Return(segment.Array);
+                        return InnerDeserialize(MemoryMarshal.Cast<byte, TSymbol>(memory.Span));
                     }
-
-                    return result;
+                    finally
+                    {
+                        if (MemoryMarshal.TryGetArray<byte>(memory, out var segment))
+                        {
+                            ArrayPool<byte>.Shared.Return(segment.Array);
+                        }
+                    }
                 }
 
                 private static async ValueTask<Memory<byte>> ReadStreamAsync(Stream stream, int sizeHint, CancellationToken cancellationToken = default)
                 {
-                    var totalSize = 0;
                     var buffer = ArrayPool<byte>.Shared.Rent(sizeHint);
-                    int read;
-                    while ((read = await stream.ReadAsync(buffer, totalSize, buffer.Length - totalSize, cancellationToken).ConfigureAwait(false)) > 0)
+                    try
                     {
-                        if (totalSize + read == buffer.Length)
+                        var totalSize = 0;
+                        int read;
+                        while ((read = await stream.ReadAsync(buffer, totalSize, buffer.Length - totalSize, cancellationToken).ConfigureAwait(false)) > 0)
                         {
-                            FormatterUtils.GrowArray(ref buffer);
+                            if (totalSize + read == buffer.Length)
+                            {
+                                FormatterUtils.GrowArray(ref buffer);
+                            }
+
+                            totalSize += read;
                         }
 
-                        totalSize += read;
+                        return new Memory<byte>(buffer, 0, totalSize);
                     }
+                    catch
+                    {
+                        if (buffer != null)
+                        {
+                            ArrayPool<byte>.Shared.Return(buffer);
+                        }
 
-                    return new Memory<byte>(buffer, 0, totalSize);
+                        throw;
+                    }
                 }
 
-                // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
-                private static async ValueTask AwaitSerializeAsync(Task result, char[] data)
+                private static async ValueTask AwaitSerializeAsync(Task result)
                 {
                     await result.ConfigureAwait(false);
-                    ArrayPool<char>.Shared.Return(data);
-                }
-
-                // This is a bit ugly, as we use the arraypool outside of the jsonwriter, but ref can't be use in async
-                private static async ValueTask AwaitSerializeAsync(Task result, byte[] data)
-                {
-                    await result.ConfigureAwait(false);
-                    ArrayPool<byte>.Shared.Return(data);
                 }
 
                 private static async ValueTask<T> AwaitDeserializeAsync(Task<string> task)
