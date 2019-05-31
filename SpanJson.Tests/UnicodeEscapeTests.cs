@@ -102,5 +102,24 @@ namespace SpanJson.Tests
             Assert.Equal(person.名称, deserialized.名称);
             Assert.Equal(person.数, deserialized.数);
         }
+
+        [Fact]
+        public void EmoticonsUtf16()
+        {
+            var input = "😀😁";
+            var fullyEscaped = "\"\\ud83d\\ude00\\ud83d\\ude01\"";
+            var output = JsonSerializer.Generic.Utf16.Deserialize<string>(fullyEscaped);
+            Assert.Equal(input, output);
+        }
+
+
+        [Fact]
+        public void EmoticonsUtf8()
+        {
+            var input = "😀😁";
+            var fullyEscaped = Encoding.UTF8.GetBytes("\"\\ud83d\\ude00\\ud83d\\ude01\"");
+            var output = JsonSerializer.Generic.Utf8.Deserialize<string>(fullyEscaped);
+            Assert.Equal(input, output);
+        }
     }
 }
