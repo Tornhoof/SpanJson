@@ -355,7 +355,7 @@ namespace SpanJson
         {
             SkipWhitespaceUtf16();
             var span = ReadUtf16StringSpanInternal(out var escapedCharsSize);
-            return escapedCharsSize == 0 ? ConvertGuidViaUtf8(span, _pos) : ParseUtf16GuidAllocating(span);
+            return escapedCharsSize == 0 ? ParseUtf16Guid(span, _pos) : ParseUtf16GuidAllocating(span);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -363,7 +363,20 @@ namespace SpanJson
         {
             Span<char> span = stackalloc char[JsonSharedConstant.MaxGuidLength];
             UnescapeUtf16Chars(input, ref span);
-            return ConvertGuidViaUtf8(span, _pos);
+            return ParseUtf16Guid(span, _pos);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Guid ParseUtf16Guid(in ReadOnlySpan<char> span, int position)
+        {
+            var format = 'D';
+            if (Guid.TryParseExact(span, MemoryMarshal.CreateSpan(ref format, 1), out var value))
+            {
+                return value;
+            }
+
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.Guid, position);
+            return default;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -375,32 +388,13 @@ namespace SpanJson
                 byteSpan[i] = (byte) span[i];
             }
 
-            // TODO: replace with utf16 code in .net core 3.0
+            // still slow in .NET Core 3.0
             if (Utf8Parser.TryParse(byteSpan, out TimeSpan value, out var bytesConsumed) && bytesConsumed == span.Length)
             {
                 return value;
             }
 
             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.TimeSpan, position);
-            return default;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Guid ConvertGuidViaUtf8(in ReadOnlySpan<char> span, int position)
-        {
-            Span<byte> byteSpan = stackalloc byte[JsonSharedConstant.MaxGuidLength]; // easy way
-            for (var i = 0; i < span.Length; i++)
-            {
-                byteSpan[i] = (byte) span[i];
-            }
-
-            // TODO: replace with utf16 code in .net core 3.0
-            if (Utf8Parser.TryParse(byteSpan, out Guid result, out var bytesConsumed, 'D') && bytesConsumed == span.Length)
-            {
-                return result;
-            }
-
-            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.Guid, position);
             return default;
         }
 
