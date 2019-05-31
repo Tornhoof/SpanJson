@@ -292,7 +292,7 @@ namespace SpanJson
         private DateTime ParseUtf16DateTimeAllocating(in ReadOnlySpan<char> input)
         {
             Span<char> span = stackalloc char[JsonSharedConstant.MaxDateTimeLength];
-            UnescapeUtf16Chars(input, span);
+            UnescapeUtf16Chars(input, ref span);
             if (DateTimeParser.TryParseDateTime(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
@@ -326,7 +326,7 @@ namespace SpanJson
         private DateTimeOffset ParseUtf16DateTimeOffsetAllocating(in ReadOnlySpan<char> input)
         {
             Span<char> span = stackalloc char[JsonSharedConstant.MaxDateTimeOffsetLength];
-            UnescapeUtf16Chars(input, span);
+            UnescapeUtf16Chars(input, ref span);
             if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
             {
                 return value;
@@ -347,7 +347,7 @@ namespace SpanJson
         private TimeSpan ParseUtf16TimeSpanAllocating(in ReadOnlySpan<char> input)
         {
             Span<char> span = stackalloc char[JsonSharedConstant.MaxTimeSpanLength];
-            UnescapeUtf16Chars(input, span);
+            UnescapeUtf16Chars(input, ref span);
             return ConvertTimeSpanViaUtf8(span, _pos);
         }
 
@@ -357,12 +357,12 @@ namespace SpanJson
             var span = ReadUtf16StringSpanInternal(out var escapedCharsSize);
             return escapedCharsSize == 0 ? ConvertGuidViaUtf8(span, _pos) : ParseUtf16GuidAllocating(span);
         }
-        
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         private Guid ParseUtf16GuidAllocating(in ReadOnlySpan<char> input)
         {
             Span<char> span = stackalloc char[JsonSharedConstant.MaxGuidLength];
-            UnescapeUtf16Chars(input, span);
+            UnescapeUtf16Chars(input, ref span);
             return ConvertGuidViaUtf8(span, _pos);
         }
 
@@ -370,13 +370,13 @@ namespace SpanJson
         private static TimeSpan ConvertTimeSpanViaUtf8(in ReadOnlySpan<char> span, int position)
         {
             Span<byte> byteSpan = stackalloc byte[JsonSharedConstant.MaxTimeSpanLength];
-            for (int i = 0; i < span.Length; i++)
+            for (var i = 0; i < span.Length; i++)
             {
                 byteSpan[i] = (byte) span[i];
             }
 
             // TODO: replace with utf16 code in .net core 3.0
-            if (Utf8Parser.TryParse(byteSpan, out TimeSpan value, out var bytesConsumed) && bytesConsumed == byteSpan.Length)
+            if (Utf8Parser.TryParse(byteSpan, out TimeSpan value, out var bytesConsumed) && bytesConsumed == span.Length)
             {
                 return value;
             }
@@ -393,8 +393,9 @@ namespace SpanJson
             {
                 byteSpan[i] = (byte) span[i];
             }
+
             // TODO: replace with utf16 code in .net core 3.0
-            if (Utf8Parser.TryParse(byteSpan, out Guid result, out var bytesConsumed, 'D') && bytesConsumed == byteSpan.Length)
+            if (Utf8Parser.TryParse(byteSpan, out Guid result, out var bytesConsumed, 'D') && bytesConsumed == span.Length)
             {
                 return result;
             }
@@ -462,12 +463,12 @@ namespace SpanJson
             var unescapedLength = span.Length - escapedCharSize;
             var result = new string('\0', unescapedLength);
             var writeableSpan = MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(result.AsSpan()), unescapedLength);
-            UnescapeUtf16Chars(span, writeableSpan);
+            UnescapeUtf16Chars(span, ref writeableSpan);
             return result;
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void UnescapeUtf16Chars(in ReadOnlySpan<char> span, Span<char> result)
+        private static void UnescapeUtf16Chars(in ReadOnlySpan<char> span, ref Span<char> result)
         {
             var charOffset = 0;
             var from = 0;
@@ -482,7 +483,7 @@ namespace SpanJson
                     span.Slice(from, copyLength).CopyTo(result.Slice(charOffset));
                     charOffset += copyLength;
                     index++;
-                    current =  ref span[index++];
+                    current = ref span[index++];
                     char unescaped = default;
                     switch (current)
                     {
@@ -522,6 +523,7 @@ namespace SpanJson
                             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, index);
                             break;
                         }
+
                         default:
                         {
                             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, index);
@@ -540,8 +542,12 @@ namespace SpanJson
 
             if (from < span.Length) // still data to copy
             {
-                span.Slice(from).CopyTo(result.Slice(charOffset));
+                var sliceLength = span.Length - from;
+                span.Slice(from, sliceLength).CopyTo(result.Slice(charOffset));
+                charOffset += sliceLength;
             }
+
+            result = result.Slice(0, charOffset);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -581,15 +587,6 @@ namespace SpanJson
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             escapedCharsSize = default;
             return default;
-        }
-
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ReadOnlySpan<char> ReadUtf16EscapedStringSpanInternal()
-        {
-            SkipWhitespaceUtf16();
-            var span = ReadUtf16StringSpanInternal(out var escapedCharSize);
-            return escapedCharSize == 0 ? span : UnescapeUtf16(span, escapedCharSize);
         }
 
         /// <summary>
@@ -669,6 +666,7 @@ namespace SpanJson
                         pos++;
                         continue;
                     }
+
                     default:
                         return;
                 }
@@ -871,6 +869,7 @@ namespace SpanJson
                         stack++;
                         continue;
                     }
+
                     case JsonToken.EndObject:
                     case JsonToken.EndArray:
                     {
@@ -883,6 +882,7 @@ namespace SpanJson
 
                         return;
                     }
+
                     case JsonToken.Number:
                     case JsonToken.String:
                     case JsonToken.True:
@@ -932,6 +932,7 @@ namespace SpanJson
 
                     break;
                 }
+
                 case JsonToken.String:
                 {
                     if (SkipUtf16String(ref pos))
@@ -942,6 +943,7 @@ namespace SpanJson
                     ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
                     break;
                 }
+
                 case JsonToken.Null:
                 case JsonToken.True:
                     pos += 4;
@@ -987,7 +989,7 @@ namespace SpanJson
                 if (c == JsonUtf16Constant.ReverseSolidus)
                 {
                     escapedCharsSize++;
-                    c =  ref Unsafe.Add(ref cStart, ++stringLength);
+                    c = ref Unsafe.Add(ref cStart, ++stringLength);
                     if (c == 'u')
                     {
                         escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
@@ -1044,20 +1046,24 @@ namespace SpanJson
                     ReadUtf16Null();
                     return null;
                 }
+
                 case JsonToken.False:
                 case JsonToken.True:
                 {
                     return ReadUtf16Boolean();
                 }
+
                 case JsonToken.Number:
                 {
                     return new SpanJsonDynamicUtf16Number(ReadUtf16NumberInternal());
                 }
+
                 case JsonToken.String:
                 {
                     var span = ReadUtf16StringSpanWithQuotes();
                     return new SpanJsonDynamicUtf16String(span);
                 }
+
                 case JsonToken.BeginObject:
                 {
                     pos++;
@@ -1072,6 +1078,7 @@ namespace SpanJson
 
                     return new SpanJsonDynamicObject(dictionary);
                 }
+
                 case JsonToken.BeginArray:
                 {
                     pos++;
@@ -1110,6 +1117,7 @@ namespace SpanJson
                         }
                     }
                 }
+
                 default:
                 {
                     ThrowJsonParserException(JsonParserException.ParserError.EndOfData);

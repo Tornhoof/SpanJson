@@ -114,6 +114,7 @@ namespace SpanJson
                 ThrowArgumentException("Invalid float value for JSON", nameof(value));
                 return;
             }
+
             Span<char> span = stackalloc char[JsonSharedConstant.MaxNumberBufferSize];
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;
@@ -135,6 +136,7 @@ namespace SpanJson
                 ThrowArgumentException("Invalid double value for JSON", nameof(value));
                 return;
             }
+
             Span<char> span = stackalloc char[JsonSharedConstant.MaxNumberBufferSize];
             value.TryFormat(span, out var written, provider: CultureInfo.InvariantCulture);
             ref var pos = ref _pos;

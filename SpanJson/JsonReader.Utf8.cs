@@ -4,7 +4,6 @@ using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using SpanJson.Formatters.Dynamic;
 using SpanJson.Helpers;
@@ -117,7 +116,7 @@ namespace SpanJson
             }
 
             var result = ReadUtf8NumberDigits(ref b, ref _pos);
-            return neg ? unchecked(-(long)result) : checked((long)result);
+            return neg ? unchecked(-(long) result) : checked((long) result);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -405,7 +404,7 @@ namespace SpanJson
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             }
 
-            return escapedCharsSize == 0  ? ConvertToString(span) : UnescapeUtf8(span, escapedCharsSize);
+            return escapedCharsSize == 0 ? ConvertToString(span) : UnescapeUtf8(span, escapedCharsSize);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -417,7 +416,8 @@ namespace SpanJson
             if (_bytes[_pos++] != JsonUtf8Constant.NameSeparator)
             {
                 ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
-            }            
+            }
+
             return escapedCharsSize == 0 ? span : UnescapeUtf8Bytes(span);
         }
 
@@ -444,7 +444,7 @@ namespace SpanJson
             }
 
             var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
-            return escapedCharsSize == 0  ? ConvertToString(span) : UnescapeUtf8(span, escapedCharsSize);
+            return escapedCharsSize == 0 ? ConvertToString(span) : UnescapeUtf8(span, escapedCharsSize);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -454,7 +454,7 @@ namespace SpanJson
         }
 
         /// <summary>
-        ///   This is simply said pretty much twice as slow as the Utf16 version
+        ///     This is simply said pretty much twice as slow as the Utf16 version
         /// </summary>
         [MethodImpl(MethodImplOptions.NoInlining)]
         private string UnescapeUtf8(in ReadOnlySpan<byte> span, int escapedCharsSize)
@@ -474,7 +474,7 @@ namespace SpanJson
                     // We copy everything up to the escaped char as utf8 to the string
                     charOffset += Encoding.UTF8.GetChars(span.Slice(from, index - from), writeableSpan.Slice(charOffset));
                     index++;
-                    current =  ref span[index++];
+                    current = ref span[index++];
                     char unescaped = default;
                     switch (current)
                     {
@@ -514,6 +514,7 @@ namespace SpanJson
                             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
                             break;
                         }
+
                         default:
                         {
                             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
@@ -577,41 +578,42 @@ namespace SpanJson
                         case JsonUtf8Constant.Solidus:
                             unescaped = JsonUtf8Constant.Solidus;
                             break;
-                        case (byte)'b':
+                        case (byte) 'b':
                             unescaped = (byte) '\b';
                             break;
-                        case (byte)'f':
-                            unescaped = (byte)'\f';
+                        case (byte) 'f':
+                            unescaped = (byte) '\f';
                             break;
-                        case (byte)'n':
-                            unescaped = (byte)'\n';
+                        case (byte) 'n':
+                            unescaped = (byte) '\n';
                             break;
-                        case (byte)'r':
-                            unescaped = (byte)'\r';
+                        case (byte) 'r':
+                            unescaped = (byte) '\r';
                             break;
-                        case (byte)'t':
-                            unescaped = (byte)'\t';
+                        case (byte) 't':
+                            unescaped = (byte) '\t';
                             break;
-                        case (byte)'u':
+                        case (byte) 'u':
+                        {
+                            if (Utf8Parser.TryParse(span.Slice(index, 4), out uint value, out var bytesConsumed, 'X'))
                             {
-                                if (Utf8Parser.TryParse(span.Slice(index, 4), out uint value, out var bytesConsumed, 'X'))
-                                {
-                                    index += bytesConsumed;
-                                    var c = (char) value;
-                                    Span<char> stack = MemoryMarshal.CreateSpan(ref c, 1);
-                                    byteOffset += Encoding.UTF8.GetBytes(stack, result.Slice(byteOffset));
-                                    from = index;
-                                    continue;
-                                }
+                                index += bytesConsumed;
+                                var c = (char) value;
+                                var stack = MemoryMarshal.CreateSpan(ref c, 1);
+                                byteOffset += Encoding.UTF8.GetBytes(stack, result.Slice(byteOffset));
+                                from = index;
+                                continue;
+                            }
 
-                                ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, index);
-                                break;
-                            }
+                            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, index);
+                            break;
+                        }
+
                         default:
-                            {
-                                ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, index);
-                                break;
-                            }
+                        {
+                            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, index);
+                            break;
+                        }
                     }
 
                     result[byteOffset++] = unescaped;
@@ -630,8 +632,7 @@ namespace SpanJson
                 byteOffset += sliceLength;
             }
 
-            result =  result.Slice(0, byteOffset);
-
+            result = result.Slice(0, byteOffset);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -671,14 +672,6 @@ namespace SpanJson
             ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
             escapedCharsSize = default;
             return default;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private ReadOnlySpan<byte> ReadUtf8EscapedStringSpanInternal()
-        {
-            SkipWhitespaceUtf8();
-            var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
-            return escapedCharsSize == 0 ? span : UnescapeUtf8Bytes(span);
         }
 
         /// <summary>
@@ -763,6 +756,7 @@ namespace SpanJson
                         pos++;
                         continue;
                     }
+
                     default:
                         return;
                 }
@@ -982,6 +976,7 @@ namespace SpanJson
                         stack++;
                         continue;
                     }
+
                     case JsonToken.EndObject:
                     case JsonToken.EndArray:
                     {
@@ -994,6 +989,7 @@ namespace SpanJson
 
                         return;
                     }
+
                     case JsonToken.Number:
                     case JsonToken.String:
                     case JsonToken.True:
@@ -1043,6 +1039,7 @@ namespace SpanJson
 
                     break;
                 }
+
                 case JsonToken.String:
                 {
                     if (SkipUtf8String(ref pos))
@@ -1053,6 +1050,7 @@ namespace SpanJson
                     ThrowJsonParserException(JsonParserException.ParserError.ExpectedDoubleQuote);
                     break;
                 }
+
                 case JsonToken.Null:
                 case JsonToken.True:
                     pos += 4;
@@ -1099,7 +1097,7 @@ namespace SpanJson
                 {
                     escapedCharsSize++;
                     b = ref Unsafe.Add(ref bStart, ++stringLength);
-                    if (b == (byte)'u')
+                    if (b == (byte) 'u')
                     {
                         escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
                         stringLength += 4;
@@ -1150,20 +1148,24 @@ namespace SpanJson
                     ReadUtf8Null();
                     return null;
                 }
+
                 case JsonToken.False:
                 case JsonToken.True:
                 {
                     return ReadUtf8Boolean();
                 }
+
                 case JsonToken.Number:
                 {
                     return new SpanJsonDynamicUtf8Number(ReadUtf8NumberInternal());
                 }
+
                 case JsonToken.String:
                 {
                     var span = ReadUtf8StringSpanWithQuotes();
                     return new SpanJsonDynamicUtf8String(span);
                 }
+
                 case JsonToken.BeginObject:
                 {
                     pos++;
@@ -1178,6 +1180,7 @@ namespace SpanJson
 
                     return new SpanJsonDynamicObject(dictionary);
                 }
+
                 case JsonToken.BeginArray:
                 {
                     pos++;
@@ -1216,6 +1219,7 @@ namespace SpanJson
                         }
                     }
                 }
+
                 default:
                 {
                     ThrowJsonParserException(JsonParserException.ParserError.EndOfData);
