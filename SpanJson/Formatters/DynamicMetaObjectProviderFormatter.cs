@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -74,13 +75,40 @@ namespace SpanJson.Formatters
             }
             else if (value is ISpanJsonDynamicValue<byte> bValue)
             {
-                var chars = Encoding.UTF8.GetChars(bValue.Symbols);
-                writer.WriteUtf16Verbatim(chars);
+                var cMaxLength = Encoding.UTF8.GetMaxCharCount(bValue.Symbols.Length);
+                char[] buffer = null;
+                try
+                {
+                    buffer = ArrayPool<char>.Shared.Rent(cMaxLength); // can't use stackalloc here
+                    var written = Encoding.UTF8.GetChars(bValue.Symbols, buffer);
+                    writer.WriteUtf16Verbatim(buffer.AsSpan(0, written));
+                }
+                finally
+                {
+                    if (buffer != null)
+                    {
+                        ArrayPool<char>.Shared.Return(buffer);
+                    }
+                }
+
             }
             else if (value is ISpanJsonDynamicValue<char> cValue)
             {
-                var bytes = Encoding.UTF8.GetBytes(cValue.Symbols);
-                writer.WriteUtf8Verbatim(bytes);
+                var bMaxLength = Encoding.UTF8.GetMaxCharCount(cValue.Symbols.Length);
+                byte[] buffer = null;
+                try
+                {
+                    buffer = ArrayPool<byte>.Shared.Rent(bMaxLength); // can't use stackalloc here
+                    var written = Encoding.UTF8.GetBytes(cValue.Symbols, buffer);
+                    writer.WriteUtf8Verbatim(buffer.AsSpan(0, written));
+                }
+                finally
+                {
+                    if (buffer != null)
+                    {
+                        ArrayPool<byte>.Shared.Return(buffer);
+                    }
+                }
             }
             else if (value is ISpanJsonDynamicArray dynamicArray)
             {
