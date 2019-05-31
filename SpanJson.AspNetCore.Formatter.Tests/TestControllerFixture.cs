@@ -2,6 +2,7 @@
 using System.Net.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Hosting;
 
 namespace SpanJson.AspNetCore.Formatter.Tests
 {
@@ -13,8 +14,11 @@ namespace SpanJson.AspNetCore.Formatter.Tests
 
         public TestControllerFixture()
         {
-            var builder = new WebHostBuilder().UseStartup<Startup>();
-            _testServer = new TestServer(builder);
+            Host.CreateDefaultBuilder()
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
             Client = _testServer.CreateClient();
             BaseAddress = _testServer.BaseAddress;
         }
