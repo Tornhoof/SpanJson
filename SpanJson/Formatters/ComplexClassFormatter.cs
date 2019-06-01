@@ -1,9 +1,12 @@
-﻿namespace SpanJson.Formatters
+﻿using System.Threading;
+using System.Threading.Tasks;
+
+namespace SpanJson.Formatters
 {
     /// <summary>
     /// Used for types which are not built-in
     /// </summary>
-    public sealed class ComplexClassFormatter<T, TSymbol, TResolver> : ComplexFormatter, IJsonFormatter<T, TSymbol>
+    public sealed partial class ComplexClassFormatter<T, TSymbol, TResolver> : ComplexFormatter, IJsonFormatter<T, TSymbol>
         where T : class where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
         public static readonly ComplexClassFormatter<T, TSymbol, TResolver> Default = new ComplexClassFormatter<T, TSymbol, TResolver>();

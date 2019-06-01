@@ -8,6 +8,11 @@ namespace SpanJson.Formatters
     public partial class ListFormatter<TList, T, TSymbol, TResolver> : IAsyncJsonFormatter<TList, TSymbol>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TList : class, IList<T>
     {
+
+        private static async Task Yield()
+        {
+            await Task.Yield();
+        }
         /// <summary>
         /// For this we assume that a rather large portion of the data can be written synchronously
         /// </summary>
@@ -42,7 +47,7 @@ namespace SpanJson.Formatters
                     task = writer.FlushAsync(cancellationToken);
                     if (!task.IsCompletedSuccessfully)
                     {
-                        return AwaitFlushAndContinue(task, asyncWriter, value, i+1, cancellationToken);
+                        return AwaitFlushAndContinue(task, asyncWriter, value, i + 1, cancellationToken);
                     }
                 }
             }

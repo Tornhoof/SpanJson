@@ -253,5 +253,33 @@ namespace SpanJson.Tests
         {
             _outputHelper = outputHelper;
         }
+
+
+        [Fact]
+        public async Task TestComplex()
+        {
+            char[] data = new char[5000];
+            var formatter = ComplexClassFormatter<AsyncTestClass, char, ExcludeNullsOriginalCaseResolver<char>>.Default;
+            var writer = new AsyncWriter<char>(data);
+            var input = new AsyncTestClass {Children = new List<AsyncChild>(), MoreChildren = new List<AsyncChild>()};
+            for (int i = 0; i < 10000; i++)
+            {
+                input.Children.Add(new AsyncChild {Value = "Hello World" + i});
+                input.MoreChildren.Add(new AsyncChild {Value = "Hello Universe" + i});
+            }
+
+            await formatter.SerializeAsync(writer, input, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        public class AsyncTestClass
+        {
+            public List<AsyncChild> Children { get; set; }
+            public List<AsyncChild> MoreChildren { get; set; }
+        }
+
+        public class AsyncChild
+        {
+            public string Value { get; set; }
+        }
     }
 }

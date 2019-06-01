@@ -7,6 +7,8 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using SpanJson.Helpers;
 using SpanJson.Resolvers;
 
@@ -15,7 +17,7 @@ namespace SpanJson.Formatters
     /// <summary>
     /// Main type for handling complex types
     /// </summary>
-    public abstract class ComplexFormatter : BaseFormatter
+    public abstract partial class ComplexFormatter : BaseFormatter
     {
         /// <summary>
         /// Creates the serializer for both utf8 and utf16
@@ -588,5 +590,7 @@ namespace SpanJson.Formatters
 
 
         protected delegate void SerializeDelegate<in T, TSymbol>(ref JsonWriter<TSymbol> writer, T value) where TSymbol : struct;
+
+        protected delegate ValueTask<int> SerializeAsyncDelegate<in T, TSymbol>(AsyncWriter<TSymbol> writer, int state, T value, CancellationToken cancellationToken = default) where TSymbol : struct;
     }
 }

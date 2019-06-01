@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SpanJson.Formatters
 {
@@ -37,6 +39,16 @@ namespace SpanJson.Formatters
             {
                 RuntimeFormatter<TSymbol, TResolver>.Default.Serialize(ref writer, value);
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected static ValueTask SerializeFallbackAsync<T, TSymbol, TResolver>(AsyncWriter<TSymbol> asyncWriter,
+            T value, IJsonFormatter<T, TSymbol> formatter, CancellationToken cancellationToken = default)
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+        {
+            var writer = asyncWriter.Create();
+            formatter.Serialize(ref writer, value);
+            return writer.FlushAsync(cancellationToken);
         }
     }
 }
