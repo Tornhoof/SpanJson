@@ -251,7 +251,7 @@ namespace SpanJson.Tests
         {
             var formatter = ListFormatter<List<int>, int, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default;
             var writer = new JsonWriter<byte>(5000);
-            var state = new AwaiterState(-1, null);
+            var state = new AwaiterState(-1);
             return formatter.SerializeAsync(ref writer, ref state, values, CancellationToken.None);
         }
     }

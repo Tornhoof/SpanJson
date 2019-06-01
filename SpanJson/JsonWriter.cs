@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace SpanJson
 {
@@ -62,6 +63,22 @@ namespace SpanJson
         public int Position => _pos;
 
         public TSymbol[] Data { get; private set; }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Task FlushAsync()
+        {
+            if (Data.Length - _pos < 512)
+            {
+                return Yield();
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private static async Task Yield()
+        {
+            await Task.Yield();
+        }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

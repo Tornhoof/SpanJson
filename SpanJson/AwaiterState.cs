@@ -7,13 +7,11 @@ namespace SpanJson
 {
     public struct AwaiterState
     {
-        public AwaiterState(int state, ICriticalNotifyCompletion awaiter)
+        public AwaiterState(int state)
         {
             State = state;
-            Awaiter = awaiter;
         }
 
         public int State;
-        public ICriticalNotifyCompletion Awaiter;
     }
 }
