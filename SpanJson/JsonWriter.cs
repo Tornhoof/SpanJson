@@ -3,6 +3,8 @@ using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace SpanJson
 {
@@ -36,9 +38,49 @@ namespace SpanJson
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public JsonWriter(TSymbol[] data)
+        {
+            Data = data;
+            _pos = 0;
+            _depth = 0;
+            if (typeof(TSymbol) == typeof(char))
+            {
+                _chars = MemoryMarshal.Cast<TSymbol, char>(Data);
+                _bytes = null;
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                _bytes = MemoryMarshal.Cast<TSymbol, byte>(Data);
+                _chars = null;
+            }
+            else
+            {
+                ThrowNotSupportedException();
+                _chars = null;
+                _bytes = null;
+            }
+        }
+
         public int Position => _pos;
 
         public TSymbol[] Data { get; private set; }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Task FlushAsync(CancellationToken cancellationToken = default)
+        {
+            if (Data.Length - _pos < 512)
+            {
+                return Yield();
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private static async Task Yield()
+        {
+            await Task.Yield();
+        }
 
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
