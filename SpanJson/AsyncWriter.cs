@@ -1,6 +1,6 @@
 ﻿namespace SpanJson
 {
-    public struct AsyncWriter<TSymbol> where TSymbol : struct
+    public class AsyncWriter<TSymbol> where TSymbol : struct
     {
         public TSymbol[] Data { get; }
 

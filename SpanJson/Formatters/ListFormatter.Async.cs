@@ -8,6 +8,9 @@ namespace SpanJson.Formatters
     public partial class ListFormatter<TList, T, TSymbol, TResolver> : IAsyncJsonFormatter<TList, TSymbol>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TList : class, IList<T>
     {
+        /// <summary>
+        /// For this we assume that a rather large portion of the data can be written synchronously
+        /// </summary>
         public ValueTask SerializeAsync(AsyncWriter<TSymbol> asyncWriter, TList value, CancellationToken cancellationToken = default)
         {
             var writer = asyncWriter.Create();
@@ -27,19 +30,19 @@ namespace SpanJson.Formatters
             if (valueLength > 0)
             {
                 SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[0], ElementFormatter);
-                var flush1 = writer.FlushAsync(cancellationToken);
-                if (!flush1.IsCompletedSuccessfully)
+                var task = writer.FlushAsync(cancellationToken);
+                if (!task.IsCompletedSuccessfully)
                 {
-                    return AwaitFlushAndContinue(flush1, asyncWriter, value, 1, cancellationToken);
+                    return AwaitFlushAndContinue(task, asyncWriter, value, 1, cancellationToken);
                 }
                 for (var i = 1; i < valueLength; i++)
                 {
                     writer.WriteValueSeparator();
                     SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i], ElementFormatter);
-                    flush1 = writer.FlushAsync(cancellationToken);
-                    if (!flush1.IsCompletedSuccessfully)
+                    task = writer.FlushAsync(cancellationToken);
+                    if (!task.IsCompletedSuccessfully)
                     {
-                        return AwaitFlushAndContinue(flush1, asyncWriter, value, i+1, cancellationToken);
+                        return AwaitFlushAndContinue(task, asyncWriter, value, i+1, cancellationToken);
                     }
                 }
             }
@@ -53,7 +56,10 @@ namespace SpanJson.Formatters
             return default;
         }
 
-        private async ValueTask AwaitFlushAndContinue(Task task, AsyncWriter<TSymbol> asyncWriter, TList value, int index, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// This is necessary to prevent a stackoverflow from too many nested calls
+        /// </summary>
+        private async ValueTask AwaitFlushAndContinue(ValueTask task, AsyncWriter<TSymbol> asyncWriter, TList value, int index, CancellationToken cancellationToken = default)
         {
             await task.ConfigureAwait(false);
             var valueLength = value.Count;
@@ -63,7 +69,7 @@ namespace SpanJson.Formatters
             }
         }
 
-        private async ValueTask<int> AwaitNextFlushAndContinue(Task task, int index)
+        private async ValueTask<int> AwaitNextFlushAndContinue(ValueTask task, int index)
         {
             await task.ConfigureAwait(false);
             return index;
@@ -77,10 +83,10 @@ namespace SpanJson.Formatters
             {
                 writer.WriteValueSeparator();
                 SerializeRuntimeDecisionInternal<T, TSymbol, TResolver>(ref writer, value[i], ElementFormatter);
-                var flush1 = writer.FlushAsync(cancellationToken);
-                if (!flush1.IsCompletedSuccessfully)
+                var task = writer.FlushAsync(cancellationToken);
+                if (!task.IsCompletedSuccessfully)
                 {
-                    return AwaitNextFlushAndContinue(flush1, i + 1);
+                    return AwaitNextFlushAndContinue(task, i + 1);
                 }
             }
 
@@ -90,7 +96,7 @@ namespace SpanJson.Formatters
             }
 
             writer.WriteEndArray();
-            return default;
+            return new ValueTask<int>(valueLength);
         }
     }
 }

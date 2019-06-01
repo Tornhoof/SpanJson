@@ -1,15 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using SpanJson.Formatters;
+using SpanJson.Resolvers;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace SpanJson.Tests
 {
     public class AsyncTests
     {
+        private readonly ITestOutputHelper _outputHelper;
+
         public class AsyncTestObject : IEquatable<AsyncTestObject>
         {
             public string Text { get; set; }
@@ -190,6 +197,61 @@ namespace SpanJson.Tests
                     _stream.Dispose();
                 }
             }
+        }
+
+        [Fact]
+        public async Task WriteAsyncTest()
+        {
+            int count = 10000000;
+            List<int> values = new List<int>(count);
+            for (int i = 0; i < count; i++)
+            {
+                values.Add(i);
+            }
+
+            //var formatter = ListFormatter<List<int>, int, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default;
+            //using (var ms = new MemoryStream())
+            //{
+            //    var asyncJsonWriter = new AsyncJsonWriter<byte>(new YieldStream(ms));
+            //    await formatter.SerializeAsync(asyncJsonWriter, values, CancellationToken.None).ConfigureAwait(false);
+            //}
+            Stopwatch sw = new Stopwatch();
+            byte[] data = new byte[5000];
+            for (int i = 0; i < 10; i++)
+            {
+                sw.Restart();
+                await Run(data, values);
+                sw.Stop();
+                _outputHelper.WriteLine($"{sw.Elapsed.TotalMilliseconds}");
+            }
+
+            _outputHelper.WriteLine("Next");
+            for (int i = 0; i < 10; i++)
+            {
+                sw.Restart();
+                RunOld(values);
+                sw.Stop();
+                _outputHelper.WriteLine($"{sw.Elapsed.TotalMilliseconds}");
+            }
+        }
+
+        private void RunOld(List<int> values)
+        {
+            var writer = new JsonWriter<byte>(5000);
+            var formatter = ListFormatter<List<int>, int, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default;
+            formatter.Serialize(ref writer, values);
+        }
+
+        private ValueTask Run(byte[] data, List<int> values)
+        {
+            var formatter = ListFormatter<List<int>, int, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default;
+            var writer = new AsyncWriter<byte>(data);
+            return formatter.SerializeAsync(writer, values, CancellationToken.None);
+        }
+
+        public AsyncTests(ITestOutputHelper outputHelper)
+        {
+            _outputHelper = outputHelper;
         }
     }
 }

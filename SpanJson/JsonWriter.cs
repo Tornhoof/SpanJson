@@ -67,14 +67,14 @@ namespace SpanJson
         public TSymbol[] Data { get; private set; }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Task FlushAsync(CancellationToken cancellationToken = default)
+        public ValueTask FlushAsync(CancellationToken cancellationToken = default)
         {
             if (Data.Length - _pos < 512)
             {
-                return Yield();
+                return new ValueTask(Yield());
             }
 
-            return Task.CompletedTask;
+            return default;
         }
 
         private static async Task Yield()
