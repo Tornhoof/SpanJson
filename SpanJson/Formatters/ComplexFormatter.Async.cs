@@ -25,11 +25,11 @@ namespace SpanJson.Formatters
             var objectDescription = resolver.GetObjectDescription<T>();
             var memberInfos = objectDescription.Where(a => a.CanRead).ToList();
             var writerParameter = Expression.Parameter(typeof(AsyncWriter<TSymbol>), "asyncWriter");
-            var stateParameter = Expression.Parameter(typeof(int), "state");
+            var stateParameter = Expression.Parameter(typeof(int).MakeByRefType(), "state");
             var cancellationTokenParameter = Expression.Parameter(typeof(CancellationToken), "cancellationToken");
             var valueParameter = Expression.Parameter(typeof(T), "value");
             var expressions = new List<Expression>();
-            var returnLabel = Expression.Label(typeof(ValueTask<int>), "result");
+            var returnLabel = Expression.Label(typeof(ValueTask), "result");
             var labels = new LabelTarget[memberInfos.Count];
             var cases = new List<SwitchCase>();
             for (var i = 0; i < memberInfos.Count; i++)
@@ -41,7 +41,6 @@ namespace SpanJson.Formatters
 
             var switchExpression = Expression.Switch(stateParameter, cases.ToArray());
             expressions.Add(switchExpression);
-            var valueTaskConstructorInfo = typeof(ValueTask<int>).GetConstructor(new Type[] {typeof(int)});
             var vTaskVariable = Expression.Variable(typeof(ValueTask));
             for (var i = 0; i < memberInfos.Count; i++)
             {
@@ -65,14 +64,15 @@ namespace SpanJson.Formatters
                     parameterExpressions.Add(Expression.Field(null, fieldInfo));
                 }
                 parameterExpressions.Add(cancellationTokenParameter);
+                expressions.Add(Expression.Assign(stateParameter, Expression.Constant(i)));
                 expressions.Add(Expression.Assign(vTaskVariable, Expression.Call(serializerInstance, serializeMethodInfo, parameterExpressions)));
                 var needsAwait = Expression.IfThen(Expression.IsFalse(Expression.Property(vTaskVariable, nameof(ValueTask.IsCompletedSuccessfully))),
-                    Expression.Goto(returnLabel, Expression.New(valueTaskConstructorInfo, Expression.Constant(i)), typeof(ValueTask<int>)));
+                    Expression.Goto(returnLabel, vTaskVariable));
                 expressions.Add(needsAwait);
                 expressions.Add(Expression.Label(labels[i]));
             }
-
-            expressions.Add(Expression.Label(returnLabel, Expression.New(valueTaskConstructorInfo, Expression.Constant(-1))));
+            expressions.Add(Expression.Assign(stateParameter, Expression.Constant(-1)));
+            expressions.Add(Expression.Label(returnLabel, Expression.Default(typeof(ValueTask))));
             var blockExpression = Expression.Block(new[] {vTaskVariable}, expressions);
             var lambda =
                 Expression.Lambda<SerializeAsyncDelegate<T, TSymbol>>(blockExpression, writerParameter, stateParameter, valueParameter,
