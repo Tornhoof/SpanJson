@@ -591,6 +591,6 @@ namespace SpanJson.Formatters
 
         protected delegate void SerializeDelegate<in T, TSymbol>(ref JsonWriter<TSymbol> writer, T value) where TSymbol : struct;
 
-        protected delegate ValueTask<int> SerializeAsyncDelegate<in T, TSymbol>(AsyncWriter<TSymbol> writer, int state, T value, CancellationToken cancellationToken = default) where TSymbol : struct;
+        protected delegate ValueTask SerializeAsyncDelegate<in T, TSymbol>(AsyncWriter<TSymbol> writer, ref int state, T value, CancellationToken cancellationToken = default) where TSymbol : struct;
     }
 }

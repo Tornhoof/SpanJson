@@ -268,6 +268,9 @@ namespace SpanJson.Tests
                 input.MoreChildren.Add(new AsyncChild {Value = "Hello Universe" + i});
             }
 
+            //var listFormatter = ListFormatter<List<AsyncChild>, AsyncChild, char, ExcludeNullsOriginalCaseResolver<char>>.Default;
+            //await listFormatter.SerializeAsync(writer, input.Children).ConfigureAwait(false);
+
             await formatter.SerializeAsync(writer, input, CancellationToken.None).ConfigureAwait(false);
         }
 
