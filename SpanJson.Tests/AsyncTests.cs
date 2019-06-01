@@ -234,14 +234,17 @@ namespace SpanJson.Tests
             for (int i = 0; i < 10; i++)
             {
                 sw.Restart();
-                using (var ms = Stream.Null)
-                {
-                    await JsonSerializer.Generic.Utf8.SerializeAsync(values, ms);
-                }
-
+                RunOld(values);
                 sw.Stop();
                 _outputHelper.WriteLine($"{sw.Elapsed.TotalMilliseconds}");
             }
+        }
+
+        private void RunOld(List<int> values)
+        {
+            var writer = new JsonWriter<byte>(5000);
+            var formatter = ListFormatter<List<int>, int, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default;
+            formatter.Serialize(ref writer, values);
         }
 
         private ValueTask Run(List<int> values)
