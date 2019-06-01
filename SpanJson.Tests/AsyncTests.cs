@@ -202,12 +202,13 @@ namespace SpanJson.Tests
         [Fact]
         public async Task WriteAsyncTest()
         {
-            int count = 10000000;
-            List<int> values = new List<int>(count);
-            for (int i = 0; i < count; i++)
+            var input = new AsyncTestClass { Children = new List<AsyncChild>(), MoreChildren = new List<AsyncChild>() };
+            for (int i = 0; i < 1000000; i++)
             {
-                values.Add(i);
+                input.Children.Add(new AsyncChild { Value = "Hello World" + i });
+                input.MoreChildren.Add(new AsyncChild { Value = "Hello Universe" + i });
             }
+
 
             //var formatter = ListFormatter<List<int>, int, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default;
             //using (var ms = new MemoryStream())
@@ -220,7 +221,7 @@ namespace SpanJson.Tests
             for (int i = 0; i < 10; i++)
             {
                 sw.Restart();
-                await Run(data, values);
+                await Run(data, input);
                 sw.Stop();
                 _outputHelper.WriteLine($"{sw.Elapsed.TotalMilliseconds}");
             }
@@ -229,24 +230,24 @@ namespace SpanJson.Tests
             for (int i = 0; i < 10; i++)
             {
                 sw.Restart();
-                RunOld(values);
+                RunOld(input);
                 sw.Stop();
                 _outputHelper.WriteLine($"{sw.Elapsed.TotalMilliseconds}");
             }
         }
 
-        private void RunOld(List<int> values)
+        private void RunOld(AsyncTestClass input)
         {
             var writer = new JsonWriter<byte>(5000);
-            var formatter = ListFormatter<List<int>, int, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default;
-            formatter.Serialize(ref writer, values);
+            var formatter = ComplexClassFormatter<AsyncTestClass, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default;
+            formatter.Serialize(ref writer, input);
         }
 
-        private ValueTask Run(byte[] data, List<int> values)
+        private ValueTask Run(byte[] data, AsyncTestClass input)
         {
-            var formatter = ListFormatter<List<int>, int, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default;
+            var formatter = ComplexClassFormatter<AsyncTestClass, byte, ExcludeNullsOriginalCaseResolver<byte>>.Default;
             var writer = new AsyncWriter<byte>(data);
-            return formatter.SerializeAsync(writer, values, CancellationToken.None);
+            return formatter.SerializeAsync(writer, input, CancellationToken.None);
         }
 
         public AsyncTests(ITestOutputHelper outputHelper)
