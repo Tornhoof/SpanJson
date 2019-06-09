@@ -37,18 +37,16 @@ namespace SpanJson.Formatters
                 expressions.Add(Expression.Call(writerParameter, nameof(JsonWriter<TSymbol>.AssertDepth), Type.EmptyTypes));
             }
 
-            MethodInfo separatorWriteMethodInfo;
+
             MethodInfo writeBeginObjectMethodInfo;
             MethodInfo writeEndObjectMethodInfo;
             if (typeof(TSymbol) == typeof(char))
             {
-                separatorWriteMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16ValueSeparator));
                 writeBeginObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16BeginObject));
                 writeEndObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16EndObject));
             }
             else if (typeof(TSymbol) == typeof(byte))
             {
-                separatorWriteMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8ValueSeparator));
                 writeBeginObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8BeginObject));
                 writeEndObjectMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8EndObject));
             }
@@ -62,134 +60,18 @@ namespace SpanJson.Formatters
             for (var i = 0; i < memberInfos.Count; i++)
             {
                 var memberInfo = memberInfos[i];
-                var formatterType = resolver.GetFormatter(memberInfo).GetType();
-                Expression serializerInstance = null;
-                MethodInfo serializeMethodInfo;
-                Expression memberExpression = Expression.PropertyOrField(valueParameter, memberInfo.MemberName);
-                var parameterExpressions = new List<Expression> {writerParameter, memberExpression};
-                var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
-                if (IsNoRuntimeDecisionRequired(memberInfo.MemberType))
-                {
-                    var underlyingType = Nullable.GetUnderlyingType(memberInfo.MemberType);
-                    // if it's nullable and we don't need the null and we don't have a custom formatter, we call the underlying provider directly
-                    if (memberInfo.ExcludeNull && underlyingType != null && !typeof(ICustomJsonFormatter).IsAssignableFrom(formatterType))
-                    {
-                        formatterType = resolver.GetFormatter(memberInfo, underlyingType).GetType();
-                        fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
-                        var methodInfo = memberInfo.MemberType.GetMethod("GetValueOrDefault", Type.EmptyTypes);
-                        memberExpression = Expression.Call(memberExpression, methodInfo);
-                        parameterExpressions = new List<Expression> {writerParameter, memberExpression};
-                    }
+                var parameterExpressions = new List<Expression> { writerParameter };
+                var (serializeMethodInfo, serializerInstance) = SelectSerializer<T, TSymbol, TResolver>(resolver, memberInfo, valueParameter, writerParameter, parameterExpressions);
 
-                    serializeMethodInfo = FindPublicInstanceMethod(formatterType, "Serialize", writerParameter.Type.MakeByRefType(),
-                        underlyingType ?? memberInfo.MemberType);
-                    serializerInstance = Expression.Field(null, fieldInfo);
-                }
-                else
-                {
-                    serializeMethodInfo = typeof(BaseFormatter)
-                        .GetMethod(nameof(SerializeRuntimeDecisionInternal), BindingFlags.NonPublic | BindingFlags.Static)
-                        .MakeGenericMethod(memberInfo.MemberType, typeof(TSymbol), typeof(TResolver));
-                    parameterExpressions.Add(Expression.Field(null, fieldInfo));
-                }
-
-                bool isCandidate = RecursionCandidate.LookupRecursionCandidate(memberInfo.MemberType);
+                var isCandidate = RecursionCandidate.LookupRecursionCandidate(memberInfo.MemberType);
 
                 if (isCandidate) // only for possible candidates
                 {
                     expressions.Add(Expression.Call(writerParameter, nameof(JsonWriter<TSymbol>.IncrementDepth), Type.EmptyTypes));
                 }
 
-                ConstantExpression[] writeNameExpressions;
-                var formattedMemberInfoName = $"\"{memberInfo.Name}\":";
-
-                MethodInfo propertyNameWriterMethodInfo;
-                if (typeof(TSymbol) == typeof(char))
-                {
-                    writeNameExpressions = new[] {Expression.Constant(formattedMemberInfoName)};
-                    propertyNameWriterMethodInfo =
-                        FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim), typeof(string));
-                }
-                // utf8 has special logic for writing the attribute names as Expression.Constant(byte-Array) is slower than Expression.Constant(string)
-                else if (typeof(TSymbol) == typeof(byte))
-                {
-                    // Everything above a length of 32 is not optimized
-                    if (formattedMemberInfoName.Length > 32)
-                    {
-                        writeNameExpressions = new[] {Expression.Constant(Encoding.UTF8.GetBytes(formattedMemberInfoName))};
-                        propertyNameWriterMethodInfo =
-                            FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim), typeof(byte[]));
-                    }
-                    else
-                    {
-                        writeNameExpressions = GetIntegersForMemberName(formattedMemberInfoName);
-                        var typesToMatch = writeNameExpressions.Select(a => a.Value.GetType());
-                        propertyNameWriterMethodInfo =
-                            FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim), typesToMatch.ToArray());
-                    }
-                }
-                else
-                {
-                    throw new NotSupportedException();
-                }
-
-                var valueExpressions = new List<Expression>();
-                // we need to add the separator, but only if a value was written before
-                // we write the separator and set the marker after writing each field
-                if (i > 0)
-                {
-                    valueExpressions.Add(
-                        Expression.IfThen(
-                            writeSeparator,
-                            Expression.Block(
-                                Expression.Call(writerParameter, separatorWriteMethodInfo))
-                        ));
-                }
-
-                valueExpressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo, writeNameExpressions));
-                valueExpressions.Add(Expression.Call(serializerInstance, serializeMethodInfo, parameterExpressions));
-                valueExpressions.Add(Expression.Assign(writeSeparator, Expression.Constant(true)));
-                Expression testNullExpression = null;
-                if (memberInfo.ExcludeNull)
-                {
-                    if (memberInfo.MemberType.IsClass)
-                    {
-                        testNullExpression = Expression.ReferenceNotEqual(
-                            Expression.PropertyOrField(valueParameter, memberInfo.MemberName),
-                            Expression.Constant(null));
-                    }
-                    else if (memberInfo.MemberType.IsValueType && Nullable.GetUnderlyingType(memberInfo.MemberType) != null) // nullable value type
-                    {
-                        testNullExpression = Expression.IsTrue(
-                            Expression.Property(Expression.PropertyOrField(valueParameter, memberInfo.MemberName), "HasValue"));
-                    }
-                }
-
-                var shouldSerializeExpression = memberInfo.ShouldSerialize != null
-                    ? Expression.IsTrue(Expression.Call(valueParameter, memberInfo.ShouldSerialize))
-                    : null;
-                Expression testExpression = null;
-                if (testNullExpression != null && shouldSerializeExpression != null)
-                {
-                    testExpression = Expression.AndAlso(testNullExpression, shouldSerializeExpression);
-                }
-                else if (testNullExpression != null)
-                {
-                    testExpression = testNullExpression;
-                }
-                else if (shouldSerializeExpression != null)
-                {
-                    testExpression = shouldSerializeExpression;
-                }
-
-                if (testExpression != null)
-                {
-                    expressions.Add(Expression.IfThen(testExpression, Expression.Block(valueExpressions)));
-                }
-                else
-                {
-                    expressions.AddRange(valueExpressions);
-                }
+                var memberInfoExpressions = BuildSerializeMemberInfoExpression<TSymbol, TResolver>(writerParameter, writeSeparator, valueParameter, memberInfo, i, serializerInstance, serializeMethodInfo, parameterExpressions);
+                expressions.AddRange(memberInfoExpressions);
 
                 if (isCandidate) // only for possible candidates
                 {
@@ -215,6 +97,139 @@ namespace SpanJson.Formatters
             var lambda =
                 Expression.Lambda<SerializeDelegate<T, TSymbol>>(blockExpression, writerParameter, valueParameter);
             return lambda.Compile();
+        }
+
+        private static (MethodInfo serializeMethodInfo, Expression serializerInstance) SelectSerializer<T, TSymbol, TResolver>(TResolver resolver, JsonMemberInfo memberInfo, ParameterExpression valueParameter,
+            ParameterExpression writerParameter, List<Expression> parameterExpressions)
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+        {
+            var formatterType = resolver.GetFormatter(memberInfo).GetType();
+            Expression serializerInstance = null;
+            Expression memberExpression = Expression.PropertyOrField(valueParameter, memberInfo.MemberName);
+            var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+            MethodInfo serializeMethodInfo;
+            if (IsNoRuntimeDecisionRequired(memberInfo.MemberType))
+            {
+                var underlyingType = Nullable.GetUnderlyingType(memberInfo.MemberType);
+                // if it's nullable and we don't need the null and we don't have a custom formatter, we call the underlying provider directly
+                if (memberInfo.ExcludeNull && underlyingType != null && !typeof(ICustomJsonFormatter).IsAssignableFrom(formatterType))
+                {
+                    formatterType = resolver.GetFormatter(memberInfo, underlyingType).GetType();
+                    fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+                    var methodInfo = memberInfo.MemberType.GetMethod("GetValueOrDefault", Type.EmptyTypes);
+                    memberExpression = Expression.Call(memberExpression, methodInfo);
+                    
+                }
+                parameterExpressions.Add(memberExpression);
+                serializeMethodInfo = FindPublicInstanceMethod(formatterType, "Serialize", writerParameter.Type.MakeByRefType(),
+                    underlyingType ?? memberInfo.MemberType);
+                serializerInstance = Expression.Field(null, fieldInfo);
+            }
+            else
+            {
+                serializeMethodInfo = typeof(BaseFormatter)
+                    .GetMethod(nameof(SerializeRuntimeDecisionInternal), BindingFlags.NonPublic | BindingFlags.Static)
+                    .MakeGenericMethod(memberInfo.MemberType, typeof(TSymbol), typeof(TResolver));
+                parameterExpressions.Add(memberExpression);
+                parameterExpressions.Add(Expression.Field(null, fieldInfo));
+            }
+
+            return (serializeMethodInfo, serializerInstance);
+        }
+
+        private static IEnumerable<Expression> BuildSerializeMemberInfoExpression<TSymbol, TResolver>(ParameterExpression writerParameter,
+            ParameterExpression writeSeparator, ParameterExpression valueParameter, JsonMemberInfo memberInfo,
+            int i,  Expression serializerInstance, MethodInfo serializeMethodInfo,  List<Expression> parameterExpressions)
+            where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
+        {
+            ConstantExpression[] writeNameExpressions;
+            var formattedMemberInfoName = $"\"{memberInfo.Name}\":";
+
+            MethodInfo propertyNameWriterMethodInfo;
+            MethodInfo separatorWriteMethodInfo;
+            if (typeof(TSymbol) == typeof(char))
+            {
+                separatorWriteMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16ValueSeparator));
+                writeNameExpressions = new[] {Expression.Constant(formattedMemberInfoName)};
+                propertyNameWriterMethodInfo =
+                    FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim), typeof(string));
+            }
+            // utf8 has special logic for writing the attribute names as Expression.Constant(byte-Array) is slower than Expression.Constant(string)
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                separatorWriteMethodInfo = FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8ValueSeparator));
+                // Everything above a length of 32 is not optimized
+                if (formattedMemberInfoName.Length > 32)
+                {
+                    writeNameExpressions = new[] {Expression.Constant(Encoding.UTF8.GetBytes(formattedMemberInfoName))};
+                    propertyNameWriterMethodInfo =
+                        FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim), typeof(byte[]));
+                }
+                else
+                {
+                    writeNameExpressions = GetIntegersForMemberName(formattedMemberInfoName);
+                    var typesToMatch = writeNameExpressions.Select(a => a.Value.GetType());
+                    propertyNameWriterMethodInfo =
+                        FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim), typesToMatch.ToArray());
+                }
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+
+            var valueExpressions = new List<Expression>();
+            // we need to add the separator, but only if a value was written before
+            // we write the separator and set the marker after writing each field
+            if (i > 0)
+            {
+                valueExpressions.Add(
+                    Expression.IfThen(
+                        writeSeparator,
+                        Expression.Block(
+                            Expression.Call(writerParameter, separatorWriteMethodInfo))
+                    ));
+            }
+
+            valueExpressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo, writeNameExpressions));
+            valueExpressions.Add(Expression.Call(serializerInstance, serializeMethodInfo, parameterExpressions));
+            valueExpressions.Add(Expression.Assign(writeSeparator, Expression.Constant(true)));
+            Expression testNullExpression = null;
+            if (memberInfo.ExcludeNull)
+            {
+                if (memberInfo.MemberType.IsClass)
+                {
+                    testNullExpression = Expression.ReferenceNotEqual(
+                        Expression.PropertyOrField(valueParameter, memberInfo.MemberName),
+                        Expression.Constant(null));
+                }
+                else if (memberInfo.MemberType.IsValueType && Nullable.GetUnderlyingType(memberInfo.MemberType) != null) // nullable value type
+                {
+                    testNullExpression = Expression.IsTrue(
+                        Expression.Property(Expression.PropertyOrField(valueParameter, memberInfo.MemberName), "HasValue"));
+                }
+            }
+
+            var shouldSerializeExpression = memberInfo.ShouldSerialize != null
+                ? Expression.IsTrue(Expression.Call(valueParameter, memberInfo.ShouldSerialize))
+                : null;
+            Expression testExpression = null;
+            if (testNullExpression != null && shouldSerializeExpression != null)
+            {
+                testExpression = Expression.AndAlso(testNullExpression, shouldSerializeExpression);
+            }
+            else if (testNullExpression != null)
+            {
+                testExpression = testNullExpression;
+            }
+            else if (shouldSerializeExpression != null)
+            {
+                testExpression = shouldSerializeExpression;
+            }
+
+            return testExpression != null
+                ? (IEnumerable<Expression>) new[] {Expression.IfThen(testExpression, Expression.Block(valueExpressions))}
+                : valueExpressions;
         }
 
         /// <summary>
