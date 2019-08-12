@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,12 +18,14 @@ namespace SpanJson.AspNetCore.Formatter.Tests
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().AddSpanJson().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
-            app.UseRouting(b => b.MapControllers());
+            app.UseRouting();
+            app.UseEndpoints(e => e.MapControllers());
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -7,7 +7,7 @@
     <Version>3.0.0-alpha</Version>
     <Authors>SpanJson Contributors</Authors>
     <Company />
-    <Description>SpanJson ASP.NET Core Formatter is the ASP.NET Core formatter package for SpanJson for ASP.NET Core 2.1+</Description>
+    <Description>SpanJson ASP.NET Core Formatter is the ASP.NET Core formatter package for SpanJson for ASP.NET Core 3.0+</Description>
     <Copyright>SpanJson Contributors</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Tornhoof/SpanJson</PackageProjectUrl>
@@ -32,7 +32,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <!--<PackageReference Include="SpanJson" Version="$(Version)" />-->
   </ItemGroup>
 
