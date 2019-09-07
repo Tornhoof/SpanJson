@@ -66,29 +66,29 @@ namespace SpanJson.Benchmarks
         //    return JsonSerializer.Generic.Utf8.Deserialize<MobileBadgeAward>(MobileBadgeAwardSerializedByteArray);
         //}
 
-        //[Benchmark]
-        //public string SerializeAnswerWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Serialize(Answer);
-        //}
+        [Benchmark]
+        public string SerializeAnswerWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Serialize(Answer);
+        }
 
-        //[Benchmark]
-        //public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
-        //{
-        //    return JsonSerializer.Generic.Utf8.Serialize(Answer);
-        //}
+        [Benchmark]
+        public byte[] SerializeAnswerWithSpanJsonSerializerUtf8()
+        {
+            return JsonSerializer.Generic.Utf8.Serialize(Answer);
+        }
 
-        //[Benchmark]
-        //public Answer DeserializeAnswerWithSpanJsonSerializer()
-        //{
-        //    return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
-        //}
+        [Benchmark]
+        public Answer DeserializeAnswerWithSpanJsonSerializer()
+        {
+            return SpanJsonSerializer.Deserialize<Answer>(AnswerSerializedString);
+        }
 
-        //[Benchmark]
-        //public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
-        //{
-        //    return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
-        //}
+        [Benchmark]
+        public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
+        {
+            return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
+        }
 
 
         //[Benchmark]
@@ -553,12 +553,12 @@ namespace SpanJson.Benchmarks
         //    writer.WriteUtf8Boolean(true);
         //}
 
-        [Benchmark]
-        public void WriteUtf8String()
-        {
-            var writer = new JsonWriter<byte>(64);
-            writer.WriteUtf8String("This is a Test Value String");
-        }
+        //[Benchmark]
+        //public void WriteUtf8String()
+        //{
+        //    var writer = new JsonWriter<byte>(64);
+        //    writer.WriteUtf8String("This is a Test Value String");
+        //}
         //private static readonly byte[] buffer = new byte[64];
         //[Benchmark]
         //public void WriteUtf8StringUtf8Json()

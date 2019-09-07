@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>3.0.0-alpha</Version>
+    <Version>3.0.0-alpha-01</Version>
     <Authors>SpanJson Contributors</Authors>
     <Company />
     <Description>SpanJson ASP.NET Core Formatter is the ASP.NET Core formatter package for SpanJson for ASP.NET Core 3.0+</Description>
@@ -33,7 +33,7 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <!--<PackageReference Include="SpanJson" Version="$(Version)" />-->
+    <PackageReference Include="SpanJson" Version="$(Version)" />
   </ItemGroup>
 
   <ItemGroup>
