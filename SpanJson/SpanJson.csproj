@@ -7,7 +7,7 @@
     <Version>3.0.0-alpha</Version>
     <Authors>SpanJson Contributors</Authors>
     <Company />
-    <Description>SpanJson is a JSON serializer for .NET Core 2.1+</Description>
+    <Description>SpanJson is a JSON serializer for .NET Core 3.0+</Description>
     <Copyright>SpanJson Contributors</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Tornhoof/SpanJson</PackageProjectUrl>
@@ -15,7 +15,7 @@
     <RepositoryUrl>git://github.com/Tornhoof/SpanJson</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>JSON</PackageTags>
-    <PackageReleaseNotes>Bugfixes and improvements</PackageReleaseNotes>
+    <PackageReleaseNotes>Targets .NET Core 3.0+ now</PackageReleaseNotes>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1701;1702;1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
