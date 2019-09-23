@@ -5,7 +5,7 @@
     <PackageTags>JSON</PackageTags>
     <SignAssembly>true</SignAssembly>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyOriginatorKeyFile>$(SolutionDir)SpanJson.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>../SpanJson.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
