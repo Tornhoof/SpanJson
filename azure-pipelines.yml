@@ -13,6 +13,12 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk'
+  inputs:
+    packageType: sdk
+    version: 3.0
+    installationPath: $(Agent.ToolsDirectory)/dotnet
 - script: cd SpanJson
 - script: dotnet restore
 - script: dotnet build --configuration $(buildConfiguration)
