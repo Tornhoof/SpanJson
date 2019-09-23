@@ -13,7 +13,7 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: DotNetCoreInstaller@0
+- task: DotNetCoreInstaller@1
   inputs:
     version: '3.0.100'
 - script: cd SpanJson
