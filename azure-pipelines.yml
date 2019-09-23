@@ -28,3 +28,8 @@ steps:
   displayName: 'dotnet test'
 - script: dotnet test -c Release SpanJson.AspNetCore.Formatter.Tests/SpanJson.AspNetCore.Formatter.Tests.csproj
   displayName: 'dotnet test Formatter'
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'nuget'
+    publishLocation: 'Container'  
