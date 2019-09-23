@@ -7,7 +7,7 @@ using SpanJson.Shared.Models;
 namespace SpanJson.Benchmarks
 {
     [Config(typeof(MyConfig))]
-    [DisassemblyDiagnoser(printIL: true, recursiveDepth: 2)]
+    [DisassemblyDiagnoser(recursiveDepth: 2)]
     public class SelectedBenchmarks
     {
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture(12345);
@@ -551,6 +551,20 @@ namespace SpanJson.Benchmarks
         //{
         //    var writer = new JsonWriter<Byte>(32);
         //    writer.WriteUtf8Boolean(true);
+        //}
+
+        //[Benchmark]
+        //public void WriteUtf8String()
+        //{
+        //    var writer = new JsonWriter<byte>(64);
+        //    writer.WriteUtf8String("This is a Test Value String");
+        //}
+        //private static readonly byte[] buffer = new byte[64];
+        //[Benchmark]
+        //public void WriteUtf8StringUtf8Json()
+        //{
+        //    var writer = new Utf8Json.JsonWriter(buffer);
+        //    writer.WriteString("This is a Test Value String");
         //}
     }
 }

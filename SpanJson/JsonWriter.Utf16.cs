@@ -30,9 +30,7 @@ namespace SpanJson
 
         public override string ToString()
         {
-            var s = _chars.Slice(0, _pos).ToString();
-            Dispose();
-            return s;
+            return _chars.Slice(0, _pos).ToString();
         }
 
 

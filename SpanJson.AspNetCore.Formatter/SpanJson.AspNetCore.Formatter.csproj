@@ -1,39 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.0.0</Version>
-    <Authors>SpanJson Contributors</Authors>
-    <Company />
-    <Description>SpanJson ASP.NET Core Formatter is the ASP.NET Core formatter package for SpanJson for ASP.NET Core 2.1+</Description>
-    <Copyright>SpanJson Contributors</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/Tornhoof/SpanJson</PackageProjectUrl>
-    <RepositoryUrl>git://github.com/Tornhoof/SpanJson</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <Description>SpanJson ASP.NET Core Formatter is the ASP.NET Core formatter package for SpanJson for ASP.NET Core 3.0+</Description>
     <PackageTags>JSON;aspnetcore</PackageTags>
-    <PackageReleaseNotes>Bugfixes and improvements</PackageReleaseNotes>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1701;1702;1591</NoWarn>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <SourceLinkCreate>true</SourceLinkCreate>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\SpanJson.snk</AssemblyOriginatorKeyFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyOriginatorKeyFile>../SpanJson.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netcoreapp2.1\SpanJson.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netcoreapp3.0\SpanJson.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netcoreapp2.1\SpanJson.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\netcoreapp3.0\SpanJson.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.0" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="SpanJson" Version="$(Version)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SpanJson\SpanJson.csproj" />
   </ItemGroup>
 
 </Project>

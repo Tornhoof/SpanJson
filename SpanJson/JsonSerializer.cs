@@ -17,9 +17,16 @@ namespace SpanJson
             public static string Print(in ReadOnlySpan<char> input)
             {
                 var reader = new JsonReader<char>(input);
-                var writer = new JsonWriter<char>();
-                Print(ref reader, ref writer, 0);
-                return writer.ToString();
+                var writer = new JsonWriter<char>(input.Length);
+                try
+                {
+                    Print(ref reader, ref writer, 0);
+                    return writer.ToString();
+                }
+                finally
+                {
+                    writer.Dispose();
+                }
             }
 
             /// <summary>
@@ -30,9 +37,16 @@ namespace SpanJson
             public static byte[] Print(in ReadOnlySpan<byte> input)
             {
                 var reader = new JsonReader<byte>(input);
-                var writer = new JsonWriter<byte>();
-                Print(ref reader, ref writer, 0);
-                return writer.ToByteArray();
+                var writer = new JsonWriter<byte>(input.Length);
+                try
+                {
+                    Print(ref reader, ref writer, 0);
+                    return writer.ToByteArray();
+                }
+                finally
+                {
+                    writer.Dispose();
+                }
             }
 
             private static void Print<TSymbol>(ref JsonReader<TSymbol> reader, ref JsonWriter<TSymbol> writer, int indent) where TSymbol : struct
@@ -132,9 +146,16 @@ namespace SpanJson
             public static string Minify(in ReadOnlySpan<char> input)
             {
                 var reader = new JsonReader<char>(input);
-                var writer = new JsonWriter<char>();
-                Minify(ref reader, ref writer);
-                return writer.ToString();
+                var writer = new JsonWriter<char>(input.Length); // less but shouldn't matter here
+                try
+                {
+                    Minify(ref reader, ref writer);
+                    return writer.ToString();
+                }
+                finally
+                {
+                    writer.Dispose();
+                }
             }
 
             /// <summary>
@@ -146,8 +167,15 @@ namespace SpanJson
             {
                 var reader = new JsonReader<byte>(input);
                 var writer = new JsonWriter<byte>();
-                Minify(ref reader, ref writer);
-                return writer.ToByteArray();
+                try
+                {
+                    Minify(ref reader, ref writer);
+                    return writer.ToByteArray();
+                }
+                finally
+                {
+                    writer.Dispose();
+                }
             }
 
             private static void Minify<TSymbol>(ref JsonReader<TSymbol> reader, ref JsonWriter<TSymbol> writer) where TSymbol : struct

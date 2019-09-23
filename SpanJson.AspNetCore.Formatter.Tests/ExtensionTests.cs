@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
-using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
@@ -18,8 +17,9 @@ namespace SpanJson.AspNetCore.Formatter.Tests
         {
             var options = GetOptions<MvcOptions>(services =>
             {
-                var builder = new MvcCoreBuilder(services, new ApplicationPartManager());
-                useAction(builder);
+                var mock = new Mock<IMvcCoreBuilder>();
+                mock.Setup(a => a.Services).Returns(services);
+                useAction(mock.Object);
             });
             Assert.NotNull(options);
             Assert.Single(options.InputFormatters);
@@ -32,8 +32,9 @@ namespace SpanJson.AspNetCore.Formatter.Tests
         {
             var options = GetOptions<MvcOptions>(services =>
             {
-                var builder = new MvcBuilder(services, new ApplicationPartManager());
-                useAction(builder);
+                var mock = new Mock<IMvcBuilder>();
+                mock.Setup(a => a.Services).Returns(services);
+                useAction(mock.Object);
             });
             Assert.NotNull(options);
             Assert.Single(options.InputFormatters);

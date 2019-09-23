@@ -21,7 +21,7 @@ namespace SpanJson.AspNetCore.Formatter.Tests
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((TestObject) obj);
         }
 
@@ -29,7 +29,7 @@ namespace SpanJson.AspNetCore.Formatter.Tests
         {
             unchecked
             {
-                var hashCode = (Hello != null ? Hello.GetHashCode() : 0);
+                var hashCode = Hello != null ? Hello.GetHashCode() : 0;
                 hashCode = (hashCode * 397) ^ (World != null ? World.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (int) Enum;
                 return hashCode;

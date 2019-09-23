@@ -11,7 +11,7 @@ namespace SpanJson.Benchmarks
         {
             Add(Job.Default.WithUnrollFactor(2));
             Add(MemoryDiagnoser.Default);
-            Set(new DefaultOrderer(SummaryOrderPolicy.Default, MethodOrderPolicy.Alphabetical));
+            Orderer = new DefaultOrderer(SummaryOrderPolicy.Default, MethodOrderPolicy.Alphabetical);
         }
     }
 }

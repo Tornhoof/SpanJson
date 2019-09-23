@@ -1,0 +1,46 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: DotNetCoreInstaller@1
+  inputs:
+    version: '3.0.100'
+- script: dotnet restore
+  displayName: 'dotnet restore'
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'dotnet build'
+- script: dotnet restore -s https://api.nuget.org/v3/index.json -s ./SpanJson/bin/Release
+  displayName: 'dotnet restore for correct dependencies'
+- script: dotnet build -c Release
+  displayName: 'dotnet build with correct dependencies'
+- script: dotnet test -c Release SpanJson.Tests/SpanJson.Tests.csproj --logger trx --collect "Code coverage"
+  displayName: 'dotnet test'  
+- script: dotnet test -c Release SpanJson.AspNetCore.Formatter.Tests/SpanJson.AspNetCore.Formatter.Tests.csproj --logger trx --collect "Code coverage"
+  displayName: 'dotnet test Formatter'
+- task: PublishTestResults@2
+  inputs:
+    testRunner: VSTest
+    testResultsFiles: '**/*.trx'  
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: '**/$(buildConfiguration)/**/*.nupkg'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    CleanTargetFolder: true
+    flattenFolders: true
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'nuget'
+    publishLocation: 'Container'  

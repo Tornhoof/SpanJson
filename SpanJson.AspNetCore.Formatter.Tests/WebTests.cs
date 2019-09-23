@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using SpanJson.Shared.Fixture;
 using Xunit;
@@ -11,12 +10,12 @@ namespace SpanJson.AspNetCore.Formatter.Tests
 {
     public class WebTests : IClassFixture<TestControllerFixture>
     {
-        private readonly TestControllerFixture _fixture;
-
         public WebTests(TestControllerFixture fixture)
         {
             _fixture = fixture;
         }
+
+        private readonly TestControllerFixture _fixture;
 
         [Fact]
         public async Task PingPong()
@@ -43,7 +42,7 @@ namespace SpanJson.AspNetCore.Formatter.Tests
         [Fact]
         public async Task PingPongLarge()
         {
-            var uri = new UriBuilder(_fixture.BaseAddress) { Path = "api/test/PingPong" };
+            var uri = new UriBuilder(_fixture.BaseAddress) {Path = "api/test/PingPong"};
             var fixture = new ExpressionTreeFixture();
             var model = fixture.Create<TestObject>();
             model.Hello = string.Join(", ", Enumerable.Repeat("Hello", 10000));

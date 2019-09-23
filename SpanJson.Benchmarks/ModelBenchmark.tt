@@ -14,6 +14,7 @@
         new {ResultType = typeof(string), Name = "SpanJsonSerializer"},
         new {ResultType = typeof(byte[]), Name = "SpanJsonUtf8Serializer"},
         new {ResultType = typeof(byte[]), Name = "Utf8JsonSerializer"},
+		new {ResultType = typeof(byte[]), Name = "SystemTextJsonSerializer"},
     };
     var models = typeof(SpanJson.Shared.Models.AccessToken).Assembly
                 .GetTypes()

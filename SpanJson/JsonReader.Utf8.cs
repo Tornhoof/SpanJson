@@ -705,7 +705,7 @@ namespace SpanJson
 
         public decimal ReadUtf8Decimal()
         {
-            if (Utf8Parser.TryParse(ReadUtf8NumberInternal(), out decimal result, out var bytesConsumed))
+            if (Utf8Parser.TryParse(ReadUtf8NumberInternal(), out decimal result, out _))
             {
                 return result;
             }
