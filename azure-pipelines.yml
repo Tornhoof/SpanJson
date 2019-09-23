@@ -31,7 +31,7 @@ steps:
 - task: CopyFiles@2
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)'
-    Contents: '**/$(buildConfiguration)/**/*.nukpg'
+    Contents: '**/$(buildConfiguration)/**/*.dll'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     CleanTargetFolder: true
     flattenFolders: true
