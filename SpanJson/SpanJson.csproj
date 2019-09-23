@@ -2,26 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <LangVersion>preview</LangVersion>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>3.0.0-alpha-02</Version>
-    <Authors>SpanJson Contributors</Authors>
-    <Company />
-    <Description>SpanJson is a JSON serializer for .NET Core 3.0+</Description>
-    <Copyright>SpanJson Contributors</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/Tornhoof/SpanJson</PackageProjectUrl>
-    <PackageId>SpanJson</PackageId>
-    <RepositoryUrl>git://github.com/Tornhoof/SpanJson</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
     <PackageTags>JSON</PackageTags>
-    <PackageReleaseNotes>Targets .NET Core 3.0+ now</PackageReleaseNotes>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1701;1702;1591</NoWarn>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <SourceLinkCreate>true</SourceLinkCreate>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\SpanJson.snk</AssemblyOriginatorKeyFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyOriginatorKeyFile>$(SolutionDir)SpanJson.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
