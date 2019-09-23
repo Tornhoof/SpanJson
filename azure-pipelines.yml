@@ -28,6 +28,13 @@ steps:
   displayName: 'dotnet test'
 - script: dotnet test -c Release SpanJson.AspNetCore.Formatter.Tests/SpanJson.AspNetCore.Formatter.Tests.csproj
   displayName: 'dotnet test Formatter'
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: '**/*.nukpg'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    CleanTargetFolder: true
+    flattenFolders: true
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
