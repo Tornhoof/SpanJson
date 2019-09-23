@@ -24,10 +24,14 @@ steps:
   displayName: 'dotnet restore for correct dependencies'
 - script: dotnet build -c Release
   displayName: 'dotnet build with correct dependencies'
-- script: dotnet test -c Release SpanJson.Tests/SpanJson.Tests.csproj
-  displayName: 'dotnet test'
-- script: dotnet test -c Release SpanJson.AspNetCore.Formatter.Tests/SpanJson.AspNetCore.Formatter.Tests.csproj
+- script: dotnet test -c Release SpanJson.Tests/SpanJson.Tests.csproj --logger trx --collect "Code coverage"
+  displayName: 'dotnet test'  
+- script: dotnet test -c Release SpanJson.AspNetCore.Formatter.Tests/SpanJson.AspNetCore.Formatter.Tests.csproj --logger trx --collect "Code coverage"
   displayName: 'dotnet test Formatter'
+- task: PublishTestResults@2
+  inputs:
+    testRunner: VSTest
+    testResultsFiles: '**/*.trx'  
 - task: CopyFiles@2
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)'
