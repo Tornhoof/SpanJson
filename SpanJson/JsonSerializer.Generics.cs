@@ -58,8 +58,7 @@ namespace SpanJson
                     {
                         Formatter.Serialize(ref jsonWriter, input);
                         _lastSerializationSizeEstimate = jsonWriter.Data.Length;
-                        var temp = jsonWriter.Data;
-                        var data = Unsafe.As<TSymbol[], char[]>(ref temp);
+                        var data = Unsafe.As<char[]>(jsonWriter.Data);
                         return new ArraySegment<char>(data, 0, jsonWriter.Position);
                     }
                     catch
@@ -93,8 +92,7 @@ namespace SpanJson
                     {
                         Formatter.Serialize(ref jsonWriter, input);
                         _lastSerializationSizeEstimate = jsonWriter.Data.Length;
-                        var temp = jsonWriter.Data;
-                        var data = Unsafe.As<TSymbol[], byte[]>(ref temp);
+                        var data = Unsafe.As<byte[]>(jsonWriter.Data);
                         return new ArraySegment<byte>(data, 0, jsonWriter.Position);
                     }
                     catch
@@ -112,8 +110,7 @@ namespace SpanJson
                     {
                         Formatter.Serialize(ref jsonWriter, input);
                         _lastSerializationSizeEstimate = jsonWriter.Data.Length;
-                        var temp = jsonWriter.Data;
-                        var data = Unsafe.As<TSymbol[], char[]>(ref temp);
+                        var data = Unsafe.As<char[]>(jsonWriter.Data);
                         var result = writer.WriteAsync(data, 0, jsonWriter.Position);
                         if (result.IsCompletedSuccessfully)
                         {
@@ -135,8 +132,7 @@ namespace SpanJson
                     {
                         Formatter.Serialize(ref jsonWriter, input);
                         _lastSerializationSizeEstimate = jsonWriter.Data.Length;
-                        var temp = jsonWriter.Data;
-                        var data = Unsafe.As<TSymbol[], byte[]>(ref temp);
+                        var data = Unsafe.As<byte[]>(jsonWriter.Data);
                         var result = stream.WriteAsync(data, 0, jsonWriter.Position, cancellationToken);
                         if (result.IsCompletedSuccessfully)
                         {

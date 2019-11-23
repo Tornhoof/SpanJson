@@ -29,15 +29,13 @@ namespace SpanJson.Formatters.Dynamic
         {
             if (typeof(TSymbol) == typeof(char))
             {
-                var temp = Symbols;
-                var chars = Unsafe.As<TSymbol[], char[]>(ref temp);
+                var chars = Unsafe.As<char[]>(Symbols);
                 return new string(chars);
             }
 
             if (typeof(TSymbol) == typeof(byte))
             {
-                var temp = Symbols;
-                var bytes = Unsafe.As<TSymbol[], byte[]>(ref temp);
+                var bytes = Unsafe.As<byte[]>(Symbols);
                 return Encoding.UTF8.GetString(bytes);
             }
 
