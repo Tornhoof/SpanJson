@@ -1,7 +1,6 @@
 <Project>
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <Authors>SpanJson Contributors</Authors>
     <Copyright>SpanJson Contributors</Copyright>
     <Company />
@@ -12,7 +11,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>Bugfixes and improvements</PackageReleaseNotes>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1701;1702;1591</NoWarn>
+    <NoWarn>1701;1702;CS1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <SourceLinkCreate>true</SourceLinkCreate>
   </PropertyGroup>
