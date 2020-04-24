@@ -254,5 +254,19 @@ namespace SpanJson.Tests
             Assert.DoesNotContain(": ", minifiedAsString);
             Assert.Equal(serialized, minified);
         }
+
+
+        [Fact]
+        public void TestX()
+        {
+            decimal value = 37.60819619999995m;
+            var serialized = JsonSerializer.Generic.Utf8.Serialize(value);
+            Assert.NotNull(serialized);
+            var serialized2 = JsonSerializer.Generic.Utf16.Serialize(value);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<decimal>(serialized);
+            Assert.Equal(value, deserialized);
+            var d = System.Text.Json.JsonSerializer.Deserialize<decimal>(serialized);
+        }
+
     }
 }
