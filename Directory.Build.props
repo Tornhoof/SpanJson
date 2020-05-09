@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp5.0</TargetFramework>
     <Authors>SpanJson Contributors</Authors>
     <Copyright>SpanJson Contributors</Copyright>
     <Company />
