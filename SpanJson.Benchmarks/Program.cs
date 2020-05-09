@@ -1,4 +1,12 @@
-﻿using BenchmarkDotNet.Running;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using BenchmarkDotNet.Running;
+using Perfolizer.Mathematics.Histograms;
+using SpanJson.Codegen;
+using SpanJson.Resolvers;
+using SpanJson.Shared.Models;
 
 namespace SpanJson.Benchmarks
 {
@@ -6,7 +14,7 @@ namespace SpanJson.Benchmarks
     {
         private static void Main(string[] args)
         {
-            // dotnet run -c Release -- --methods=ReadUtf8Char
+            //// dotnet run -c Release -- --methods=ReadUtf8Char
             var switcher = new BenchmarkSwitcher(typeof(Program).Assembly);
             switcher.Run(args);
         }

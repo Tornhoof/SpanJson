@@ -16,6 +16,7 @@ namespace SpanJson
     {
         IJsonFormatter<T, TSymbol> GetFormatter<T>();
         JsonObjectDescription GetObjectDescription<T>();
+        JsonObjectDescription GetObjectDescription(Type type);
 
         Func<T> GetCreateFunctor<T>();
         Func<T, TConverted> GetEnumerableConvertFunctor<T, TConverted>();

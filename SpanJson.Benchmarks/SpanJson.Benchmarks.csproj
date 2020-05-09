@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SpanJson.Codegen\SpanJson.Codegen.csproj" />
     <ProjectReference Include="..\SpanJson.Shared\SpanJson.Shared.csproj" />
     <ProjectReference Include="..\SpanJson\SpanJson.csproj" />
   </ItemGroup>
@@ -71,6 +72,10 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ModelBenchmark.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Generated\" />
   </ItemGroup>
 
 </Project>

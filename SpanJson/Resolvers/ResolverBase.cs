@@ -149,7 +149,12 @@ namespace SpanJson.Resolvers
 
         public virtual JsonObjectDescription GetObjectDescription<T>()
         {
-            return BuildMembers(typeof(T)); // no need to cache that
+            return GetObjectDescription(typeof(T));
+        }
+
+        public virtual JsonObjectDescription GetObjectDescription(Type type)
+        {
+            return BuildMembers(type); // no need to cache that
         }
 
         public static string MakeCamelCase(string name)

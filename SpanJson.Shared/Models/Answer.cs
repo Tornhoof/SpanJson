@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace SpanJson.Shared.Models
 {
+    [AutoGenerate]
     public class Answer : IGenericEquality<Answer>
     {
         public int? question_id { get; set; }

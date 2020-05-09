@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using BenchmarkDotNet.Attributes;
+using SpanJson.Benchmarks.Generated;
 using SpanJson.Benchmarks.Serializers;
 using SpanJson.Shared.Fixture;
 using SpanJson.Shared.Models;
@@ -88,6 +89,43 @@ namespace SpanJson.Benchmarks
         public Answer DeserializeAnswerWithSpanJsonSerializerUtf8()
         {
             return JsonSerializer.Generic.Utf8.Deserialize<Answer>(AnswerSerializedByteArray);
+        }
+
+
+        [Benchmark]
+        public string SerializeAnswerWithSpanJsonSerializerGenerated()
+        {
+            var writer = new JsonWriter<char>(256);
+            AnswerUtf16Formatter.Default.Serialize(ref writer, Answer);
+            var result = writer.ToString();
+            writer.Dispose();
+            return result;
+        }
+
+        [Benchmark]
+        public byte[] SerializeAnswerWithSpanJsonSerializerUtf8Generated()
+        {
+            var writer = new JsonWriter<byte>(256);
+            AnswerUtf8Formatter.Default.Serialize(ref writer, Answer);
+            var result = writer.ToByteArray();
+            writer.Dispose();
+            return result;
+        }
+
+        [Benchmark]
+        public Answer DeserializeAnswerWithSpanJsonSerializerGenerated()
+        {
+            var reader = new JsonReader<char>(AnswerSerializedString);
+            var result = AnswerUtf16Formatter.Default.Deserialize(ref reader);
+            return result;
+        }
+
+        [Benchmark]
+        public Answer DeserializeAnswerWithSpanJsonSerializerUtf8Generated()
+        {
+            var reader = new JsonReader<byte>(AnswerSerializedByteArray);
+            var result = AnswerUtf8Formatter.Default.Deserialize(ref reader);
+            return result;
         }
 
 
