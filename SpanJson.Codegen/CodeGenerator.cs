@@ -246,10 +246,6 @@ namespace SpanJson.Codegen
             }
 
             var result = $"{GetFullName(formatter.GetType())}.Default";
-            if (result.Contains("BadgeRank"))
-            {
-
-            }
             return result;
         }
 
