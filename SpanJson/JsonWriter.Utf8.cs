@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Buffers;
 using System.Buffers.Text;
-using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.Unicode;
 using SpanJson.Helpers;
 
 namespace SpanJson
@@ -275,7 +274,7 @@ namespace SpanJson
                 ref readonly var c = ref value[index];
                 if (c < 0x20 || c == JsonUtf8Constant.DoubleQuote || c == JsonUtf8Constant.Solidus || c == JsonUtf8Constant.ReverseSolidus)
                 {
-                    WriteUtf8ReadonlySpan(value.Slice(from, index - from), 7); // The EscapedUtf8Char takes at most 6 bytes + 1 for double quote
+                    WriteUtf8ReadOnlySpan(value.Slice(from, index - from), 7); // The EscapedUtf8Char takes at most 6 bytes + 1 for double quote
                     WriteEscapedUtf8CharInternal(c);
                     from = index + 1;
                 }
@@ -286,16 +285,35 @@ namespace SpanJson
             // Still chars to encode
             if (from < value.Length)
             {
-                WriteUtf8ReadonlySpan(value.Slice(from), 1); // make sure we have place for doublequote
+                WriteUtf8ReadOnlySpan(value.Slice(from), 1); // make sure we have place for doublequote
             }
 
             WriteUtf8DoubleQuote();
         }
-
+#if NETSTANDARD2_1
+        private void WriteUtf8ReadOnlySpan(in ReadOnlySpan<char> value, int extraBytes)
+        {
+            ref var pos = ref _pos;
+            ReadOnlySpan<char> toWrite = value;
+            var encoder = Encoding.UTF8.GetEncoder();
+            bool completed;
+            do
+            {
+                var output = _bytes.Slice(pos, _bytes.Length - pos - extraBytes);
+                encoder.Convert(toWrite, output, true, out var charsRead, out var bytesWritten, out completed);
+                pos += bytesWritten;
+                if (!completed)
+                {
+                    Grow(toWrite.Length - charsRead);
+                    toWrite = toWrite.Slice(charsRead);
+                }
+            } while (!completed);
+        }
+#else 
         /// <summary>
         /// The new Utf8 api from .net core 3, we make sure we have a bit of buffer left to write e.g. double quotes
         /// </summary>
-        private void WriteUtf8ReadonlySpan(in ReadOnlySpan<char> value, int extraBytes)
+        private void WriteUtf8ReadOnlySpan(in ReadOnlySpan<char> value, int extraBytes)
         {
             ref var pos = ref _pos;
             OperationStatus opStatus;
@@ -312,7 +330,7 @@ namespace SpanJson
                 }
             } while (opStatus != OperationStatus.Done);
         }
-
+#endif
         private void WriteEscapedUtf8CharInternal(char value)
         {
             switch (value)
@@ -441,7 +459,7 @@ namespace SpanJson
             else
             {
                 var span = MemoryMarshal.CreateReadOnlySpan(ref value, 1);
-                WriteUtf8ReadonlySpan(span, 0);
+                WriteUtf8ReadOnlySpan(span, 0);
             }
         }
 
@@ -478,7 +496,7 @@ namespace SpanJson
             }
 
             WriteUtf8DoubleQuote();
-            WriteUtf8ReadonlySpan(value, 2);
+            WriteUtf8ReadOnlySpan(value, 2);
             WriteUtf8DoubleQuote();
             _bytes[pos++] = JsonUtf8Constant.NameSeparator;
         }

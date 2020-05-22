@@ -10,11 +10,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netcoreapp3.0\SpanJson.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netstandard2.1\SpanJson.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netcoreapp3.0\SpanJson.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\netstandard2.1\SpanJson.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
