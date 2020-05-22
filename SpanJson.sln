@@ -17,8 +17,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanJson.AspNetCore.Formatt
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanJson.AspNetCore.Formatter.Tests", "SpanJson.AspNetCore.Formatter.Tests\SpanJson.AspNetCore.Formatter.Tests.csproj", "{20BEDA75-0AA9-4846-9D20-D3640204E92C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpanJson.Codegen", "SpanJson.Codegen\SpanJson.Codegen.csproj", "{D8E61AF6-68BC-4FD8-8773-51F4254B2EED}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,10 +51,6 @@ Global
 		{20BEDA75-0AA9-4846-9D20-D3640204E92C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20BEDA75-0AA9-4846-9D20-D3640204E92C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20BEDA75-0AA9-4846-9D20-D3640204E92C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D8E61AF6-68BC-4FD8-8773-51F4254B2EED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D8E61AF6-68BC-4FD8-8773-51F4254B2EED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D8E61AF6-68BC-4FD8-8773-51F4254B2EED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D8E61AF6-68BC-4FD8-8773-51F4254B2EED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

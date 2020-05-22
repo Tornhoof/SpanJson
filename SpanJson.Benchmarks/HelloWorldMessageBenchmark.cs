@@ -1,8 +1,10 @@
 ﻿using System.Buffers;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
+using SpanJson.Benchmarks.Serializers;
 
 namespace SpanJson.Benchmarks
 {
@@ -18,6 +20,10 @@ namespace SpanJson.Benchmarks
         private const string Message = "Hello, World!";
 
         private static readonly JsonMessage JsonMessageInput = new JsonMessage {message = Message};
+
+
+        private static readonly JsonSerializerOptions SerializerOptions = new JsonSerializerOptions();
+        private static readonly ArrayBufferWriter<byte> Writer = new ArrayBufferWriter<byte>();
 
 
         [Benchmark]
@@ -86,6 +92,31 @@ namespace SpanJson.Benchmarks
             jsonWriter.WriteRaw(NameByteArray);
             jsonWriter.WriteString("Hello, World!");
             jsonWriter.WriteEndObject();
+            ArrayPool<byte>.Shared.Return(buffer);
+        }
+
+        [Benchmark]
+        public void SerializeSystemTextJson()
+        {
+            Writer.Clear();
+            var message = JsonMessageInput;
+            using (var utf8JsonWriter = new Utf8JsonWriter(Writer))
+            {
+                System.Text.Json.JsonSerializer.Serialize(utf8JsonWriter, message, SerializerOptions);
+            }
+        }
+
+        [Benchmark]
+        public void WriteeMessageDirectlySystemTextJson()
+        {
+            Writer.Clear();
+            var message = JsonMessageInput;
+            using (var utf8JsonWriter = new Utf8JsonWriter(Writer))
+            {
+                utf8JsonWriter.WriteStartObject();
+                utf8JsonWriter.WriteString("message", message.message);
+                utf8JsonWriter.WriteEndObject();
+            }
         }
     }
 }

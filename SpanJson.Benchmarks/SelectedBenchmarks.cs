@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using BenchmarkDotNet.Attributes;
-using SpanJson.Benchmarks.Generated;
+//using SpanJson.Benchmarks.Generated;
 using SpanJson.Benchmarks.Serializers;
 using SpanJson.Shared.Fixture;
 using SpanJson.Shared.Models;

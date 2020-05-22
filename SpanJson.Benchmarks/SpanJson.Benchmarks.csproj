@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SpanJson.Codegen\SpanJson.Codegen.csproj" />
     <ProjectReference Include="..\SpanJson.Shared\SpanJson.Shared.csproj" />
     <ProjectReference Include="..\SpanJson\SpanJson.csproj" />
   </ItemGroup>

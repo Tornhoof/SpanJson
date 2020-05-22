@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using BenchmarkDotNet.Running;
 using Perfolizer.Mathematics.Histograms;
-using SpanJson.Codegen;
 using SpanJson.Resolvers;
 using SpanJson.Shared.Models;
 
