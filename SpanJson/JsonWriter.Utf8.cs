@@ -321,7 +321,7 @@ namespace SpanJson
             do
             {
                 var output = _bytes.Slice(pos, _bytes.Length - pos - extraBytes);
-                opStatus = Utf8.FromUtf16(toWrite, output, out var charsRead, out var bytesWritten);
+                opStatus = System.Text.Unicode.Utf8.FromUtf16(toWrite, output, out var charsRead, out var bytesWritten);
                 pos += bytesWritten;
                 if (opStatus == OperationStatus.DestinationTooSmall)
                 {
