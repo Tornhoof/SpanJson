@@ -5,7 +5,7 @@
     <LangVersion>latest</LangVersion>
     <TieredCompilation>false</TieredCompilation>
     <IsPackable>false</IsPackable>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
