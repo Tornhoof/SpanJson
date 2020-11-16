@@ -5,10 +5,7 @@
     <LangVersion>latest</LangVersion>
     <TieredCompilation>false</TieredCompilation>
     <IsPackable>false</IsPackable>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702;EPS06</NoWarn>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,10 +24,6 @@
   <ItemGroup>
     <ProjectReference Include="..\SpanJson.Shared\SpanJson.Shared.csproj" />
     <ProjectReference Include="..\SpanJson\SpanJson.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 
   <ItemGroup>

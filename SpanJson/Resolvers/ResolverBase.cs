@@ -212,7 +212,7 @@ namespace SpanJson.Resolvers
                 return;
             }
 
-            if (TryGetBaseClassJsonConstructorAttribute(type, out attribute))
+            if (TryGetBaseClassJsonConstructorAttribute(type, out attribute) || type.GetMethod("<Clone>$") != null)
             {
                 // We basically take the one with the most parameters, this needs to match the dictionary // TODO find better method
                 constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance).OrderByDescending(a => a.GetParameters().Length)

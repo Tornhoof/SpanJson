@@ -16,6 +16,32 @@ namespace SpanJson.Resolvers
             if (Constructor != null)
             {
                 ConstructorMapping = BuildMapping();
+                // we need to sort all the members which are not assigned in the ctor after the ctor assigment, otherwise the object is not ctor'd.
+                Array.Sort(Members, (x, y) =>
+                {
+                    if (ReferenceEquals(x, y))
+                    {
+                        return 0;
+                    }
+
+                    var xIsCtorMapping = ConstructorMapping.TryGetValue(x.MemberName, out var xElement);
+                    var yIsCtorMapping = ConstructorMapping.TryGetValue(y.MemberName, out var yElement); 
+                    if (!xIsCtorMapping && !yIsCtorMapping) // both are not in, it doesn't matter
+                    {
+                        return StringComparer.Ordinal.Compare(x.MemberName, y.MemberName);
+                    }
+                    if (xIsCtorMapping && !yIsCtorMapping) // x is in ctor and y not, move x up
+                    {
+                        return -1;
+                    }
+
+                    if (!xIsCtorMapping && yIsCtorMapping) // x is not in ctor and y is, move x down
+                    {
+                        return 1;
+                    }
+
+                    return xElement.Index.CompareTo(yElement.Index);
+                });
             }
         }
 
