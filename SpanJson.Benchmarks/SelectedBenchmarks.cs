@@ -7,7 +7,7 @@ using SpanJson.Shared.Models;
 namespace SpanJson.Benchmarks
 {
     [Config(typeof(MyConfig))]
-    [DisassemblyDiagnoser(recursiveDepth: 2)]
+    [DisassemblyDiagnoser(2)]
     public class SelectedBenchmarks
     {
         private static readonly ExpressionTreeFixture ExpressionTreeFixture = new ExpressionTreeFixture(12345);
