@@ -21,8 +21,4 @@
     <ProjectReference Include="..\SpanJson.AspNetCore.Formatter\SpanJson.AspNetCore.Formatter.csproj" />
     <ProjectReference Include="..\SpanJson.Shared\SpanJson.Shared.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
 </Project>
