@@ -14,9 +14,9 @@ namespace SpanJson.Tests
             var person = new PersonRecord("Hello", "World");
             var serialized = JsonSerializer.Generic.Utf16.Serialize(person);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Utf16.Deserialize(serialized);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<PersonRecord>(serialized);
             Assert.NotNull(deserialized);
-            Assert.Equals(person, deserialized);
+            Assert.Equal(person, deserialized);
         }
 
         [Fact]
@@ -25,9 +25,9 @@ namespace SpanJson.Tests
             var person = new PersonRecord("Hello", "World");
             var serialized = JsonSerializer.Generic.Utf8.Serialize(person);
             Assert.NotNull(serialized);
-            var deserialized = JsonSerializer.Generic.Utf8.Deserialize(serialized);
+            var deserialized = JsonSerializer.Generic.Utf8.Deserialize<PersonRecord>(serialized);
             Assert.NotNull(deserialized);
-            Assert.Equals(person, deserialized);
+            Assert.Equal(person, deserialized);
         }
 
 
