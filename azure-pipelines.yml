@@ -16,6 +16,9 @@ steps:
 - task: DotNetCoreInstaller@1
   inputs:
     version: '5.0.100'
+- task: DotNetCoreInstaller@2
+  inputs:
+    version: '3.1.200'
 - script: dotnet restore
   displayName: 'dotnet restore'
 - script: dotnet build --configuration $(buildConfiguration)
