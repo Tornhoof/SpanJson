@@ -48,8 +48,8 @@ namespace SpanJson.Formatters
             }
 
             var formatterType = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter(type).GetType();
-            var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
-            var serializeMethodInfo = formatterType.GetMethod("Serialize");
+            var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public)!;
+            var serializeMethodInfo = formatterType.GetMethod("Serialize")!;
             var lambda = Expression.Lambda<SerializeDelegate>(
                 Expression.Call(Expression.Field(null, fieldInfo), serializeMethodInfo, writerParameter,
                     Expression.Convert(valueParameter, type)), writerParameter, valueParameter);

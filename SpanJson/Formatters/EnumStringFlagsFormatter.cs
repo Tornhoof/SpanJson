@@ -115,7 +115,7 @@ namespace SpanJson.Formatters
             var array = Enum.GetValues(typeof(T));
             for (var i = 0; i < array.Length; i++)
             {
-                var arrayValue = (T) array.GetValue(i);
+                var arrayValue = (T) array.GetValue(i)!;
                 if(((TEnumBase) Convert.ChangeType(arrayValue, typeof(TEnumBase))).Equals(0)) // looks so complicated because the enum values might be negative
                 { 
                     return arrayValue;

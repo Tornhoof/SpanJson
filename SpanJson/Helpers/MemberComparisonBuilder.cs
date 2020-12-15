@@ -61,7 +61,7 @@ namespace SpanJson.Helpers
                     var length = index + group.Key.offset;
                     var matchExpression = matchExpressionFunctor(memberInfo);
                     matchExpression = Expression.Block(matchExpression, Expression.Goto(endOfBlockLabel));
-                    Expression comparisonExpression = null;
+                    Expression? comparisonExpression = null;
                     if (group.Key.Key != 0 || group.Key.offset != 0)
                     {
                         comparisonExpression = Expression.Equal(GetReadMethod(nameSpanExpression, group.Key.intType, Expression.Constant(index * symbolSize)),
@@ -163,7 +163,7 @@ namespace SpanJson.Helpers
                 throw new NotSupportedException();
             }
 
-            var methodInfo = typeof(SpanHelper).GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
+            var methodInfo = typeof(SpanHelper).GetMethod(methodName, BindingFlags.Static | BindingFlags.Public)!;
             return Expression.Call(methodInfo, nameSpanExpression, offsetParameter);
         }
 

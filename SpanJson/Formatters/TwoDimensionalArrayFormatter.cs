@@ -20,7 +20,7 @@ namespace SpanJson.Formatters
             var count = 0;
             while (!reader.TryReadIsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
             {
-                values.Add(ArrayFormatter<T, TSymbol, TResolver>.Default.Deserialize(ref reader));
+                values.Add(ArrayFormatter<T, TSymbol, TResolver>.Default.Deserialize(ref reader)!);
             }
 
             if (values.Count == 0)

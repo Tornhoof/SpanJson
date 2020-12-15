@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Linq;
 
@@ -18,12 +19,12 @@ namespace SpanJson.Formatters.Dynamic
             return $"{{{string.Join(",", _dictionary.Select(a => $"\"{a.Key}\":{a.Value.ToJsonValue()}"))}}}";
         }
 
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        public override bool TryGetMember(GetMemberBinder binder, [MaybeNullWhen(false)] out object? result)
         {
             return _dictionary.TryGetValue(binder.Name, out result);
         }
 
-        public override bool TryConvert(ConvertBinder binder, out object result)
+        public override bool TryConvert(ConvertBinder binder, [MaybeNullWhen(false)] out object? result)
         {
             if (typeof(IDictionary<string, object>).IsAssignableFrom(binder.ReturnType))
             {

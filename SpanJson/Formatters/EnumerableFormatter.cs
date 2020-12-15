@@ -8,7 +8,7 @@ namespace SpanJson.Formatters
     /// <summary>
     /// Used for types which are not built-in
     /// </summary>
-    public sealed class EnumerableFormatter<TEnumerable, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TEnumerable, TSymbol>
+    public sealed class EnumerableFormatter<TEnumerable, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TEnumerable?, TSymbol>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TEnumerable : IEnumerable<T>
 
     {
@@ -21,18 +21,18 @@ namespace SpanJson.Formatters
             StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();
         private static readonly bool IsRecursionCandidate = RecursionCandidate<T>.IsRecursionCandidate;
 
-        public TEnumerable Deserialize(ref JsonReader<TSymbol> reader)
+        public TEnumerable? Deserialize(ref JsonReader<TSymbol> reader)
         {
             if (reader.ReadIsNull())
             {
                 return default;
             }
 
-            var array = ArrayFormatter<T, TSymbol, TResolver>.Default.Deserialize(ref reader);
+            var array = ArrayFormatter<T, TSymbol, TResolver>.Default.Deserialize(ref reader)!;
             return Converter(array);
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, TEnumerable value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, TEnumerable? value)
         {
             if (value == null)
             {
@@ -44,7 +44,7 @@ namespace SpanJson.Formatters
             {
                 writer.IncrementDepth();
             }
-            IEnumerator<T> enumerator = null;
+            IEnumerator<T>? enumerator = null;
             try
             {
                 enumerator = value.GetEnumerator();

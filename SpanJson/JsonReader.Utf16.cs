@@ -441,7 +441,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string ReadUtf16String()
+        public string? ReadUtf16String()
         {
             if (ReadUtf16IsNull())
             {
@@ -794,7 +794,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Version ReadUtf16Version()
+        public Version? ReadUtf16Version()
         {
             var stringValue = ReadUtf16String();
             if (stringValue == null)
@@ -806,7 +806,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Uri ReadUtf16Uri()
+        public Uri? ReadUtf16Uri()
         {
             var stringValue = ReadUtf16String();
             if (stringValue == null)
@@ -1019,12 +1019,12 @@ namespace SpanJson
             return false;
         }
 
-        public object ReadUtf16Dynamic()
+        public object? ReadUtf16Dynamic()
         {
             return ReadUtf16Dynamic(0);
         }
 
-        public object ReadUtf16Dynamic(int stack)
+        public object? ReadUtf16Dynamic(int stack)
         {
             ref var pos = ref _pos;
             var nextToken = ReadUtf16NextToken();
@@ -1067,7 +1067,7 @@ namespace SpanJson
                     {
                         var name = ReadUtf16EscapedName();
                         var value = ReadUtf16Dynamic(stack + 1);
-                        dictionary[name] = value; // take last one
+                        dictionary[name] = value!; // take last one
                     }
 
                     return new SpanJsonDynamicObject(dictionary);
@@ -1077,7 +1077,7 @@ namespace SpanJson
                 {
                     pos++;
                     var count = 0;
-                    object[] temp = null;
+                    object[]? temp = null;
                     try
                     {
                         temp = ArrayPool<object>.Shared.Rent(4);
@@ -1088,7 +1088,7 @@ namespace SpanJson
                                 FormatterUtils.GrowArray(ref temp);
                             }
 
-                            temp[count - 1] = ReadUtf16Dynamic(stack + 1);
+                            temp[count - 1] = ReadUtf16Dynamic(stack + 1)!;
                         }
 
                         object[] result;

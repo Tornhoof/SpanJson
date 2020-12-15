@@ -23,6 +23,6 @@ namespace SpanJson
             ParameterNames = parameterNames;
         }
 
-        public string[] ParameterNames { get; }
+        public string[]? ParameterNames { get; }
     }
 }

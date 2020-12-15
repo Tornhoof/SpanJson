@@ -313,7 +313,7 @@ namespace SpanJson.Resolvers
             if (type.TryGetTypeOfGenericInterface(typeof(IDictionary<,>), out var dictArgumentTypes) && HasApplicableCtor(type))
             {
                 var writableType = type.IsInterface ? GetFunctorFallBackType(type) : type;
-                return GetDefaultOrCreate(typeof(DictionaryFormatter<,,,,,>).MakeGenericType(type, writableType, dictArgumentTypes[0], dictArgumentTypes[1],
+                return GetDefaultOrCreate(typeof(DictionaryFormatter<,,,,,>).MakeGenericType(type, writableType!, dictArgumentTypes[0], dictArgumentTypes[1],
                     typeof(TSymbol), typeof(TResolver)));
             }
 

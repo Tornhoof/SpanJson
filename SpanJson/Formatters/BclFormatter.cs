@@ -47,11 +47,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableSByteUtf16ArrayFormatter : IJsonFormatter<SByte?[], Char>
+    public sealed class NullableSByteUtf16ArrayFormatter : IJsonFormatter<SByte?[]?, Char>
     {
         public static readonly NullableSByteUtf16ArrayFormatter Default = new NullableSByteUtf16ArrayFormatter();
         private static readonly NullableSByteUtf16Formatter ElementFormatter = NullableSByteUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, SByte?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, SByte?[]? value)
         {
             if (value is null)
             {
@@ -73,9 +73,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public SByte?[] Deserialize(ref JsonReader<Char> reader)
+        public SByte?[]? Deserialize(ref JsonReader<Char> reader)
         {
-            SByte?[] temp = null;
+            SByte?[]? temp = null;
             SByte?[] result;
             try
             {
@@ -117,12 +117,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableSByteUtf16ListFormatter : IJsonFormatter<List<SByte?>, Char>
+    public sealed class NullableSByteUtf16ListFormatter : IJsonFormatter<List<SByte?>?, Char>
     {
         public static readonly NullableSByteUtf16ListFormatter Default = new NullableSByteUtf16ListFormatter();
         private static readonly NullableSByteUtf16Formatter ElementFormatter = NullableSByteUtf16Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Char> writer, List<SByte?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<SByte?>? value)
         {
             if (value is null)
             {
@@ -144,7 +144,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public List<SByte?> Deserialize(ref JsonReader<Char> reader)
+        public List<SByte?>? Deserialize(ref JsonReader<Char> reader)
         {
             if (reader.ReadUtf16IsNull())
             {
@@ -162,11 +162,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class SByteUtf16ArrayFormatter : IJsonFormatter<SByte[], Char>
+    public sealed class SByteUtf16ArrayFormatter : IJsonFormatter<SByte[]?, Char>
     {
         public static readonly SByteUtf16ArrayFormatter Default = new SByteUtf16ArrayFormatter();
         private static readonly SByteUtf16Formatter ElementFormatter = SByteUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, SByte[] value)
+        public void Serialize(ref JsonWriter<Char> writer, SByte[]? value)
         {
             if (value is null)
             {
@@ -188,9 +188,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public SByte[] Deserialize(ref JsonReader<Char> reader)
+        public SByte[]? Deserialize(ref JsonReader<Char> reader)
         {
-            SByte[] temp = null;
+            SByte[]? temp = null;
             SByte[] result;
             try
             {
@@ -316,11 +316,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableSByteUtf8ArrayFormatter : IJsonFormatter<SByte?[], Byte>
+    public sealed class NullableSByteUtf8ArrayFormatter : IJsonFormatter<SByte?[]?, Byte>
     {
         public static readonly NullableSByteUtf8ArrayFormatter Default = new NullableSByteUtf8ArrayFormatter();
         private static readonly NullableSByteUtf8Formatter ElementFormatter = NullableSByteUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, SByte?[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, SByte?[]? value)
         {
             if (value is null)
             {
@@ -342,9 +342,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public SByte?[] Deserialize(ref JsonReader<Byte> reader)
+        public SByte?[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            SByte?[] temp = null;
+            SByte?[]? temp = null;
             SByte?[] result;
             try
             {
@@ -386,12 +386,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableSByteUtf8ListFormatter : IJsonFormatter<List<SByte?>, Byte>
+    public sealed class NullableSByteUtf8ListFormatter : IJsonFormatter<List<SByte?>?, Byte>
     {
         public static readonly NullableSByteUtf8ListFormatter Default = new NullableSByteUtf8ListFormatter();
         private static readonly NullableSByteUtf8Formatter ElementFormatter = NullableSByteUtf8Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Byte> writer, List<SByte?> value)
+        public void Serialize(ref JsonWriter<Byte> writer, List<SByte?>? value)
         {
             if (value is null)
             {
@@ -413,7 +413,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public List<SByte?> Deserialize(ref JsonReader<Byte> reader)
+        public List<SByte?>? Deserialize(ref JsonReader<Byte> reader)
         {
             if (reader.ReadUtf8IsNull())
             {
@@ -431,11 +431,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class SByteUtf8ArrayFormatter : IJsonFormatter<SByte[], Byte>
+    public sealed class SByteUtf8ArrayFormatter : IJsonFormatter<SByte[]?, Byte>
     {
         public static readonly SByteUtf8ArrayFormatter Default = new SByteUtf8ArrayFormatter();
         private static readonly SByteUtf8Formatter ElementFormatter = SByteUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, SByte[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, SByte[]? value)
         {
             if (value is null)
             {
@@ -457,9 +457,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public SByte[] Deserialize(ref JsonReader<Byte> reader)
+        public SByte[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            SByte[] temp = null;
+            SByte[]? temp = null;
             SByte[] result;
             try
             {
@@ -585,11 +585,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableInt16Utf16ArrayFormatter : IJsonFormatter<Int16?[], Char>
+    public sealed class NullableInt16Utf16ArrayFormatter : IJsonFormatter<Int16?[]?, Char>
     {
         public static readonly NullableInt16Utf16ArrayFormatter Default = new NullableInt16Utf16ArrayFormatter();
         private static readonly NullableInt16Utf16Formatter ElementFormatter = NullableInt16Utf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Int16?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Int16?[]? value)
         {
             if (value is null)
             {
@@ -611,9 +611,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Int16?[] Deserialize(ref JsonReader<Char> reader)
+        public Int16?[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Int16?[] temp = null;
+            Int16?[]? temp = null;
             Int16?[] result;
             try
             {
@@ -655,12 +655,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableInt16Utf16ListFormatter : IJsonFormatter<List<Int16?>, Char>
+    public sealed class NullableInt16Utf16ListFormatter : IJsonFormatter<List<Int16?>?, Char>
     {
         public static readonly NullableInt16Utf16ListFormatter Default = new NullableInt16Utf16ListFormatter();
         private static readonly NullableInt16Utf16Formatter ElementFormatter = NullableInt16Utf16Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Char> writer, List<Int16?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Int16?>? value)
         {
             if (value is null)
             {
@@ -682,7 +682,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public List<Int16?> Deserialize(ref JsonReader<Char> reader)
+        public List<Int16?>? Deserialize(ref JsonReader<Char> reader)
         {
             if (reader.ReadUtf16IsNull())
             {
@@ -700,11 +700,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class Int16Utf16ArrayFormatter : IJsonFormatter<Int16[], Char>
+    public sealed class Int16Utf16ArrayFormatter : IJsonFormatter<Int16[]?, Char>
     {
         public static readonly Int16Utf16ArrayFormatter Default = new Int16Utf16ArrayFormatter();
         private static readonly Int16Utf16Formatter ElementFormatter = Int16Utf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Int16[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Int16[]? value)
         {
             if (value is null)
             {
@@ -726,9 +726,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Int16[] Deserialize(ref JsonReader<Char> reader)
+        public Int16[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Int16[] temp = null;
+            Int16[]? temp = null;
             Int16[] result;
             try
             {
@@ -854,11 +854,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableInt16Utf8ArrayFormatter : IJsonFormatter<Int16?[], Byte>
+    public sealed class NullableInt16Utf8ArrayFormatter : IJsonFormatter<Int16?[]?, Byte>
     {
         public static readonly NullableInt16Utf8ArrayFormatter Default = new NullableInt16Utf8ArrayFormatter();
         private static readonly NullableInt16Utf8Formatter ElementFormatter = NullableInt16Utf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Int16?[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Int16?[]? value)
         {
             if (value is null)
             {
@@ -880,9 +880,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Int16?[] Deserialize(ref JsonReader<Byte> reader)
+        public Int16?[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Int16?[] temp = null;
+            Int16?[]? temp = null;
             Int16?[] result;
             try
             {
@@ -924,12 +924,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableInt16Utf8ListFormatter : IJsonFormatter<List<Int16?>, Byte>
+    public sealed class NullableInt16Utf8ListFormatter : IJsonFormatter<List<Int16?>?, Byte>
     {
         public static readonly NullableInt16Utf8ListFormatter Default = new NullableInt16Utf8ListFormatter();
         private static readonly NullableInt16Utf8Formatter ElementFormatter = NullableInt16Utf8Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Byte> writer, List<Int16?> value)
+        public void Serialize(ref JsonWriter<Byte> writer, List<Int16?>? value)
         {
             if (value is null)
             {
@@ -951,7 +951,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public List<Int16?> Deserialize(ref JsonReader<Byte> reader)
+        public List<Int16?>? Deserialize(ref JsonReader<Byte> reader)
         {
             if (reader.ReadUtf8IsNull())
             {
@@ -969,11 +969,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class Int16Utf8ArrayFormatter : IJsonFormatter<Int16[], Byte>
+    public sealed class Int16Utf8ArrayFormatter : IJsonFormatter<Int16[]?, Byte>
     {
         public static readonly Int16Utf8ArrayFormatter Default = new Int16Utf8ArrayFormatter();
         private static readonly Int16Utf8Formatter ElementFormatter = Int16Utf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Int16[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Int16[]? value)
         {
             if (value is null)
             {
@@ -995,9 +995,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Int16[] Deserialize(ref JsonReader<Byte> reader)
+        public Int16[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Int16[] temp = null;
+            Int16[]? temp = null;
             Int16[] result;
             try
             {
@@ -1123,11 +1123,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableInt32Utf16ArrayFormatter : IJsonFormatter<Int32?[], Char>
+    public sealed class NullableInt32Utf16ArrayFormatter : IJsonFormatter<Int32?[]?, Char>
     {
         public static readonly NullableInt32Utf16ArrayFormatter Default = new NullableInt32Utf16ArrayFormatter();
         private static readonly NullableInt32Utf16Formatter ElementFormatter = NullableInt32Utf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Int32?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Int32?[]? value)
         {
             if (value is null)
             {
@@ -1149,9 +1149,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Int32?[] Deserialize(ref JsonReader<Char> reader)
+        public Int32?[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Int32?[] temp = null;
+            Int32?[]? temp = null;
             Int32?[] result;
             try
             {
@@ -1193,12 +1193,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableInt32Utf16ListFormatter : IJsonFormatter<List<Int32?>, Char>
+    public sealed class NullableInt32Utf16ListFormatter : IJsonFormatter<List<Int32?>?, Char>
     {
         public static readonly NullableInt32Utf16ListFormatter Default = new NullableInt32Utf16ListFormatter();
         private static readonly NullableInt32Utf16Formatter ElementFormatter = NullableInt32Utf16Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Char> writer, List<Int32?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Int32?>? value)
         {
             if (value is null)
             {
@@ -1220,7 +1220,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public List<Int32?> Deserialize(ref JsonReader<Char> reader)
+        public List<Int32?>? Deserialize(ref JsonReader<Char> reader)
         {
             if (reader.ReadUtf16IsNull())
             {
@@ -1238,11 +1238,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class Int32Utf16ArrayFormatter : IJsonFormatter<Int32[], Char>
+    public sealed class Int32Utf16ArrayFormatter : IJsonFormatter<Int32[]?, Char>
     {
         public static readonly Int32Utf16ArrayFormatter Default = new Int32Utf16ArrayFormatter();
         private static readonly Int32Utf16Formatter ElementFormatter = Int32Utf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Int32[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Int32[]? value)
         {
             if (value is null)
             {
@@ -1264,9 +1264,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Int32[] Deserialize(ref JsonReader<Char> reader)
+        public Int32[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Int32[] temp = null;
+            Int32[]? temp = null;
             Int32[] result;
             try
             {
@@ -1392,11 +1392,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableInt32Utf8ArrayFormatter : IJsonFormatter<Int32?[], Byte>
+    public sealed class NullableInt32Utf8ArrayFormatter : IJsonFormatter<Int32?[]?, Byte>
     {
         public static readonly NullableInt32Utf8ArrayFormatter Default = new NullableInt32Utf8ArrayFormatter();
         private static readonly NullableInt32Utf8Formatter ElementFormatter = NullableInt32Utf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Int32?[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Int32?[]? value)
         {
             if (value is null)
             {
@@ -1418,9 +1418,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Int32?[] Deserialize(ref JsonReader<Byte> reader)
+        public Int32?[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Int32?[] temp = null;
+            Int32?[]? temp = null;
             Int32?[] result;
             try
             {
@@ -1462,12 +1462,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableInt32Utf8ListFormatter : IJsonFormatter<List<Int32?>, Byte>
+    public sealed class NullableInt32Utf8ListFormatter : IJsonFormatter<List<Int32?>?, Byte>
     {
         public static readonly NullableInt32Utf8ListFormatter Default = new NullableInt32Utf8ListFormatter();
         private static readonly NullableInt32Utf8Formatter ElementFormatter = NullableInt32Utf8Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Byte> writer, List<Int32?> value)
+        public void Serialize(ref JsonWriter<Byte> writer, List<Int32?>? value)
         {
             if (value is null)
             {
@@ -1489,7 +1489,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public List<Int32?> Deserialize(ref JsonReader<Byte> reader)
+        public List<Int32?>? Deserialize(ref JsonReader<Byte> reader)
         {
             if (reader.ReadUtf8IsNull())
             {
@@ -1507,11 +1507,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class Int32Utf8ArrayFormatter : IJsonFormatter<Int32[], Byte>
+    public sealed class Int32Utf8ArrayFormatter : IJsonFormatter<Int32[]?, Byte>
     {
         public static readonly Int32Utf8ArrayFormatter Default = new Int32Utf8ArrayFormatter();
         private static readonly Int32Utf8Formatter ElementFormatter = Int32Utf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Int32[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Int32[]? value)
         {
             if (value is null)
             {
@@ -1533,9 +1533,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Int32[] Deserialize(ref JsonReader<Byte> reader)
+        public Int32[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Int32[] temp = null;
+            Int32[]? temp = null;
             Int32[] result;
             try
             {
@@ -1661,11 +1661,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableInt64Utf16ArrayFormatter : IJsonFormatter<Int64?[], Char>
+    public sealed class NullableInt64Utf16ArrayFormatter : IJsonFormatter<Int64?[]?, Char>
     {
         public static readonly NullableInt64Utf16ArrayFormatter Default = new NullableInt64Utf16ArrayFormatter();
         private static readonly NullableInt64Utf16Formatter ElementFormatter = NullableInt64Utf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Int64?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Int64?[]? value)
         {
             if (value is null)
             {
@@ -1687,9 +1687,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Int64?[] Deserialize(ref JsonReader<Char> reader)
+        public Int64?[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Int64?[] temp = null;
+            Int64?[]? temp = null;
             Int64?[] result;
             try
             {
@@ -1731,12 +1731,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableInt64Utf16ListFormatter : IJsonFormatter<List<Int64?>, Char>
+    public sealed class NullableInt64Utf16ListFormatter : IJsonFormatter<List<Int64?>?, Char>
     {
         public static readonly NullableInt64Utf16ListFormatter Default = new NullableInt64Utf16ListFormatter();
         private static readonly NullableInt64Utf16Formatter ElementFormatter = NullableInt64Utf16Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Char> writer, List<Int64?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Int64?>? value)
         {
             if (value is null)
             {
@@ -1758,7 +1758,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public List<Int64?> Deserialize(ref JsonReader<Char> reader)
+        public List<Int64?>? Deserialize(ref JsonReader<Char> reader)
         {
             if (reader.ReadUtf16IsNull())
             {
@@ -1776,11 +1776,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class Int64Utf16ArrayFormatter : IJsonFormatter<Int64[], Char>
+    public sealed class Int64Utf16ArrayFormatter : IJsonFormatter<Int64[]?, Char>
     {
         public static readonly Int64Utf16ArrayFormatter Default = new Int64Utf16ArrayFormatter();
         private static readonly Int64Utf16Formatter ElementFormatter = Int64Utf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Int64[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Int64[]? value)
         {
             if (value is null)
             {
@@ -1802,9 +1802,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Int64[] Deserialize(ref JsonReader<Char> reader)
+        public Int64[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Int64[] temp = null;
+            Int64[]? temp = null;
             Int64[] result;
             try
             {
@@ -1930,11 +1930,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableInt64Utf8ArrayFormatter : IJsonFormatter<Int64?[], Byte>
+    public sealed class NullableInt64Utf8ArrayFormatter : IJsonFormatter<Int64?[]?, Byte>
     {
         public static readonly NullableInt64Utf8ArrayFormatter Default = new NullableInt64Utf8ArrayFormatter();
         private static readonly NullableInt64Utf8Formatter ElementFormatter = NullableInt64Utf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Int64?[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Int64?[]? value)
         {
             if (value is null)
             {
@@ -1956,9 +1956,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Int64?[] Deserialize(ref JsonReader<Byte> reader)
+        public Int64?[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Int64?[] temp = null;
+            Int64?[]? temp = null;
             Int64?[] result;
             try
             {
@@ -2000,12 +2000,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableInt64Utf8ListFormatter : IJsonFormatter<List<Int64?>, Byte>
+    public sealed class NullableInt64Utf8ListFormatter : IJsonFormatter<List<Int64?>?, Byte>
     {
         public static readonly NullableInt64Utf8ListFormatter Default = new NullableInt64Utf8ListFormatter();
         private static readonly NullableInt64Utf8Formatter ElementFormatter = NullableInt64Utf8Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Byte> writer, List<Int64?> value)
+        public void Serialize(ref JsonWriter<Byte> writer, List<Int64?>? value)
         {
             if (value is null)
             {
@@ -2027,7 +2027,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public List<Int64?> Deserialize(ref JsonReader<Byte> reader)
+        public List<Int64?>? Deserialize(ref JsonReader<Byte> reader)
         {
             if (reader.ReadUtf8IsNull())
             {
@@ -2045,11 +2045,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class Int64Utf8ArrayFormatter : IJsonFormatter<Int64[], Byte>
+    public sealed class Int64Utf8ArrayFormatter : IJsonFormatter<Int64[]?, Byte>
     {
         public static readonly Int64Utf8ArrayFormatter Default = new Int64Utf8ArrayFormatter();
         private static readonly Int64Utf8Formatter ElementFormatter = Int64Utf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Int64[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Int64[]? value)
         {
             if (value is null)
             {
@@ -2071,9 +2071,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Int64[] Deserialize(ref JsonReader<Byte> reader)
+        public Int64[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Int64[] temp = null;
+            Int64[]? temp = null;
             Int64[] result;
             try
             {
@@ -2199,11 +2199,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableByteUtf16ArrayFormatter : IJsonFormatter<Byte?[], Char>
+    public sealed class NullableByteUtf16ArrayFormatter : IJsonFormatter<Byte?[]?, Char>
     {
         public static readonly NullableByteUtf16ArrayFormatter Default = new NullableByteUtf16ArrayFormatter();
         private static readonly NullableByteUtf16Formatter ElementFormatter = NullableByteUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Byte?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Byte?[]? value)
         {
             if (value is null)
             {
@@ -2225,9 +2225,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Byte?[] Deserialize(ref JsonReader<Char> reader)
+        public Byte?[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Byte?[] temp = null;
+            Byte?[]? temp = null;
             Byte?[] result;
             try
             {
@@ -2269,12 +2269,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableByteUtf16ListFormatter : IJsonFormatter<List<Byte?>, Char>
+    public sealed class NullableByteUtf16ListFormatter : IJsonFormatter<List<Byte?>?, Char>
     {
         public static readonly NullableByteUtf16ListFormatter Default = new NullableByteUtf16ListFormatter();
         private static readonly NullableByteUtf16Formatter ElementFormatter = NullableByteUtf16Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Char> writer, List<Byte?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Byte?>? value)
         {
             if (value is null)
             {
@@ -2296,7 +2296,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public List<Byte?> Deserialize(ref JsonReader<Char> reader)
+        public List<Byte?>? Deserialize(ref JsonReader<Char> reader)
         {
             if (reader.ReadUtf16IsNull())
             {
@@ -2314,11 +2314,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class ByteUtf16ArrayFormatter : IJsonFormatter<Byte[], Char>
+    public sealed class ByteUtf16ArrayFormatter : IJsonFormatter<Byte[]?, Char>
     {
         public static readonly ByteUtf16ArrayFormatter Default = new ByteUtf16ArrayFormatter();
         private static readonly ByteUtf16Formatter ElementFormatter = ByteUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Byte[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Byte[]? value)
         {
             if (value is null)
             {
@@ -2340,9 +2340,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Byte[] Deserialize(ref JsonReader<Char> reader)
+        public Byte[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Byte[] temp = null;
+            Byte[]? temp = null;
             Byte[] result;
             try
             {
@@ -2468,11 +2468,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableByteUtf8ArrayFormatter : IJsonFormatter<Byte?[], Byte>
+    public sealed class NullableByteUtf8ArrayFormatter : IJsonFormatter<Byte?[]?, Byte>
     {
         public static readonly NullableByteUtf8ArrayFormatter Default = new NullableByteUtf8ArrayFormatter();
         private static readonly NullableByteUtf8Formatter ElementFormatter = NullableByteUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Byte?[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Byte?[]? value)
         {
             if (value is null)
             {
@@ -2494,9 +2494,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Byte?[] Deserialize(ref JsonReader<Byte> reader)
+        public Byte?[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Byte?[] temp = null;
+            Byte?[]? temp = null;
             Byte?[] result;
             try
             {
@@ -2538,12 +2538,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableByteUtf8ListFormatter : IJsonFormatter<List<Byte?>, Byte>
+    public sealed class NullableByteUtf8ListFormatter : IJsonFormatter<List<Byte?>?, Byte>
     {
         public static readonly NullableByteUtf8ListFormatter Default = new NullableByteUtf8ListFormatter();
         private static readonly NullableByteUtf8Formatter ElementFormatter = NullableByteUtf8Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Byte> writer, List<Byte?> value)
+        public void Serialize(ref JsonWriter<Byte> writer, List<Byte?>? value)
         {
             if (value is null)
             {
@@ -2565,7 +2565,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public List<Byte?> Deserialize(ref JsonReader<Byte> reader)
+        public List<Byte?>? Deserialize(ref JsonReader<Byte> reader)
         {
             if (reader.ReadUtf8IsNull())
             {
@@ -2583,11 +2583,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class ByteUtf8ArrayFormatter : IJsonFormatter<Byte[], Byte>
+    public sealed class ByteUtf8ArrayFormatter : IJsonFormatter<Byte[]?, Byte>
     {
         public static readonly ByteUtf8ArrayFormatter Default = new ByteUtf8ArrayFormatter();
         private static readonly ByteUtf8Formatter ElementFormatter = ByteUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Byte[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Byte[]? value)
         {
             if (value is null)
             {
@@ -2609,9 +2609,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Byte[] Deserialize(ref JsonReader<Byte> reader)
+        public Byte[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Byte[] temp = null;
+            Byte[]? temp = null;
             Byte[] result;
             try
             {
@@ -2737,11 +2737,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableUInt16Utf16ArrayFormatter : IJsonFormatter<UInt16?[], Char>
+    public sealed class NullableUInt16Utf16ArrayFormatter : IJsonFormatter<UInt16?[]?, Char>
     {
         public static readonly NullableUInt16Utf16ArrayFormatter Default = new NullableUInt16Utf16ArrayFormatter();
         private static readonly NullableUInt16Utf16Formatter ElementFormatter = NullableUInt16Utf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, UInt16?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, UInt16?[]? value)
         {
             if (value is null)
             {
@@ -2763,9 +2763,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public UInt16?[] Deserialize(ref JsonReader<Char> reader)
+        public UInt16?[]? Deserialize(ref JsonReader<Char> reader)
         {
-            UInt16?[] temp = null;
+            UInt16?[]? temp = null;
             UInt16?[] result;
             try
             {
@@ -2807,12 +2807,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableUInt16Utf16ListFormatter : IJsonFormatter<List<UInt16?>, Char>
+    public sealed class NullableUInt16Utf16ListFormatter : IJsonFormatter<List<UInt16?>?, Char>
     {
         public static readonly NullableUInt16Utf16ListFormatter Default = new NullableUInt16Utf16ListFormatter();
         private static readonly NullableUInt16Utf16Formatter ElementFormatter = NullableUInt16Utf16Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Char> writer, List<UInt16?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<UInt16?>? value)
         {
             if (value is null)
             {
@@ -2834,7 +2834,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public List<UInt16?> Deserialize(ref JsonReader<Char> reader)
+        public List<UInt16?>? Deserialize(ref JsonReader<Char> reader)
         {
             if (reader.ReadUtf16IsNull())
             {
@@ -2852,11 +2852,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class UInt16Utf16ArrayFormatter : IJsonFormatter<UInt16[], Char>
+    public sealed class UInt16Utf16ArrayFormatter : IJsonFormatter<UInt16[]?, Char>
     {
         public static readonly UInt16Utf16ArrayFormatter Default = new UInt16Utf16ArrayFormatter();
         private static readonly UInt16Utf16Formatter ElementFormatter = UInt16Utf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, UInt16[] value)
+        public void Serialize(ref JsonWriter<Char> writer, UInt16[]? value)
         {
             if (value is null)
             {
@@ -2878,9 +2878,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public UInt16[] Deserialize(ref JsonReader<Char> reader)
+        public UInt16[]? Deserialize(ref JsonReader<Char> reader)
         {
-            UInt16[] temp = null;
+            UInt16[]? temp = null;
             UInt16[] result;
             try
             {
@@ -3006,11 +3006,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableUInt16Utf8ArrayFormatter : IJsonFormatter<UInt16?[], Byte>
+    public sealed class NullableUInt16Utf8ArrayFormatter : IJsonFormatter<UInt16?[]?, Byte>
     {
         public static readonly NullableUInt16Utf8ArrayFormatter Default = new NullableUInt16Utf8ArrayFormatter();
         private static readonly NullableUInt16Utf8Formatter ElementFormatter = NullableUInt16Utf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, UInt16?[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, UInt16?[]? value)
         {
             if (value is null)
             {
@@ -3032,9 +3032,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public UInt16?[] Deserialize(ref JsonReader<Byte> reader)
+        public UInt16?[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            UInt16?[] temp = null;
+            UInt16?[]? temp = null;
             UInt16?[] result;
             try
             {
@@ -3076,12 +3076,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableUInt16Utf8ListFormatter : IJsonFormatter<List<UInt16?>, Byte>
+    public sealed class NullableUInt16Utf8ListFormatter : IJsonFormatter<List<UInt16?>?, Byte>
     {
         public static readonly NullableUInt16Utf8ListFormatter Default = new NullableUInt16Utf8ListFormatter();
         private static readonly NullableUInt16Utf8Formatter ElementFormatter = NullableUInt16Utf8Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Byte> writer, List<UInt16?> value)
+        public void Serialize(ref JsonWriter<Byte> writer, List<UInt16?>? value)
         {
             if (value is null)
             {
@@ -3103,7 +3103,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public List<UInt16?> Deserialize(ref JsonReader<Byte> reader)
+        public List<UInt16?>? Deserialize(ref JsonReader<Byte> reader)
         {
             if (reader.ReadUtf8IsNull())
             {
@@ -3121,11 +3121,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class UInt16Utf8ArrayFormatter : IJsonFormatter<UInt16[], Byte>
+    public sealed class UInt16Utf8ArrayFormatter : IJsonFormatter<UInt16[]?, Byte>
     {
         public static readonly UInt16Utf8ArrayFormatter Default = new UInt16Utf8ArrayFormatter();
         private static readonly UInt16Utf8Formatter ElementFormatter = UInt16Utf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, UInt16[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, UInt16[]? value)
         {
             if (value is null)
             {
@@ -3147,9 +3147,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public UInt16[] Deserialize(ref JsonReader<Byte> reader)
+        public UInt16[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            UInt16[] temp = null;
+            UInt16[]? temp = null;
             UInt16[] result;
             try
             {
@@ -3275,11 +3275,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableUInt32Utf16ArrayFormatter : IJsonFormatter<UInt32?[], Char>
+    public sealed class NullableUInt32Utf16ArrayFormatter : IJsonFormatter<UInt32?[]?, Char>
     {
         public static readonly NullableUInt32Utf16ArrayFormatter Default = new NullableUInt32Utf16ArrayFormatter();
         private static readonly NullableUInt32Utf16Formatter ElementFormatter = NullableUInt32Utf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, UInt32?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, UInt32?[]? value)
         {
             if (value is null)
             {
@@ -3301,9 +3301,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public UInt32?[] Deserialize(ref JsonReader<Char> reader)
+        public UInt32?[]? Deserialize(ref JsonReader<Char> reader)
         {
-            UInt32?[] temp = null;
+            UInt32?[]? temp = null;
             UInt32?[] result;
             try
             {
@@ -3345,12 +3345,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableUInt32Utf16ListFormatter : IJsonFormatter<List<UInt32?>, Char>
+    public sealed class NullableUInt32Utf16ListFormatter : IJsonFormatter<List<UInt32?>?, Char>
     {
         public static readonly NullableUInt32Utf16ListFormatter Default = new NullableUInt32Utf16ListFormatter();
         private static readonly NullableUInt32Utf16Formatter ElementFormatter = NullableUInt32Utf16Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Char> writer, List<UInt32?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<UInt32?>? value)
         {
             if (value is null)
             {
@@ -3372,7 +3372,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public List<UInt32?> Deserialize(ref JsonReader<Char> reader)
+        public List<UInt32?>? Deserialize(ref JsonReader<Char> reader)
         {
             if (reader.ReadUtf16IsNull())
             {
@@ -3390,11 +3390,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class UInt32Utf16ArrayFormatter : IJsonFormatter<UInt32[], Char>
+    public sealed class UInt32Utf16ArrayFormatter : IJsonFormatter<UInt32[]?, Char>
     {
         public static readonly UInt32Utf16ArrayFormatter Default = new UInt32Utf16ArrayFormatter();
         private static readonly UInt32Utf16Formatter ElementFormatter = UInt32Utf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, UInt32[] value)
+        public void Serialize(ref JsonWriter<Char> writer, UInt32[]? value)
         {
             if (value is null)
             {
@@ -3416,9 +3416,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public UInt32[] Deserialize(ref JsonReader<Char> reader)
+        public UInt32[]? Deserialize(ref JsonReader<Char> reader)
         {
-            UInt32[] temp = null;
+            UInt32[]? temp = null;
             UInt32[] result;
             try
             {
@@ -3544,11 +3544,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableUInt32Utf8ArrayFormatter : IJsonFormatter<UInt32?[], Byte>
+    public sealed class NullableUInt32Utf8ArrayFormatter : IJsonFormatter<UInt32?[]?, Byte>
     {
         public static readonly NullableUInt32Utf8ArrayFormatter Default = new NullableUInt32Utf8ArrayFormatter();
         private static readonly NullableUInt32Utf8Formatter ElementFormatter = NullableUInt32Utf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, UInt32?[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, UInt32?[]? value)
         {
             if (value is null)
             {
@@ -3570,9 +3570,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public UInt32?[] Deserialize(ref JsonReader<Byte> reader)
+        public UInt32?[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            UInt32?[] temp = null;
+            UInt32?[]? temp = null;
             UInt32?[] result;
             try
             {
@@ -3614,12 +3614,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableUInt32Utf8ListFormatter : IJsonFormatter<List<UInt32?>, Byte>
+    public sealed class NullableUInt32Utf8ListFormatter : IJsonFormatter<List<UInt32?>?, Byte>
     {
         public static readonly NullableUInt32Utf8ListFormatter Default = new NullableUInt32Utf8ListFormatter();
         private static readonly NullableUInt32Utf8Formatter ElementFormatter = NullableUInt32Utf8Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Byte> writer, List<UInt32?> value)
+        public void Serialize(ref JsonWriter<Byte> writer, List<UInt32?>? value)
         {
             if (value is null)
             {
@@ -3641,7 +3641,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public List<UInt32?> Deserialize(ref JsonReader<Byte> reader)
+        public List<UInt32?>? Deserialize(ref JsonReader<Byte> reader)
         {
             if (reader.ReadUtf8IsNull())
             {
@@ -3659,11 +3659,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class UInt32Utf8ArrayFormatter : IJsonFormatter<UInt32[], Byte>
+    public sealed class UInt32Utf8ArrayFormatter : IJsonFormatter<UInt32[]?, Byte>
     {
         public static readonly UInt32Utf8ArrayFormatter Default = new UInt32Utf8ArrayFormatter();
         private static readonly UInt32Utf8Formatter ElementFormatter = UInt32Utf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, UInt32[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, UInt32[]? value)
         {
             if (value is null)
             {
@@ -3685,9 +3685,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public UInt32[] Deserialize(ref JsonReader<Byte> reader)
+        public UInt32[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            UInt32[] temp = null;
+            UInt32[]? temp = null;
             UInt32[] result;
             try
             {
@@ -3813,11 +3813,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableUInt64Utf16ArrayFormatter : IJsonFormatter<UInt64?[], Char>
+    public sealed class NullableUInt64Utf16ArrayFormatter : IJsonFormatter<UInt64?[]?, Char>
     {
         public static readonly NullableUInt64Utf16ArrayFormatter Default = new NullableUInt64Utf16ArrayFormatter();
         private static readonly NullableUInt64Utf16Formatter ElementFormatter = NullableUInt64Utf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, UInt64?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, UInt64?[]? value)
         {
             if (value is null)
             {
@@ -3839,9 +3839,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public UInt64?[] Deserialize(ref JsonReader<Char> reader)
+        public UInt64?[]? Deserialize(ref JsonReader<Char> reader)
         {
-            UInt64?[] temp = null;
+            UInt64?[]? temp = null;
             UInt64?[] result;
             try
             {
@@ -3883,12 +3883,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableUInt64Utf16ListFormatter : IJsonFormatter<List<UInt64?>, Char>
+    public sealed class NullableUInt64Utf16ListFormatter : IJsonFormatter<List<UInt64?>?, Char>
     {
         public static readonly NullableUInt64Utf16ListFormatter Default = new NullableUInt64Utf16ListFormatter();
         private static readonly NullableUInt64Utf16Formatter ElementFormatter = NullableUInt64Utf16Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Char> writer, List<UInt64?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<UInt64?>? value)
         {
             if (value is null)
             {
@@ -3910,7 +3910,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public List<UInt64?> Deserialize(ref JsonReader<Char> reader)
+        public List<UInt64?>? Deserialize(ref JsonReader<Char> reader)
         {
             if (reader.ReadUtf16IsNull())
             {
@@ -3928,11 +3928,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class UInt64Utf16ArrayFormatter : IJsonFormatter<UInt64[], Char>
+    public sealed class UInt64Utf16ArrayFormatter : IJsonFormatter<UInt64[]?, Char>
     {
         public static readonly UInt64Utf16ArrayFormatter Default = new UInt64Utf16ArrayFormatter();
         private static readonly UInt64Utf16Formatter ElementFormatter = UInt64Utf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, UInt64[] value)
+        public void Serialize(ref JsonWriter<Char> writer, UInt64[]? value)
         {
             if (value is null)
             {
@@ -3954,9 +3954,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public UInt64[] Deserialize(ref JsonReader<Char> reader)
+        public UInt64[]? Deserialize(ref JsonReader<Char> reader)
         {
-            UInt64[] temp = null;
+            UInt64[]? temp = null;
             UInt64[] result;
             try
             {
@@ -4082,11 +4082,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableUInt64Utf8ArrayFormatter : IJsonFormatter<UInt64?[], Byte>
+    public sealed class NullableUInt64Utf8ArrayFormatter : IJsonFormatter<UInt64?[]?, Byte>
     {
         public static readonly NullableUInt64Utf8ArrayFormatter Default = new NullableUInt64Utf8ArrayFormatter();
         private static readonly NullableUInt64Utf8Formatter ElementFormatter = NullableUInt64Utf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, UInt64?[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, UInt64?[]? value)
         {
             if (value is null)
             {
@@ -4108,9 +4108,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public UInt64?[] Deserialize(ref JsonReader<Byte> reader)
+        public UInt64?[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            UInt64?[] temp = null;
+            UInt64?[]? temp = null;
             UInt64?[] result;
             try
             {
@@ -4152,12 +4152,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableUInt64Utf8ListFormatter : IJsonFormatter<List<UInt64?>, Byte>
+    public sealed class NullableUInt64Utf8ListFormatter : IJsonFormatter<List<UInt64?>?, Byte>
     {
         public static readonly NullableUInt64Utf8ListFormatter Default = new NullableUInt64Utf8ListFormatter();
         private static readonly NullableUInt64Utf8Formatter ElementFormatter = NullableUInt64Utf8Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Byte> writer, List<UInt64?> value)
+        public void Serialize(ref JsonWriter<Byte> writer, List<UInt64?>? value)
         {
             if (value is null)
             {
@@ -4179,7 +4179,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public List<UInt64?> Deserialize(ref JsonReader<Byte> reader)
+        public List<UInt64?>? Deserialize(ref JsonReader<Byte> reader)
         {
             if (reader.ReadUtf8IsNull())
             {
@@ -4197,11 +4197,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class UInt64Utf8ArrayFormatter : IJsonFormatter<UInt64[], Byte>
+    public sealed class UInt64Utf8ArrayFormatter : IJsonFormatter<UInt64[]?, Byte>
     {
         public static readonly UInt64Utf8ArrayFormatter Default = new UInt64Utf8ArrayFormatter();
         private static readonly UInt64Utf8Formatter ElementFormatter = UInt64Utf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, UInt64[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, UInt64[]? value)
         {
             if (value is null)
             {
@@ -4223,9 +4223,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public UInt64[] Deserialize(ref JsonReader<Byte> reader)
+        public UInt64[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            UInt64[] temp = null;
+            UInt64[]? temp = null;
             UInt64[] result;
             try
             {
@@ -4351,11 +4351,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableSingleUtf16ArrayFormatter : IJsonFormatter<Single?[], Char>
+    public sealed class NullableSingleUtf16ArrayFormatter : IJsonFormatter<Single?[]?, Char>
     {
         public static readonly NullableSingleUtf16ArrayFormatter Default = new NullableSingleUtf16ArrayFormatter();
         private static readonly NullableSingleUtf16Formatter ElementFormatter = NullableSingleUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Single?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Single?[]? value)
         {
             if (value is null)
             {
@@ -4377,9 +4377,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Single?[] Deserialize(ref JsonReader<Char> reader)
+        public Single?[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Single?[] temp = null;
+            Single?[]? temp = null;
             Single?[] result;
             try
             {
@@ -4421,12 +4421,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableSingleUtf16ListFormatter : IJsonFormatter<List<Single?>, Char>
+    public sealed class NullableSingleUtf16ListFormatter : IJsonFormatter<List<Single?>?, Char>
     {
         public static readonly NullableSingleUtf16ListFormatter Default = new NullableSingleUtf16ListFormatter();
         private static readonly NullableSingleUtf16Formatter ElementFormatter = NullableSingleUtf16Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Char> writer, List<Single?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Single?>? value)
         {
             if (value is null)
             {
@@ -4448,7 +4448,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public List<Single?> Deserialize(ref JsonReader<Char> reader)
+        public List<Single?>? Deserialize(ref JsonReader<Char> reader)
         {
             if (reader.ReadUtf16IsNull())
             {
@@ -4466,11 +4466,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class SingleUtf16ArrayFormatter : IJsonFormatter<Single[], Char>
+    public sealed class SingleUtf16ArrayFormatter : IJsonFormatter<Single[]?, Char>
     {
         public static readonly SingleUtf16ArrayFormatter Default = new SingleUtf16ArrayFormatter();
         private static readonly SingleUtf16Formatter ElementFormatter = SingleUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Single[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Single[]? value)
         {
             if (value is null)
             {
@@ -4492,9 +4492,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Single[] Deserialize(ref JsonReader<Char> reader)
+        public Single[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Single[] temp = null;
+            Single[]? temp = null;
             Single[] result;
             try
             {
@@ -4620,11 +4620,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableSingleUtf8ArrayFormatter : IJsonFormatter<Single?[], Byte>
+    public sealed class NullableSingleUtf8ArrayFormatter : IJsonFormatter<Single?[]?, Byte>
     {
         public static readonly NullableSingleUtf8ArrayFormatter Default = new NullableSingleUtf8ArrayFormatter();
         private static readonly NullableSingleUtf8Formatter ElementFormatter = NullableSingleUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Single?[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Single?[]? value)
         {
             if (value is null)
             {
@@ -4646,9 +4646,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Single?[] Deserialize(ref JsonReader<Byte> reader)
+        public Single?[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Single?[] temp = null;
+            Single?[]? temp = null;
             Single?[] result;
             try
             {
@@ -4690,12 +4690,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableSingleUtf8ListFormatter : IJsonFormatter<List<Single?>, Byte>
+    public sealed class NullableSingleUtf8ListFormatter : IJsonFormatter<List<Single?>?, Byte>
     {
         public static readonly NullableSingleUtf8ListFormatter Default = new NullableSingleUtf8ListFormatter();
         private static readonly NullableSingleUtf8Formatter ElementFormatter = NullableSingleUtf8Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Byte> writer, List<Single?> value)
+        public void Serialize(ref JsonWriter<Byte> writer, List<Single?>? value)
         {
             if (value is null)
             {
@@ -4717,7 +4717,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public List<Single?> Deserialize(ref JsonReader<Byte> reader)
+        public List<Single?>? Deserialize(ref JsonReader<Byte> reader)
         {
             if (reader.ReadUtf8IsNull())
             {
@@ -4735,11 +4735,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class SingleUtf8ArrayFormatter : IJsonFormatter<Single[], Byte>
+    public sealed class SingleUtf8ArrayFormatter : IJsonFormatter<Single[]?, Byte>
     {
         public static readonly SingleUtf8ArrayFormatter Default = new SingleUtf8ArrayFormatter();
         private static readonly SingleUtf8Formatter ElementFormatter = SingleUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Single[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Single[]? value)
         {
             if (value is null)
             {
@@ -4761,9 +4761,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Single[] Deserialize(ref JsonReader<Byte> reader)
+        public Single[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Single[] temp = null;
+            Single[]? temp = null;
             Single[] result;
             try
             {
@@ -4889,11 +4889,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableDoubleUtf16ArrayFormatter : IJsonFormatter<Double?[], Char>
+    public sealed class NullableDoubleUtf16ArrayFormatter : IJsonFormatter<Double?[]?, Char>
     {
         public static readonly NullableDoubleUtf16ArrayFormatter Default = new NullableDoubleUtf16ArrayFormatter();
         private static readonly NullableDoubleUtf16Formatter ElementFormatter = NullableDoubleUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Double?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Double?[]? value)
         {
             if (value is null)
             {
@@ -4915,9 +4915,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Double?[] Deserialize(ref JsonReader<Char> reader)
+        public Double?[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Double?[] temp = null;
+            Double?[]? temp = null;
             Double?[] result;
             try
             {
@@ -4959,12 +4959,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableDoubleUtf16ListFormatter : IJsonFormatter<List<Double?>, Char>
+    public sealed class NullableDoubleUtf16ListFormatter : IJsonFormatter<List<Double?>?, Char>
     {
         public static readonly NullableDoubleUtf16ListFormatter Default = new NullableDoubleUtf16ListFormatter();
         private static readonly NullableDoubleUtf16Formatter ElementFormatter = NullableDoubleUtf16Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Char> writer, List<Double?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Double?>? value)
         {
             if (value is null)
             {
@@ -4986,7 +4986,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public List<Double?> Deserialize(ref JsonReader<Char> reader)
+        public List<Double?>? Deserialize(ref JsonReader<Char> reader)
         {
             if (reader.ReadUtf16IsNull())
             {
@@ -5004,11 +5004,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class DoubleUtf16ArrayFormatter : IJsonFormatter<Double[], Char>
+    public sealed class DoubleUtf16ArrayFormatter : IJsonFormatter<Double[]?, Char>
     {
         public static readonly DoubleUtf16ArrayFormatter Default = new DoubleUtf16ArrayFormatter();
         private static readonly DoubleUtf16Formatter ElementFormatter = DoubleUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Double[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Double[]? value)
         {
             if (value is null)
             {
@@ -5030,9 +5030,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Double[] Deserialize(ref JsonReader<Char> reader)
+        public Double[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Double[] temp = null;
+            Double[]? temp = null;
             Double[] result;
             try
             {
@@ -5158,11 +5158,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableDoubleUtf8ArrayFormatter : IJsonFormatter<Double?[], Byte>
+    public sealed class NullableDoubleUtf8ArrayFormatter : IJsonFormatter<Double?[]?, Byte>
     {
         public static readonly NullableDoubleUtf8ArrayFormatter Default = new NullableDoubleUtf8ArrayFormatter();
         private static readonly NullableDoubleUtf8Formatter ElementFormatter = NullableDoubleUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Double?[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Double?[]? value)
         {
             if (value is null)
             {
@@ -5184,9 +5184,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Double?[] Deserialize(ref JsonReader<Byte> reader)
+        public Double?[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Double?[] temp = null;
+            Double?[]? temp = null;
             Double?[] result;
             try
             {
@@ -5228,12 +5228,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableDoubleUtf8ListFormatter : IJsonFormatter<List<Double?>, Byte>
+    public sealed class NullableDoubleUtf8ListFormatter : IJsonFormatter<List<Double?>?, Byte>
     {
         public static readonly NullableDoubleUtf8ListFormatter Default = new NullableDoubleUtf8ListFormatter();
         private static readonly NullableDoubleUtf8Formatter ElementFormatter = NullableDoubleUtf8Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Byte> writer, List<Double?> value)
+        public void Serialize(ref JsonWriter<Byte> writer, List<Double?>? value)
         {
             if (value is null)
             {
@@ -5255,7 +5255,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public List<Double?> Deserialize(ref JsonReader<Byte> reader)
+        public List<Double?>? Deserialize(ref JsonReader<Byte> reader)
         {
             if (reader.ReadUtf8IsNull())
             {
@@ -5273,11 +5273,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class DoubleUtf8ArrayFormatter : IJsonFormatter<Double[], Byte>
+    public sealed class DoubleUtf8ArrayFormatter : IJsonFormatter<Double[]?, Byte>
     {
         public static readonly DoubleUtf8ArrayFormatter Default = new DoubleUtf8ArrayFormatter();
         private static readonly DoubleUtf8Formatter ElementFormatter = DoubleUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Double[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Double[]? value)
         {
             if (value is null)
             {
@@ -5299,9 +5299,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Double[] Deserialize(ref JsonReader<Byte> reader)
+        public Double[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Double[] temp = null;
+            Double[]? temp = null;
             Double[] result;
             try
             {
@@ -5427,11 +5427,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableDecimalUtf16ArrayFormatter : IJsonFormatter<Decimal?[], Char>
+    public sealed class NullableDecimalUtf16ArrayFormatter : IJsonFormatter<Decimal?[]?, Char>
     {
         public static readonly NullableDecimalUtf16ArrayFormatter Default = new NullableDecimalUtf16ArrayFormatter();
         private static readonly NullableDecimalUtf16Formatter ElementFormatter = NullableDecimalUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Decimal?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Decimal?[]? value)
         {
             if (value is null)
             {
@@ -5453,9 +5453,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Decimal?[] Deserialize(ref JsonReader<Char> reader)
+        public Decimal?[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Decimal?[] temp = null;
+            Decimal?[]? temp = null;
             Decimal?[] result;
             try
             {
@@ -5497,12 +5497,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableDecimalUtf16ListFormatter : IJsonFormatter<List<Decimal?>, Char>
+    public sealed class NullableDecimalUtf16ListFormatter : IJsonFormatter<List<Decimal?>?, Char>
     {
         public static readonly NullableDecimalUtf16ListFormatter Default = new NullableDecimalUtf16ListFormatter();
         private static readonly NullableDecimalUtf16Formatter ElementFormatter = NullableDecimalUtf16Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Char> writer, List<Decimal?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Decimal?>? value)
         {
             if (value is null)
             {
@@ -5524,7 +5524,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public List<Decimal?> Deserialize(ref JsonReader<Char> reader)
+        public List<Decimal?>? Deserialize(ref JsonReader<Char> reader)
         {
             if (reader.ReadUtf16IsNull())
             {
@@ -5542,11 +5542,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class DecimalUtf16ArrayFormatter : IJsonFormatter<Decimal[], Char>
+    public sealed class DecimalUtf16ArrayFormatter : IJsonFormatter<Decimal[]?, Char>
     {
         public static readonly DecimalUtf16ArrayFormatter Default = new DecimalUtf16ArrayFormatter();
         private static readonly DecimalUtf16Formatter ElementFormatter = DecimalUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Decimal[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Decimal[]? value)
         {
             if (value is null)
             {
@@ -5568,9 +5568,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Decimal[] Deserialize(ref JsonReader<Char> reader)
+        public Decimal[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Decimal[] temp = null;
+            Decimal[]? temp = null;
             Decimal[] result;
             try
             {
@@ -5696,11 +5696,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableDecimalUtf8ArrayFormatter : IJsonFormatter<Decimal?[], Byte>
+    public sealed class NullableDecimalUtf8ArrayFormatter : IJsonFormatter<Decimal?[]?, Byte>
     {
         public static readonly NullableDecimalUtf8ArrayFormatter Default = new NullableDecimalUtf8ArrayFormatter();
         private static readonly NullableDecimalUtf8Formatter ElementFormatter = NullableDecimalUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Decimal?[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Decimal?[]? value)
         {
             if (value is null)
             {
@@ -5722,9 +5722,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Decimal?[] Deserialize(ref JsonReader<Byte> reader)
+        public Decimal?[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Decimal?[] temp = null;
+            Decimal?[]? temp = null;
             Decimal?[] result;
             try
             {
@@ -5766,12 +5766,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableDecimalUtf8ListFormatter : IJsonFormatter<List<Decimal?>, Byte>
+    public sealed class NullableDecimalUtf8ListFormatter : IJsonFormatter<List<Decimal?>?, Byte>
     {
         public static readonly NullableDecimalUtf8ListFormatter Default = new NullableDecimalUtf8ListFormatter();
         private static readonly NullableDecimalUtf8Formatter ElementFormatter = NullableDecimalUtf8Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Byte> writer, List<Decimal?> value)
+        public void Serialize(ref JsonWriter<Byte> writer, List<Decimal?>? value)
         {
             if (value is null)
             {
@@ -5793,7 +5793,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public List<Decimal?> Deserialize(ref JsonReader<Byte> reader)
+        public List<Decimal?>? Deserialize(ref JsonReader<Byte> reader)
         {
             if (reader.ReadUtf8IsNull())
             {
@@ -5811,11 +5811,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class DecimalUtf8ArrayFormatter : IJsonFormatter<Decimal[], Byte>
+    public sealed class DecimalUtf8ArrayFormatter : IJsonFormatter<Decimal[]?, Byte>
     {
         public static readonly DecimalUtf8ArrayFormatter Default = new DecimalUtf8ArrayFormatter();
         private static readonly DecimalUtf8Formatter ElementFormatter = DecimalUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Decimal[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Decimal[]? value)
         {
             if (value is null)
             {
@@ -5837,9 +5837,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Decimal[] Deserialize(ref JsonReader<Byte> reader)
+        public Decimal[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Decimal[] temp = null;
+            Decimal[]? temp = null;
             Decimal[] result;
             try
             {
@@ -5965,11 +5965,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableBooleanUtf16ArrayFormatter : IJsonFormatter<Boolean?[], Char>
+    public sealed class NullableBooleanUtf16ArrayFormatter : IJsonFormatter<Boolean?[]?, Char>
     {
         public static readonly NullableBooleanUtf16ArrayFormatter Default = new NullableBooleanUtf16ArrayFormatter();
         private static readonly NullableBooleanUtf16Formatter ElementFormatter = NullableBooleanUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Boolean?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Boolean?[]? value)
         {
             if (value is null)
             {
@@ -5991,9 +5991,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Boolean?[] Deserialize(ref JsonReader<Char> reader)
+        public Boolean?[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Boolean?[] temp = null;
+            Boolean?[]? temp = null;
             Boolean?[] result;
             try
             {
@@ -6035,12 +6035,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableBooleanUtf16ListFormatter : IJsonFormatter<List<Boolean?>, Char>
+    public sealed class NullableBooleanUtf16ListFormatter : IJsonFormatter<List<Boolean?>?, Char>
     {
         public static readonly NullableBooleanUtf16ListFormatter Default = new NullableBooleanUtf16ListFormatter();
         private static readonly NullableBooleanUtf16Formatter ElementFormatter = NullableBooleanUtf16Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Char> writer, List<Boolean?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Boolean?>? value)
         {
             if (value is null)
             {
@@ -6062,7 +6062,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public List<Boolean?> Deserialize(ref JsonReader<Char> reader)
+        public List<Boolean?>? Deserialize(ref JsonReader<Char> reader)
         {
             if (reader.ReadUtf16IsNull())
             {
@@ -6080,11 +6080,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class BooleanUtf16ArrayFormatter : IJsonFormatter<Boolean[], Char>
+    public sealed class BooleanUtf16ArrayFormatter : IJsonFormatter<Boolean[]?, Char>
     {
         public static readonly BooleanUtf16ArrayFormatter Default = new BooleanUtf16ArrayFormatter();
         private static readonly BooleanUtf16Formatter ElementFormatter = BooleanUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Boolean[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Boolean[]? value)
         {
             if (value is null)
             {
@@ -6106,9 +6106,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Boolean[] Deserialize(ref JsonReader<Char> reader)
+        public Boolean[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Boolean[] temp = null;
+            Boolean[]? temp = null;
             Boolean[] result;
             try
             {
@@ -6234,11 +6234,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableBooleanUtf8ArrayFormatter : IJsonFormatter<Boolean?[], Byte>
+    public sealed class NullableBooleanUtf8ArrayFormatter : IJsonFormatter<Boolean?[]?, Byte>
     {
         public static readonly NullableBooleanUtf8ArrayFormatter Default = new NullableBooleanUtf8ArrayFormatter();
         private static readonly NullableBooleanUtf8Formatter ElementFormatter = NullableBooleanUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Boolean?[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Boolean?[]? value)
         {
             if (value is null)
             {
@@ -6260,9 +6260,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Boolean?[] Deserialize(ref JsonReader<Byte> reader)
+        public Boolean?[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Boolean?[] temp = null;
+            Boolean?[]? temp = null;
             Boolean?[] result;
             try
             {
@@ -6304,12 +6304,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableBooleanUtf8ListFormatter : IJsonFormatter<List<Boolean?>, Byte>
+    public sealed class NullableBooleanUtf8ListFormatter : IJsonFormatter<List<Boolean?>?, Byte>
     {
         public static readonly NullableBooleanUtf8ListFormatter Default = new NullableBooleanUtf8ListFormatter();
         private static readonly NullableBooleanUtf8Formatter ElementFormatter = NullableBooleanUtf8Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Byte> writer, List<Boolean?> value)
+        public void Serialize(ref JsonWriter<Byte> writer, List<Boolean?>? value)
         {
             if (value is null)
             {
@@ -6331,7 +6331,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public List<Boolean?> Deserialize(ref JsonReader<Byte> reader)
+        public List<Boolean?>? Deserialize(ref JsonReader<Byte> reader)
         {
             if (reader.ReadUtf8IsNull())
             {
@@ -6349,11 +6349,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class BooleanUtf8ArrayFormatter : IJsonFormatter<Boolean[], Byte>
+    public sealed class BooleanUtf8ArrayFormatter : IJsonFormatter<Boolean[]?, Byte>
     {
         public static readonly BooleanUtf8ArrayFormatter Default = new BooleanUtf8ArrayFormatter();
         private static readonly BooleanUtf8Formatter ElementFormatter = BooleanUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Boolean[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Boolean[]? value)
         {
             if (value is null)
             {
@@ -6375,9 +6375,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Boolean[] Deserialize(ref JsonReader<Byte> reader)
+        public Boolean[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Boolean[] temp = null;
+            Boolean[]? temp = null;
             Boolean[] result;
             try
             {
@@ -6503,11 +6503,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableCharUtf16ArrayFormatter : IJsonFormatter<Char?[], Char>
+    public sealed class NullableCharUtf16ArrayFormatter : IJsonFormatter<Char?[]?, Char>
     {
         public static readonly NullableCharUtf16ArrayFormatter Default = new NullableCharUtf16ArrayFormatter();
         private static readonly NullableCharUtf16Formatter ElementFormatter = NullableCharUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Char?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Char?[]? value)
         {
             if (value is null)
             {
@@ -6529,9 +6529,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Char?[] Deserialize(ref JsonReader<Char> reader)
+        public Char?[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Char?[] temp = null;
+            Char?[]? temp = null;
             Char?[] result;
             try
             {
@@ -6573,12 +6573,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableCharUtf16ListFormatter : IJsonFormatter<List<Char?>, Char>
+    public sealed class NullableCharUtf16ListFormatter : IJsonFormatter<List<Char?>?, Char>
     {
         public static readonly NullableCharUtf16ListFormatter Default = new NullableCharUtf16ListFormatter();
         private static readonly NullableCharUtf16Formatter ElementFormatter = NullableCharUtf16Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Char> writer, List<Char?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Char?>? value)
         {
             if (value is null)
             {
@@ -6600,7 +6600,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public List<Char?> Deserialize(ref JsonReader<Char> reader)
+        public List<Char?>? Deserialize(ref JsonReader<Char> reader)
         {
             if (reader.ReadUtf16IsNull())
             {
@@ -6618,11 +6618,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class CharUtf16ArrayFormatter : IJsonFormatter<Char[], Char>
+    public sealed class CharUtf16ArrayFormatter : IJsonFormatter<Char[]?, Char>
     {
         public static readonly CharUtf16ArrayFormatter Default = new CharUtf16ArrayFormatter();
         private static readonly CharUtf16Formatter ElementFormatter = CharUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Char[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Char[]? value)
         {
             if (value is null)
             {
@@ -6644,9 +6644,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Char[] Deserialize(ref JsonReader<Char> reader)
+        public Char[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Char[] temp = null;
+            Char[]? temp = null;
             Char[] result;
             try
             {
@@ -6772,11 +6772,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableCharUtf8ArrayFormatter : IJsonFormatter<Char?[], Byte>
+    public sealed class NullableCharUtf8ArrayFormatter : IJsonFormatter<Char?[]?, Byte>
     {
         public static readonly NullableCharUtf8ArrayFormatter Default = new NullableCharUtf8ArrayFormatter();
         private static readonly NullableCharUtf8Formatter ElementFormatter = NullableCharUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Char?[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Char?[]? value)
         {
             if (value is null)
             {
@@ -6798,9 +6798,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Char?[] Deserialize(ref JsonReader<Byte> reader)
+        public Char?[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Char?[] temp = null;
+            Char?[]? temp = null;
             Char?[] result;
             try
             {
@@ -6842,12 +6842,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableCharUtf8ListFormatter : IJsonFormatter<List<Char?>, Byte>
+    public sealed class NullableCharUtf8ListFormatter : IJsonFormatter<List<Char?>?, Byte>
     {
         public static readonly NullableCharUtf8ListFormatter Default = new NullableCharUtf8ListFormatter();
         private static readonly NullableCharUtf8Formatter ElementFormatter = NullableCharUtf8Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Byte> writer, List<Char?> value)
+        public void Serialize(ref JsonWriter<Byte> writer, List<Char?>? value)
         {
             if (value is null)
             {
@@ -6869,7 +6869,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public List<Char?> Deserialize(ref JsonReader<Byte> reader)
+        public List<Char?>? Deserialize(ref JsonReader<Byte> reader)
         {
             if (reader.ReadUtf8IsNull())
             {
@@ -6887,11 +6887,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class CharUtf8ArrayFormatter : IJsonFormatter<Char[], Byte>
+    public sealed class CharUtf8ArrayFormatter : IJsonFormatter<Char[]?, Byte>
     {
         public static readonly CharUtf8ArrayFormatter Default = new CharUtf8ArrayFormatter();
         private static readonly CharUtf8Formatter ElementFormatter = CharUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Char[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Char[]? value)
         {
             if (value is null)
             {
@@ -6913,9 +6913,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Char[] Deserialize(ref JsonReader<Byte> reader)
+        public Char[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Char[] temp = null;
+            Char[]? temp = null;
             Char[] result;
             try
             {
@@ -7041,11 +7041,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableDateTimeUtf16ArrayFormatter : IJsonFormatter<DateTime?[], Char>
+    public sealed class NullableDateTimeUtf16ArrayFormatter : IJsonFormatter<DateTime?[]?, Char>
     {
         public static readonly NullableDateTimeUtf16ArrayFormatter Default = new NullableDateTimeUtf16ArrayFormatter();
         private static readonly NullableDateTimeUtf16Formatter ElementFormatter = NullableDateTimeUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, DateTime?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, DateTime?[]? value)
         {
             if (value is null)
             {
@@ -7067,9 +7067,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public DateTime?[] Deserialize(ref JsonReader<Char> reader)
+        public DateTime?[]? Deserialize(ref JsonReader<Char> reader)
         {
-            DateTime?[] temp = null;
+            DateTime?[]? temp = null;
             DateTime?[] result;
             try
             {
@@ -7111,12 +7111,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableDateTimeUtf16ListFormatter : IJsonFormatter<List<DateTime?>, Char>
+    public sealed class NullableDateTimeUtf16ListFormatter : IJsonFormatter<List<DateTime?>?, Char>
     {
         public static readonly NullableDateTimeUtf16ListFormatter Default = new NullableDateTimeUtf16ListFormatter();
         private static readonly NullableDateTimeUtf16Formatter ElementFormatter = NullableDateTimeUtf16Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Char> writer, List<DateTime?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<DateTime?>? value)
         {
             if (value is null)
             {
@@ -7138,7 +7138,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public List<DateTime?> Deserialize(ref JsonReader<Char> reader)
+        public List<DateTime?>? Deserialize(ref JsonReader<Char> reader)
         {
             if (reader.ReadUtf16IsNull())
             {
@@ -7156,11 +7156,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class DateTimeUtf16ArrayFormatter : IJsonFormatter<DateTime[], Char>
+    public sealed class DateTimeUtf16ArrayFormatter : IJsonFormatter<DateTime[]?, Char>
     {
         public static readonly DateTimeUtf16ArrayFormatter Default = new DateTimeUtf16ArrayFormatter();
         private static readonly DateTimeUtf16Formatter ElementFormatter = DateTimeUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, DateTime[] value)
+        public void Serialize(ref JsonWriter<Char> writer, DateTime[]? value)
         {
             if (value is null)
             {
@@ -7182,9 +7182,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public DateTime[] Deserialize(ref JsonReader<Char> reader)
+        public DateTime[]? Deserialize(ref JsonReader<Char> reader)
         {
-            DateTime[] temp = null;
+            DateTime[]? temp = null;
             DateTime[] result;
             try
             {
@@ -7310,11 +7310,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableDateTimeUtf8ArrayFormatter : IJsonFormatter<DateTime?[], Byte>
+    public sealed class NullableDateTimeUtf8ArrayFormatter : IJsonFormatter<DateTime?[]?, Byte>
     {
         public static readonly NullableDateTimeUtf8ArrayFormatter Default = new NullableDateTimeUtf8ArrayFormatter();
         private static readonly NullableDateTimeUtf8Formatter ElementFormatter = NullableDateTimeUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, DateTime?[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, DateTime?[]? value)
         {
             if (value is null)
             {
@@ -7336,9 +7336,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public DateTime?[] Deserialize(ref JsonReader<Byte> reader)
+        public DateTime?[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            DateTime?[] temp = null;
+            DateTime?[]? temp = null;
             DateTime?[] result;
             try
             {
@@ -7380,12 +7380,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableDateTimeUtf8ListFormatter : IJsonFormatter<List<DateTime?>, Byte>
+    public sealed class NullableDateTimeUtf8ListFormatter : IJsonFormatter<List<DateTime?>?, Byte>
     {
         public static readonly NullableDateTimeUtf8ListFormatter Default = new NullableDateTimeUtf8ListFormatter();
         private static readonly NullableDateTimeUtf8Formatter ElementFormatter = NullableDateTimeUtf8Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Byte> writer, List<DateTime?> value)
+        public void Serialize(ref JsonWriter<Byte> writer, List<DateTime?>? value)
         {
             if (value is null)
             {
@@ -7407,7 +7407,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public List<DateTime?> Deserialize(ref JsonReader<Byte> reader)
+        public List<DateTime?>? Deserialize(ref JsonReader<Byte> reader)
         {
             if (reader.ReadUtf8IsNull())
             {
@@ -7425,11 +7425,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class DateTimeUtf8ArrayFormatter : IJsonFormatter<DateTime[], Byte>
+    public sealed class DateTimeUtf8ArrayFormatter : IJsonFormatter<DateTime[]?, Byte>
     {
         public static readonly DateTimeUtf8ArrayFormatter Default = new DateTimeUtf8ArrayFormatter();
         private static readonly DateTimeUtf8Formatter ElementFormatter = DateTimeUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, DateTime[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, DateTime[]? value)
         {
             if (value is null)
             {
@@ -7451,9 +7451,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public DateTime[] Deserialize(ref JsonReader<Byte> reader)
+        public DateTime[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            DateTime[] temp = null;
+            DateTime[]? temp = null;
             DateTime[] result;
             try
             {
@@ -7579,11 +7579,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableDateTimeOffsetUtf16ArrayFormatter : IJsonFormatter<DateTimeOffset?[], Char>
+    public sealed class NullableDateTimeOffsetUtf16ArrayFormatter : IJsonFormatter<DateTimeOffset?[]?, Char>
     {
         public static readonly NullableDateTimeOffsetUtf16ArrayFormatter Default = new NullableDateTimeOffsetUtf16ArrayFormatter();
         private static readonly NullableDateTimeOffsetUtf16Formatter ElementFormatter = NullableDateTimeOffsetUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, DateTimeOffset?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, DateTimeOffset?[]? value)
         {
             if (value is null)
             {
@@ -7605,9 +7605,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public DateTimeOffset?[] Deserialize(ref JsonReader<Char> reader)
+        public DateTimeOffset?[]? Deserialize(ref JsonReader<Char> reader)
         {
-            DateTimeOffset?[] temp = null;
+            DateTimeOffset?[]? temp = null;
             DateTimeOffset?[] result;
             try
             {
@@ -7649,12 +7649,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableDateTimeOffsetUtf16ListFormatter : IJsonFormatter<List<DateTimeOffset?>, Char>
+    public sealed class NullableDateTimeOffsetUtf16ListFormatter : IJsonFormatter<List<DateTimeOffset?>?, Char>
     {
         public static readonly NullableDateTimeOffsetUtf16ListFormatter Default = new NullableDateTimeOffsetUtf16ListFormatter();
         private static readonly NullableDateTimeOffsetUtf16Formatter ElementFormatter = NullableDateTimeOffsetUtf16Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Char> writer, List<DateTimeOffset?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<DateTimeOffset?>? value)
         {
             if (value is null)
             {
@@ -7676,7 +7676,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public List<DateTimeOffset?> Deserialize(ref JsonReader<Char> reader)
+        public List<DateTimeOffset?>? Deserialize(ref JsonReader<Char> reader)
         {
             if (reader.ReadUtf16IsNull())
             {
@@ -7694,11 +7694,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class DateTimeOffsetUtf16ArrayFormatter : IJsonFormatter<DateTimeOffset[], Char>
+    public sealed class DateTimeOffsetUtf16ArrayFormatter : IJsonFormatter<DateTimeOffset[]?, Char>
     {
         public static readonly DateTimeOffsetUtf16ArrayFormatter Default = new DateTimeOffsetUtf16ArrayFormatter();
         private static readonly DateTimeOffsetUtf16Formatter ElementFormatter = DateTimeOffsetUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, DateTimeOffset[] value)
+        public void Serialize(ref JsonWriter<Char> writer, DateTimeOffset[]? value)
         {
             if (value is null)
             {
@@ -7720,9 +7720,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public DateTimeOffset[] Deserialize(ref JsonReader<Char> reader)
+        public DateTimeOffset[]? Deserialize(ref JsonReader<Char> reader)
         {
-            DateTimeOffset[] temp = null;
+            DateTimeOffset[]? temp = null;
             DateTimeOffset[] result;
             try
             {
@@ -7848,11 +7848,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableDateTimeOffsetUtf8ArrayFormatter : IJsonFormatter<DateTimeOffset?[], Byte>
+    public sealed class NullableDateTimeOffsetUtf8ArrayFormatter : IJsonFormatter<DateTimeOffset?[]?, Byte>
     {
         public static readonly NullableDateTimeOffsetUtf8ArrayFormatter Default = new NullableDateTimeOffsetUtf8ArrayFormatter();
         private static readonly NullableDateTimeOffsetUtf8Formatter ElementFormatter = NullableDateTimeOffsetUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, DateTimeOffset?[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, DateTimeOffset?[]? value)
         {
             if (value is null)
             {
@@ -7874,9 +7874,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public DateTimeOffset?[] Deserialize(ref JsonReader<Byte> reader)
+        public DateTimeOffset?[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            DateTimeOffset?[] temp = null;
+            DateTimeOffset?[]? temp = null;
             DateTimeOffset?[] result;
             try
             {
@@ -7918,12 +7918,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableDateTimeOffsetUtf8ListFormatter : IJsonFormatter<List<DateTimeOffset?>, Byte>
+    public sealed class NullableDateTimeOffsetUtf8ListFormatter : IJsonFormatter<List<DateTimeOffset?>?, Byte>
     {
         public static readonly NullableDateTimeOffsetUtf8ListFormatter Default = new NullableDateTimeOffsetUtf8ListFormatter();
         private static readonly NullableDateTimeOffsetUtf8Formatter ElementFormatter = NullableDateTimeOffsetUtf8Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Byte> writer, List<DateTimeOffset?> value)
+        public void Serialize(ref JsonWriter<Byte> writer, List<DateTimeOffset?>? value)
         {
             if (value is null)
             {
@@ -7945,7 +7945,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public List<DateTimeOffset?> Deserialize(ref JsonReader<Byte> reader)
+        public List<DateTimeOffset?>? Deserialize(ref JsonReader<Byte> reader)
         {
             if (reader.ReadUtf8IsNull())
             {
@@ -7963,11 +7963,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class DateTimeOffsetUtf8ArrayFormatter : IJsonFormatter<DateTimeOffset[], Byte>
+    public sealed class DateTimeOffsetUtf8ArrayFormatter : IJsonFormatter<DateTimeOffset[]?, Byte>
     {
         public static readonly DateTimeOffsetUtf8ArrayFormatter Default = new DateTimeOffsetUtf8ArrayFormatter();
         private static readonly DateTimeOffsetUtf8Formatter ElementFormatter = DateTimeOffsetUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, DateTimeOffset[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, DateTimeOffset[]? value)
         {
             if (value is null)
             {
@@ -7989,9 +7989,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public DateTimeOffset[] Deserialize(ref JsonReader<Byte> reader)
+        public DateTimeOffset[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            DateTimeOffset[] temp = null;
+            DateTimeOffset[]? temp = null;
             DateTimeOffset[] result;
             try
             {
@@ -8117,11 +8117,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableTimeSpanUtf16ArrayFormatter : IJsonFormatter<TimeSpan?[], Char>
+    public sealed class NullableTimeSpanUtf16ArrayFormatter : IJsonFormatter<TimeSpan?[]?, Char>
     {
         public static readonly NullableTimeSpanUtf16ArrayFormatter Default = new NullableTimeSpanUtf16ArrayFormatter();
         private static readonly NullableTimeSpanUtf16Formatter ElementFormatter = NullableTimeSpanUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, TimeSpan?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, TimeSpan?[]? value)
         {
             if (value is null)
             {
@@ -8143,9 +8143,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public TimeSpan?[] Deserialize(ref JsonReader<Char> reader)
+        public TimeSpan?[]? Deserialize(ref JsonReader<Char> reader)
         {
-            TimeSpan?[] temp = null;
+            TimeSpan?[]? temp = null;
             TimeSpan?[] result;
             try
             {
@@ -8187,12 +8187,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableTimeSpanUtf16ListFormatter : IJsonFormatter<List<TimeSpan?>, Char>
+    public sealed class NullableTimeSpanUtf16ListFormatter : IJsonFormatter<List<TimeSpan?>?, Char>
     {
         public static readonly NullableTimeSpanUtf16ListFormatter Default = new NullableTimeSpanUtf16ListFormatter();
         private static readonly NullableTimeSpanUtf16Formatter ElementFormatter = NullableTimeSpanUtf16Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Char> writer, List<TimeSpan?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<TimeSpan?>? value)
         {
             if (value is null)
             {
@@ -8214,7 +8214,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public List<TimeSpan?> Deserialize(ref JsonReader<Char> reader)
+        public List<TimeSpan?>? Deserialize(ref JsonReader<Char> reader)
         {
             if (reader.ReadUtf16IsNull())
             {
@@ -8232,11 +8232,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class TimeSpanUtf16ArrayFormatter : IJsonFormatter<TimeSpan[], Char>
+    public sealed class TimeSpanUtf16ArrayFormatter : IJsonFormatter<TimeSpan[]?, Char>
     {
         public static readonly TimeSpanUtf16ArrayFormatter Default = new TimeSpanUtf16ArrayFormatter();
         private static readonly TimeSpanUtf16Formatter ElementFormatter = TimeSpanUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, TimeSpan[] value)
+        public void Serialize(ref JsonWriter<Char> writer, TimeSpan[]? value)
         {
             if (value is null)
             {
@@ -8258,9 +8258,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public TimeSpan[] Deserialize(ref JsonReader<Char> reader)
+        public TimeSpan[]? Deserialize(ref JsonReader<Char> reader)
         {
-            TimeSpan[] temp = null;
+            TimeSpan[]? temp = null;
             TimeSpan[] result;
             try
             {
@@ -8386,11 +8386,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableTimeSpanUtf8ArrayFormatter : IJsonFormatter<TimeSpan?[], Byte>
+    public sealed class NullableTimeSpanUtf8ArrayFormatter : IJsonFormatter<TimeSpan?[]?, Byte>
     {
         public static readonly NullableTimeSpanUtf8ArrayFormatter Default = new NullableTimeSpanUtf8ArrayFormatter();
         private static readonly NullableTimeSpanUtf8Formatter ElementFormatter = NullableTimeSpanUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, TimeSpan?[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, TimeSpan?[]? value)
         {
             if (value is null)
             {
@@ -8412,9 +8412,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public TimeSpan?[] Deserialize(ref JsonReader<Byte> reader)
+        public TimeSpan?[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            TimeSpan?[] temp = null;
+            TimeSpan?[]? temp = null;
             TimeSpan?[] result;
             try
             {
@@ -8456,12 +8456,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableTimeSpanUtf8ListFormatter : IJsonFormatter<List<TimeSpan?>, Byte>
+    public sealed class NullableTimeSpanUtf8ListFormatter : IJsonFormatter<List<TimeSpan?>?, Byte>
     {
         public static readonly NullableTimeSpanUtf8ListFormatter Default = new NullableTimeSpanUtf8ListFormatter();
         private static readonly NullableTimeSpanUtf8Formatter ElementFormatter = NullableTimeSpanUtf8Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Byte> writer, List<TimeSpan?> value)
+        public void Serialize(ref JsonWriter<Byte> writer, List<TimeSpan?>? value)
         {
             if (value is null)
             {
@@ -8483,7 +8483,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public List<TimeSpan?> Deserialize(ref JsonReader<Byte> reader)
+        public List<TimeSpan?>? Deserialize(ref JsonReader<Byte> reader)
         {
             if (reader.ReadUtf8IsNull())
             {
@@ -8501,11 +8501,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class TimeSpanUtf8ArrayFormatter : IJsonFormatter<TimeSpan[], Byte>
+    public sealed class TimeSpanUtf8ArrayFormatter : IJsonFormatter<TimeSpan[]?, Byte>
     {
         public static readonly TimeSpanUtf8ArrayFormatter Default = new TimeSpanUtf8ArrayFormatter();
         private static readonly TimeSpanUtf8Formatter ElementFormatter = TimeSpanUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, TimeSpan[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, TimeSpan[]? value)
         {
             if (value is null)
             {
@@ -8527,9 +8527,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public TimeSpan[] Deserialize(ref JsonReader<Byte> reader)
+        public TimeSpan[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            TimeSpan[] temp = null;
+            TimeSpan[]? temp = null;
             TimeSpan[] result;
             try
             {
@@ -8655,11 +8655,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableGuidUtf16ArrayFormatter : IJsonFormatter<Guid?[], Char>
+    public sealed class NullableGuidUtf16ArrayFormatter : IJsonFormatter<Guid?[]?, Char>
     {
         public static readonly NullableGuidUtf16ArrayFormatter Default = new NullableGuidUtf16ArrayFormatter();
         private static readonly NullableGuidUtf16Formatter ElementFormatter = NullableGuidUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Guid?[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Guid?[]? value)
         {
             if (value is null)
             {
@@ -8681,9 +8681,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Guid?[] Deserialize(ref JsonReader<Char> reader)
+        public Guid?[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Guid?[] temp = null;
+            Guid?[]? temp = null;
             Guid?[] result;
             try
             {
@@ -8725,12 +8725,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableGuidUtf16ListFormatter : IJsonFormatter<List<Guid?>, Char>
+    public sealed class NullableGuidUtf16ListFormatter : IJsonFormatter<List<Guid?>?, Char>
     {
         public static readonly NullableGuidUtf16ListFormatter Default = new NullableGuidUtf16ListFormatter();
         private static readonly NullableGuidUtf16Formatter ElementFormatter = NullableGuidUtf16Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Char> writer, List<Guid?> value)
+        public void Serialize(ref JsonWriter<Char> writer, List<Guid?>? value)
         {
             if (value is null)
             {
@@ -8752,7 +8752,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public List<Guid?> Deserialize(ref JsonReader<Char> reader)
+        public List<Guid?>? Deserialize(ref JsonReader<Char> reader)
         {
             if (reader.ReadUtf16IsNull())
             {
@@ -8770,11 +8770,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class GuidUtf16ArrayFormatter : IJsonFormatter<Guid[], Char>
+    public sealed class GuidUtf16ArrayFormatter : IJsonFormatter<Guid[]?, Char>
     {
         public static readonly GuidUtf16ArrayFormatter Default = new GuidUtf16ArrayFormatter();
         private static readonly GuidUtf16Formatter ElementFormatter = GuidUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Guid[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Guid[]? value)
         {
             if (value is null)
             {
@@ -8796,9 +8796,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Guid[] Deserialize(ref JsonReader<Char> reader)
+        public Guid[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Guid[] temp = null;
+            Guid[]? temp = null;
             Guid[] result;
             try
             {
@@ -8924,11 +8924,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableGuidUtf8ArrayFormatter : IJsonFormatter<Guid?[], Byte>
+    public sealed class NullableGuidUtf8ArrayFormatter : IJsonFormatter<Guid?[]?, Byte>
     {
         public static readonly NullableGuidUtf8ArrayFormatter Default = new NullableGuidUtf8ArrayFormatter();
         private static readonly NullableGuidUtf8Formatter ElementFormatter = NullableGuidUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Guid?[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Guid?[]? value)
         {
             if (value is null)
             {
@@ -8950,9 +8950,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Guid?[] Deserialize(ref JsonReader<Byte> reader)
+        public Guid?[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Guid?[] temp = null;
+            Guid?[]? temp = null;
             Guid?[] result;
             try
             {
@@ -8994,12 +8994,12 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class NullableGuidUtf8ListFormatter : IJsonFormatter<List<Guid?>, Byte>
+    public sealed class NullableGuidUtf8ListFormatter : IJsonFormatter<List<Guid?>?, Byte>
     {
         public static readonly NullableGuidUtf8ListFormatter Default = new NullableGuidUtf8ListFormatter();
         private static readonly NullableGuidUtf8Formatter ElementFormatter = NullableGuidUtf8Formatter.Default;
 
-        public void Serialize(ref JsonWriter<Byte> writer, List<Guid?> value)
+        public void Serialize(ref JsonWriter<Byte> writer, List<Guid?>? value)
         {
             if (value is null)
             {
@@ -9021,7 +9021,7 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public List<Guid?> Deserialize(ref JsonReader<Byte> reader)
+        public List<Guid?>? Deserialize(ref JsonReader<Byte> reader)
         {
             if (reader.ReadUtf8IsNull())
             {
@@ -9039,11 +9039,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class GuidUtf8ArrayFormatter : IJsonFormatter<Guid[], Byte>
+    public sealed class GuidUtf8ArrayFormatter : IJsonFormatter<Guid[]?, Byte>
     {
         public static readonly GuidUtf8ArrayFormatter Default = new GuidUtf8ArrayFormatter();
         private static readonly GuidUtf8Formatter ElementFormatter = GuidUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Guid[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Guid[]? value)
         {
             if (value is null)
             {
@@ -9065,9 +9065,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Guid[] Deserialize(ref JsonReader<Byte> reader)
+        public Guid[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Guid[] temp = null;
+            Guid[]? temp = null;
             Guid[] result;
             try
             {
@@ -9173,11 +9173,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class StringUtf16ArrayFormatter : IJsonFormatter<String[], Char>
+    public sealed class StringUtf16ArrayFormatter : IJsonFormatter<String[]?, Char>
     {
         public static readonly StringUtf16ArrayFormatter Default = new StringUtf16ArrayFormatter();
         private static readonly StringUtf16Formatter ElementFormatter = StringUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, String[] value)
+        public void Serialize(ref JsonWriter<Char> writer, String[]? value)
         {
             if (value is null)
             {
@@ -9199,9 +9199,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public String[] Deserialize(ref JsonReader<Char> reader)
+        public String[]? Deserialize(ref JsonReader<Char> reader)
         {
-            String[] temp = null;
+            String[]? temp = null;
             String[] result;
             try
             {
@@ -9307,11 +9307,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class StringUtf8ArrayFormatter : IJsonFormatter<String[], Byte>
+    public sealed class StringUtf8ArrayFormatter : IJsonFormatter<String[]?, Byte>
     {
         public static readonly StringUtf8ArrayFormatter Default = new StringUtf8ArrayFormatter();
         private static readonly StringUtf8Formatter ElementFormatter = StringUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, String[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, String[]? value)
         {
             if (value is null)
             {
@@ -9333,9 +9333,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public String[] Deserialize(ref JsonReader<Byte> reader)
+        public String[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            String[] temp = null;
+            String[]? temp = null;
             String[] result;
             try
             {
@@ -9441,11 +9441,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class VersionUtf16ArrayFormatter : IJsonFormatter<Version[], Char>
+    public sealed class VersionUtf16ArrayFormatter : IJsonFormatter<Version[]?, Char>
     {
         public static readonly VersionUtf16ArrayFormatter Default = new VersionUtf16ArrayFormatter();
         private static readonly VersionUtf16Formatter ElementFormatter = VersionUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Version[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Version[]? value)
         {
             if (value is null)
             {
@@ -9467,9 +9467,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Version[] Deserialize(ref JsonReader<Char> reader)
+        public Version[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Version[] temp = null;
+            Version[]? temp = null;
             Version[] result;
             try
             {
@@ -9575,11 +9575,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class VersionUtf8ArrayFormatter : IJsonFormatter<Version[], Byte>
+    public sealed class VersionUtf8ArrayFormatter : IJsonFormatter<Version[]?, Byte>
     {
         public static readonly VersionUtf8ArrayFormatter Default = new VersionUtf8ArrayFormatter();
         private static readonly VersionUtf8Formatter ElementFormatter = VersionUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Version[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Version[]? value)
         {
             if (value is null)
             {
@@ -9601,9 +9601,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Version[] Deserialize(ref JsonReader<Byte> reader)
+        public Version[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Version[] temp = null;
+            Version[]? temp = null;
             Version[] result;
             try
             {
@@ -9709,11 +9709,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class UriUtf16ArrayFormatter : IJsonFormatter<Uri[], Char>
+    public sealed class UriUtf16ArrayFormatter : IJsonFormatter<Uri[]?, Char>
     {
         public static readonly UriUtf16ArrayFormatter Default = new UriUtf16ArrayFormatter();
         private static readonly UriUtf16Formatter ElementFormatter = UriUtf16Formatter.Default;
-        public void Serialize(ref JsonWriter<Char> writer, Uri[] value)
+        public void Serialize(ref JsonWriter<Char> writer, Uri[]? value)
         {
             if (value is null)
             {
@@ -9735,9 +9735,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf16EndArray();
         }
 
-        public Uri[] Deserialize(ref JsonReader<Char> reader)
+        public Uri[]? Deserialize(ref JsonReader<Char> reader)
         {
-            Uri[] temp = null;
+            Uri[]? temp = null;
             Uri[] result;
             try
             {
@@ -9843,11 +9843,11 @@ namespace SpanJson.Formatters
         }
     }
 
-    public sealed class UriUtf8ArrayFormatter : IJsonFormatter<Uri[], Byte>
+    public sealed class UriUtf8ArrayFormatter : IJsonFormatter<Uri[]?, Byte>
     {
         public static readonly UriUtf8ArrayFormatter Default = new UriUtf8ArrayFormatter();
         private static readonly UriUtf8Formatter ElementFormatter = UriUtf8Formatter.Default;
-        public void Serialize(ref JsonWriter<Byte> writer, Uri[] value)
+        public void Serialize(ref JsonWriter<Byte> writer, Uri[]? value)
         {
             if (value is null)
             {
@@ -9869,9 +9869,9 @@ namespace SpanJson.Formatters
             writer.WriteUtf8EndArray();
         }
 
-        public Uri[] Deserialize(ref JsonReader<Byte> reader)
+        public Uri[]? Deserialize(ref JsonReader<Byte> reader)
         {
-            Uri[] temp = null;
+            Uri[]? temp = null;
             Uri[] result;
             try
             {

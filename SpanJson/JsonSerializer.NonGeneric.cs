@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
@@ -24,7 +25,7 @@ namespace SpanJson
                 private static readonly ConcurrentDictionary<Type, Invoker> Invokers =
                     new ConcurrentDictionary<Type, Invoker>();
 
-                public static string InnerSerializeToString(object input)
+                public static string? InnerSerializeToString([NotNullIfNotNull("input")] object? input)
                 {
                     if (input == null)
                     {
@@ -37,11 +38,11 @@ namespace SpanJson
                     return invoker.ToStringSerializer(input);
                 }
 
-                public static ArraySegment<char> InnerSerializeToCharArrayPool(object input)
+                public static ArraySegment<char> InnerSerializeToCharArrayPool([NotNullIfNotNull("input")] object? input)
                 {
                     if (input == null)
                     {
-                        return null;
+                        return ArraySegment<char>.Empty;
                     }
 
                     // ReSharper disable ConvertClosureToMethodGroup
@@ -50,7 +51,7 @@ namespace SpanJson
                     return invoker.ToCharArrayPoolSerializer(input);
                 }
 
-                public static byte[] InnerSerializeToByteArray(object input)
+                public static byte[]? InnerSerializeToByteArray([NotNullIfNotNull("input")] object? input)
                 {
                     if (input == null)
                     {
@@ -63,11 +64,11 @@ namespace SpanJson
                     return invoker.ToByteArraySerializer(input);
                 }
 
-                public static ArraySegment<byte> InnerSerializeToByteArrayPool(object input)
+                public static ArraySegment<byte> InnerSerializeToByteArrayPool([NotNullIfNotNull("input")] object? input)
                 {
                     if (input == null)
                     {
-                        return null;
+                        return ArraySegment<byte>.Empty;
                     }
 
                     // ReSharper disable ConvertClosureToMethodGroup
@@ -76,7 +77,7 @@ namespace SpanJson
                     return invoker.ToByteArrayPoolSerializer(input);
                 }
 
-                public static object InnerDeserialize(in ReadOnlySpan<TSymbol> input, Type type)
+                public static object? InnerDeserialize(in ReadOnlySpan<TSymbol> input, Type type)
                 {
                     if (input == null)
                     {
@@ -89,9 +90,9 @@ namespace SpanJson
                     return invoker.Deserializer(input);
                 }
 
-                public static ValueTask InnerSerializeAsync(object input, TextWriter writer, CancellationToken cancellationToken = default)
+                public static ValueTask InnerSerializeAsync(object? input, TextWriter? writer, CancellationToken cancellationToken = default)
                 {
-                    if (input == null)
+                    if (input == null || writer is null)
                     {
                         return new ValueTask(Task.CompletedTask);
                     }
@@ -102,11 +103,11 @@ namespace SpanJson
                     return invoker.ToTextWriterSerializerAsync(input, writer, cancellationToken);
                 }
 
-                public static ValueTask<object> InnerDeserializeAsync(TextReader reader, Type type, CancellationToken cancellationToken = default)
+                public static ValueTask<object?> InnerDeserializeAsync(TextReader? reader, Type type, CancellationToken cancellationToken = default)
                 {
                     if (reader == null)
                     {
-                        return new ValueTask<object>(null);
+                        return new ValueTask<object?>(null!);
                     }
 
                     // ReSharper disable ConvertClosureToMethodGroup
@@ -115,9 +116,9 @@ namespace SpanJson
                     return invoker.FromTextReaderDeserializerAsync(reader, cancellationToken);
                 }
 
-                public static ValueTask InnerSerializeAsync(object input, Stream stream, CancellationToken cancellationToken = default)
+                public static ValueTask InnerSerializeAsync(object? input, Stream? stream, CancellationToken cancellationToken = default)
                 {
-                    if (input == null)
+                    if (input == null || stream == null)
                     {
                         return new ValueTask(Task.CompletedTask);
                     }
@@ -128,11 +129,11 @@ namespace SpanJson
                     return invoker.ToStreamSerializerAsync(input, stream, cancellationToken);
                 }
 
-                public static ValueTask<object> InnerDeserializeAsync(Stream stream, Type type, CancellationToken cancellationToken = default)
+                public static ValueTask<object?> InnerDeserializeAsync(Stream? stream, Type type, CancellationToken cancellationToken = default)
                 {
                     if (stream == null)
                     {
-                        return new ValueTask<object>(null);
+                        return new ValueTask<object?>(null!);
                     }
 
                     // ReSharper disable ConvertClosureToMethodGroup
@@ -148,15 +149,15 @@ namespace SpanJson
                 {
                     if (typeof(TSymbol) == typeof(char))
                     {
-                        return new Invoker(BuildToStringSerializer(type), null, BuildToCharArrayPoolSerializer(type), null, BuildDeserializer(type),
+                        return new Invoker(BuildToStringSerializer(type), null!, BuildToCharArrayPoolSerializer(type), null!, BuildDeserializer(type),
                             BuildAsyncTextWriterSerializer(type),
-                            BuildAsyncTextReaderDeserializer(type), null, null);
+                            BuildAsyncTextReaderDeserializer(type), null!, null!);
                     }
 
                     if (typeof(TSymbol) == typeof(byte))
                     {
-                        return new Invoker(null, BuildToByteArraySerializer(type), null, BuildToByteArrayPoolSerializer(type), BuildDeserializer(type),
-                            null, null, BuildAsyncStreamSerializer(type), BuildAsyncStreamDeserializer(type));
+                        return new Invoker(null!, BuildToByteArraySerializer(type), null!, BuildToByteArrayPoolSerializer(type), BuildDeserializer(type),
+                            null!, null!, BuildAsyncStreamSerializer(type), BuildAsyncStreamDeserializer(type));
                     }
 
                     throw new NotSupportedException();
@@ -273,11 +274,11 @@ namespace SpanJson
                 }
 
 
-                private delegate object DeserializeDelegate(in ReadOnlySpan<TSymbol> input);
+                private delegate object? DeserializeDelegate(in ReadOnlySpan<TSymbol> input);
 
-                private delegate ValueTask<object> DeserializeFromStreamDelegateAsync(Stream stream, CancellationToken cancellationToken = default);
+                private delegate ValueTask<object?> DeserializeFromStreamDelegateAsync(Stream? stream, CancellationToken cancellationToken = default);
 
-                private delegate ValueTask<object> DeserializeFromTextReaderDelegateAsync(TextReader textReader, CancellationToken cancellationToken = default);
+                private delegate ValueTask<object?> DeserializeFromTextReaderDelegateAsync(TextReader? textReader, CancellationToken cancellationToken = default);
 
                 private class Invoker
                 {
@@ -309,17 +310,17 @@ namespace SpanJson
                     public readonly DeserializeFromStreamDelegateAsync FromStreamDeserializerAsync;
                 }
 
-                private delegate byte[] SerializeToByteArrayDelegate(object input);
+                private delegate byte[] SerializeToByteArrayDelegate(object? input);
 
-                private delegate ArraySegment<byte> SerializeToByteArrayPoolDelegate(object input);
+                private delegate ArraySegment<byte> SerializeToByteArrayPoolDelegate(object? input);
 
-                private delegate ValueTask SerializeToStreamDelegateAsync(object input, Stream stream, CancellationToken cancellationToken = default);
+                private delegate ValueTask SerializeToStreamDelegateAsync(object? input, Stream? stream, CancellationToken cancellationToken = default);
 
-                private delegate string SerializeToStringDelegate(object input);
+                private delegate string SerializeToStringDelegate(object? input);
 
-                private delegate ArraySegment<char> SerializeToCharArrayPoolDelegate(object input);
+                private delegate ArraySegment<char> SerializeToCharArrayPoolDelegate(object? input);
 
-                private delegate ValueTask SerializeToTextWriterDelegateAsync(object input, TextWriter writer, CancellationToken cancellationToken = default);
+                private delegate ValueTask SerializeToTextWriterDelegateAsync(object? input, TextWriter? writer, CancellationToken cancellationToken = default);
             }
 
             /// <summary>
@@ -332,7 +333,7 @@ namespace SpanJson
                 /// </summary>
                 /// <param name="input">Input</param>
                 /// <returns>String</returns>
-                public static string Serialize(object input)
+                public static string? Serialize([NotNullIfNotNull("input")] object? input)
                 {
                     return Serialize<ExcludeNullsOriginalCaseResolver<char>>(input);
                 }
@@ -343,7 +344,7 @@ namespace SpanJson
                 /// </summary>
                 /// <param name="input">Input</param>
                 /// <returns>Char array from ArrayPool</returns>
-                public static ArraySegment<char> SerializeToArrayPool(object input)
+                public static ArraySegment<char> SerializeToArrayPool([NotNullIfNotNull("input")] object? input)
                 {
                     return SerializeToArrayPool<ExcludeNullsOriginalCaseResolver<char>>(input);
                 }
@@ -355,7 +356,7 @@ namespace SpanJson
                 /// <param name="writer">TextWriter</param>
                 /// <param name="cancellationToken">CancellationToken</param>
                 /// <returns>Task</returns>
-                public static ValueTask SerializeAsync(object input, TextWriter writer, CancellationToken cancellationToken = default)
+                public static ValueTask SerializeAsync(object? input, TextWriter? writer, CancellationToken cancellationToken = default)
                 {
                     return SerializeAsync<ExcludeNullsOriginalCaseResolver<char>>(input, writer, cancellationToken);
                 }
@@ -367,7 +368,7 @@ namespace SpanJson
                 /// <param name="input">Input</param>
                 /// <param name="type">Object Type</param>
                 /// <returns>Deserialized object</returns>
-                public static object Deserialize<TResolver>(in ReadOnlySpan<char> input, Type type)
+                public static object? Deserialize<TResolver>(in ReadOnlySpan<char> input, Type type)
                     where TResolver : IJsonFormatterResolver<char, TResolver>, new()
                 {
                     return Inner<char, TResolver>.InnerDeserialize(input, type);
@@ -379,7 +380,7 @@ namespace SpanJson
                 /// <param name="input">Input</param>
                 /// <param name="type">Object Type</param>
                 /// <returns>Deserialized object</returns>
-                public static object Deserialize(in ReadOnlySpan<char> input, Type type)
+                public static object? Deserialize(in ReadOnlySpan<char> input, Type type)
                 {
                     return Deserialize<ExcludeNullsOriginalCaseResolver<char>>(input, type);
                 }
@@ -391,7 +392,7 @@ namespace SpanJson
                 /// <param name="type">Object Type</param>
                 /// <param name="cancellationToken">CancellationToken</param>
                 /// <returns>Task</returns>
-                public static ValueTask<object> DeserializeAsync(TextReader reader, Type type, CancellationToken cancellationToken = default)
+                public static ValueTask<object?> DeserializeAsync(TextReader? reader, Type type, CancellationToken cancellationToken = default)
                 {
                     return DeserializeAsync<ExcludeNullsOriginalCaseResolver<char>>(reader, type, cancellationToken);
                 }
@@ -402,7 +403,7 @@ namespace SpanJson
                 /// <typeparam name="TResolver">Resolver</typeparam>
                 /// <param name="input">Input</param>
                 /// <returns>String</returns>
-                public static string Serialize<TResolver>(object input) where TResolver : IJsonFormatterResolver<char, TResolver>, new()
+                public static string? Serialize<TResolver>([NotNullIfNotNull("input")] object? input) where TResolver : IJsonFormatterResolver<char, TResolver>, new()
                 {
                     return Inner<char, TResolver>.InnerSerializeToString(input);
                 }
@@ -414,7 +415,7 @@ namespace SpanJson
                 /// <typeparam name="TResolver">Resolver</typeparam>
                 /// <param name="input">Input</param>
                 /// <returns>Char array from Array Pool</returns>
-                public static ArraySegment<char> SerializeToArrayPool<TResolver>(object input) where TResolver : IJsonFormatterResolver<char, TResolver>, new()
+                public static ArraySegment<char> SerializeToArrayPool<TResolver>([NotNullIfNotNull("input")] object? input) where TResolver : IJsonFormatterResolver<char, TResolver>, new()
                 {
                     return Inner<char, TResolver>.InnerSerializeToCharArrayPool(input);
                 }
@@ -427,7 +428,7 @@ namespace SpanJson
                 /// <param name="type">Object Type</param>
                 /// <param name="cancellationToken">CancellationToken</param>
                 /// <returns>Task</returns>
-                public static ValueTask<object> DeserializeAsync<TResolver>(TextReader reader, Type type,
+                public static ValueTask<object?> DeserializeAsync<TResolver>(TextReader? reader, Type type,
                     CancellationToken cancellationToken = default)
                     where TResolver : IJsonFormatterResolver<char, TResolver>, new()
                 {
@@ -442,7 +443,7 @@ namespace SpanJson
                 /// <param name="writer">TextWriter</param>
                 /// <param name="cancellationToken">CancellationToken</param>
                 /// <returns>Task</returns>
-                public static ValueTask SerializeAsync<TResolver>(object input, TextWriter writer, CancellationToken cancellationToken = default)
+                public static ValueTask SerializeAsync<TResolver>(object? input, TextWriter? writer, CancellationToken cancellationToken = default)
                     where TResolver : IJsonFormatterResolver<char, TResolver>, new()
                 {
                     return Inner<char, TResolver>.InnerSerializeAsync(input, writer, cancellationToken);
@@ -452,7 +453,7 @@ namespace SpanJson
                 ///     This is necessary to convert ValueTask of T to ValueTask of object
                 /// </summary>
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                internal static async ValueTask<object> GenericTextReaderObjectWrapper<T, TResolver>(TextReader reader,
+                internal static async ValueTask<object?> GenericTextReaderObjectWrapper<T, TResolver>(TextReader? reader,
                     CancellationToken cancellationToken = default) where TResolver : IJsonFormatterResolver<char, TResolver>, new()
                 {
                     return await Generic.Utf16.DeserializeAsync<T, TResolver>(reader, cancellationToken).ConfigureAwait(false);
@@ -469,7 +470,7 @@ namespace SpanJson
                 /// </summary>
                 /// <param name="input">Input</param>
                 /// <returns>Byte array</returns>
-                public static byte[] Serialize(object input)
+                public static byte[]? Serialize([NotNullIfNotNull("input")] object? input)
                 {
                     return Serialize<ExcludeNullsOriginalCaseResolver<byte>>(input);
                 }
@@ -480,7 +481,7 @@ namespace SpanJson
                 /// </summary>
                 /// <param name="input">Input</param>
                 /// <returns>Byte array from ArrayPool</returns>
-                public static ArraySegment<byte> SerializeToArrayPool(object input)
+                public static ArraySegment<byte> SerializeToArrayPool([NotNullIfNotNull("input")] object? input)
                 {
                     return SerializeToArrayPool<ExcludeNullsOriginalCaseResolver<byte>>(input);
                 }
@@ -492,7 +493,7 @@ namespace SpanJson
                 /// <param name="input">Input</param>
                 /// <param name="type">Object Type</param>
                 /// <returns>Deserialized object</returns>
-                public static object Deserialize<TResolver>(in ReadOnlySpan<byte> input, Type type)
+                public static object? Deserialize<TResolver>(in ReadOnlySpan<byte> input, Type type)
                     where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
                 {
                     return Inner<byte, TResolver>.InnerDeserialize(input, type);
@@ -504,7 +505,7 @@ namespace SpanJson
                 /// <param name="input">Input</param>
                 /// <param name="type">Object Type</param>
                 /// <returns>Deserialized object</returns>
-                public static object Deserialize(in ReadOnlySpan<byte> input, Type type)
+                public static object? Deserialize(in ReadOnlySpan<byte> input, Type type)
                 {
                     return Deserialize<ExcludeNullsOriginalCaseResolver<byte>>(input, type);
                 }
@@ -528,7 +529,7 @@ namespace SpanJson
                 /// <param name="type">Object Type</param>
                 /// <param name="cancellationToken">CancellationToken</param>
                 /// <returns>Task</returns>
-                public static ValueTask<object> DeserializeAsync(Stream stream, Type type, CancellationToken cancellationToken = default)
+                public static ValueTask<object?> DeserializeAsync(Stream? stream, Type type, CancellationToken cancellationToken = default)
                 {
                     return DeserializeAsync<ExcludeNullsOriginalCaseResolver<byte>>(stream, type, cancellationToken);
                 }
@@ -541,7 +542,7 @@ namespace SpanJson
                 /// <param name="type">Object Type</param>
                 /// <param name="cancellationToken">CancellationToken</param>
                 /// <returns>Task</returns>
-                public static ValueTask<object> DeserializeAsync<TResolver>(Stream stream, Type type,
+                public static ValueTask<object?> DeserializeAsync<TResolver>(Stream? stream, Type type,
                     CancellationToken cancellationToken = default)
                     where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
                 {
@@ -556,7 +557,7 @@ namespace SpanJson
                 /// <param name="stream">Stream</param>
                 /// <param name="cancellationToken">CancellationToken</param>
                 /// <returns>Task</returns>
-                public static ValueTask SerializeAsync<TResolver>(object input, Stream stream, CancellationToken cancellationToken = default)
+                public static ValueTask SerializeAsync<TResolver>(object? input, Stream? stream, CancellationToken cancellationToken = default)
                     where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
                 {
                     return Inner<byte, TResolver>.InnerSerializeAsync(input, stream, cancellationToken);
@@ -568,7 +569,7 @@ namespace SpanJson
                 /// <typeparam name="TResolver">Resolver</typeparam>
                 /// <param name="input">Input</param>
                 /// <returns>Byte array</returns>
-                public static byte[] Serialize<TResolver>(object input) where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
+                public static byte[]? Serialize<TResolver>([NotNullIfNotNull("input")] object? input) where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
                 {
                     return Inner<byte, TResolver>.InnerSerializeToByteArray(input);
                 }
@@ -580,7 +581,7 @@ namespace SpanJson
                 /// <typeparam name="TResolver">Resolver</typeparam>
                 /// <param name="input">Input</param>
                 /// <returns>Byte array</returns>
-                public static ArraySegment<byte> SerializeToArrayPool<TResolver>(object input) where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
+                public static ArraySegment<byte> SerializeToArrayPool<TResolver>([NotNullIfNotNull("input")] object? input) where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
                 {
                     return Inner<byte, TResolver>.InnerSerializeToByteArrayPool(input);
                 }
@@ -589,19 +590,19 @@ namespace SpanJson
                 ///     This is necessary to convert ValueTask of T to ValueTask of object
                 /// </summary>
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                internal static ValueTask<object> GenericStreamObjectWrapper<T, TResolver>(Stream stream, CancellationToken cancellationToken = default)
+                internal static ValueTask<object?> GenericStreamObjectWrapper<T, TResolver>(Stream stream, CancellationToken cancellationToken = default)
                     where TResolver : IJsonFormatterResolver<byte, TResolver>, new()
                 {
                     var task = Generic.Utf8.DeserializeAsync<T, TResolver>(stream, cancellationToken);
                     if (task.IsCompletedSuccessfully)
                     {
-                        return new ValueTask<object>(task.Result);
+                        return new ValueTask<object?>(task.Result);
                     }
 
                     return AwaitGenericStreamObjectWrapper(task);
                 }
 
-                private static async ValueTask<object> AwaitGenericStreamObjectWrapper<T>(ValueTask<T> valueTask)
+                private static async ValueTask<object?> AwaitGenericStreamObjectWrapper<T>(ValueTask<T> valueTask)
                 {
                     return await valueTask.ConfigureAwait(false);
                 }

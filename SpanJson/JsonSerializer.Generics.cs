@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -156,7 +157,7 @@ namespace SpanJson
                 }
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                public static ValueTask<T> InnerDeserializeAsync(TextReader reader, CancellationToken cancellationToken = default)
+                public static ValueTask<T> InnerDeserializeAsync(TextReader? reader, CancellationToken cancellationToken = default)
                 {
                     var input = reader.ReadToEndAsync();
                     if (input.IsCompletedSuccessfully)
@@ -218,7 +219,7 @@ namespace SpanJson
                     {
                         if (MemoryMarshal.TryGetArray<byte>(memory, out var segment))
                         {
-                            ArrayPool<byte>.Shared.Return(segment.Array);
+                            ArrayPool<byte>.Shared.Return(segment.Array!);
                         }
                     }
                 }
@@ -430,7 +431,7 @@ namespace SpanJson
                 /// <param name="reader">TextReader</param>
                 /// <param name="cancellationToken">CancellationToken</param>
                 /// <returns>Task</returns>
-                public static ValueTask<T> DeserializeAsync<T, TResolver>(TextReader reader, CancellationToken cancellationToken = default)
+                public static ValueTask<T> DeserializeAsync<T, TResolver>(TextReader? reader, CancellationToken cancellationToken = default)
                     where TResolver : IJsonFormatterResolver<char, TResolver>, new()
                 {
                     return Inner<T, char, TResolver>.InnerDeserializeAsync(reader, cancellationToken);
@@ -460,7 +461,7 @@ namespace SpanJson
                 /// <typeparam name="T">Type</typeparam>
                 /// <param name="input">Input</param>
                 /// <returns>Byte array from ArrayPool</returns>
-                public static ArraySegment<byte> SerializeToArrayPool<T>(T input)
+                public static ArraySegment<byte> SerializeToArrayPool<T>([NotNullIfNotNull("input")] T input)
                 {
                     return SerializeToArrayPool<T, ExcludeNullsOriginalCaseResolver<byte>>(input);
                 }

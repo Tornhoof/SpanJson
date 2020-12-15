@@ -27,7 +27,8 @@ namespace SpanJson.Tests
         {
             var model = Fixture.Create<Answer>();
             var serialized = JsonSerializer.Generic.Utf8.SerializeToArrayPool(model);
-            Assert.IsType<ArraySegment<byte>>(serialized);
+            serialized = Assert.IsType<ArraySegment<byte>>(serialized);
+            Assert.NotNull(serialized.Array);
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<Answer>(serialized.AsSpan(serialized.Offset, serialized.Count));
             Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
             ArrayPool<byte>.Shared.Return(serialized.Array);
@@ -38,7 +39,8 @@ namespace SpanJson.Tests
         {
             var model = Fixture.Create<Answer>();
             var serialized = JsonSerializer.NonGeneric.Utf16.SerializeToArrayPool(model);
-            Assert.IsType<ArraySegment<char>>(serialized);
+            serialized = Assert.IsType<ArraySegment<char>>(serialized);
+            Assert.NotNull(serialized.Array);
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Answer>(serialized.AsSpan(serialized.Offset, serialized.Count));
             Assert.Equal(model, deserialized, GenericEqualityComparer.Default);
             ArrayPool<char>.Shared.Return(serialized.Array);

@@ -16,7 +16,7 @@ using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 
 namespace SpanJson.Formatters
 {
-    public class DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T, TSymbol>
+    public class DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T?, TSymbol>
         where T : IDynamicMetaObjectProvider
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
         where TSymbol : struct
@@ -33,7 +33,7 @@ namespace SpanJson.Formatters
 
         private static readonly ConcurrentDictionary<string, Action<T, object>> SetMemberCache = new ConcurrentDictionary<string, Action<T, object>>();
 
-        public T Deserialize(ref JsonReader<TSymbol> reader)
+        public T? Deserialize(ref JsonReader<TSymbol> reader)
         {
             if (reader.ReadIsNull())
             {
@@ -60,7 +60,7 @@ namespace SpanJson.Formatters
             return result;
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T? value)
         {
             if (value == null)
             {
@@ -76,7 +76,7 @@ namespace SpanJson.Formatters
             else if (value is ISpanJsonDynamicValue<byte> bValue)
             {
                 var cMaxLength = Encoding.UTF8.GetMaxCharCount(bValue.Symbols.Length);
-                char[] buffer = null;
+                char[]? buffer = null;
                 try
                 {
                     buffer = ArrayPool<char>.Shared.Rent(cMaxLength); // can't use stackalloc here
@@ -95,7 +95,7 @@ namespace SpanJson.Formatters
             else if (value is ISpanJsonDynamicValue<char> cValue)
             {
                 var bMaxLength = Encoding.UTF8.GetMaxCharCount(cValue.Symbols.Length);
-                byte[] buffer = null;
+                byte[]? buffer = null;
                 try
                 {
                     buffer = ArrayPool<byte>.Shared.Rent(bMaxLength); // can't use stackalloc here
@@ -198,7 +198,7 @@ namespace SpanJson.Formatters
                 }
 
                 var formatterType = resolver.GetFormatter(memberInfo).GetType();
-                var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+                var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public)!;
                 var assignExpression = Expression.Assign(Expression.PropertyOrField(inputParameter, memberInfo.MemberName),
                     Expression.Call(Expression.Field(null, fieldInfo),
                         FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()), readerParameter));

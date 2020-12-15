@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -19,7 +20,7 @@ namespace SpanJson.Formatters.Dynamic
         {
             private static readonly Dictionary<Type, ConvertDelegate> Converters = BuildDelegates();
 
-            public override bool TryConvertTo(Type destinationType, ReadOnlySpan<TSymbol> span, out object value)
+            public override bool TryConvertTo(Type destinationType, ReadOnlySpan<TSymbol> span, [MaybeNullWhen(false)] out object? value)
             {
                 try
                 {
@@ -36,12 +37,13 @@ namespace SpanJson.Formatters.Dynamic
                         return true;
                     }
 
-                    if (destinationType.IsEnum || (destinationType = Nullable.GetUnderlyingType(destinationType)) != null)
+                    Type? temp = destinationType;
+                    if (temp.IsEnum || (temp = Nullable.GetUnderlyingType(temp)) != null)
                     {
                         var data = reader.ReadString();
-                        if (Enum.TryParse(destinationType, data, out var enumValue))
+                        if (Enum.TryParse(temp, data, out var enumValue))
                         {
-                            value = enumValue;
+                            value = enumValue!;
                             return true;
                         }
                     }

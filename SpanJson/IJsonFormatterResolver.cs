@@ -7,7 +7,7 @@ namespace SpanJson
     public interface IJsonFormatterResolver
     {
         IJsonFormatter GetFormatter(Type type);
-        IJsonFormatter GetFormatter(JsonMemberInfo info, Type overrideMemberType = null);
+        IJsonFormatter GetFormatter(JsonMemberInfo info, Type? overrideMemberType = null);
         JsonObjectDescription GetDynamicObjectDescription(IDynamicMetaObjectProvider provider);
     }
 

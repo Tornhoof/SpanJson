@@ -8,7 +8,7 @@ namespace SpanJson.Formatters
     /// <summary>
     /// Used for types which are not built-in
     /// </summary>
-    public sealed class ListFormatter<TList, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TList, TSymbol>
+    public sealed class ListFormatter<TList, T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<TList?, TSymbol>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TList : class, IList<T>
 
     {
@@ -19,7 +19,7 @@ namespace SpanJson.Formatters
 
         private static readonly bool IsRecursionCandidate = RecursionCandidate<T>.IsRecursionCandidate;
 
-        public TList Deserialize(ref JsonReader<TSymbol> reader)
+        public TList? Deserialize(ref JsonReader<TSymbol> reader)
         {
             if (reader.ReadIsNull())
             {
@@ -37,7 +37,7 @@ namespace SpanJson.Formatters
             return list;
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, TList value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, TList? value)
         {
             if (value == null)
             {

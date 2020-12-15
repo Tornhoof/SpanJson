@@ -436,7 +436,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public string ReadUtf8String()
+        public string? ReadUtf8String()
         {
             if (ReadUtf8IsNull())
             {
@@ -907,7 +907,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Version ReadUtf8Version()
+        public Version? ReadUtf8Version()
         {
             var stringValue = ReadUtf8String();
             if (stringValue == null)
@@ -919,7 +919,7 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Uri ReadUtf8Uri()
+        public Uri? ReadUtf8Uri()
         {
             var stringValue = ReadUtf8String();
             if (stringValue == null)
@@ -1127,12 +1127,12 @@ namespace SpanJson
             return false;
         }
 
-        public object ReadUtf8Dynamic()
+        public object? ReadUtf8Dynamic()
         {
             return ReadUtf8Dynamic(0);
         }
 
-        public object ReadUtf8Dynamic(int stack)
+        public object? ReadUtf8Dynamic(int stack)
         {
             ref var pos = ref _pos;
             var nextToken = ReadUtf8NextToken();
@@ -1175,7 +1175,7 @@ namespace SpanJson
                     {
                         var name = ReadUtf8EscapedName();
                         var value = ReadUtf8Dynamic(stack + 1);
-                        dictionary[name] = value; // take last one
+                        dictionary[name] = value!; // take last one
                     }
 
                     return new SpanJsonDynamicObject(dictionary);
@@ -1185,7 +1185,7 @@ namespace SpanJson
                 {
                     pos++;
                     var count = 0;
-                    object[] temp = null;
+                    object[]? temp = null;
                     try
                     {
                         temp = ArrayPool<object>.Shared.Rent(4);
@@ -1196,7 +1196,7 @@ namespace SpanJson
                                 FormatterUtils.GrowArray(ref temp);
                             }
 
-                            temp[count - 1] = ReadUtf8Dynamic(stack + 1);
+                            temp[count - 1] = ReadUtf8Dynamic(stack + 1)!;
                         }
 
                         object[] result;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
@@ -7,7 +8,7 @@ namespace SpanJson.Helpers
 {
     public static class TypeExtensions
     {
-        public static bool TryGetNullableUnderlyingType(this Type type, out Type underlingType)
+        public static bool TryGetNullableUnderlyingType(this Type type, [MaybeNullWhen(false)] out Type underlingType)
         {
             if (type.IsValueType)
             {
@@ -24,7 +25,7 @@ namespace SpanJson.Helpers
             return type.IsClass || Nullable.GetUnderlyingType(type) != null;
         }
 
-        public static bool TryGetTypeOfGenericInterface(this Type type, Type interfaceType, out Type[] argumentTypes)
+        public static bool TryGetTypeOfGenericInterface(this Type type, Type interfaceType, [MaybeNullWhen(false)] out Type[] argumentTypes)
         {
             if (!interfaceType.IsInterface)
             {
