@@ -4,16 +4,17 @@
     <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
     <PackageTags>JSON</PackageTags>
     <SignAssembly>true</SignAssembly>
+    <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyOriginatorKeyFile>../SpanJson.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netcoreapp3.1\SpanJson.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\net5.0\SpanJson.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netcoreapp3.1\SpanJson.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\net5.0\SpanJson.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

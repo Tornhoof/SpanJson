@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq.Expressions;
 using SpanJson.Helpers;
@@ -30,7 +31,7 @@ namespace SpanJson.Formatters.Dynamic
             return IsSupported(destinationType);
         }
 
-        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
+        public override object? ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value,
             Type destinationType)
         {
             if (value == null)
@@ -53,7 +54,7 @@ namespace SpanJson.Formatters.Dynamic
             throw new InvalidCastException();
         }
 
-        public abstract bool TryConvertTo(Type destinationType, ReadOnlySpan<TSymbol> span, out object value);
+        public abstract bool TryConvertTo(Type destinationType, ReadOnlySpan<TSymbol> span, [MaybeNullWhen(false)] out object? value);
 
         public abstract bool IsSupported(Type destinationType);
 

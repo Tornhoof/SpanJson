@@ -8,7 +8,7 @@ namespace SpanJson.Formatters
     /// <summary>
     /// Used for types which are not built-in
     /// </summary>
-    public sealed class ArrayFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T[], TSymbol>
+    public sealed class ArrayFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T[]?, TSymbol>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
         public static readonly ArrayFormatter<T, TSymbol, TResolver> Default = new ArrayFormatter<T, TSymbol, TResolver>();
@@ -18,9 +18,9 @@ namespace SpanJson.Formatters
 
         private static readonly bool IsRecursionCandidate = RecursionCandidate<T>.IsRecursionCandidate;
 
-        public T[] Deserialize(ref JsonReader<TSymbol> reader)
+        public T[]? Deserialize(ref JsonReader<TSymbol> reader)
         {
-            T[] temp = null;
+            T[]? temp = null;
             T[] result;
             try
             {
@@ -54,7 +54,7 @@ namespace SpanJson.Formatters
             return result;
         }
 
-        public void Serialize(ref JsonWriter<TSymbol> writer, T[] value)
+        public void Serialize(ref JsonWriter<TSymbol> writer, T[]? value)
         {
             if (value == null)
             {

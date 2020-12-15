@@ -12,7 +12,7 @@ namespace SpanJson
     {
         public Type Type { get; }
 
-        public object Arguments { get; }
+        public object? Arguments { get; }
 
         public JsonCustomSerializerAttribute(Type type, object arguments) : this(type)
         {

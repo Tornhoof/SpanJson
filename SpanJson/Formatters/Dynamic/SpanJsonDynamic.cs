@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
@@ -19,7 +20,7 @@ namespace SpanJson.Formatters.Dynamic
         protected abstract BaseDynamicTypeConverter<TSymbol> Converter { get; }
 
 
-        public bool TryConvert(Type outputType, out object result)
+        public bool TryConvert(Type outputType, [MaybeNullWhen(false)] out object? result)
         {
             return Converter.TryConvertTo(outputType, Symbols, out result);
         }
@@ -44,7 +45,7 @@ namespace SpanJson.Formatters.Dynamic
 
         public virtual string ToJsonValue() => ToString();
 
-        public override bool TryConvert(ConvertBinder binder, out object result)
+        public override bool TryConvert(ConvertBinder binder, [MaybeNullWhen(false)] out object? result)
         {
             return TryConvert(binder.ReturnType, out result);
         }

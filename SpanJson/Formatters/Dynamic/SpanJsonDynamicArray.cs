@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -44,16 +45,16 @@ namespace SpanJson.Formatters.Dynamic
             }
         }
 
-        public override bool TryConvert(ConvertBinder binder, out object result)
+        public override bool TryConvert(ConvertBinder binder, [MaybeNullWhen(false)] out object? result)
         {
             var returnType = binder.ReturnType;
             if (returnType.IsArray)
             {
                 // ReSharper disable ConvertClosureToMethodGroup
-                var functor = Enumerables.GetOrAdd(returnType.GetElementType(), x => CreateEnumerable(x));
+                var functor = Enumerables.GetOrAdd(returnType.GetElementType()!, x => CreateEnumerable(x));
                 // ReSharper restore ConvertClosureToMethodGroup
                 var enumerable = functor(_input);
-                var array = Array.CreateInstance(returnType.GetElementType(), enumerable.Count);
+                var array = Array.CreateInstance(returnType.GetElementType()!, enumerable.Count);
                 var index = 0;
                 foreach (var value in enumerable)
                 {
@@ -131,7 +132,7 @@ namespace SpanJson.Formatters.Dynamic
             public int Count { get; }
         }
 
-        private struct Enumerator<TConverter, TOutput> : IEnumerator<TOutput> where TConverter : TypeConverter
+        private struct Enumerator<TConverter, TOutput> : IEnumerator<TOutput?> where TConverter : TypeConverter
         {
             private readonly TConverter _converter;
             private readonly object[] _input;
@@ -164,9 +165,9 @@ namespace SpanJson.Formatters.Dynamic
                 _index = 0;
             }
 
-            public TOutput Current { get; private set; }
+            public TOutput? Current { get; private set; }
 
-            object IEnumerator.Current => Current;
+            object? IEnumerator.Current => Current;
 
             public void Dispose()
             {
@@ -194,7 +195,7 @@ namespace SpanJson.Formatters.Dynamic
                     return new Enumerator<SpanJsonDynamicNumber<TSymbol>.DynamicTypeConverter, TOutput>(NumberTypeConverter, input);
                 }
 
-                return null;
+                throw new NotSupportedException();
             }
         }
 

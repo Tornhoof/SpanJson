@@ -65,6 +65,11 @@ namespace SpanJson.Tests
 
             public bool Equals(CustomReadOnlyDictionary<TKey, TValue> other)
             {
+                if (other is null)
+                {
+                    return false;
+                }
+                
                 if (Count != other.Count)
                 {
                     return false;
@@ -79,6 +84,16 @@ namespace SpanJson.Tests
                 }
 
                 return true;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is CustomReadOnlyDictionary<TKey, TValue> crd)
+                {
+                    return Equals(crd);
+                }
+
+                return false;
             }
 
             public override int GetHashCode()

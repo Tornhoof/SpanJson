@@ -9,7 +9,7 @@ namespace SpanJson.Formatters
     {
         protected static MethodInfo FindPublicInstanceMethod(Type type, string name, params Type[] args)
         {
-            return args?.Length > 0 ? type.GetMethod(name, args) : type.GetMethod(name);
+            return args?.Length > 0 ? type.GetMethod(name, args)! : type.GetMethod(name)!;
         }
 
         protected static MethodInfo FindGenericMethod(Type type, string name, BindingFlags bindingFlags, Type genericType, Type parameterType)

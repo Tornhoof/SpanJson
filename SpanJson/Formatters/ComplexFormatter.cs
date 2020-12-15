@@ -61,7 +61,7 @@ namespace SpanJson.Formatters
             {
                 var memberInfo = memberInfos[i];
                 var formatterType = resolver.GetFormatter(memberInfo).GetType();
-                Expression serializerInstance = null;
+                Expression serializerInstance = default!;
                 MethodInfo serializeMethodInfo;
                 Expression memberExpression = Expression.PropertyOrField(valueParameter, memberInfo.MemberName);
                 var parameterExpressions = new List<Expression> {writerParameter, memberExpression};
@@ -74,21 +74,21 @@ namespace SpanJson.Formatters
                     {
                         formatterType = resolver.GetFormatter(memberInfo, underlyingType).GetType();
                         fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
-                        var methodInfo = memberInfo.MemberType.GetMethod("GetValueOrDefault", Type.EmptyTypes);
+                        var methodInfo = memberInfo.MemberType.GetMethod(nameof(Nullable<int>.GetValueOrDefault), Type.EmptyTypes)!;
                         memberExpression = Expression.Call(memberExpression, methodInfo);
                         parameterExpressions = new List<Expression> {writerParameter, memberExpression};
                     }
 
                     serializeMethodInfo = FindPublicInstanceMethod(formatterType, "Serialize", writerParameter.Type.MakeByRefType(),
-                        underlyingType ?? memberInfo.MemberType);
-                    serializerInstance = Expression.Field(null, fieldInfo);
+                        underlyingType ?? memberInfo.MemberType)!;
+                    serializerInstance = Expression.Field(null, fieldInfo!);
                 }
                 else
                 {
                     serializeMethodInfo = typeof(BaseFormatter)
-                        .GetMethod(nameof(SerializeRuntimeDecisionInternal), BindingFlags.NonPublic | BindingFlags.Static)
+                        .GetMethod(nameof(SerializeRuntimeDecisionInternal), BindingFlags.NonPublic | BindingFlags.Static)!
                         .MakeGenericMethod(memberInfo.MemberType, typeof(TSymbol), typeof(TResolver));
-                    parameterExpressions.Add(Expression.Field(null, fieldInfo));
+                    parameterExpressions.Add(Expression.Field(null, fieldInfo!));
                 }
 
                 bool isCandidate = RecursionCandidate.LookupRecursionCandidate(memberInfo.MemberType);
@@ -106,7 +106,7 @@ namespace SpanJson.Formatters
                 {
                     writeNameExpressions = new[] {Expression.Constant(formattedMemberInfoName)};
                     propertyNameWriterMethodInfo =
-                        FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim), typeof(string));
+                        FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf16Verbatim), typeof(string))!;
                 }
                 // utf8 has special logic for writing the attribute names as Expression.Constant(byte-Array) is slower than Expression.Constant(string)
                 else if (typeof(TSymbol) == typeof(byte))
@@ -116,14 +116,14 @@ namespace SpanJson.Formatters
                     {
                         writeNameExpressions = new[] {Expression.Constant(Encoding.UTF8.GetBytes(formattedMemberInfoName))};
                         propertyNameWriterMethodInfo =
-                            FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim), typeof(byte[]));
+                            FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim), typeof(byte[]))!;
                     }
                     else
                     {
                         writeNameExpressions = GetIntegersForMemberName(formattedMemberInfoName);
                         var typesToMatch = writeNameExpressions.Select(a => a.Value.GetType());
                         propertyNameWriterMethodInfo =
-                            FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim), typesToMatch.ToArray());
+                            FindPublicInstanceMethod(writerParameter.Type, nameof(JsonWriter<TSymbol>.WriteUtf8Verbatim), typesToMatch.ToArray())!;
                     }
                 }
                 else
@@ -144,10 +144,11 @@ namespace SpanJson.Formatters
                         ));
                 }
 
-                valueExpressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo, writeNameExpressions));
+                // ReSharper disable once CoVariantArrayConversion
+                valueExpressions.Add(Expression.Call(writerParameter, propertyNameWriterMethodInfo, writeNameExpressions!));
                 valueExpressions.Add(Expression.Call(serializerInstance, serializeMethodInfo, parameterExpressions));
                 valueExpressions.Add(Expression.Assign(writeSeparator, Expression.Constant(true)));
-                Expression testNullExpression = null;
+                Expression? testNullExpression = default;
                 if (memberInfo.ExcludeNull)
                 {
                     if (memberInfo.MemberType.IsClass)
@@ -166,7 +167,7 @@ namespace SpanJson.Formatters
                 var shouldSerializeExpression = memberInfo.ShouldSerialize != null
                     ? Expression.IsTrue(Expression.Call(valueParameter, memberInfo.ShouldSerialize))
                     : null;
-                Expression testExpression = null;
+                Expression? testExpression = default;
                 if (testNullExpression != null && shouldSerializeExpression != null)
                 {
                     testExpression = Expression.AndAlso(testNullExpression, shouldSerializeExpression);
@@ -198,7 +199,7 @@ namespace SpanJson.Formatters
             if (objectDescription.ExtensionMemberInfo != null)
             {
                 var knownNames = objectDescription.Members.Where(t => t.CanWrite).Select(a => a.Name).ToHashSet();
-                var memberInfo = typeof(ComplexFormatter).GetMethod(nameof(SerializeExtension), BindingFlags.Static | BindingFlags.NonPublic);
+                var memberInfo = typeof(ComplexFormatter).GetMethod(nameof(SerializeExtension), BindingFlags.Static | BindingFlags.NonPublic)!;
                 var closedMemberInfo = memberInfo.MakeGenericMethod(typeof(TSymbol), typeof(TResolver));
                 var valueExpression = Expression.TypeAs(Expression.PropertyOrField(valueParameter, objectDescription.ExtensionMemberInfo.MemberName),
                     typeof(IDictionary<string, object>));
@@ -252,7 +253,7 @@ namespace SpanJson.Formatters
 
             if (memberInfos.Count == 0 && objectDescription.ExtensionMemberInfo == null)
             {
-                Expression createExpression = null;
+                Expression? createExpression = null;
                 if (typeof(T).IsClass)
                 {
                     var ci = typeof(T).GetConstructor(Type.EmptyTypes);
@@ -294,12 +295,12 @@ namespace SpanJson.Formatters
 
             // We need to decide during generation if we handle constructors or normal member assignment, the difference is done in the functor below
             Func<JsonMemberInfo, Expression> matchExpressionFunctor;
-            Expression[] constructorParameterExpressions = null;
+            Expression[]? constructorParameterExpressions = null;
             List<(string, Expression)> additionalAfterCtorParameterExpressions = new List<(string, Expression)>();
             if (objectDescription.Constructor != null)
             {
                 // If we want to use the constructor we serialize into an array of variables internally and then create the object from that
-                var dict = objectDescription.ConstructorMapping;
+                var dict = objectDescription.ConstructorMapping!;
                 constructorParameterExpressions = new Expression[dict.Count];
                 foreach (var valueTuple in dict)
                 {
@@ -321,7 +322,7 @@ namespace SpanJson.Formatters
                     }
                     var formatter = resolver.GetFormatter(memberInfo);
                     var formatterType = formatter.GetType();
-                    var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+                    var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public)!;
                     return Expression.Assign(assignValueExpression,
                         Expression.Call(Expression.Field(null, fieldInfo),
                             FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()),
@@ -335,7 +336,7 @@ namespace SpanJson.Formatters
                 {
                     var formatter = resolver.GetFormatter(memberInfo);
                     var formatterType = formatter.GetType();
-                    var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+                    var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public)!;
                     return Expression.Assign(Expression.PropertyOrField(returnValue, memberInfo.MemberName),
                         Expression.Call(Expression.Field(null, fieldInfo),
                             FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()),
@@ -391,7 +392,7 @@ namespace SpanJson.Formatters
                     : Expression.New(objectDescription.ExtensionMemberInfo.MemberType);
                 extensionExpressions.Add(Expression.IfThen(Expression.ReferenceEqual(dictExpression, Expression.Constant(null)),
                     Expression.Assign(dictExpression, createExpression)));
-                var memberInfo = typeof(ComplexFormatter).GetMethod(nameof(DeserializeExtension), BindingFlags.Static | BindingFlags.NonPublic);
+                var memberInfo = typeof(ComplexFormatter).GetMethod(nameof(DeserializeExtension), BindingFlags.Static | BindingFlags.NonPublic)!;
                 var closedMemberInfo = memberInfo.MakeGenericMethod(typeof(TSymbol), typeof(TResolver));
                 extensionExpressions.Add(Expression.Call(null, closedMemberInfo, readerParameter, byteNameSpan, dictExpression,
                     Expression.Constant(objectDescription.ExtensionMemberInfo.ExcludeNulls)));
@@ -473,7 +474,7 @@ namespace SpanJson.Formatters
                 return;
             }
 
-            string key = null;
+            string key = default!;
             if (typeof(TSymbol) == typeof(char))
             {
                 key = Encoding.Unicode.GetString(nameSpan);
@@ -518,7 +519,7 @@ namespace SpanJson.Formatters
                     var name = kvp.Key;
                     if (namingConvention == NamingConventions.CamelCase && char.IsUpper(name[0]))
                     {
-                        char[] array = null;
+                        char[]? array = default;
                         try
                         {
                             array = ArrayPool<char>.Shared.Rent(name.Length);
@@ -545,7 +546,7 @@ namespace SpanJson.Formatters
                     }
 
                     writer.IncrementDepth();
-                    SerializeRuntimeDecisionInternal<object, TSymbol, TResolver>(ref writer, kvp.Value, RuntimeFormatter<TSymbol, TResolver>.Default);
+                    SerializeRuntimeDecisionInternal<object, TSymbol, TResolver>(ref writer, kvp.Value!, RuntimeFormatter<TSymbol, TResolver>.Default);
                     writer.DecrementDepth();
                     writeSeparator = true;
                 }

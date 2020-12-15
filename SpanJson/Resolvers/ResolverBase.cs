@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -19,7 +21,7 @@ namespace SpanJson.Resolvers
 
         protected static readonly ParameterExpression DynamicMetaObjectParameterExpression = Expression.Parameter(typeof(object));
 
-        protected static bool TryGetBaseClassJsonConstructorAttribute(Type type, out JsonConstructorAttribute attribute)
+        protected static bool TryGetBaseClassJsonConstructorAttribute(Type type, [MaybeNullWhen(false)] out JsonConstructorAttribute attribute)
         {
             if (BaseClassJsonConstructorMap.TryGetValue(type, out attribute))
             {
@@ -60,7 +62,7 @@ namespace SpanJson.Resolvers
         public static IJsonFormatter GetDefaultOrCreate(Type type)
         {
             return (IJsonFormatter)(type.GetField("Default", BindingFlags.Public | BindingFlags.Static)
-                                        ?.GetValue(null) ?? Activator.CreateInstance(type)); // leave the createinstance here, this helps with recursive types
+                                        ?.GetValue(null) ?? Activator.CreateInstance(type)!); // leave the createinstance here, this helps with recursive types
         }
     }
 
@@ -104,7 +106,7 @@ namespace SpanJson.Resolvers
             Formatters.AddOrUpdate(type, GetDefaultOrCreate(formatterType), (t, formatter) => GetDefaultOrCreate(formatterType));
         }
 
-        public virtual IJsonFormatter GetFormatter(JsonMemberInfo memberInfo, Type overrideMemberType = null)
+        public virtual IJsonFormatter GetFormatter(JsonMemberInfo memberInfo, Type? overrideMemberType = null)
         {
             // ReSharper disable ConvertClosureToMethodGroup
             if (memberInfo.CustomSerializer != null)
@@ -166,12 +168,16 @@ namespace SpanJson.Resolvers
         {
             var publicMembers = type.SerializableMembers();
             var result = new List<JsonMemberInfo>();
-            JsonExtensionMemberInfo extensionMemberInfo = null;
+            JsonExtensionMemberInfo? extensionMemberInfo = null;
             var excludeNulls = _spanJsonOptions.NullOption == NullOptions.ExcludeNulls;
             foreach (var memberInfo in publicMembers)
             {
-                var memberType = memberInfo is FieldInfo fi ? fi.FieldType :
-                    memberInfo is PropertyInfo pi ? pi.PropertyType : null;
+                var memberType = memberInfo switch
+                {
+                    FieldInfo fi => fi.FieldType,
+                    PropertyInfo pi => pi.PropertyType,
+                    _ => throw new ArgumentException()
+                };
                 var name = Escape(GetAttributeName(memberInfo) ?? memberInfo.Name);
                 if (_spanJsonOptions.NamingConvention == NamingConventions.CamelCase)
                 {
@@ -202,10 +208,9 @@ namespace SpanJson.Resolvers
             return new JsonObjectDescription(constructor, attribute, result.ToArray(), extensionMemberInfo);
         }
 
-        protected virtual void TryGetAnnotatedAttributeConstructor(Type type, out ConstructorInfo constructor, out JsonConstructorAttribute attribute)
+        protected virtual void TryGetAnnotatedAttributeConstructor(Type type, out ConstructorInfo? constructor, out JsonConstructorAttribute? attribute)
         {
-            constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance)
-                .FirstOrDefault(a => a.GetCustomAttribute<JsonConstructorAttribute>() != null);
+            constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(a => a.GetCustomAttribute<JsonConstructorAttribute>() != null);
             if (constructor != null)
             {
                 attribute = constructor.GetCustomAttribute<JsonConstructorAttribute>();
@@ -234,7 +239,7 @@ namespace SpanJson.Resolvers
             return memberInfo.GetCustomAttribute<IgnoreDataMemberAttribute>() != null;
         }
 
-        private static string GetAttributeName(MemberInfo memberInfo)
+        private static string? GetAttributeName(MemberInfo memberInfo)
         {
             return memberInfo.GetCustomAttribute<DataMemberAttribute>()?.Name;
         }
@@ -247,7 +252,7 @@ namespace SpanJson.Resolvers
                 return integrated;
             }
 
-            JsonCustomSerializerAttribute attr;
+            JsonCustomSerializerAttribute? attr;
             if ((attr = type.GetCustomAttribute<JsonCustomSerializerAttribute>()) != null)
             {
                 var formatter = GetDefaultOrCreate(attr.Type);
@@ -269,10 +274,10 @@ namespace SpanJson.Resolvers
                 switch (rank)
                 {
                     case 1:
-                        return GetDefaultOrCreate(typeof(ArrayFormatter<,,>).MakeGenericType(type.GetElementType(),
+                        return GetDefaultOrCreate(typeof(ArrayFormatter<,,>).MakeGenericType(type.GetElementType()!,
                             typeof(TSymbol), typeof(TResolver)));
                     case 2:
-                        return GetDefaultOrCreate(typeof(TwoDimensionalArrayFormatter<,,>).MakeGenericType(type.GetElementType(),
+                        return GetDefaultOrCreate(typeof(TwoDimensionalArrayFormatter<,,>).MakeGenericType(type.GetElementType()!,
                             typeof(TSymbol), typeof(TResolver)));
                     default:
                         throw new NotSupportedException("Only One- and Two-dimensional arrrays are supported.");
@@ -366,7 +371,7 @@ namespace SpanJson.Resolvers
             return type.GetConstructor(Type.EmptyTypes) != null;
         }
 
-        private static IJsonFormatter GetIntegrated(Type type)
+        private static IJsonFormatter? GetIntegrated(Type type)
         {
             var allTypes = typeof(ResolverBase).Assembly.GetTypes();
             foreach (var candidate in allTypes.Where(a => a.IsPublic))
@@ -397,7 +402,7 @@ namespace SpanJson.Resolvers
 
         private static bool HasCustomFormatterForRelatedType(Type type)
         {
-            Type relatedType = Nullable.GetUnderlyingType(type);
+            Type? relatedType = Nullable.GetUnderlyingType(type);
             if (relatedType == null && type.IsArray)
             {
                 relatedType = type.GetElementType();
@@ -440,7 +445,7 @@ namespace SpanJson.Resolvers
             return Expression.Lambda<Func<T>>(Expression.New(type)).Compile();
         }
 
-        protected virtual Type GetFunctorFallBackType(Type type)
+        protected virtual Type? GetFunctorFallBackType(Type type)
         {
             if (type.TryGetTypeOfGenericInterface(typeof(IDictionary<,>), out var dictArgumentTypes))
             {
