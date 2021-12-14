@@ -129,6 +129,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<SByte?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -140,7 +154,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -244,6 +258,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<SByte>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -255,7 +283,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -398,6 +426,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<SByte?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -409,7 +451,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -513,6 +555,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<SByte>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -524,7 +580,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -667,6 +723,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Int16?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -678,7 +748,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -782,6 +852,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Int16>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -793,7 +877,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -936,6 +1020,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Int16?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -947,7 +1045,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -1051,6 +1149,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Int16>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -1062,7 +1174,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -1205,6 +1317,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Int32?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -1216,7 +1342,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -1320,6 +1446,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Int32>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -1331,7 +1471,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -1474,6 +1614,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Int32?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -1485,7 +1639,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -1589,6 +1743,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Int32>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -1600,7 +1768,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -1743,6 +1911,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Int64?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -1754,7 +1936,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -1858,6 +2040,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Int64>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -1869,7 +2065,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -2012,6 +2208,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Int64?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -2023,7 +2233,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -2127,6 +2337,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Int64>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -2138,7 +2362,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -2281,6 +2505,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Byte?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -2292,7 +2530,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -2396,6 +2634,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Byte>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -2407,7 +2659,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -2550,6 +2802,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Byte?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -2561,7 +2827,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -2665,6 +2931,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Byte>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -2676,7 +2956,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -2819,6 +3099,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<UInt16?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -2830,7 +3124,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -2934,6 +3228,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<UInt16>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -2945,7 +3253,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -3088,6 +3396,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<UInt16?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -3099,7 +3421,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -3203,6 +3525,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<UInt16>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -3214,7 +3550,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -3357,6 +3693,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<UInt32?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -3368,7 +3718,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -3472,6 +3822,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<UInt32>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -3483,7 +3847,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -3626,6 +3990,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<UInt32?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -3637,7 +4015,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -3741,6 +4119,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<UInt32>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -3752,7 +4144,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -3895,6 +4287,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<UInt64?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -3906,7 +4312,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -4010,6 +4416,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<UInt64>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -4021,7 +4441,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -4164,6 +4584,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<UInt64?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -4175,7 +4609,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -4279,6 +4713,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<UInt64>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -4290,7 +4738,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -4433,6 +4881,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Single?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -4444,7 +4906,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -4548,6 +5010,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Single>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -4559,7 +5035,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -4702,6 +5178,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Single?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -4713,7 +5203,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -4817,6 +5307,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Single>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -4828,7 +5332,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -4971,6 +5475,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Double?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -4982,7 +5500,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -5086,6 +5604,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Double>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -5097,7 +5629,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -5240,6 +5772,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Double?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -5251,7 +5797,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -5355,6 +5901,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Double>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -5366,7 +5926,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -5509,6 +6069,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Decimal?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -5520,7 +6094,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -5624,6 +6198,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Decimal>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -5635,7 +6223,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -5778,6 +6366,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Decimal?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -5789,7 +6391,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -5893,6 +6495,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Decimal>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -5904,7 +6520,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -6047,6 +6663,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Boolean?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -6058,7 +6688,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -6162,6 +6792,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Boolean>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -6173,7 +6817,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -6316,6 +6960,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Boolean?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -6327,7 +6985,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -6431,6 +7089,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Boolean>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -6442,7 +7114,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -6585,6 +7257,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Char?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -6596,7 +7282,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -6700,6 +7386,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Char>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -6711,7 +7411,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -6854,6 +7554,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Char?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -6865,7 +7579,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -6969,6 +7683,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Char>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -6980,7 +7708,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -7123,6 +7851,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<DateTime?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -7134,7 +7876,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -7238,6 +7980,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<DateTime>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -7249,7 +8005,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -7392,6 +8148,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<DateTime?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -7403,7 +8173,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -7507,6 +8277,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<DateTime>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -7518,7 +8302,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -7661,6 +8445,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<DateTimeOffset?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -7672,7 +8470,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -7776,6 +8574,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<DateTimeOffset>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -7787,7 +8599,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -7930,6 +8742,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<DateTimeOffset?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -7941,7 +8767,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -8045,6 +8871,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<DateTimeOffset>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -8056,7 +8896,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -8199,6 +9039,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<TimeSpan?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -8210,7 +9064,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -8314,6 +9168,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<TimeSpan>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -8325,7 +9193,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -8468,6 +9336,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<TimeSpan?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -8479,7 +9361,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -8583,6 +9465,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<TimeSpan>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -8594,7 +9490,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -8737,6 +9633,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Guid?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -8748,7 +9658,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -8852,6 +9762,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Guid>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -8863,7 +9787,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -9006,6 +9930,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Guid?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -9017,7 +9955,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -9121,6 +10059,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Guid>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -9132,7 +10084,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -9255,6 +10207,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<String>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -9266,7 +10232,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -9389,6 +10355,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<String>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -9400,7 +10380,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -9523,6 +10503,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Version>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -9534,7 +10528,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -9657,6 +10651,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Version>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -9668,7 +10676,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
@@ -9791,6 +10799,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf16Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Uri>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf16BeginArray();
             if (valueLength > 0)
@@ -9802,7 +10824,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf16EndArray();
         }
 
@@ -9925,6 +10947,20 @@ namespace SpanJson.Formatters
                 writer.WriteUtf8Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<Uri>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.WriteUtf8BeginArray();
             if (valueLength > 0)
@@ -9936,7 +10972,7 @@ namespace SpanJson.Formatters
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.WriteUtf8EndArray();
         }
 
