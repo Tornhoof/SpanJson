@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TieredCompilation>false</TieredCompilation>
     <IsPackable>false</IsPackable>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -65,6 +65,10 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ModelBenchmark.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 
 </Project>
