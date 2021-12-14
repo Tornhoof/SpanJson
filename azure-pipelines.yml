@@ -13,12 +13,18 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: DotNetCoreInstaller@1
+- task: UseDotNet@2
   inputs:
-    version: '5.0.100'
-- task: DotNetCoreInstaller@2
+    packageType: sdk
+    version: 3.1.x
+- task: UseDotNet@2
   inputs:
-    version: '3.1.200'
+    packageType: sdk
+    version: 5.0.x
+- task: UseDotNet@2
+  inputs:
+    packageType: sdk
+    version: 6.0.x
 - script: dotnet restore
   displayName: 'dotnet restore'
 - script: dotnet build --configuration $(buildConfiguration)

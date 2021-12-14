@@ -10,7 +10,7 @@ namespace SpanJson.Benchmarks.Serializers
     {
         private static readonly JsonSerializerOptions Options = new JsonSerializerOptions
         {
-            IgnoreNullValues = true, 
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase, 
             WriteIndented = false,
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
