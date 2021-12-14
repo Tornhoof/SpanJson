@@ -598,8 +598,8 @@ namespace SpanJson
 
             WriteUtf8DoubleQuote();
             Span<char> tempSpan = stackalloc char[JsonSharedConstant.MaxVersionLength];
-            value.TryFormat(tempSpan, out _);
-            pos += Encoding.UTF8.GetBytes(tempSpan, _bytes.Slice(pos));
+            value.TryFormat(tempSpan, out var written);
+            pos += Encoding.UTF8.GetBytes(tempSpan.Slice(0, written), _bytes.Slice(pos));
             WriteUtf8DoubleQuote();
         }
 
