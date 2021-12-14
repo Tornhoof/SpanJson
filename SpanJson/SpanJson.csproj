@@ -6,6 +6,7 @@
     <SignAssembly>true</SignAssembly>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyOriginatorKeyFile>../SpanJson.snk</AssemblyOriginatorKeyFile>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
