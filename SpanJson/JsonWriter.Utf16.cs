@@ -363,7 +363,7 @@ namespace SpanJson
             WriteUtf16DoubleQuote();
             Span<byte> byteSpan = stackalloc byte[tsSize];
             Utf8Formatter.TryFormat(value, byteSpan, out var bytesWritten);
-            for (var i = 0; i < byteSpan.Length; i++)
+            for (var i = 0; i < bytesWritten; i++)
             {
                 _chars[i + pos] = (char) byteSpan[i];
             }

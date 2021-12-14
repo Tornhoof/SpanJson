@@ -13,6 +13,20 @@ void GenerateListSerializeCode(string typeName, string utfName)
                 writer.Write<#= utfName #>Null();
                 return;
             }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<<#= typeName #>>(value);
+            var valueLength = span.Length;
+            writer.Write<#= utfName #>BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.Write<#= utfName #>ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
             var valueLength = value.Count;
             writer.Write<#= utfName #>BeginArray();
             if (valueLength > 0)
@@ -24,7 +38,7 @@ void GenerateListSerializeCode(string typeName, string utfName)
                     ElementFormatter.Serialize(ref writer, value[i]);
                 }
             }
-
+#endif
             writer.Write<#= utfName #>EndArray();
 <#
 }

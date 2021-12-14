@@ -382,20 +382,21 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static TimeSpan ConvertTimeSpanViaUtf8(in ReadOnlySpan<char> span, int position)
         {
-            Span<byte> byteSpan = stackalloc byte[JsonSharedConstant.MaxTimeSpanLength];
-            for (var i = 0; i < span.Length; i++)
-            {
-                byteSpan[i] = (byte) span[i];
-            }
+	        Span<byte> byteSpan = stackalloc byte[JsonSharedConstant.MaxTimeSpanLength];
+	        for (var i = 0; i < span.Length; i++)
+	        {
+		        byteSpan[i] = (byte)span[i];
+	        }
 
-            // still slow in .NET Core 3.0
-            if (Utf8Parser.TryParse(byteSpan, out TimeSpan value, out var bytesConsumed) && bytesConsumed == span.Length)
-            {
-                return value;
-            }
+	        // still slow in .NET Core 3.0
+	        byteSpan = byteSpan.Slice(0, span.Length);
+	        if (Utf8Parser.TryParse(byteSpan, out TimeSpan value, out var bytesConsumed) && bytesConsumed == span.Length)
+	        {
+		        return value;
+	        }
 
-            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.TimeSpan, position);
-            return default;
+	        ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.TimeSpan, position);
+	        return default;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
