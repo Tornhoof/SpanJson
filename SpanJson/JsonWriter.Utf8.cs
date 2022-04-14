@@ -275,8 +275,16 @@ namespace SpanJson
                 ref readonly var c = ref value[index];
                 if (c < 0x20 || c == JsonUtf8Constant.DoubleQuote || c == JsonUtf8Constant.Solidus || c == JsonUtf8Constant.ReverseSolidus)
                 {
-                    WriteUtf8ReadonlySpan(value.Slice(from, index - from), 7); // The EscapedUtf8Char takes at most 6 bytes + 1 for double quote
-                    WriteEscapedUtf8CharInternal(c);
+                    // changed extraBytes to 1, for and post grow the buffer if required, previously it was 7, but some rare combinations of buffer size and content failed with that
+                    // instead of checking the buffer size here to get atleast the 7 extra bytes in, we do it after writing the initial buffer (which works due to Grow above)
+                    // in the assumption that it's a rare case that the buffer needs to be grown
+                    // do the check here as this code path is only taken for chars which need to be escaped
+                    WriteUtf8ReadonlySpan(value.Slice(from, index - from), 1); //  + 1 for double quote
+	                if (pos > _bytes.Length - 6) // The EscapedUtf8Char takes at most 6 bytes
+                    {
+                        Grow(6);
+	                }
+	                WriteEscapedUtf8CharInternal(c);
                     from = index + 1;
                 }
 
@@ -297,20 +305,20 @@ namespace SpanJson
         /// </summary>
         private void WriteUtf8ReadonlySpan(in ReadOnlySpan<char> value, int extraBytes)
         {
-            ref var pos = ref _pos;
-            OperationStatus opStatus;
-            ReadOnlySpan<char> toWrite = value;
-            do
-            {
-                var output = _bytes.Slice(pos, _bytes.Length - pos - extraBytes);
-                opStatus = Utf8.FromUtf16(toWrite, output, out var charsRead, out var bytesWritten);
-                pos += bytesWritten;
-                if (opStatus == OperationStatus.DestinationTooSmall)
-                {
-                    Grow(toWrite.Length - charsRead);
-                    toWrite = toWrite.Slice(charsRead);
-                }
-            } while (opStatus != OperationStatus.Done);
+	        ref var pos = ref _pos;
+	        OperationStatus opStatus;
+	        ReadOnlySpan<char> toWrite = value;
+	        do
+	        {
+		        var output = _bytes.Slice(pos, _bytes.Length - pos - extraBytes);
+		        opStatus = Utf8.FromUtf16(toWrite, output, out var charsRead, out var bytesWritten);
+		        pos += bytesWritten;
+		        if (opStatus == OperationStatus.DestinationTooSmall)
+		        {
+			        Grow(toWrite.Length - charsRead);
+			        toWrite = toWrite.Slice(charsRead);
+		        }
+	        } while (opStatus != OperationStatus.Done);
         }
 
         private void WriteEscapedUtf8CharInternal(char value)

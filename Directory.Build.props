@@ -3,12 +3,12 @@
     <Authors>SpanJson Contributors</Authors>
     <Copyright>SpanJson Contributors</Copyright>
     <Company />
-    <Version>3.2.0</Version>
+    <Version>3.2.1</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Tornhoof/SpanJson</PackageProjectUrl>
     <RepositoryUrl>git://github.com/Tornhoof/SpanJson</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageReleaseNotes>Bugfixes and improvements</PackageReleaseNotes>
+    <PackageReleaseNotes>Bugfixes</PackageReleaseNotes>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1701;1702;1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
