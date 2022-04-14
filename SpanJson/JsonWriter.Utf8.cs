@@ -305,20 +305,20 @@ namespace SpanJson
         /// </summary>
         private void WriteUtf8ReadonlySpan(in ReadOnlySpan<char> value, int extraBytes)
         {
-            ref var pos = ref _pos;
-            OperationStatus opStatus;
-            ReadOnlySpan<char> toWrite = value;
-            do
-            {
-	            var output = _bytes.Slice(pos, _bytes.Length - pos - extraBytes);
-                opStatus = Utf8.FromUtf16(toWrite, output, out var charsRead, out var bytesWritten);
-                pos += bytesWritten;
-                if (opStatus == OperationStatus.DestinationTooSmall)
-                {
-                    Grow(toWrite.Length - charsRead);
-                    toWrite = toWrite.Slice(charsRead);
-                }
-            } while (opStatus != OperationStatus.Done);
+	        ref var pos = ref _pos;
+	        OperationStatus opStatus;
+	        ReadOnlySpan<char> toWrite = value;
+	        do
+	        {
+		        var output = _bytes.Slice(pos, _bytes.Length - pos - extraBytes);
+		        opStatus = Utf8.FromUtf16(toWrite, output, out var charsRead, out var bytesWritten);
+		        pos += bytesWritten;
+		        if (opStatus == OperationStatus.DestinationTooSmall)
+		        {
+			        Grow(toWrite.Length - charsRead);
+			        toWrite = toWrite.Slice(charsRead);
+		        }
+	        } while (opStatus != OperationStatus.Done);
         }
 
         private void WriteEscapedUtf8CharInternal(char value)
