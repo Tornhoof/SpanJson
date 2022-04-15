@@ -23,6 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Formatters\BclFormatter.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BclFormatter.cs</LastGenOutput>
