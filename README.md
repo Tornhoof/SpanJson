@@ -278,8 +278,8 @@ public class ExtensionTest
 }
 ```
 
-## ASP.NET Core 2.1 Formatter ##
-You can enable SpanJson as the default JSON formatter in ASP.NET Core 2.1 by using the Nuget package [SpanJson.AspNetCore.Formatter](https://www.nuget.org/packages/SpanJson.AspNetCore.Formatter).
+## ASP.NET Core 3.1 Formatter ##
+You can enable SpanJson as the default JSON formatter in ASP.NET Core 3.1 by using the Nuget package [SpanJson.AspNetCore.Formatter](https://www.nuget.org/packages/SpanJson.AspNetCore.Formatter).
 To enable it, add one of the following extension methods to the ``AddMvc()`` call in ``ConfigureServices``
 * AddSpanJson for a resolver with ASP.NET Core 2.1 defaults: IncludeNull, CamelCase, Integer Enums
 * AddSpanJsonCustom for a custom resolver (one of the default resolvers or custom)
@@ -288,7 +288,7 @@ To enable it, add one of the following extension methods to the ``AddMvc()`` cal
 // This method gets called by the runtime. Use this method to add services to the container.
 public void ConfigureServices(IServiceCollection services)
 {
-    services.AddMvc().AddSpanJson().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+    services.AddMvc().AddSpanJson();
 }
 ```
 
