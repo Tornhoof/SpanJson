@@ -295,7 +295,7 @@ namespace SpanJson.Formatters
             // We need to decide during generation if we handle constructors or normal member assignment, the difference is done in the functor below
             Func<JsonMemberInfo, Expression> matchExpressionFunctor;
             Expression[] constructorParameterExpressions = null;
-            List<(string, Expression)> additionalAfterCtorParameterExpressions = new List<(string, Expression)>();
+            var additionalAfterCtorParameterExpressions = new List<(string Name, ParameterExpression HasVariable, Expression Variable)>();
             if (objectDescription.Constructor != null)
             {
                 // If we want to use the constructor we serialize into an array of variables internally and then create the object from that
@@ -303,30 +303,47 @@ namespace SpanJson.Formatters
                 constructorParameterExpressions = new Expression[dict.Count];
                 foreach (var valueTuple in dict)
                 {
-                    constructorParameterExpressions[valueTuple.Value.Index] = Expression.Variable(valueTuple.Value.Type);
+                    constructorParameterExpressions[valueTuple.Value.Index] = Expression.Variable(valueTuple.Value.Type, ToCamelCase(valueTuple.Key));
                 }
 
                 matchExpressionFunctor = memberInfo =>
                 {
                     Expression assignValueExpression;
+                    // Ctor-Functor stores values in local variables to assign them before calling the ctor.
+                    // Therefore we need a 'hasVariable' to check if it has been assigned, like:
+                    // var result = new Value(var1, var2);
+                    // if(hasVar3) { result.Var3 = var3; }
+                    ParameterExpression hasVariable = null;
                     if (dict.TryGetValue(memberInfo.MemberName, out var element))
                     {
                         assignValueExpression = constructorParameterExpressions[element.Index];
                     }
                     else
                     {
-                        var variable = Expression.Variable(memberInfo.MemberType);
-                        additionalAfterCtorParameterExpressions.Add((memberInfo.MemberName, variable));
+                        var variable = Expression.Variable(memberInfo.MemberType, ToCamelCase(memberInfo.MemberName));
+                        hasVariable = Expression.Variable(typeof(bool), $"has{ToPascalCase(variable.Name)}");
+                        additionalAfterCtorParameterExpressions.Add((memberInfo.MemberName, hasVariable, variable));
                         assignValueExpression = variable;
                     }
+
                     var formatter = resolver.GetFormatter(memberInfo);
                     var formatterType = formatter.GetType();
                     var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
-                    return Expression.Assign(assignValueExpression,
+                    var assignVariableExpression = Expression.Assign(assignValueExpression,
                         Expression.Call(Expression.Field(null, fieldInfo),
                             FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()),
                             readerParameter));
+                    if (hasVariable is null)
+                    {
+                        return assignVariableExpression;
+                    }
+
+                    var assignHasVariableExpression = Expression.Assign(hasVariable, Expression.Constant(true));
+                    return Expression.Block(assignHasVariableExpression, assignVariableExpression);
                 };
+
+                static string ToPascalCase(string name) => char.ToUpperInvariant(name[0]) + name.Substring(1);
+                static string ToCamelCase(string name) => char.ToLowerInvariant(name[0]) + name.Substring(1);
             }
             else
             {
@@ -426,25 +443,32 @@ namespace SpanJson.Formatters
             if (objectDescription.Constructor != null)
             {
                 var blockParameters = new List<ParameterExpression> {returnValue, countExpression};
-                // ReSharper disable AssignNullToNotNullAttribute
                 blockParameters.AddRange(constructorParameterExpressions.OfType<ParameterExpression>());
-                blockParameters.AddRange(additionalAfterCtorParameterExpressions.Select(a => a.Item2).OfType<ParameterExpression>());
-                var blockExpressions = new List<Expression>
+                blockParameters.AddRange(additionalAfterCtorParameterExpressions.SelectMany(a => new[] {a.HasVariable, a.Variable})
+                    .OfType<ParameterExpression>());
+
+                var blockExpressions = new List<Expression>();
+                for (var i = 0; i < objectDescription.Constructor.GetParameters().Length; i++)
                 {
-                    readBeginObject,
-                    Expression.Loop(
-                        Expression.IfThenElse(abortExpression, Expression.Break(loopAbort),
-                            deserializeMemberBlock), loopAbort
-                    ),
-                    Expression.Assign(returnValue, Expression.New(objectDescription.Constructor, constructorParameterExpressions))
-                };
-                foreach (var (memberName, valueVariable) in additionalAfterCtorParameterExpressions)
+                    var parameterInfo = objectDescription.Constructor.GetParameters()[i];
+                    if (parameterInfo.DefaultValue != DBNull.Value)
+                    {
+                        blockExpressions.Add(Expression.Assign(constructorParameterExpressions[i], Expression.Constant(parameterInfo.DefaultValue)));
+                    }
+                }
+
+                blockExpressions.Add(readBeginObject);
+                blockExpressions.Add(Expression.Loop(Expression.IfThenElse(abortExpression, Expression.Break(loopAbort), deserializeMemberBlock), loopAbort));
+                blockExpressions.Add(Expression.Assign(returnValue, Expression.New(objectDescription.Constructor, constructorParameterExpressions)));
+
+                foreach (var (memberName, hasValueExpression, valueVariable) in additionalAfterCtorParameterExpressions)
                 {
-                    blockExpressions.Add(Expression.Assign(Expression.PropertyOrField(returnValue, memberName), valueVariable));
+                    var assignValueExpression = Expression.Assign(Expression.PropertyOrField(returnValue, memberName), valueVariable);
+                    var assignIfHasValueExpression = Expression.IfThen(hasValueExpression, assignValueExpression);
+                    blockExpressions.Add(assignIfHasValueExpression);
                 }
 
                 blockExpressions.Add(Expression.Label(returnTarget, returnValue));
-                // ReSharper restore AssignNullToNotNullAttribute
                 block = Expression.Block(blockParameters, blockExpressions.ToArray());
             }
             else
