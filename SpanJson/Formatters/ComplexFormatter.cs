@@ -442,18 +442,26 @@ namespace SpanJson.Formatters
             Expression block;
             if (objectDescription.Constructor != null)
             {
-                var blockParameters = new List<ParameterExpression> {returnValue, countExpression};
+                var blockParameters = new List<ParameterExpression> { returnValue, countExpression };
                 blockParameters.AddRange(constructorParameterExpressions.OfType<ParameterExpression>());
-                blockParameters.AddRange(additionalAfterCtorParameterExpressions.SelectMany(a => new[] {a.HasVariable, a.Variable})
+                blockParameters.AddRange(additionalAfterCtorParameterExpressions.SelectMany(a => new[] { a.HasVariable, a.Variable })
                     .OfType<ParameterExpression>());
 
                 var blockExpressions = new List<Expression>();
                 for (var i = 0; i < objectDescription.Constructor.GetParameters().Length; i++)
                 {
                     var parameterInfo = objectDescription.Constructor.GetParameters()[i];
-                    if (parameterInfo.DefaultValue != DBNull.Value)
+                    if (parameterInfo.HasDefaultValue)
                     {
-                        blockExpressions.Add(Expression.Assign(constructorParameterExpressions[i], Expression.Constant(parameterInfo.DefaultValue)));
+                        var parameterType = parameterInfo.ParameterType;
+                        var defaultValue = parameterInfo.DefaultValue;
+                        if (!(defaultValue is null) && parameterType.TryGetNullableUnderlyingType(out var notNullType) && notNullType.IsEnum)
+                        {
+                            // Fix for nullable enums, which come with their integer value.
+                            defaultValue = Enum.ToObject(notNullType, defaultValue);
+                        }
+
+                        blockExpressions.Add(Expression.Assign(constructorParameterExpressions[i], Expression.Constant(defaultValue, parameterType)));
                     }
                 }
 
