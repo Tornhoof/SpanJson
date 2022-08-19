@@ -82,7 +82,7 @@ namespace SpanJson.Tests
             {
                 NullOption = NullOptions.ExcludeNulls,
                 NamingConvention = NamingConventions.CamelCase,
-                ByteArrayOptions = ByteArrayOptions.Base64
+                ByteArrayOption = ByteArrayOptions.Base64
             })
             {
             }
