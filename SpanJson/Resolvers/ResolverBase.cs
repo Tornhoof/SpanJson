@@ -241,26 +241,9 @@ namespace SpanJson.Resolvers
 
         private IJsonFormatter BuildFormatter(Type type)
         {
-            if (type == typeof(byte[]))
+            if (type == typeof(byte[]) && _spanJsonOptions.ByteArrayOptions == ByteArrayOptions.Base64)
             {
-                switch (_spanJsonOptions.ByteArrayOptions)
-                {
-                    case ByteArrayOptions.Base64:
-                    {
-                        if (typeof(TSymbol) == typeof(byte))
-                        {
-                            return ByteArrayBase64Utf8Formatter.Default;
-                        }
-
-                        if (typeof(TSymbol) == typeof(char))
-                        {
-                            return ByteArrayBase64Utf16Formatter.Default;
-                        }
-
-                        break;
-                    }
-                    // let the other case fall through
-                }
+                return GetDefaultOrCreate(typeof(ByteArrayBase64Formatter<TSymbol, TResolver>));
             }
 
             var integrated = GetIntegrated(type);

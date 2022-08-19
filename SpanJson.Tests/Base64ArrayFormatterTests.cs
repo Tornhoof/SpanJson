@@ -21,11 +21,16 @@ namespace SpanJson.Tests
         [InlineData(199)]
         [InlineData(200)]
         [InlineData(201)]
+        [InlineData(1022)]
+        [InlineData(1023)]
+        [InlineData(1024)]
+        [InlineData(1025)]
+
         public void SerializeDeserializeUtf16(int length)
         {
             var bytes = new byte[length];
             _random.NextBytes(bytes);
-            var test = new TestDTO {Name = "Hello World", Value = bytes};
+            var test = new TestDTO { Name = "Hello World", Value = bytes, ValueString = "Hello Universe" };
             var serialized = JsonSerializer.Generic.Utf16.Serialize<TestDTO, ExcludeNullCamelCaseBase64ArrayResolver<char>>(test);
             if (length % 3 != 0)
             {
@@ -49,15 +54,19 @@ namespace SpanJson.Tests
         [InlineData(199)]
         [InlineData(200)]
         [InlineData(201)]
+        [InlineData(1022)]
+        [InlineData(1023)]
+        [InlineData(1024)]
+        [InlineData(1025)]
         public void SerializeDeserializeUtf8(int length)
         {
             var bytes = new byte[length];
             _random.NextBytes(bytes);
-            var test = new TestDTO {Name = "Hello World", Value = bytes};
+            var test = new TestDTO { Name = "Hello World", Value = bytes, ValueString = "Hello Universe" };
             var serialized = JsonSerializer.Generic.Utf8.Serialize<TestDTO, ExcludeNullCamelCaseBase64ArrayResolver<byte>>(test);
             if (length % 3 != 0)
             {
-                Assert.Contains((byte) '=', serialized);
+                Assert.Contains((byte)'=', serialized);
             }
 
             var deserialized = JsonSerializer.Generic.Utf8.Deserialize<TestDTO, ExcludeNullCamelCaseBase64ArrayResolver<byte>>(serialized);
@@ -83,11 +92,13 @@ namespace SpanJson.Tests
 
             public byte[] Value { get; set; }
 
+            public string ValueString { get; set; }
+
             public bool Equals(TestDTO other)
             {
                 if (ReferenceEquals(null, other)) return false;
                 if (ReferenceEquals(this, other)) return true;
-                return Name == other.Name && Value.AsSpan().SequenceEqual(other.Value);
+                return Name == other.Name && Value.AsSpan().SequenceEqual(other.Value) && ValueString == other.ValueString;
             }
 
             public override bool Equals(object obj)
@@ -95,13 +106,13 @@ namespace SpanJson.Tests
                 if (ReferenceEquals(null, obj)) return false;
                 if (ReferenceEquals(this, obj)) return true;
                 if (obj.GetType() != this.GetType()) return false;
-                return Equals((TestDTO) obj);
+                return Equals((TestDTO)obj);
             }
 
             public override int GetHashCode()
             {
                 // ReSharper disable NonReadonlyMemberInGetHashCode
-                return HashCode.Combine(Name, Value);
+                return HashCode.Combine(Name, Value, ValueString);
                 // ReSharper restore NonReadonlyMemberInGetHashCode
             }
         }

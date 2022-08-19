@@ -380,6 +380,23 @@ namespace SpanJson
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteBase64EncodedArray(in ReadOnlySpan<byte> value)
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                WriteUtf16Base64EncodedArray(value);
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                WriteUtf8Base64EncodedArray(value);
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void ThrowNotSupportedException()
         {
