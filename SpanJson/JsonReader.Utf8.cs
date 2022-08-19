@@ -2,11 +2,9 @@
 using System.Buffers;
 using System.Buffers.Text;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.Unicode;
 using SpanJson.Formatters.Dynamic;
 using SpanJson.Helpers;
 
@@ -1282,36 +1280,35 @@ namespace SpanJson
         public byte[] ReadUtf8Base64EncodedArray()
         {
             var byteValue = ReadUtf8StringSpan();
-            if (byteValue.IsEmpty || byteValue[0] == JsonUtf8Constant.NullTerminator[0])
+            if (byteValue.IsEmpty)
+            {
+                return Array.Empty<byte>();
+            }
+            // this shold not be hit, null checks happen in the formatter
+            if (byteValue[0] == JsonUtf8Constant.NullTerminator[0])
             {
                 return default;
             }
 
-            char[] pooled = null;
+            byte[] pooled = null;
             try
             {
-                var expectedLength = Encoding.UTF8.GetMaxCharCount(byteValue.Length);
-                var scratchBuffer = expectedLength < JsonSharedConstant.StackAllocByteMaxLength
-                    ? stackalloc char[JsonSharedConstant.StackAllocCharMaxLength]
-                    : pooled = ArrayPool<char>.Shared.Rent(expectedLength);
-                var status = Utf8.ToUtf16(byteValue, scratchBuffer, out _, out var charsWritten);
-                Debug.Assert(status == OperationStatus.Done);
-                scratchBuffer = scratchBuffer.Slice(0, charsWritten);
-                var paddingStart = scratchBuffer.IndexOf('=');
-                var padding = paddingStart == -1 ? 0 : scratchBuffer.Length - paddingStart;
-                var result = new byte[(scratchBuffer.Length * 3) / 4 - padding];
-                if (!Convert.TryFromBase64Chars(scratchBuffer, result, out var written) || written != result.Length)
+                var maxDecoded = Base64.GetMaxDecodedFromUtf8Length(byteValue.Length);
+                var scratchBuffer = maxDecoded < JsonSharedConstant.StackAllocByteMaxLength
+                    ? stackalloc byte[JsonSharedConstant.StackAllocByteMaxLength]
+                    : pooled = ArrayPool<byte>.Shared.Rent(maxDecoded);
+                if (Base64.DecodeFromUtf8(byteValue, scratchBuffer, out _, out var written) != OperationStatus.Done)
                 {
                     ThrowJsonParserException(JsonParserException.ParserError.InvalidEncoding, JsonParserException.ValueType.Array, _pos);
                 }
 
-                return result;
+                return scratchBuffer.Slice(0, written).ToArray();
             }
             finally
             {
                 if (pooled != null)
                 {
-                    ArrayPool<char>.Shared.Return(pooled);
+                    ArrayPool<byte>.Shared.Return(pooled);
                 }
             }
         }

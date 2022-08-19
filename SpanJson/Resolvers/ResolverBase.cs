@@ -239,9 +239,9 @@ namespace SpanJson.Resolvers
             return memberInfo.GetCustomAttribute<DataMemberAttribute>()?.Name;
         }
 
-        private IJsonFormatter BuildFormatter(Type type)
+        protected virtual IJsonFormatter BuildFormatter(Type type)
         {
-            if (type == typeof(byte[]) && _spanJsonOptions.ByteArrayOptions == ByteArrayOptions.Base64)
+            if (type == typeof(byte[]) && _spanJsonOptions.ByteArrayOption == ByteArrayOptions.Base64)
             {
                 return GetDefaultOrCreate(typeof(ByteArrayBase64Formatter<TSymbol, TResolver>));
             }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Buffers;
 using System.Buffers.Text;
-using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -622,34 +621,19 @@ namespace SpanJson
         public void WriteUtf8Base64EncodedArray(in ReadOnlySpan<byte> value)
         {
             ref var pos = ref _pos;
-            var expectedLength = ((4 * value.Length / 3) + 3) & ~3;
-            if (pos > _bytes.Length - expectedLength)
+            var maxEncoded = Base64.GetMaxEncodedToUtf8Length(value.Length);
+            if (pos > _bytes.Length - maxEncoded)
             {
-                Grow(expectedLength);
+                Grow(maxEncoded);
             }
 
             WriteUtf8DoubleQuote();
-            char[] pooled = null;
-            try
+            if (Base64.EncodeToUtf8(value, _bytes.Slice(pos), out _, out var written) != OperationStatus.Done)
             {
-                var tempSpan = expectedLength < JsonSharedConstant.StackAllocCharMaxLength
-                    ? stackalloc char[JsonSharedConstant.StackAllocCharMaxLength]
-                    : pooled = ArrayPool<char>.Shared.Rent(expectedLength);
-                if (!Convert.TryToBase64Chars(value, tempSpan, out var written) || written != expectedLength)
-                {
-                    ThrowArgumentException("Can't encode Base64 array.", nameof(value));
-                }
-
-                pos += Encoding.UTF8.GetBytes(tempSpan.Slice(0, written), _bytes.Slice(pos));
-            }
-            finally
-            {
-                if (pooled != null)
-                {
-                    ArrayPool<char>.Shared.Return(pooled);
-                }
+                ThrowArgumentException("Can't encode Base64 array.", nameof(value));
             }
 
+            pos += written;
             WriteUtf8DoubleQuote();
         }
     }

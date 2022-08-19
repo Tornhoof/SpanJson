@@ -1173,7 +1173,12 @@ namespace SpanJson
         public byte[] ReadUtf16Base64EncodedArray()
         {
             var stringValue = ReadUtf16StringSpan();
-            if (stringValue.IsEmpty || stringValue[0] == JsonUtf16Constant.NullTerminator[0])
+            if (stringValue.IsEmpty)
+            {
+                return Array.Empty<byte>();
+            }
+            // this shold not be hit, null checks happen in the formatter
+            if (stringValue[0] == JsonUtf16Constant.NullTerminator[0])
             {
                 return default;
             }

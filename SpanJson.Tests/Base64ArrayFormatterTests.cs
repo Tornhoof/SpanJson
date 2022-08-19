@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Text;
 using SpanJson.Resolvers;
 using Xunit;
 
@@ -80,10 +82,62 @@ namespace SpanJson.Tests
             {
                 NullOption = NullOptions.ExcludeNulls,
                 NamingConvention = NamingConventions.CamelCase,
-                ByteArrayOptions = ByteArrayOptions.Base64
+                ByteArrayOption = ByteArrayOptions.Base64
             })
             {
             }
+        }
+
+        [Theory]
+        [InlineData(true, 10, @"{""id"":42,""bytes"":""AAECAwQFBgcICQ==""}")]
+        [InlineData(true, 0, @"{""id"":42,""bytes"":""""}")]
+        [InlineData(true, null, @"{""id"":42}")]
+        [InlineData(false, 10, @"{""id"":42,""bytes"":""AAECAwQFBgcICQ==""}")]
+        [InlineData(false, 0, @"{""id"":42,""bytes"":""""}")]
+        [InlineData(false, null, @"{""id"":42}")]
+        public void Serialize_ByteArray_ShouldUseBase64(bool utf8, int? arraySize, string expected)
+        {
+            // Arrange
+            var bytes = arraySize.HasValue ? Enumerable.Range(0, arraySize.Value).Select(b => (byte)b).ToArray() : null;
+            var data = new SimpleData { Id = 42, Bytes = bytes };
+
+            // Act
+            var result = utf8
+                ? Encoding.UTF8.GetString(JsonSerializer.Generic.Utf8.Serialize<SimpleData, ExcludeNullCamelCaseBase64ArrayResolver<byte>>(data))
+                : JsonSerializer.Generic.Utf16.Serialize<SimpleData, ExcludeNullCamelCaseBase64ArrayResolver<char>>(data);
+
+            // Assert
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [InlineData(true, 10, @"{""id"":42,""bytes"":""AAECAwQFBgcICQ==""}")]
+        [InlineData(true, 0, @"{""id"":42,""bytes"":""""}")]
+        [InlineData(true, null, @"{""id"":42}")]
+        [InlineData(false, 10, @"{""id"":42,""bytes"":""AAECAwQFBgcICQ==""}")]
+        [InlineData(false, 0, @"{""id"":42,""bytes"":""""}")]
+        [InlineData(false, null, @"{""id"":42}")]
+        public void Deserialize_ByteArray_ShouldUseBase64(bool utf8, int? arraySize, string value)
+        {
+            // Arrange
+            var bytes = arraySize.HasValue ? Enumerable.Range(0, arraySize.Value).Select(b => (byte)b).ToArray() : null;
+            var expected = new SimpleData { Id = 42, Bytes = bytes };
+
+            // Act
+            var result = utf8
+                ? JsonSerializer.Generic.Utf8.Deserialize<SimpleData, ExcludeNullCamelCaseBase64ArrayResolver<byte>>(Encoding.UTF8.GetBytes(value))
+                : JsonSerializer.Generic.Utf16.Deserialize<SimpleData, ExcludeNullCamelCaseBase64ArrayResolver<char>>(value);
+
+            // Assert
+            Assert.Equal(expected.Id, result.Id);
+            Assert.Equal(expected.Bytes, result.Bytes);
+        }
+
+
+        public class SimpleData
+        {
+            public int Id { get; set; }
+            public byte[] Bytes { get; set; }
         }
 
         public class TestDTO : IEquatable<TestDTO>
