@@ -10,6 +10,7 @@ namespace SpanJson
             InvalidNumberFormat,
             InvalidSymbol,
             InvalidArrayFormat,
+            InvalidEncoding,
             ExpectedDoubleQuote,
             ExpectedBeginArray,
             ExpectedEndArray,
@@ -26,6 +27,7 @@ namespace SpanJson
             DateTimeOffset,
             TimeSpan,
             Guid,
+            Array,
         }
 
         public JsonParserException(ParserError error, int position) : base($"Error Reading JSON data: '{error}' at position: '{position}'.")

@@ -362,6 +362,22 @@ namespace SpanJson
                 ThrowNotSupportedException();
             }
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public byte[] ReadBase64EncodedArray()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return ReadUtf16Base64EncodedArray();
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                return ReadUtf8Base64EncodedArray();
+            }
+
+            ThrowNotSupportedException();
+            return default;
+        }
 
     }
 }

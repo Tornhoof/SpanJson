@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Buffers;
 using System.Buffers.Text;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Text;
 using SpanJson.Helpers;
 
 namespace SpanJson
@@ -49,7 +51,7 @@ namespace SpanJson
                 value = unchecked(-value);
             }
 
-            WriteUtf16UInt64Internal((ulong) value);
+            WriteUtf16UInt64Internal((ulong)value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -63,7 +65,7 @@ namespace SpanJson
                     Grow(1);
                 }
 
-                _chars[pos++] = (char) ('0' + value);
+                _chars[pos++] = (char)('0' + value);
                 return;
             }
 
@@ -78,7 +80,7 @@ namespace SpanJson
             {
                 var temp = '0' + value;
                 value /= 10;
-                _chars[pos + i - 1] = (char) (temp - value * 10);
+                _chars[pos + i - 1] = (char)(temp - value * 10);
             }
 
             pos += digits;
@@ -365,7 +367,7 @@ namespace SpanJson
             Utf8Formatter.TryFormat(value, byteSpan, out var bytesWritten);
             for (var i = 0; i < bytesWritten; i++)
             {
-                _chars[i + pos] = (char) byteSpan[i];
+                _chars[i + pos] = (char)byteSpan[i];
             }
 
             pos += bytesWritten;
@@ -599,6 +601,25 @@ namespace SpanJson
         public void WriteUtf16Uri(Uri value)
         {
             WriteUtf16String(value.ToString()); // Uri does not implement ISpanFormattable
+        }
+
+        public void WriteUtf16Base64EncodedArray(in ReadOnlySpan<byte> value)
+        {
+            ref var pos = ref _pos;
+            var expectedLength = ((4 * value.Length / 3) + 3) & ~3;
+            if (pos > _chars.Length - expectedLength)
+            {
+                Grow(expectedLength);
+            }
+
+            WriteUtf16DoubleQuote();
+            if (!Convert.TryToBase64Chars(value, _chars.Slice(pos), out var written) || written != expectedLength)
+            {
+                ThrowArgumentException("Can't encode Base64 array.", nameof(value));
+            }
+
+            pos += written;
+            WriteUtf16DoubleQuote();
         }
     }
 }

@@ -27,6 +27,7 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 - Support for tuples currently excludes the last type with 8 arguments (TRest)
 - Support for annotating a constructor with ``[JsonConstructor]`` to use that one instead of assigning members during deserialization
 - Support for custom serializers with ``[JsonCustomSerializer]`` to use that one instead of the normal formatter, see examples below
+- Support for Base64 encoded byte arrays, see the Custom Resolvers example below
 - Support for annotating a IDictionary<string,object> with ``[JsonExtensionData]``. Serialization will write all values from the dictionary as additional attributes. Deserialization will deserialize all unknown attributes into it.
   This does not work together with the Dynamic Language Runtime (DLR) support or the ``[JsonConstructor]`` attribute. See Example below. The Dictionary will also honor the Case Setting (i.e. CamelCase) and null behaviour for the dictionary keys.
 - Pretty printing JSON
@@ -117,34 +118,34 @@ using SpanJson;
 
 namespace Test
 {
-	// This JsonConstructorAttribute assumes that the constructor parameter names are the same as the member names (case insensitive comparison, order is not important)
-	public class DefaultDO
-	{
-		[JsonConstructor]
-		public DefaultDO(string key, int value)
-		{
-			Key = key;
-			Value = value;
-		}
+    // This JsonConstructorAttribute assumes that the constructor parameter names are the same as the member names (case insensitive comparison, order is not important)
+    public class DefaultDO
+    {
+        [JsonConstructor]
+        public DefaultDO(string key, int value)
+        {
+            Key = key;
+            Value = value;
+        }
 
-		public string Key { get; }
-		public int Value { get; }
-	}
+        public string Key { get; }
+        public int Value { get; }
+    }
 
-	// This JsonConstructorAttribute allows overwriting the matching names of the constructor parameter names to allow for different member names vs. constructor parameter names, order is important here
-	public readonly struct NamedDO
-	{
-		[JsonConstructor(nameof(Key), nameof(Value))]
-		public NamedDO(string first, int second)
-		{
-			Key = first;
-			Value = second;
-		}
+    // This JsonConstructorAttribute allows overwriting the matching names of the constructor parameter names to allow for different member names vs. constructor parameter names, order is important here
+    public readonly struct NamedDO
+    {
+        [JsonConstructor(nameof(Key), nameof(Value))]
+        public NamedDO(string first, int second)
+        {
+            Key = first;
+            Value = second;
+        }
 
 
-		public string Key { get; }
-		public int Value { get; }
-	}
+        public string Key { get; }
+        public int Value { get; }
+    }
 }
 ```
 
@@ -160,8 +161,8 @@ public class TestDTO
 public sealed class LongAsStringFormatter : ICustomJsonFormatter<long>
 {
     public static readonly LongAsStringFormatter Default = new LongAsStringFormatter();
-	
-	public object Arguments {get;set;} // the Argument from the attribute will be assigned
+    
+    public object Arguments {get;set;} // the Argument from the attribute will be assigned
 
     public void Serialize(ref JsonWriter<char> writer, long value)
     {
@@ -278,10 +279,11 @@ public class ExtensionTest
 }
 ```
 
-## ASP.NET Core 3.1 Formatter ##
+
+## ASP.NET Core 3.1+ Formatter ##
 You can enable SpanJson as the default JSON formatter in ASP.NET Core 3.1 by using the Nuget package [SpanJson.AspNetCore.Formatter](https://www.nuget.org/packages/SpanJson.AspNetCore.Formatter).
 To enable it, add one of the following extension methods to the ``AddMvc()`` call in ``ConfigureServices``
-* AddSpanJson for a resolver with ASP.NET Core 2.1 defaults: IncludeNull, CamelCase, Integer Enums
+* AddSpanJson for a resolver with ASP.NET Core 3.1 defaults: IncludeNull, CamelCase, Integer Enums
 * AddSpanJsonCustom for a custom resolver (one of the default resolvers or custom)
 
 ```csharp
@@ -305,13 +307,15 @@ public sealed class CustomResolver<TSymbol> : ResolverBase<TSymbol, CustomResolv
     {
         NullOption = NullOptions.ExcludeNulls,
         NamingConvention = NamingConventions.CamelCase,
-        EnumOption = EnumOptions.Integer
+        EnumOption = EnumOptions.Integer,
+        ByteArrayOptions = ByteArrayOptions.Base64
     })
     {
     }
 }
 ```
 and pass this type just the same as e.g. ``ExcludeNullsCamelCaseResolver``
+
 
 ## TODO ##
 - Improve async deserialization/serialization: Find a way to do it streaming instead of buffering.

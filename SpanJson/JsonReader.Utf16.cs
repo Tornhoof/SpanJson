@@ -14,17 +14,17 @@ namespace SpanJson
     {
         public sbyte ReadUtf16SByte()
         {
-            return checked((sbyte) ReadUtf16NumberInt64());
+            return checked((sbyte)ReadUtf16NumberInt64());
         }
 
         public short ReadUtf16Int16()
         {
-            return checked((short) ReadUtf16NumberInt64());
+            return checked((short)ReadUtf16NumberInt64());
         }
 
         public int ReadUtf16Int32()
         {
-            return checked((int) ReadUtf16NumberInt64());
+            return checked((int)ReadUtf16NumberInt64());
         }
 
         public long ReadUtf16Int64()
@@ -34,17 +34,17 @@ namespace SpanJson
 
         public byte ReadUtf16Byte()
         {
-            return checked((byte) ReadUtf16NumberUInt64());
+            return checked((byte)ReadUtf16NumberUInt64());
         }
 
         public ushort ReadUtf16UInt16()
         {
-            return checked((ushort) ReadUtf16NumberUInt64());
+            return checked((ushort)ReadUtf16NumberUInt64());
         }
 
         public uint ReadUtf16UInt32()
         {
-            return checked((uint) ReadUtf16NumberUInt64());
+            return checked((uint)ReadUtf16NumberUInt64());
         }
 
         public ulong ReadUtf16UInt64()
@@ -104,7 +104,7 @@ namespace SpanJson
             }
 
             var result = ReadUtf16NumberDigits(ref c, ref _pos);
-            return neg ? unchecked(-(long) result) : checked((long) result);
+            return neg ? unchecked(-(long)result) : checked((long)result);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -236,7 +236,7 @@ namespace SpanJson
                     {
                         if (int.TryParse(span.Slice(pos, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var value))
                         {
-                            return (char) value;
+                            return (char)value;
                         }
 
                         break;
@@ -382,21 +382,21 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static TimeSpan ConvertTimeSpanViaUtf8(in ReadOnlySpan<char> span, int position)
         {
-	        Span<byte> byteSpan = stackalloc byte[JsonSharedConstant.MaxTimeSpanLength];
-	        for (var i = 0; i < span.Length; i++)
-	        {
-		        byteSpan[i] = (byte)span[i];
-	        }
+            Span<byte> byteSpan = stackalloc byte[JsonSharedConstant.MaxTimeSpanLength];
+            for (var i = 0; i < span.Length; i++)
+            {
+                byteSpan[i] = (byte)span[i];
+            }
 
-	        // still slow in .NET Core 3.0
-	        byteSpan = byteSpan.Slice(0, span.Length);
-	        if (Utf8Parser.TryParse(byteSpan, out TimeSpan value, out var bytesConsumed) && bytesConsumed == span.Length)
-	        {
-		        return value;
-	        }
+            // still slow in .NET Core 3.0
+            byteSpan = byteSpan.Slice(0, span.Length);
+            if (Utf8Parser.TryParse(byteSpan, out TimeSpan value, out var bytesConsumed) && bytesConsumed == span.Length)
+            {
+                return value;
+            }
 
-	        ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.TimeSpan, position);
-	        return default;
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.TimeSpan, position);
+            return default;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -511,7 +511,7 @@ namespace SpanJson
                             if (int.TryParse(span.Slice(index, 4), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out var value))
                             {
                                 index += 4;
-                                unescaped = (char) value;
+                                unescaped = (char)value;
                                 break;
                             }
 
@@ -890,7 +890,7 @@ namespace SpanJson
                         {
                             SkipNextUtf16Value(token);
                             token = ReadUtf16NextToken();
-                        } while (stack > 0 && (byte) token > 4); // No None or the Begin/End-Array/Object tokens
+                        } while (stack > 0 && (byte)token > 4); // No None or the Begin/End-Array/Object tokens
 
                         if (stack > 0)
                         {
@@ -1168,6 +1168,25 @@ namespace SpanJson
                 default:
                     return JsonToken.None;
             }
+        }
+
+        public byte[] ReadUtf16Base64EncodedArray()
+        {
+            var stringValue = ReadUtf16StringSpan();
+            if (stringValue.IsEmpty || stringValue[0] == JsonUtf16Constant.NullTerminator[0])
+            {
+                return default;
+            }
+            var paddingStart = stringValue.IndexOf('=');
+            var length = stringValue.Length;
+            var padding = paddingStart == -1 ? 0 : length - paddingStart;
+            var result = new byte[(length * 3) / 4 - padding];
+            if (!Convert.TryFromBase64Chars(stringValue, result, out var written) || written != result.Length)
+            {
+                ThrowJsonParserException(JsonParserException.ParserError.InvalidEncoding, JsonParserException.ValueType.Array, _pos);
+            }
+
+            return result;
         }
     }
 }

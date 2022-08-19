@@ -2,9 +2,11 @@
 using System.Buffers;
 using System.Buffers.Text;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Unicode;
 using SpanJson.Formatters.Dynamic;
 using SpanJson.Helpers;
 
@@ -14,17 +16,17 @@ namespace SpanJson
     {
         public sbyte ReadUtf8SByte()
         {
-            return checked((sbyte) ReadUtf8NumberInt64());
+            return checked((sbyte)ReadUtf8NumberInt64());
         }
 
         public short ReadUtf8Int16()
         {
-            return checked((short) ReadUtf8NumberInt64());
+            return checked((short)ReadUtf8NumberInt64());
         }
 
         public int ReadUtf8Int32()
         {
-            return checked((int) ReadUtf8NumberInt64());
+            return checked((int)ReadUtf8NumberInt64());
         }
 
         public long ReadUtf8Int64()
@@ -34,17 +36,17 @@ namespace SpanJson
 
         public byte ReadUtf8Byte()
         {
-            return checked((byte) ReadUtf8NumberUInt64());
+            return checked((byte)ReadUtf8NumberUInt64());
         }
 
         public ushort ReadUtf8UInt16()
         {
-            return checked((ushort) ReadUtf8NumberUInt64());
+            return checked((ushort)ReadUtf8NumberUInt64());
         }
 
         public uint ReadUtf8UInt32()
         {
-            return checked((uint) ReadUtf8NumberUInt64());
+            return checked((uint)ReadUtf8NumberUInt64());
         }
 
         public ulong ReadUtf8UInt64()
@@ -103,7 +105,7 @@ namespace SpanJson
 
             ref var b = ref MemoryMarshal.GetReference(_bytes);
             var neg = false;
-            if (Unsafe.Add(ref b, _pos) == (byte) '-')
+            if (Unsafe.Add(ref b, _pos) == (byte)'-')
             {
                 _pos++;
                 neg = true;
@@ -116,7 +118,7 @@ namespace SpanJson
             }
 
             var result = ReadUtf8NumberDigits(ref b, ref _pos);
-            return neg ? unchecked(-(long) result) : checked((long) result);
+            return neg ? unchecked(-(long)result) : checked((long)result);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -159,21 +161,21 @@ namespace SpanJson
         {
             switch (c)
             {
-                case (byte) '0':
-                case (byte) '1':
-                case (byte) '2':
-                case (byte) '3':
-                case (byte) '4':
-                case (byte) '5':
-                case (byte) '6':
-                case (byte) '7':
-                case (byte) '8':
-                case (byte) '9':
-                case (byte) '+':
-                case (byte) '-':
-                case (byte) '.':
-                case (byte) 'E':
-                case (byte) 'e':
+                case (byte)'0':
+                case (byte)'1':
+                case (byte)'2':
+                case (byte)'3':
+                case (byte)'4':
+                case (byte)'5':
+                case (byte)'6':
+                case (byte)'7':
+                case (byte)'8':
+                case (byte)'9':
+                case (byte)'+':
+                case (byte)'-':
+                case (byte)'.':
+                case (byte)'E':
+                case (byte)'e':
                     return true;
             }
 
@@ -195,7 +197,7 @@ namespace SpanJson
                     return true;
                 }
 
-                if (pos <= _length - 5 && value == 0x736C6166U /* slaf */ && Unsafe.Add(ref b, pos + 4) == (byte) 'e')
+                if (pos <= _length - 5 && value == 0x736C6166U /* slaf */ && Unsafe.Add(ref b, pos + 4) == (byte)'e')
                 {
                     pos += 5;
                     return false;
@@ -218,7 +220,7 @@ namespace SpanJson
         {
             if (span.Length == 1)
             {
-                return (char) span[0];
+                return (char)span[0];
             }
 
             if (span[0] == JsonUtf8Constant.ReverseSolidus)
@@ -231,20 +233,20 @@ namespace SpanJson
                         return JsonUtf16Constant.ReverseSolidus;
                     case JsonUtf8Constant.Solidus:
                         return JsonUtf16Constant.Solidus;
-                    case (byte) 'b':
+                    case (byte)'b':
                         return '\b';
-                    case (byte) 'f':
+                    case (byte)'f':
                         return '\f';
-                    case (byte) 'n':
+                    case (byte)'n':
                         return '\n';
-                    case (byte) 'r':
+                    case (byte)'r':
                         return '\r';
-                    case (byte) 't':
+                    case (byte)'t':
                         return '\t';
-                    case (byte) 'u':
+                    case (byte)'u':
                         if (Utf8Parser.TryParse(span.Slice(2, 4), out int value, out _, 'X'))
                         {
-                            return (char) value;
+                            return (char)value;
                         }
 
                         ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol);
@@ -487,27 +489,27 @@ namespace SpanJson
                         case JsonUtf8Constant.Solidus:
                             unescaped = JsonUtf16Constant.Solidus;
                             break;
-                        case (byte) 'b':
+                        case (byte)'b':
                             unescaped = '\b';
                             break;
-                        case (byte) 'f':
+                        case (byte)'f':
                             unescaped = '\f';
                             break;
-                        case (byte) 'n':
+                        case (byte)'n':
                             unescaped = '\n';
                             break;
-                        case (byte) 'r':
+                        case (byte)'r':
                             unescaped = '\r';
                             break;
-                        case (byte) 't':
+                        case (byte)'t':
                             unescaped = '\t';
                             break;
-                        case (byte) 'u':
+                        case (byte)'u':
                         {
                             if (Utf8Parser.TryParse(span.Slice(index, 4), out uint value, out var bytesConsumed, 'X'))
                             {
                                 index += bytesConsumed;
-                                unescaped = (char) value;
+                                unescaped = (char)value;
                                 break;
                             }
 
@@ -578,27 +580,27 @@ namespace SpanJson
                         case JsonUtf8Constant.Solidus:
                             unescaped = JsonUtf8Constant.Solidus;
                             break;
-                        case (byte) 'b':
-                            unescaped = (byte) '\b';
+                        case (byte)'b':
+                            unescaped = (byte)'\b';
                             break;
-                        case (byte) 'f':
-                            unescaped = (byte) '\f';
+                        case (byte)'f':
+                            unescaped = (byte)'\f';
                             break;
-                        case (byte) 'n':
-                            unescaped = (byte) '\n';
+                        case (byte)'n':
+                            unescaped = (byte)'\n';
                             break;
-                        case (byte) 'r':
-                            unescaped = (byte) '\r';
+                        case (byte)'r':
+                            unescaped = (byte)'\r';
                             break;
-                        case (byte) 't':
-                            unescaped = (byte) '\t';
+                        case (byte)'t':
+                            unescaped = (byte)'\t';
                             break;
-                        case (byte) 'u':
+                        case (byte)'u':
                         {
                             if (Utf8Parser.TryParse(span.Slice(index, 4), out uint value, out var bytesConsumed, 'X'))
                             {
                                 index += bytesConsumed;
-                                var c = (char) value;
+                                var c = (char)value;
                                 var stack = MemoryMarshal.CreateSpan(ref c, 1);
                                 byteOffset += Encoding.UTF8.GetBytes(stack, result.Slice(byteOffset));
                                 from = index;
@@ -748,10 +750,10 @@ namespace SpanJson
                 ref readonly var b = ref _bytes[pos];
                 switch (b)
                 {
-                    case (byte) ' ':
-                    case (byte) '\t':
-                    case (byte) '\r':
-                    case (byte) '\n':
+                    case (byte)' ':
+                    case (byte)'\t':
+                    case (byte)'\r':
+                    case (byte)'\n':
                     {
                         pos++;
                         continue;
@@ -1002,7 +1004,7 @@ namespace SpanJson
                         {
                             SkipNextUtf8Value(token);
                             token = ReadUtf8NextToken();
-                        } while (stack > 0 && (byte) token > 4); // No None or the Begin/End-Array/Object tokens
+                        } while (stack > 0 && (byte)token > 4); // No None or the Begin/End-Array/Object tokens
 
                         if (stack > 0)
                         {
@@ -1097,7 +1099,7 @@ namespace SpanJson
                 {
                     escapedCharsSize++;
                     b = ref Unsafe.Add(ref bStart, ++stringLength);
-                    if (b == (byte) 'u')
+                    if (b == (byte)'u')
                     {
                         escapedCharsSize += 4; // add only 4 and not 5 as we still need one unescaped char
                         stringLength += 4;
@@ -1260,20 +1262,57 @@ namespace SpanJson
                     return JsonToken.ValueSeparator;
                 case JsonUtf8Constant.NameSeparator:
                     return JsonToken.NameSeparator;
-                case (byte) '-':
-                case (byte) '1':
-                case (byte) '2':
-                case (byte) '3':
-                case (byte) '4':
-                case (byte) '5':
-                case (byte) '6':
-                case (byte) '7':
-                case (byte) '8':
-                case (byte) '9':
-                case (byte) '0':
+                case (byte)'-':
+                case (byte)'1':
+                case (byte)'2':
+                case (byte)'3':
+                case (byte)'4':
+                case (byte)'5':
+                case (byte)'6':
+                case (byte)'7':
+                case (byte)'8':
+                case (byte)'9':
+                case (byte)'0':
                     return JsonToken.Number;
                 default:
                     return JsonToken.None;
+            }
+        }
+
+        public byte[] ReadUtf8Base64EncodedArray()
+        {
+            var byteValue = ReadUtf8StringSpan();
+            if (byteValue.IsEmpty || byteValue[0] == JsonUtf8Constant.NullTerminator[0])
+            {
+                return default;
+            }
+
+            char[] pooled = null;
+            try
+            {
+                var expectedLength = Encoding.UTF8.GetMaxCharCount(byteValue.Length);
+                var scratchBuffer = expectedLength < JsonSharedConstant.StackAllocByteMaxLength
+                    ? stackalloc char[JsonSharedConstant.StackAllocCharMaxLength]
+                    : pooled = ArrayPool<char>.Shared.Rent(expectedLength);
+                var status = Utf8.ToUtf16(byteValue, scratchBuffer, out _, out var charsWritten);
+                Debug.Assert(status == OperationStatus.Done);
+                scratchBuffer = scratchBuffer.Slice(0, charsWritten);
+                var paddingStart = scratchBuffer.IndexOf('=');
+                var padding = paddingStart == -1 ? 0 : scratchBuffer.Length - paddingStart;
+                var result = new byte[(scratchBuffer.Length * 3) / 4 - padding];
+                if (!Convert.TryFromBase64Chars(scratchBuffer, result, out var written) || written != result.Length)
+                {
+                    ThrowJsonParserException(JsonParserException.ParserError.InvalidEncoding, JsonParserException.ValueType.Array, _pos);
+                }
+
+                return result;
+            }
+            finally
+            {
+                if (pooled != null)
+                {
+                    ArrayPool<char>.Shared.Return(pooled);
+                }
             }
         }
     }
