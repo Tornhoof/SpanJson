@@ -48,8 +48,11 @@ namespace SpanJson
                     writer.Dispose();
                 }
             }
-
+#if NET7_0_OR_GREATER
+            private static void Print<TSymbol>(scoped ref JsonReader<TSymbol> reader, scoped ref JsonWriter<TSymbol> writer, int indent) where TSymbol : struct
+#else
             private static void Print<TSymbol>(ref JsonReader<TSymbol> reader, ref JsonWriter<TSymbol> writer, int indent) where TSymbol : struct
+#endif
             {
                 var token = reader.ReadNextToken();
                 switch (token)

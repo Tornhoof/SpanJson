@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>SpanJson ASP.NET Core Formatter is the ASP.NET Core formatter package for SpanJson for ASP.NET Core 3.0+</Description>
     <PackageTags>JSON;aspnetcore</PackageTags>
     <SignAssembly>true</SignAssembly>
@@ -10,11 +10,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netcoreapp3.1\SpanJson.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\net6.0\SpanJson.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\Release\netcoreapp3.1\SpanJson.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\net6.0\SpanJson.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

@@ -411,7 +411,11 @@ namespace SpanJson
         public ReadOnlySpan<byte> ReadUtf8EscapedNameSpan()
         {
             SkipWhitespaceUtf8();
+#if NET7_0_OR_GREATER
+            scoped var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
+#else
             var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
+#endif
             SkipWhitespaceUtf8();
             if (_bytes[_pos++] != JsonUtf8Constant.NameSeparator)
             {
@@ -642,8 +646,11 @@ namespace SpanJson
             {
                 return JsonUtf8Constant.NullTerminator;
             }
-
+#if NET7_0_OR_GREATER
+            scoped var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
+#else
             var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
+#endif
             return escapedCharsSize == 0 ? span : UnescapeUtf8Bytes(span);
         }
 
