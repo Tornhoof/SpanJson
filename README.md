@@ -280,10 +280,10 @@ public class ExtensionTest
 ```
 
 
-## ASP.NET Core 5.0+ Formatter ##
-You can enable SpanJson as the default JSON formatter in ASP.NET Core 5.0+ by using the Nuget package [SpanJson.AspNetCore.Formatter](https://www.nuget.org/packages/SpanJson.AspNetCore.Formatter).
+## ASP.NET Core 6.0+ Formatter ##
+You can enable SpanJson as the default JSON formatter in ASP.NET Core 6.0+ by using the Nuget package [SpanJson.AspNetCore.Formatter](https://www.nuget.org/packages/SpanJson.AspNetCore.Formatter).
 To enable it, add one of the following extension methods to the ``AddMvc()`` call in ``ConfigureServices``
-* AddSpanJson for a resolver with ASP.NET Core 5.0 defaults: IncludeNull, CamelCase, Integer Enums
+* AddSpanJson for a resolver with ASP.NET Core 6.0 defaults: IncludeNull, CamelCase, Integer Enums
 * AddSpanJsonCustom for a custom resolver (one of the default resolvers or custom)
 
 ```csharp
