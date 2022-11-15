@@ -16,8 +16,13 @@ namespace SpanJson
             /// <returns>String</returns>
             public static string Print(in ReadOnlySpan<char> input)
             {
+#if NET7_0_OR_GREATER
+                scoped var reader = new JsonReader<char>(input);
+                scoped var writer = new JsonWriter<char>(input.Length);
+#else
                 var reader = new JsonReader<char>(input);
                 var writer = new JsonWriter<char>(input.Length);
+#endif
                 try
                 {
                     Print(ref reader, ref writer, 0);
@@ -36,8 +41,13 @@ namespace SpanJson
             /// <returns>Byte array</returns>
             public static byte[] Print(in ReadOnlySpan<byte> input)
             {
+#if NET7_0_OR_GREATER
+                scoped var reader = new JsonReader<byte>(input);
+                scoped var writer = new JsonWriter<byte>(input.Length);
+#else
                 var reader = new JsonReader<byte>(input);
                 var writer = new JsonWriter<byte>(input.Length);
+#endif
                 try
                 {
                     Print(ref reader, ref writer, 0);
@@ -48,11 +58,8 @@ namespace SpanJson
                     writer.Dispose();
                 }
             }
-#if NET7_0_OR_GREATER
-            private static void Print<TSymbol>(scoped ref JsonReader<TSymbol> reader, scoped ref JsonWriter<TSymbol> writer, int indent) where TSymbol : struct
-#else
+
             private static void Print<TSymbol>(ref JsonReader<TSymbol> reader, ref JsonWriter<TSymbol> writer, int indent) where TSymbol : struct
-#endif
             {
                 var token = reader.ReadNextToken();
                 switch (token)
@@ -148,8 +155,13 @@ namespace SpanJson
             /// <returns>String</returns>
             public static string Minify(in ReadOnlySpan<char> input)
             {
+#if NET7_0_OR_GREATER
+                scoped var reader = new JsonReader<char>(input);
+                scoped var writer = new JsonWriter<char>(input.Length); // less but shouldn't matter here
+#else
                 var reader = new JsonReader<char>(input);
-                var writer = new JsonWriter<char>(input.Length); // less but shouldn't matter here
+                var writer = new JsonWriter<char>(input.Length);
+#endif
                 try
                 {
                     Minify(ref reader, ref writer);
@@ -168,8 +180,13 @@ namespace SpanJson
             /// <returns>Byte array</returns>
             public static byte[] Minify(in ReadOnlySpan<byte> input)
             {
+#if NET7_0_OR_GREATER
+                scoped var reader = new JsonReader<byte>(input);
+                scoped var writer = new JsonWriter<byte>();
+#else
                 var reader = new JsonReader<byte>(input);
-                var writer = new JsonWriter<byte>();
+                var writer = new JsonWriter<byte>(input.Length);
+#endif
                 try
                 {
                     Minify(ref reader, ref writer);
