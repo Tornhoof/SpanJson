@@ -6,10 +6,10 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public sealed class RuntimeFormatter<TSymbol, TResolver> : BaseFormatter, IJsonFormatter<object, TSymbol>
+    public sealed class RuntimeFormatter<TSymbol, TResolver> : BaseFormatter, IJsonFormatter<object, TSymbol>, IJsonFormatterStaticDefault<object, TSymbol, RuntimeFormatter<TSymbol, TResolver>>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
-        public static readonly RuntimeFormatter<TSymbol, TResolver> Default = new RuntimeFormatter<TSymbol, TResolver>();
+        public static IJsonFormatter<object, TSymbol> Default {get;} = new RuntimeFormatter<TSymbol, TResolver>();
 
         private static readonly ConcurrentDictionary<Type, SerializeDelegate> RuntimeSerializerDictionary =
             new ConcurrentDictionary<Type, SerializeDelegate>();
@@ -48,10 +48,10 @@ namespace SpanJson.Formatters
             }
 
             var formatterType = StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter(type).GetType();
-            var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+            var fieldInfo = formatterType.GetProperty("Default", BindingFlags.Static | BindingFlags.Public);
             var serializeMethodInfo = formatterType.GetMethod("Serialize");
             var lambda = Expression.Lambda<SerializeDelegate>(
-                Expression.Call(Expression.Field(null, fieldInfo), serializeMethodInfo, writerParameter,
+                Expression.Call(Expression.Property(null, fieldInfo), serializeMethodInfo, writerParameter,
                     Expression.Convert(valueParameter, type)), writerParameter, valueParameter);
             return lambda.Compile();
         }

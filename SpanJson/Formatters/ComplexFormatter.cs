@@ -65,7 +65,7 @@ namespace SpanJson.Formatters
                 MethodInfo serializeMethodInfo;
                 Expression memberExpression = Expression.PropertyOrField(valueParameter, memberInfo.MemberName);
                 var parameterExpressions = new List<Expression> {writerParameter, memberExpression};
-                var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+                var propertyInfo = formatterType.GetProperty("Default", BindingFlags.Static | BindingFlags.Public);
                 if (IsNoRuntimeDecisionRequired(memberInfo.MemberType))
                 {
                     var underlyingType = Nullable.GetUnderlyingType(memberInfo.MemberType);
@@ -73,7 +73,7 @@ namespace SpanJson.Formatters
                     if (memberInfo.ExcludeNull && underlyingType != null && !typeof(ICustomJsonFormatter).IsAssignableFrom(formatterType))
                     {
                         formatterType = resolver.GetFormatter(memberInfo, underlyingType).GetType();
-                        fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+                        propertyInfo = formatterType.GetProperty("Default", BindingFlags.Static | BindingFlags.Public);
                         var methodInfo = memberInfo.MemberType.GetMethod("GetValueOrDefault", Type.EmptyTypes);
                         memberExpression = Expression.Call(memberExpression, methodInfo);
                         parameterExpressions = new List<Expression> {writerParameter, memberExpression};
@@ -81,14 +81,14 @@ namespace SpanJson.Formatters
 
                     serializeMethodInfo = FindPublicInstanceMethod(formatterType, "Serialize", writerParameter.Type.MakeByRefType(),
                         underlyingType ?? memberInfo.MemberType);
-                    serializerInstance = Expression.Field(null, fieldInfo);
+                    serializerInstance = Expression.Property(null, propertyInfo);
                 }
                 else
                 {
                     serializeMethodInfo = typeof(BaseFormatter)
                         .GetMethod(nameof(SerializeRuntimeDecisionInternal), BindingFlags.NonPublic | BindingFlags.Static)
                         .MakeGenericMethod(memberInfo.MemberType, typeof(TSymbol), typeof(TResolver));
-                    parameterExpressions.Add(Expression.Field(null, fieldInfo));
+                    parameterExpressions.Add(Expression.Property(null, propertyInfo));
                 }
 
                 bool isCandidate = RecursionCandidate.LookupRecursionCandidate(memberInfo.MemberType);
@@ -328,9 +328,9 @@ namespace SpanJson.Formatters
 
                     var formatter = resolver.GetFormatter(memberInfo);
                     var formatterType = formatter.GetType();
-                    var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+                    var propertyInfo = formatterType.GetProperty("Default", BindingFlags.Static | BindingFlags.Public);
                     var assignVariableExpression = Expression.Assign(assignValueExpression,
-                        Expression.Call(Expression.Field(null, fieldInfo),
+                        Expression.Call(Expression.Property(null, propertyInfo),
                             FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()),
                             readerParameter));
                     if (hasVariable is null)
@@ -352,9 +352,9 @@ namespace SpanJson.Formatters
                 {
                     var formatter = resolver.GetFormatter(memberInfo);
                     var formatterType = formatter.GetType();
-                    var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+                    var propertyInfo = formatterType.GetProperty("Default", BindingFlags.Static | BindingFlags.Public);
                     return Expression.Assign(Expression.PropertyOrField(returnValue, memberInfo.MemberName),
-                        Expression.Call(Expression.Field(null, fieldInfo),
+                        Expression.Call(Expression.Property(null, propertyInfo),
                             FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()),
                             readerParameter));
                 };

@@ -4,10 +4,10 @@ using SpanJson.Resolvers;
 
 namespace SpanJson.Formatters
 {
-    public sealed class TwoDimensionalArrayFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T[,], TSymbol>
+    public sealed class TwoDimensionalArrayFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T[,], TSymbol>, IJsonFormatterStaticDefault<T[,], TSymbol, TwoDimensionalArrayFormatter<T, TSymbol, TResolver>>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
-        public static readonly TwoDimensionalArrayFormatter<T, TSymbol, TResolver> Default = new TwoDimensionalArrayFormatter<T, TSymbol, TResolver>();
+        public static IJsonFormatter<T[,], TSymbol> Default {get;} = new TwoDimensionalArrayFormatter<T, TSymbol, TResolver>();
 
         private static readonly IJsonFormatter<T, TSymbol> ElementFormatter =
             StandardResolvers.GetResolver<TSymbol, TResolver>().GetFormatter<T>();

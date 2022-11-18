@@ -3,14 +3,14 @@ using System.Linq.Expressions;
 
 namespace SpanJson.Formatters
 {
-    public sealed class EnumIntegerFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T, TSymbol> where T : struct, Enum
+    public sealed class EnumIntegerFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T, TSymbol>, IJsonFormatterStaticDefault<T, TSymbol, EnumIntegerFormatter<T, TSymbol, TResolver>>
+        where T : struct, Enum
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
         where TSymbol : struct
     {
         private static readonly SerializeDelegate Serializer = BuildSerializeDelegate();
         private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
-        public static readonly EnumIntegerFormatter<T, TSymbol, TResolver> Default = new EnumIntegerFormatter<T, TSymbol, TResolver>();
-
+        public static IJsonFormatter<T, TSymbol> Default {get;} = new EnumIntegerFormatter<T, TSymbol, TResolver>();
 
         public T Deserialize(ref JsonReader<TSymbol> reader)
         {

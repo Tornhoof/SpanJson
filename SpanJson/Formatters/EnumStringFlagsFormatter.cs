@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using SpanJson.Helpers;
 
 namespace SpanJson.Formatters
 {
-    public sealed class EnumStringFlagsFormatter<T, TEnumBase, TSymbol, TResolver> : BaseEnumStringFormatter<T, TSymbol>, IJsonFormatter<T, TSymbol>
+    public sealed class EnumStringFlagsFormatter<T, TEnumBase, TSymbol, TResolver> : BaseEnumStringFormatter<T, TSymbol>, IJsonFormatter<T, TSymbol>, IJsonFormatterStaticDefault<T, TSymbol, EnumStringFlagsFormatter<T, TEnumBase, TSymbol, TResolver>>
         where T : struct, Enum
         where TEnumBase : struct, IComparable, IFormattable
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
@@ -18,8 +17,7 @@ namespace SpanJson.Formatters
         private static readonly T[] Flags = BuildFlags();
         private static readonly T? ZeroFlag = GetZeroFlag();
 
-        public static readonly EnumStringFlagsFormatter<T, TEnumBase, TSymbol, TResolver> Default =
-            new EnumStringFlagsFormatter<T, TEnumBase, TSymbol, TResolver>();
+        public static IJsonFormatter<T, TSymbol> Default { get; }=  new EnumStringFlagsFormatter<T, TEnumBase, TSymbol, TResolver>();
 
         public T Deserialize(ref JsonReader<TSymbol> reader)
         {

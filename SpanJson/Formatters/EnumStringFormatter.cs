@@ -4,13 +4,14 @@ using System.Reflection;
 
 namespace SpanJson.Formatters
 {
-    public sealed class EnumStringFormatter<T, TSymbol, TResolver> : BaseEnumStringFormatter<T, TSymbol>, IJsonFormatter<T, TSymbol> where T : struct, Enum
+    public sealed class EnumStringFormatter<T, TSymbol, TResolver> : BaseEnumStringFormatter<T, TSymbol>, IJsonFormatter<T, TSymbol>, IJsonFormatterStaticDefault<T, TSymbol, EnumStringFormatter<T, TSymbol, TResolver>>
+        where T : struct, Enum
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
         where TSymbol : struct
     {
         private static readonly SerializeDelegate Serializer = BuildSerializeDelegate(s => "\"" + s + "\"");
         private static readonly DeserializeDelegate Deserializer = BuildDeserializeDelegate();
-        public static readonly EnumStringFormatter<T, TSymbol, TResolver> Default = new EnumStringFormatter<T, TSymbol, TResolver>();
+        public static IJsonFormatter<T, TSymbol> Default {get;} = new EnumStringFormatter<T, TSymbol, TResolver>();
 
 
         public T Deserialize(ref JsonReader<TSymbol> reader)

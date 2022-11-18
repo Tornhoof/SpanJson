@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -17,14 +18,13 @@ using Binder = Microsoft.CSharp.RuntimeBinder.Binder;
 namespace SpanJson.Formatters
 {
     public class DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver> : BaseFormatter, IJsonFormatter<T, TSymbol>
-        where T : IDynamicMetaObjectProvider
+        where T : IDynamicMetaObjectProvider, IJsonFormatterStaticDefault<T, TSymbol, DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver>>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new()
         where TSymbol : struct
     {
         private static readonly Func<T> CreateFunctor = StandardResolvers.GetResolver<TSymbol, TResolver>().GetCreateFunctor<T>();
 
-        public static readonly DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver> Default =
-            new DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver>();
+        public static IJsonFormatter<T, TSymbol> Default { get; } = new DynamicMetaObjectProviderFormatter<T, TSymbol, TResolver>();
 
         private static readonly IJsonFormatterResolver<TSymbol, TResolver> Resolver = StandardResolvers.GetResolver<TSymbol, TResolver>();
         private static readonly Dictionary<string, DeserializeDelegate> KnownMembersDictionary = BuildKnownMembers();
@@ -198,9 +198,9 @@ namespace SpanJson.Formatters
                 }
 
                 var formatterType = resolver.GetFormatter(memberInfo).GetType();
-                var fieldInfo = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
+                var fieldInfo = formatterType.GetProperty("Default", BindingFlags.Static | BindingFlags.Public);
                 var assignExpression = Expression.Assign(Expression.PropertyOrField(inputParameter, memberInfo.MemberName),
-                    Expression.Call(Expression.Field(null, fieldInfo),
+                    Expression.Call(Expression.Property(null, fieldInfo),
                         FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()), readerParameter));
                 var lambda = Expression.Lambda<DeserializeDelegate>(assignExpression, inputParameter, readerParameter).Compile();
                 result.Add(memberInfo.Name, lambda);

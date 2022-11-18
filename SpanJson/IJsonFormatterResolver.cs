@@ -11,7 +11,7 @@ namespace SpanJson
         JsonObjectDescription GetDynamicObjectDescription(IDynamicMetaObjectProvider provider);
     }
 
-    public interface IJsonFormatterResolver<TSymbol, in TResolver> : IJsonFormatterResolver
+    public interface IJsonFormatterResolver<TSymbol, TResolver> : IJsonFormatterResolver
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
         IJsonFormatter<T, TSymbol> GetFormatter<T>();
@@ -19,5 +19,9 @@ namespace SpanJson
 
         Func<T> GetCreateFunctor<T>();
         Func<T, TConverted> GetEnumerableConvertFunctor<T, TConverted>();
+
+#if NET7_0_OR_GREATER
+        static virtual TResolver Default { get; } = new();
+#endif
     }
 }

@@ -13,7 +13,7 @@ namespace SpanJson.Formatters
     /// Used for types which are not built-in
     /// </summary>
     public sealed class DictionaryFormatter<TDictionary, TWritableDictionary, TKey, TValue, TSymbol, TResolver> : BaseFormatter,
-        IJsonFormatter<TDictionary, TSymbol>
+        IJsonFormatter<TDictionary, TSymbol>, IJsonFormatterStaticDefault<TDictionary, TSymbol, DictionaryFormatter<TDictionary, TWritableDictionary, TKey, TValue, TSymbol, TResolver>>
         where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct where TDictionary : IEnumerable<KeyValuePair<TKey, TValue>>
     {
         private static readonly Func<TWritableDictionary> CreateFunctor =
@@ -25,7 +25,7 @@ namespace SpanJson.Formatters
 
         private static readonly AssignKvpDelegate AssignKvpFunctor = BuildAssignKvpFunctor();
 
-        public static readonly DictionaryFormatter<TDictionary, TWritableDictionary, TKey, TValue, TSymbol, TResolver> Default =
+        public static IJsonFormatter<TDictionary, TSymbol> Default { get; } =
             new DictionaryFormatter<TDictionary, TWritableDictionary, TKey, TValue, TSymbol, TResolver>();
 
         private static readonly IJsonFormatter<TKey, TSymbol> KeyFormatter = GetKeyFormatter();

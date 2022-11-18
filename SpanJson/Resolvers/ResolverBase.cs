@@ -59,8 +59,17 @@ namespace SpanJson.Resolvers
 
         public static IJsonFormatter GetDefaultOrCreate(Type type)
         {
-            return (IJsonFormatter)(type.GetField("Default", BindingFlags.Public | BindingFlags.Static)
+            return (IJsonFormatter)(type.GetProperty("Default", BindingFlags.Public | BindingFlags.Static)
                                         ?.GetValue(null) ?? Activator.CreateInstance(type)); // leave the createinstance here, this helps with recursive types
+        }
+
+        public static IJsonFormatter GetDefault<T, TSymbol, TSelf>() where TSelf : IJsonFormatterStaticDefault<T, TSymbol, TSelf>, IJsonFormatter<T, TSymbol>, new() where TSymbol : struct
+        {
+#if NET7_0_OR_GREATER
+            return TSelf.Default;
+#else
+            return GetDefaultOrCreate(typeof(T));
+#endif
         }
     }
 
@@ -87,6 +96,8 @@ namespace SpanJson.Resolvers
             // ReSharper restore ConvertClosureToMethodGroup
         }
 
+
+
         /// <summary>
         /// Override a formatter on global scale, additionally we might need to register array versions etc
         /// Only register primitive types here, no arrays etc. this creates weird problems.
@@ -95,8 +106,8 @@ namespace SpanJson.Resolvers
         {
             var type = typeof(T);
             var formatterType = typeof(TFormatter);
-            var staticDefaultField = formatterType.GetField("Default", BindingFlags.Static | BindingFlags.Public);
-            if (staticDefaultField == null)
+            var staticDefaultProperty = formatterType.GetProperty("Default", BindingFlags.Static | BindingFlags.Public);
+            if (staticDefaultProperty == null)
             {
                 throw new InvalidOperationException($"{formatterType.FullName} must have a public static field 'Default' returning an instance of it.");
             }
@@ -215,8 +226,7 @@ namespace SpanJson.Resolvers
             if (TryGetBaseClassJsonConstructorAttribute(type, out attribute) || type.GetMethod("<Clone>$") != null)
             {
                 // We basically take the one with the most parameters, this needs to match the dictionary // TODO find better method
-                constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance).OrderByDescending(a => a.GetParameters().Length)
-                    .FirstOrDefault();
+                constructor = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance).MaxBy(a => a.GetParameters().Length);
                 return;
             }
 
@@ -243,7 +253,7 @@ namespace SpanJson.Resolvers
         {
             if (type == typeof(byte[]) && _spanJsonOptions.ByteArrayOption == ByteArrayOptions.Base64)
             {
-                return GetDefaultOrCreate(typeof(ByteArrayBase64Formatter<TSymbol, TResolver>));
+                return GetDefault<byte[], TSymbol, ByteArrayBase64Formatter<TSymbol, TResolver>>();
             }
 
             var integrated = GetIntegrated(type);
@@ -265,7 +275,7 @@ namespace SpanJson.Resolvers
 
             if (type == typeof(object))
             {
-                return GetDefaultOrCreate(typeof(RuntimeFormatter<TSymbol, TResolver>));
+                return GetDefault<object, TSymbol, RuntimeFormatter<TSymbol, TResolver>>();
             }
 
             if (type.IsArray)

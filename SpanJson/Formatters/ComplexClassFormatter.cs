@@ -3,10 +3,10 @@
     /// <summary>
     /// Used for types which are not built-in
     /// </summary>
-    public sealed class ComplexClassFormatter<T, TSymbol, TResolver> : ComplexFormatter, IJsonFormatter<T, TSymbol>
+    public sealed class ComplexClassFormatter<T, TSymbol, TResolver> : ComplexFormatter, IJsonFormatter<T, TSymbol>, IJsonFormatterStaticDefault<T, TSymbol, ComplexClassFormatter<T, TSymbol, TResolver>>
         where T : class where TResolver : IJsonFormatterResolver<TSymbol, TResolver>, new() where TSymbol : struct
     {
-        public static readonly ComplexClassFormatter<T, TSymbol, TResolver> Default = new ComplexClassFormatter<T, TSymbol, TResolver>();
+        public static IJsonFormatter<T, TSymbol> Default {get;} = new ComplexClassFormatter<T, TSymbol, TResolver>();
         private static readonly DeserializeDelegate<T, TSymbol> Deserializer = BuildDeserializeDelegate<T, TSymbol, TResolver>();
 
         private static readonly SerializeDelegate<T, TSymbol> Serializer = BuildSerializeDelegate<T, TSymbol, TResolver>();

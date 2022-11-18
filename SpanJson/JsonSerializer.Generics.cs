@@ -158,7 +158,11 @@ namespace SpanJson
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 public static ValueTask<T> InnerDeserializeAsync(TextReader reader, CancellationToken cancellationToken = default)
                 {
+#if NET7_0_OR_GREATER
+                    var input = reader.ReadToEndAsync(cancellationToken);
+#else
                     var input = reader.ReadToEndAsync();
+#endif
                     if (input.IsCompletedSuccessfully)
                     {
                         return new ValueTask<T>(InnerDeserialize(MemoryMarshal.Cast<char, TSymbol>(input.Result)));
