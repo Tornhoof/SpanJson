@@ -313,6 +313,24 @@ namespace SpanJson
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ReadOnlySpan<TSymbol> ReadNextSegmentSpan()
+        {
+            int start = this._pos;
+            this.SkipNextSegment();
+            int end = this._pos;
+            if(typeof(TSymbol) == typeof(char))
+            {
+                return MemoryMarshal.Cast<char, TSymbol>(_chars.Slice(start, end - start));
+            }
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                return MemoryMarshal.Cast<byte, TSymbol>(_bytes.Slice(start, end - start));
+            }
+            ThrowNotSupportedException();
+            return default;
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public JsonToken ReadNextToken()
         {
             if (typeof(TSymbol) == typeof(char))
