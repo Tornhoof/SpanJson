@@ -272,7 +272,7 @@ namespace SpanJson
             while (index < value.Length)
             {
                 ref readonly var c = ref value[index];
-                if (c < 0x20 || c == JsonUtf8Constant.DoubleQuote || c == JsonUtf8Constant.Solidus || c == JsonUtf8Constant.ReverseSolidus)
+                if (c < 0x20 || c == JsonUtf8Constant.DoubleQuote || c == JsonUtf8Constant.ReverseSolidus)
                 {
                     // changed extraBytes to 0 and post grow the buffer, if required, by atleast 7, the previous code failed in some rare combinations of content and buffer size
                     // instead of checking the buffer size here to get atleast the 7 extra bytes in, we do it after writing the initial buffer (which works due to Grow above)
@@ -437,7 +437,7 @@ namespace SpanJson
         private void WriteUtf8CharInternal(char value)
         {
             ref var pos = ref _pos;
-            if (value < 0x20 || value == JsonUtf8Constant.DoubleQuote || value == JsonUtf8Constant.Solidus || value == JsonUtf8Constant.ReverseSolidus)
+            if (value < 0x20 || value == JsonUtf8Constant.DoubleQuote || value == JsonUtf8Constant.ReverseSolidus)
             {
                 WriteEscapedUtf8CharInternal(value);
             }
