@@ -542,33 +542,11 @@ namespace SpanJson.Formatters
                         continue;
                     }
 
-                    if (writeSeparator)
-                    {
-                        writer.WriteValueSeparator();
-                    }
-
                     var name = kvp.Key;
                     if (namingConvention == NamingConventions.CamelCase && char.IsUpper(name[0]))
                     {
-                        char[] array = null;
-                        try
-                        {
-                            array = ArrayPool<char>.Shared.Rent(name.Length);
-                            name.AsSpan().CopyTo(array);
-                            array[0] = char.ToLower(array[0]);
-                            writer.WriteName(array.AsSpan(0, name.Length));
-                        }
-                        finally
-                        {
-                            if (array != null)
-                            {
-                                ArrayPool<char>.Shared.Return(array);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        writer.WriteName(kvp.Key);
+                        // allocates unfortunately
+                        name = ResolverBase<TSymbol, TResolver>.MakeCamelCase(name);
                     }
 
                     if (knownNames.Contains(name))
@@ -576,6 +554,12 @@ namespace SpanJson.Formatters
                         continue;
                     }
 
+                    if (writeSeparator)
+                    {
+                        writer.WriteValueSeparator();
+                    }
+
+                    writer.WriteName(name);
                     writer.IncrementDepth();
                     SerializeRuntimeDecisionInternal<object, TSymbol, TResolver>(ref writer, kvp.Value, RuntimeFormatter<TSymbol, TResolver>.Default);
                     writer.DecrementDepth();
