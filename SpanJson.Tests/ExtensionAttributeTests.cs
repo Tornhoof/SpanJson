@@ -153,6 +153,9 @@ namespace SpanJson.Tests
             var dto = new ExtensionTestDTO {Key = "Hello", Value = "World", AdditionalValues = new Dictionary<string, object> {{"Test", null}}};
             var output = JsonSerializer.Generic.Utf16.Serialize(dto);
             Assert.DoesNotContain("Test", output);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<ExtensionTestDTO>(output);
+            Assert.NotNull(deserialized);
+            Assert.Null(deserialized.AdditionalValues);
         }
 
         [Fact]
@@ -186,7 +189,38 @@ namespace SpanJson.Tests
             var dto = new ExtensionTestDTO {Key = "Hello", Value = "World", AdditionalValues = new Dictionary<string, object> {{"Key", 1.0m}}};
             var output = JsonSerializer.Generic.Utf16.Serialize(dto);
             Assert.Contains("World", output);
-            Assert.DoesNotContain("1.0", (dynamic) output);
+            Assert.DoesNotContain("1.0", output);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<ExtensionTestDTO>(output);
+            Assert.NotNull(deserialized);
+            Assert.Null(deserialized.AdditionalValues);
+        }
+
+        [Fact]
+        public void SerializeDeserializeUtf16DuplicateDifferentCase()
+        {
+            var dto = new ExtensionTestDTO { Key = "Hello", Value = "World", AdditionalValues = new Dictionary<string, object> { { "key", 1.0m } } };
+            var output = JsonSerializer.Generic.Utf16.Serialize(dto);
+            Assert.Contains("World", output);
+            Assert.Contains("Hello", output);
+            Assert.Contains("1.0", output);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<ExtensionTestDTO>(output);
+            Assert.NotNull(deserialized);
+            Assert.True(deserialized.AdditionalValues.TryGetValue("key", out var value));
+            Assert.Equal(1.0m, (decimal)(dynamic)value);
+        }
+
+        [Theory]
+        [InlineData("key")]
+        [InlineData("Key")]
+        public void SerializeDeserializeUtf16NoDuplicateCamelCase(string key)
+        {
+            var dto = new ExtensionTestDTO {Key = "Hello", Value = "World", AdditionalValues = new Dictionary<string, object> {{key, 1.0m}}};
+            var output = JsonSerializer.Generic.Utf16.Serialize<ExtensionTestDTO, ExcludeNullsCamelCaseResolver<char>>(dto);
+            Assert.Contains("World", output);
+            Assert.Contains("Hello", output);
+            Assert.DoesNotContain("1.0", output);
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<ExtensionTestDTO>(output);
+            Assert.NotNull(deserialized);
         }
 
         [Fact]
