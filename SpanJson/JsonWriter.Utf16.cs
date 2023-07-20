@@ -309,7 +309,7 @@ namespace SpanJson
             }
 
             WriteUtf16DoubleQuote();
-            if (value < 0x20 || value == JsonUtf16Constant.DoubleQuote || value == JsonUtf16Constant.Solidus || value == JsonUtf16Constant.ReverseSolidus)
+            if (value < 0x20 || value == JsonUtf16Constant.DoubleQuote || value == JsonUtf16Constant.ReverseSolidus)
             {
                 WriteEscapedUtf16CharInternal(value);
             }
@@ -405,7 +405,7 @@ namespace SpanJson
             for (var i = 0; i < value.Length; i++)
             {
                 ref readonly var c = ref value[i];
-                if (c < 0x20 || c == JsonUtf16Constant.DoubleQuote || c == JsonUtf16Constant.Solidus || c == JsonUtf16Constant.ReverseSolidus)
+                if (c < 0x20 || c == JsonUtf16Constant.DoubleQuote || c == JsonUtf16Constant.ReverseSolidus)
                 {
                     WriteEscapedUtf16CharInternal(c);
                     var remaining = 5 + value.Length - i; // make sure that all characters and an extra 5 for a full escape still fit
