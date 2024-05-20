@@ -275,7 +275,7 @@ namespace SpanJson.Tests
             value = value.AddTicks(-(value.Ticks % TimeSpan.TicksPerSecond));
             var offset = TimeZoneInfo.Local.GetUtcOffset(value);
             var output = value.ToString("yyyy-MM-ddTHH:mm:ss");
-            var sign = offset.Hours < 0 ? '-' : '+';
+            var sign = offset.Hours < 0 ? "" : "+";
             output = output + sign + $"{offset.Hours:D2}:{offset.Minutes:D2}";
             Span<char> charSpan = stackalloc char[35];
             Assert.True(DateTimeFormatter.TryFormat(value, charSpan, out var symbolsWritten));
