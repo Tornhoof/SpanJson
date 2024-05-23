@@ -345,7 +345,7 @@ namespace SpanJson.Formatters
                 static string ToPascalCase(string name) => char.ToUpperInvariant(name[0]) + name.Substring(1);
                 static string ToCamelCase(string name) => char.ToLowerInvariant(name[0]) + name.Substring(1);
             }
-            else
+            else if (objectDescription.HasDefaultConstructor)
             {
                 // The normal assign to member type
                 matchExpressionFunctor = memberInfo =>
@@ -358,6 +358,14 @@ namespace SpanJson.Formatters
                             FindPublicInstanceMethod(formatterType, "Deserialize", readerParameter.Type.MakeByRefType()),
                             readerParameter));
                 };
+            }
+            else
+            {
+                return Expression
+                    .Lambda<DeserializeDelegate<T, TSymbol>>(Expression.Block(
+                            Expression.Throw(Expression.Constant(new InvalidOperationException($"{typeof(T).Name} does not have a default constructor."))),
+                            Expression.Default(typeof(T))),
+                        readerParameter).Compile();
             }
 
             var nameSpan = Expression.Variable(typeof(ReadOnlySpan<TSymbol>), "nameSpan");

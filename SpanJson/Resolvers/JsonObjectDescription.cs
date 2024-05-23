@@ -7,12 +7,13 @@ namespace SpanJson.Resolvers
 {
     public class JsonObjectDescription : IReadOnlyList<JsonMemberInfo>
     {
-        public JsonObjectDescription(ConstructorInfo constructor, JsonConstructorAttribute attribute, JsonMemberInfo[] members, JsonExtensionMemberInfo extensionMemberInfo)
+        public JsonObjectDescription(ConstructorInfo constructor, JsonConstructorAttribute attribute, bool hasDefaultConstructor, JsonMemberInfo[] members, JsonExtensionMemberInfo extensionMemberInfo)
         {
             Members = members;
             ExtensionMemberInfo = extensionMemberInfo;
             Constructor = constructor;
             Attribute = attribute;
+            HasDefaultConstructor = hasDefaultConstructor;
             if (Constructor != null)
             {
                 ConstructorMapping = BuildMapping();
@@ -47,6 +48,7 @@ namespace SpanJson.Resolvers
 
         public ConstructorInfo Constructor { get; }
         public JsonConstructorAttribute Attribute { get; }
+        public bool HasDefaultConstructor { get; }
         public JsonMemberInfo[] Members { get; }
         public JsonExtensionMemberInfo ExtensionMemberInfo { get; }
         public IReadOnlyDictionary<string, (Type Type, int Index)> ConstructorMapping { get; }

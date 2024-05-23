@@ -407,22 +407,30 @@ namespace SpanJson.Tests
 
             }
 
-            protected override void TryGetAnnotatedAttributeConstructor(Type type, out ConstructorInfo constructor, out JsonConstructorAttribute attribute)
+            protected override void GetConstructorInfo(Type type, out ConstructorInfo constructor, out JsonConstructorAttribute attribute, out bool hasDefaultConstructor)
             {
-                constructor = type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
-                    .FirstOrDefault(a => a.GetCustomAttribute<JsonConstructorAttribute>() != null);
-                if (constructor != null)
+                constructor = null;
+                attribute = null;
+                hasDefaultConstructor = type.IsValueType;
+
+                var ctors = type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+                int bestConstructorParamCount = 0;
+                foreach (var ctor in ctors)
                 {
-                    attribute = constructor.GetCustomAttribute<JsonConstructorAttribute>();
-                    return;
+                    var currentAttribute = ctor.GetCustomAttribute<JsonConstructorAttribute>();
+                    var currentParamCount = ctor.GetParameters().Length;
+                    if (currentParamCount == 0) hasDefaultConstructor = true;
+                    if ((attribute is null || currentAttribute is not null) && currentParamCount > bestConstructorParamCount)
+                    {
+                        constructor = ctor;
+                        attribute = currentAttribute;
+                        bestConstructorParamCount = currentParamCount;
+                    }
                 }
 
-                if (TryGetBaseClassJsonConstructorAttribute(type, out attribute))
+                if (attribute is not null) return;
+                if (TryGetBaseClassJsonConstructorAttribute(type, out attribute) || type.GetMethod("<Clone>$") != null)
                 {
-                    // We basically take the one with the most parameters, this needs to match the dictionary // TODO find better method
-                    constructor = type.GetConstructors(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance)
-                        .OrderByDescending(a => a.GetParameters().Length)
-                        .FirstOrDefault();
                     return;
                 }
 
