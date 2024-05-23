@@ -604,6 +604,15 @@ namespace SpanJson.Tests
             Assert.Equal("{\"Key\":\"1\",\"Value\":5}", deserialized.ToString());
         }
 
+        [Fact]
+        public void DynamicIssue202()
+        {
+            const string input = "{\"bs_id\":1,\"lon\":36.93697,\"lat\":56.16896,\"azimuth\":20,\"width\":76,\"avg_range\":-331.47153,\"max_range\":null,\"bsic\":null,\"decrrease_power\":0,\"address\":\"Город Солнечногорск, Улица Ожогинская, Дом 21\",\"begin_time\":1450569600,\"end_time\":2524597199,\"standart\":null,\"controllerid\":null,\"switchid\":null,\"power\":\"43\",\"maxpower\":null,\"amountgain\":\"16\",\"height\":29,\"angleh\":355,\"msccode\":null,\"sectornum\":0,\"bs_r\":null,\"bs_anglesector\":null,\"bs_beginangle\":null,\"bs_f_out\":null,\"bs_f_in\":null,\"class\":null,\"bts_type\":\"UMTS\",\"bs_name\":null,\"pilot_pn\":null,\"id\":{\"id\":\"250.20.27919.15574\",\"type\":\"LOC\"}}";
+
+            var deserialized = JsonSerializer.Generic.Utf16.Deserialize<object>(input);
+            var bytes = JsonSerializer.NonGeneric.Utf8.Serialize(deserialized);
+            Assert.NotNull(bytes);
+        }
 
         public class NonDynamicParent
         {

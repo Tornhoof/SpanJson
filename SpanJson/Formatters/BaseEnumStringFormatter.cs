@@ -65,7 +65,7 @@ namespace SpanJson.Formatters
 
         private static string GetFormattedValue(string enumValue)
         {
-           return typeof(T).GetMember(enumValue)?.FirstOrDefault()?.GetCustomAttribute<EnumMemberAttribute>()?.Value ?? enumValue;
+           return typeof(T).GetMember(enumValue, BindingFlags.Public | BindingFlags.Static)?.FirstOrDefault()?.GetCustomAttribute<EnumMemberAttribute>()?.Value ?? enumValue;
         }
 
         protected static TDelegate BuildDeserializeDelegateExpressions<TDelegate, TReturn>(ParameterExpression inputExpression, Expression nameSpanExpression)
