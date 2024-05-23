@@ -81,7 +81,7 @@ namespace SpanJson.Tests
 
             using (var ms = new MemoryStream())
             {
-                await JsonSerializer.Generic.Utf8.SerializeAsync(input, ms).ConfigureAwait(false);
+                await JsonSerializer.Generic.Utf8.SerializeAsync(input, ms);
 
                 ms.Position = 0;
 
@@ -97,7 +97,7 @@ namespace SpanJson.Tests
 
             using (var ms = new MemoryStream())
             {
-                await JsonSerializer.NonGeneric.Utf8.SerializeAsync(input, ms).ConfigureAwait(false);
+                await JsonSerializer.NonGeneric.Utf8.SerializeAsync(input, ms);
 
                 ms.Position = 0;
 
@@ -113,7 +113,7 @@ namespace SpanJson.Tests
 
             using (var ms = new WrappedMemoryStream(true))
             {
-                await JsonSerializer.Generic.Utf8.SerializeAsync(input, ms).ConfigureAwait(false);
+                await JsonSerializer.Generic.Utf8.SerializeAsync(input, ms);
 
                 ms.Position = 0;
 
@@ -129,7 +129,7 @@ namespace SpanJson.Tests
 
             using (var ms = new WrappedMemoryStream(false))
             {
-                await JsonSerializer.Generic.Utf8.SerializeAsync(input, ms).ConfigureAwait(false);
+                await JsonSerializer.Generic.Utf8.SerializeAsync(input, ms);
 
                 ms.Position = 0;
 
