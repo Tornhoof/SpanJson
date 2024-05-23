@@ -251,7 +251,7 @@ namespace SpanJson.Tests
             Assert.Null(deserialized.Complex.Complex);
             Assert.Null(deserialized.Complex.Complexes);
 
-            Assert.Equal(1, deserialized.Complexes.Count);
+            Assert.Single(deserialized.Complexes);
             Assert.Equal("Baz", deserialized.Complexes[0].String);
             Assert.Null(deserialized.Complexes[0].StringNull);
             Assert.Equal(42, deserialized.Complexes[0].Int32);

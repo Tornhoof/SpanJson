@@ -29,10 +29,10 @@ namespace SpanJson.AspNetCore.Formatter.Tests
                 message.Content = new ByteArrayContent(JsonSerializer.Generic.Utf8.Serialize<TestObject, AspNetCoreDefaultResolver<byte>>(model));
                 message.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
-                using (var response = await _fixture.Client.SendAsync(message).ConfigureAwait(false))
+                using (var response = await _fixture.Client.SendAsync(message))
                 {
                     Assert.True(response.IsSuccessStatusCode);
-                    var body = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+                    var body = await response.Content.ReadAsByteArrayAsync();
                     var resultModel = JsonSerializer.Generic.Utf8.Deserialize<TestObject, AspNetCoreDefaultResolver<byte>>(body);
                     Assert.Equal(model, resultModel);
                 }
@@ -52,10 +52,10 @@ namespace SpanJson.AspNetCore.Formatter.Tests
                 message.Content = new ByteArrayContent(JsonSerializer.Generic.Utf8.Serialize<TestObject, AspNetCoreDefaultResolver<byte>>(model));
                 message.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
 
-                using (var response = await _fixture.Client.SendAsync(message).ConfigureAwait(false))
+                using (var response = await _fixture.Client.SendAsync(message))
                 {
                     Assert.True(response.IsSuccessStatusCode);
-                    var body = await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+                    var body = await response.Content.ReadAsByteArrayAsync();
                     var resultModel = JsonSerializer.Generic.Utf8.Deserialize<TestObject, AspNetCoreDefaultResolver<byte>>(body);
                     Assert.Equal(model, resultModel);
                 }

@@ -10,6 +10,8 @@ namespace SpanJson.Tests
     {
         public enum TestEnum
         {
+            [EnumMember(Value = "equals")]
+            Equals,
             Hello,
             World,
             [EnumMember(Value = "SolarSystem")] Renamed,
@@ -42,6 +44,7 @@ namespace SpanJson.Tests
         }
 
         [Theory]
+        [InlineData(TestEnum.Equals, "\"equals\"")]
         [InlineData(TestEnum.Hello, "\"Hello\"")]
         [InlineData(TestEnum.World, "\"World\"")]
         [InlineData(TestEnum.Universe, "\"Universe\"")]
@@ -53,6 +56,7 @@ namespace SpanJson.Tests
         }
 
         [Theory]
+        [InlineData("\"equals\"", TestEnum.Equals)]
         [InlineData("\"Hello\"", TestEnum.Hello)]
         [InlineData("\"World\"", TestEnum.World)]
         [InlineData("\"Universe\"", TestEnum.Universe)]
@@ -64,6 +68,7 @@ namespace SpanJson.Tests
         }
 
         [Theory]
+        [InlineData(TestEnum.Equals)]
         [InlineData(TestEnum.Hello)]
         [InlineData(TestEnum.World)]
         [InlineData(TestEnum.Universe)]
@@ -77,6 +82,7 @@ namespace SpanJson.Tests
         }
 
         [Theory]
+        [InlineData(TestEnum.Equals)]
         [InlineData(TestEnum.Hello)]
         [InlineData(TestEnum.World)]
         [InlineData(TestEnum.Universe)]

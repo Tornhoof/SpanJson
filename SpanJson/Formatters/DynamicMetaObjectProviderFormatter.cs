@@ -94,7 +94,7 @@ namespace SpanJson.Formatters
             }
             else if (value is ISpanJsonDynamicValue<char> cValue)
             {
-                var bMaxLength = Encoding.UTF8.GetMaxCharCount(cValue.Symbols.Length);
+                var bMaxLength = Encoding.UTF8.GetMaxByteCount(cValue.Symbols.Length);
                 byte[] buffer = null;
                 try
                 {
