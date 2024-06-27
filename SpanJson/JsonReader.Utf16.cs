@@ -278,7 +278,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private DateTime ParseUtf16DateTime(in ReadOnlySpan<char> span)
         {
-            if (DateTimeParser.TryParseDateTime(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            if (DateTimeParser.TryParseDateTime(span, out var value, out var charsConsumed) && span.Length == charsConsumed)
             {
                 return value;
             }
@@ -293,7 +293,7 @@ namespace SpanJson
         {
             Span<char> span = stackalloc char[JsonSharedConstant.MaxDateTimeLength];
             UnescapeUtf16Chars(input, ref span);
-            if (DateTimeParser.TryParseDateTime(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            if (DateTimeParser.TryParseDateTime(span, out var value, out var charsConsumed) && span.Length == charsConsumed)
             {
                 return value;
             }
@@ -312,7 +312,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private DateTimeOffset ParseUtf16DateTimeOffset(in ReadOnlySpan<char> span)
         {
-            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var charsConsumed) && span.Length == charsConsumed)
             {
                 return value;
             }
@@ -327,7 +327,7 @@ namespace SpanJson
         {
             Span<char> span = stackalloc char[JsonSharedConstant.MaxDateTimeOffsetLength];
             UnescapeUtf16Chars(input, ref span);
-            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var charsConsumed) && span.Length == charsConsumed)
             {
                 return value;
             }
@@ -390,7 +390,7 @@ namespace SpanJson
 
             // still slow in .NET Core 3.0
             byteSpan = byteSpan.Slice(0, span.Length);
-            if (Utf8Parser.TryParse(byteSpan, out TimeSpan value, out var bytesConsumed) && bytesConsumed == span.Length)
+            if (Utf8Parser.TryParse(byteSpan, out TimeSpan value, out var bytesConsumed) && bytesConsumed == byteSpan.Length)
             {
                 return value;
             }
