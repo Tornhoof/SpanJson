@@ -6,7 +6,7 @@
 <#@ import namespace="System.Reflection" #>
 <#@ import namespace="System" #>
 <#@ Assembly name="$(TargetPath)" #>
-<#@ Assembly name="$(SolutionDir)\SpanJson.Shared\bin\Debug\netstandard2.0\SpanJson.Shared.dll" #>
+<#@ Assembly name="$(SolutionDir)\SpanJson.Shared\bin\Debug\net6.0\SpanJson.Shared.dll" #>
 <#
     var serializers = new []
     {
