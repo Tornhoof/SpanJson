@@ -5,14 +5,18 @@ namespace SpanJson
     public static class JsonSharedConstant
     {
         public const int MaxNumberBufferSize = 32;
-        public const int MaxVersionLength = 45; // 4 * int + 3 . + 2 double quote
         public const int NestingLimit = 256;
         public const int StackAllocByteMaxLength = 256;
         public const int StackAllocCharMaxLength = StackAllocByteMaxLength / sizeof(char);
-        public const int MaxDateTimeOffsetLength = 35; // o + 2 double quotes
-        public const int MaxDateTimeLength = 35; // o + 2 double quotes
-        public const int MaxTimeSpanLength = 27; // c + 2 double quotes
-        public const int MaxGuidLength = 42; // d + 2 double quotes
+
+        // Max lengths of JSON strings; all include 2 double quotes.
+        public const int MaxVersionLength = 45; // "{int.MaxValue}.{int.MaxValue}.{int.MaxValue}.{int.MaxValue}" => "2147483647.2147483647.2147483647.2147483647"
+        public const int MaxGuidLength = 40; // B or P format specifier, e.g. "{nnnnnnnn-nnnn-nnnn-nnnn-nnnnnnnnnnnn}" or "(nnnnnnnn-nnnn-nnnn-nnnn-nnnnnnnnnnnn)" respectively
+        public const int MaxDateTimeOffsetLength = 35; // o format specifier; e.g. "9999-12-31T23:59:59.9999999-00:00"
+        public const int MaxDateTimeLength = 35; // o format specifier; e.g. "9999-12-31T23:59:59.9999999-00:00"
+        public const int MaxTimeSpanLength = 28; // c format specifier; e.g. "{TimeSpan.MinValue:c}" => "-10675199.02:48:05.4775808"
+        public const int MaxDateOnlyLength = 12; // "9999-12-31"
+        public const int MaxTimeOnlyLength = 18; // "23:59:59.9999999"
     }
 
     public static class JsonUtf8Constant
