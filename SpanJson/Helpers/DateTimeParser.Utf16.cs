@@ -336,8 +336,7 @@ namespace SpanJson.Helpers
         ///     2017-06-12T05:30:45Z
         ///     2017-06-12 (local)
         /// </summary>
-        private static bool TryParseDate(in ReadOnlySpan<char> source, out Date value,
-            out int charsConsumed)
+        private static bool TryParseDate(in ReadOnlySpan<char> source, out Date value, out int charsConsumed)
         {
             if (source.Length < 10)
             {
@@ -375,7 +374,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[5] - 48U;
                 var digit2 = source[6] - 48U;
 
-                if (digit1 > 2 || digit2 > 9)
+                if (digit1 > 2 || digit2 > 9 || digit1 == 1 && digit2 > 2)
                 {
                     value = default;
                     charsConsumed = 0;
@@ -397,7 +396,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[8] - 48U;
                 var digit2 = source[9] - 48U;
 
-                if (digit1 > 3 || digit2 > 9)
+                if (digit1 > 3 || digit2 > 9 || digit1 == 3 && digit2 > 1)
                 {
                     value = default;
                     charsConsumed = 0;
@@ -426,7 +425,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[11] - 48U;
                 var digit2 = source[12] - 48U;
 
-                if (digit1 > 2 || digit2 > 9)
+                if (digit1 > 2 || digit2 > 9 || digit1 == 2 && digit2 > 3)
                 {
                     value = default;
                     charsConsumed = 0;
@@ -455,7 +454,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[14] - 48U;
                 var digit2 = source[15] - 48U;
 
-                if (digit1 > 6 || digit2 > 9)
+                if (digit1 > 5 || digit2 > 9)
                 {
                     value = default;
                     charsConsumed = 0;
@@ -484,7 +483,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[17] - 48U;
                 var digit2 = source[18] - 48U;
 
-                if (digit1 > 6 || digit2 > 9)
+                if (digit1 > 5 || digit2 > 9)
                 {
                     value = default;
                     charsConsumed = 0;
@@ -502,8 +501,6 @@ namespace SpanJson.Helpers
             }
 
             var currentOffset = 19; // up until here everything is fixed
-
-
             var fraction = 0;
             if (source.Length > currentOffset + 1 && source[currentOffset] == '.')
             {
