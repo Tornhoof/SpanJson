@@ -45,6 +45,9 @@ namespace SpanJson.Shared.Fixture
             AddValueFixture(new DateTimeOffsetValueFixture());
             AddValueFixture(new DateTimeValueFixture());
             AddValueFixture(new TimespanFixture());
+            AddValueFixture(new DateOnlyFixture());
+            AddValueFixture(new TimeOnlyFixture());
+
 
             AddValueFixture(new GuidValueFixture());
             AddValueFixture(new VersionFixture());
