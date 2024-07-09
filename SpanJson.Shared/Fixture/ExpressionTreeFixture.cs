@@ -13,7 +13,7 @@ namespace SpanJson.Shared.Fixture
 
         private readonly ConcurrentDictionary<Type, Func<int, int, object>> _functorCache = new();
 
-        private readonly Dictionary<Type, IValueFixture> _valueFixtures = [];
+        private readonly Dictionary<Type, IValueFixture> _valueFixtures = new();
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void AddValueFixture<T>(T valueFixture) where T : IValueFixture
         {
@@ -88,7 +88,7 @@ namespace SpanJson.Shared.Fixture
         {
             var breakLabel = Expression.Label("LoopBreak");
             var length = Expression.Variable(typeof(int), "length");
-            var block = Expression.Block([index, length],
+            var block = Expression.Block(new[] { index, length },
                 Expression.Assign(index, Expression.Constant(0)),
                 Expression.Assign(length, lengthExpression),
                 Expression.Loop(
@@ -137,7 +137,7 @@ namespace SpanJson.Shared.Fixture
             var returnTarget = Expression.Label(typeof(object));
             var returnLabel = Expression.Label(returnTarget, Expression.Convert(typedOutput, typeof(object)));
             subExpressions.Add(returnLabel);
-            var block = Expression.Block([typedOutput], subExpressions);
+            var block = Expression.Block(new[] { typedOutput }, subExpressions);
             var lambda = Expression.Lambda<Func<int, int, object>>(block, repeatCount, recursiveCount);
             return lambda.Compile();
         }
@@ -200,7 +200,7 @@ namespace SpanJson.Shared.Fixture
                 var elementType = type.GetGenericArguments()[0];
                 expressionList.Add(Expression.Assign(generatedValue, Expression.New(type)));
                 var index = Expression.Parameter(typeof(int), "i");
-                var addMi = type.GetMethod("Add", [elementType]);
+                var addMi = type.GetMethod("Add", new[] { elementType });
                 var childValue = Expression.Parameter(elementType);
                 var loopBlock = new List<Expression>
                 {
@@ -209,7 +209,7 @@ namespace SpanJson.Shared.Fixture
                 };
                 if (loopBlock.Count > 0)
                 {
-                    var loopContent = Expression.Block([childValue, index], loopBlock);
+                    var loopContent = Expression.Block(new[] { childValue, index }, loopBlock);
                     expressionList.Add(ForLoop(index, repeatCount, loopContent));
                 }
 
@@ -244,11 +244,11 @@ namespace SpanJson.Shared.Fixture
             Expression recursiveCount)
         {
             var mi = typeof(ExpressionTreeFixture).GetMethod(nameof(Create),
-                [typeof(Type), typeof(int), typeof(int)]);
+                new[] { typeof(Type), typeof(int), typeof(int) });
             return Expression.Assign(generatedValue,
                 Expression.Convert(
                     Expression.Call(Expression.Constant(this), mi,
-                        [Expression.Constant(type), repeatCount, recursiveCount]),
+                        new[] { Expression.Constant(type), repeatCount, recursiveCount }),
                     generatedValue.Type));
         }
 
