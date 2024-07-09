@@ -68,6 +68,263 @@ namespace SpanJson.Helpers
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryParseDateOnly(ReadOnlySpan<byte> source, out DateOnly value)
+        {
+            if (source.Length != 10 || source[4] != (byte) '-' || source[7] != (byte) '-')
+            {
+                value = default;
+                return false;
+            }
+
+            int year;
+            {
+                var digit1 = source[0] - 48U; // '0' (this makes it uint)
+                var digit2 = source[1] - 48U;
+                var digit3 = source[2] - 48U;
+                var digit4 = source[3] - 48U;
+
+                if (digit1 > 9 || digit2 > 9 || digit3 > 9 || digit4 > 9)
+                {
+                    value = default;
+                    return false;
+                }
+
+                year = (int) (digit1 * 1000 + digit2 * 100 + digit3 * 10 + digit4);
+            }
+
+            int month;
+            {
+                var digit1 = source[5] - 48U;
+                var digit2 = source[6] - 48U;
+
+                if (digit1 > 2 || digit2 > 9 || digit1 == 1 && digit2 > 2)
+                {
+                    value = default;
+                    return false;
+                }
+
+                month = (int) (digit1 * 10 + digit2);
+            }
+
+            int day;
+            {
+                var digit1 = source[8] - 48U;
+                var digit2 = source[9] - 48U;
+
+                if (digit1 > 3 || digit2 > 9 || digit1 == 3 && digit2 > 1)
+                {
+                    value = default;
+                    return false;
+                }
+
+                day = (int) (digit1 * 10 + digit2);
+            }
+
+            value = new DateOnly(year, month, day);
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryParseTimeOnly(ReadOnlySpan<byte> source, out TimeOnly value, out int charsConsumed)
+        {
+            if (source.Length is < 5 or > 16 || source[2] != (byte) ':')
+            {
+                goto InvalidDate;
+            }
+
+            long ticks = 0L;
+
+            // Hour
+            {
+                var digit1 = source[0] - 48U; // '0' (this makes it uint)
+                var digit2 = source[1] - 48U;
+
+                if (digit1 > 2 || digit2 > 9 || digit1 == 2 && digit2 > 3)
+                {
+                    value = default;
+                    charsConsumed = 0;
+                    return false;
+                }
+
+                ticks += TimeSpan.TicksPerHour * (digit1 * 10 + digit2);
+            }
+
+            // Minute
+            {
+                var digit1 = source[3] - 48U;
+                var digit2 = source[4] - 48U;
+
+                if (digit1 > 5 || digit2 > 9)
+                {
+                    value = default;
+                    charsConsumed = 0;
+                    return false;
+                }
+
+                ticks += TimeSpan.TicksPerMinute * (digit1 * 10 + digit2);
+            }
+
+            if (source.Length == 5)
+            {
+                goto ValidDate;
+            }
+
+            if (source[5] != (byte) ':')
+            {
+                goto InvalidDate;
+            }
+
+            // Second
+            {
+                var digit1 = source[6] - 48U;
+                var digit2 = source[7] - 48U;
+
+                if (digit1 > 5 || digit2 > 9)
+                {
+                    goto InvalidDate;
+                }
+
+                ticks += TimeSpan.TicksPerSecond * (digit1 * 10 + digit2);
+            }
+
+            if (source.Length == 8)
+            {
+                goto ValidDate;
+            }
+
+            if (source[8] != (byte) '.')
+            {
+                goto InvalidDate;
+            }
+
+            // 0.1 seconds
+            {
+                var digit = source[9] - 48U;
+                if (digit > 9)
+                {
+                    goto InvalidDate;
+                }
+
+                ticks += TimeSpan.TicksPerMillisecond * 100 * digit;
+            }
+
+            if (source.Length == 10)
+            {
+                goto ValidDate;
+            }
+
+            // 0.01 seconds
+            {
+                var digit = source[10] - 48U;
+                if (digit > 9)
+                {
+                    goto InvalidDate;
+                }
+
+                ticks += TimeSpan.TicksPerMillisecond * 10 * digit;
+            }
+
+            if (source.Length == 11)
+            {
+                goto ValidDate;
+            }
+
+            // 0.001 seconds
+            {
+                var digit = source[11] - 48U;
+                if (digit > 9)
+                {
+                    goto InvalidDate;
+                }
+
+                ticks += TimeSpan.TicksPerMillisecond * digit;
+            }
+
+            if (source.Length == 12)
+            {
+                goto ValidDate;
+            }
+
+            // 0.0001 seconds
+            {
+                var digit = source[12] - 48U;
+                if (digit > 9)
+                {
+                    goto InvalidDate;
+                }
+#if NET7_0_OR_GREATER
+                ticks += TimeSpan.TicksPerMicrosecond * 100 * digit;
+#else
+                ticks += 1000 * digit;
+#endif
+            }
+
+            if (source.Length == 13)
+            {
+                goto ValidDate;
+            }
+
+            // 0.00001 seconds
+            {
+                var digit = source[13] - 48U;
+                if (digit > 9)
+                {
+                    goto InvalidDate;
+                }
+#if NET7_0_OR_GREATER
+                ticks += TimeSpan.TicksPerMicrosecond * 10 * digit;
+#else
+                ticks += 100 * digit;
+#endif
+            }
+
+            if (source.Length == 14)
+            {
+                goto ValidDate;
+            }
+
+            // 0.000001 seconds
+            {
+                var digit = source[14] - 48U;
+                if (digit > 9)
+                {
+                    goto InvalidDate;
+                }
+#if NET7_0_OR_GREATER
+                ticks += TimeSpan.TicksPerMicrosecond * digit;
+#else
+                ticks += 10 * digit;
+#endif
+            }
+
+            if (source.Length == 15)
+            {
+                goto ValidDate;
+            }
+
+            // 0.0000001 seconds
+            {
+                var digit = source[15] - 48U;
+                if (digit > 9)
+                {
+                    goto InvalidDate;
+                }
+
+                ticks += digit;
+            }
+
+            ValidDate:
+            charsConsumed = source.Length;
+            value = new TimeOnly(ticks);
+            return true;
+
+            InvalidDate:
+            value = default;
+            charsConsumed = 0;
+            return false;
+        }
+
         /// <summary>
         ///     2017-06-12T05:30:45.7680000-07:00
         ///     2017-06-12T05:30:45.7680000Z
@@ -80,8 +337,7 @@ namespace SpanJson.Helpers
         ///     2017-06-12T05:30:45 (local)
         ///     2017-06-12 (local)
         /// </summary>
-        private static bool TryParseDate(in ReadOnlySpan<byte> source, out Date value,
-            out int bytesConsumed)
+        private static bool TryParseDate(in ReadOnlySpan<byte> source, out Date value, out int bytesConsumed)
         {
             if (source.Length < 10)
             {
