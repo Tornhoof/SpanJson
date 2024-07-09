@@ -24,25 +24,30 @@ namespace SpanJson.Shared.Fixture
         {
             _seed = seed;
             AddValueFixture(new StringValueFixture(seed));
-            AddValueFixture(new IntValueFixture(seed));
-            AddValueFixture(new GuidValueFixture());
-            AddValueFixture(new DateTimeOffsetValueFixture());
-            AddValueFixture(new DateTimeValueFixture());
+            AddValueFixture(new UriFixture());
+
             AddValueFixture(new BooleanValueFixture(seed));
-            AddValueFixture(new DecimalValueFixture(seed));
+            AddValueFixture(new ByteValueFixture(seed));
+            AddValueFixture(new CharValueFixture(seed));
+            AddValueFixture(new UshortValueFixture(seed));
+            AddValueFixture(new UintValueFixture(seed));
+            AddValueFixture(new UlongValueFixture(seed));
+
+            AddValueFixture(new SByteValueFixture(seed));
+            AddValueFixture(new ShortValueFixture(seed));
+            AddValueFixture(new IntValueFixture(seed));
             AddValueFixture(new LongValueFixture(seed));
+
             AddValueFixture(new FloatValueFixture(seed));
             AddValueFixture(new DoubleValueFixture(seed));
-            AddValueFixture(new ByteValueFixture(seed));
-            AddValueFixture(new ShortValueFixture(seed));
-            AddValueFixture(new VersionFixture());
-            AddValueFixture(new UriFixture());
-            AddValueFixture(new SByteValueFixture(seed));
-            AddValueFixture(new UintValueFixture(seed));
-            AddValueFixture(new UshortValueFixture(seed));
-            AddValueFixture(new UlongValueFixture(seed));
+            AddValueFixture(new DecimalValueFixture(seed));
+
+            AddValueFixture(new DateTimeOffsetValueFixture());
+            AddValueFixture(new DateTimeValueFixture());
             AddValueFixture(new TimespanFixture());
-            AddValueFixture(new CharValueFixture(seed));
+
+            AddValueFixture(new GuidValueFixture());
+            AddValueFixture(new VersionFixture());
         }
 
         public T Configure<T>() where T : IValueFixture
