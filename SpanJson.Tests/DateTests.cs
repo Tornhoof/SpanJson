@@ -30,42 +30,85 @@ namespace SpanJson.Tests
         [InlineData("2017-06-12T05:30:45.760738998", 29, 2017, 6, 12, 5, 30, 45, 7607389, false, 0, 0, DateTimeKind.Unspecified)]
         [InlineData("2017-06-12T24:00:00", 19, 2017, 6, 13, 0, 0, 0, 0, false, 0, 0, DateTimeKind.Unspecified)]
         [InlineData("2017-06-12T24:00", 16, 2017, 6, 13, 0, 0, 0, 0, false, 0, 0, DateTimeKind.Unspecified)]
-        [InlineData("2017-06-12T24", 13, 2017, 6, 13, 0, 0, 0, 0, false, 0, 0, DateTimeKind.Unspecified)]        
+        [InlineData("2017-06-12T24", 13, 2017, 6, 13, 0, 0, 0, 0, false, 0, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T24:01", 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T24:00:01", 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T24:00:00.1", 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T24:00:00.01", 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T24:00:00.001", 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T24:00:00.0001", 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T24:00:00.00001", 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T24:00:00.000001", 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, DateTimeKind.Unspecified)]
+        [InlineData("2017-06-12T24:00:00.0000001", 0, 0, 0, 0, 0, 0, 0, 0, false, 0, 0, DateTimeKind.Unspecified)]
         public void Parse(string input, int length, int year, int month, int day, int hour, int minute,
-            int second, int fraction, bool negative, int offsethours, int offsetminutes, DateTimeKind kind)
+            int second, int fraction, bool negative, int offsetHours, int offsetMinutes, DateTimeKind kind)
         {
-            Assert.True(DateTimeParser.TryParseDateTimeOffset(input.AsSpan(), out var dtoValue, out var dtoConsumed));
-            Assert.Equal(length, input.Length);
+            var ucs2DateTimeOffsetParseResult = DateTimeParser.TryParseDateTimeOffset(input.AsSpan(), out var ucs2DtoValue, out var dtoConsumed);
             Assert.Equal(length, dtoConsumed);
-            Assert.True(DateTimeParser.TryParseDateTime(input.AsSpan(), out var dtValue, out var dtConsumed));
-            Assert.Equal(length, dtConsumed);
-            AssertDateTime(dtoValue.DateTime, year, month, day, hour, minute, second, fraction);
-            var offset = new TimeSpan(offsethours, offsetminutes, 0) * (negative ? -1 : 1);
-            switch (kind)
+            if (length > 0)
             {
-                case DateTimeKind.Local:
-                    Assert.Equal(offset, dtoValue.DateTime - dtoValue.UtcDateTime);
-                    Assert.Equal(dtValue, dtoValue.LocalDateTime);
-                    break;
-                case DateTimeKind.Unspecified:
-                    Assert.Equal(offset, dtoValue.DateTime - dtoValue.LocalDateTime);
-                    Assert.Equal(dtValue, dtoValue.DateTime);
-                    break;
-                case DateTimeKind.Utc:
-                    Assert.Equal(offset, dtoValue.DateTime - dtoValue.UtcDateTime);
-                    Assert.Equal(dtValue, dtoValue.UtcDateTime);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
+                Assert.True(ucs2DateTimeOffsetParseResult);
+                Assert.Equal(length, input.Length);
+            }
+            else
+            {
+                Assert.False(ucs2DateTimeOffsetParseResult);
+            }
+            var ucs2DateTimeParseResult = DateTimeParser.TryParseDateTime(input.AsSpan(), out var ucs2DtValue, out var dtConsumed);
+            if (length > 0)
+            {
+                Assert.True(ucs2DateTimeParseResult);
+                Assert.Equal(length, dtConsumed);
+                AssertDateTime(ucs2DtoValue.DateTime, year, month, day, hour, minute, second, fraction);
+                var offset = new TimeSpan(offsetHours, offsetMinutes, 0) * (negative ? -1 : 1);
+                switch (kind)
+                {
+                    case DateTimeKind.Local:
+                        Assert.Equal(offset, ucs2DtoValue.DateTime - ucs2DtoValue.UtcDateTime);
+                        Assert.Equal(ucs2DtValue, ucs2DtoValue.LocalDateTime);
+                        break;
+                    case DateTimeKind.Unspecified:
+                        Assert.Equal(offset, ucs2DtoValue.DateTime - ucs2DtoValue.LocalDateTime);
+                        Assert.Equal(ucs2DtValue, ucs2DtoValue.DateTime);
+                        break;
+                    case DateTimeKind.Utc:
+                        Assert.Equal(offset, ucs2DtoValue.DateTime - ucs2DtoValue.UtcDateTime);
+                        Assert.Equal(ucs2DtValue, ucs2DtoValue.UtcDateTime);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
+                }
+            }
+            else
+            {
+                Assert.False(ucs2DateTimeParseResult);
             }
 
-            Assert.True(DateTimeParser.TryParseDateTimeOffset(Encoding.UTF8.GetBytes(input), out var utf8dtoValue, out dtoConsumed));
-            Assert.Equal(length, input.Length);
-            Assert.Equal(length, dtoConsumed);
-            Assert.True(DateTimeParser.TryParseDateTime(Encoding.UTF8.GetBytes(input), out var utf8dtValue, out dtConsumed));;
-            Assert.Equal(length, dtConsumed);
-            Assert.Equal(dtoValue, utf8dtoValue);
-            Assert.Equal(dtValue, utf8dtValue);
+            var utf8Input = Encoding.UTF8.GetBytes(input);
+            var utf8DateTimeOffsetParseResult = DateTimeParser.TryParseDateTimeOffset(utf8Input, out var utf8DtoValue, out var utf8DtoConsumed);
+            Assert.Equal(length, utf8DtoConsumed);
+            if (length > 0)
+            {
+                Assert.True(utf8DateTimeOffsetParseResult);
+            }
+            else
+            {
+                Assert.False(utf8DateTimeOffsetParseResult);
+            }
+
+            var utf8DateTimeParseResult = DateTimeParser.TryParseDateTime(utf8Input, out var utf8dtValue, out var utf8DtConsumed);
+            Assert.Equal(length, utf8DtConsumed);
+            if (length > 0)
+            {
+                Assert.True(utf8DateTimeParseResult);
+            }
+            else
+            {
+                Assert.False(utf8DateTimeParseResult);
+            }
+
+            Assert.Equal(ucs2DtoValue, utf8DtoValue);
+            Assert.Equal(ucs2DtValue, utf8dtValue);
         }
 
         [Theory]
@@ -127,27 +170,27 @@ namespace SpanJson.Tests
 
             for (int i = 1; i < 13; i++)
             {
-                yield return new object[] {new DateTime(startDate + TimeSpan.FromDays(31).Ticks * i)};
+                yield return new object[] { new DateTime(startDate + TimeSpan.FromDays(31).Ticks * i) };
             }
 
             for (int i = 1; i < 31; i++)
             {
-                yield return new object[] {new DateTime(startDate + TimeSpan.FromDays(i).Ticks)};
+                yield return new object[] { new DateTime(startDate + TimeSpan.FromDays(i).Ticks) };
             }
 
             for (int i = 0; i < 24; i++)
             {
-                yield return new object[] {new DateTime(startDate + TimeSpan.FromHours(i).Ticks)};
+                yield return new object[] { new DateTime(startDate + TimeSpan.FromHours(i).Ticks) };
             }
 
             for (int i = 0; i < 60; i++)
             {
-                yield return new object[] {new DateTime(startDate + TimeSpan.FromMinutes(i).Ticks)};
+                yield return new object[] { new DateTime(startDate + TimeSpan.FromMinutes(i).Ticks) };
             }
 
             for (int i = 0; i < 60; i++)
             {
-                yield return new object[] {new DateTime(startDate + TimeSpan.FromSeconds(i).Ticks)};
+                yield return new object[] { new DateTime(startDate + TimeSpan.FromSeconds(i).Ticks) };
             }
         }
 

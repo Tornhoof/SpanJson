@@ -338,7 +338,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[11] - 48U;
                 var digit2 = source[12] - 48U;
 
-                if (digit1 > 2 || digit2 > 9 || digit1 == 2 && digit2 > 3)
+                if (digit1 > 2 || digit2 > 9 || digit1 == 2 && digit2 > 4)
                 {
                     value = default;
                     bytesConsumed = 0;
@@ -367,7 +367,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[14] - 48U;
                 var digit2 = source[15] - 48U;
 
-                if (digit1 > 5 || digit2 > 9)
+                if (digit1 > 5 || digit2 > 9 || hour == 24 && (digit1 > 0 || digit2 > 0))
                 {
                     value = default;
                     bytesConsumed = 0;
@@ -396,7 +396,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[17] - 48U;
                 var digit2 = source[18] - 48U;
 
-                if (digit1 > 5 || digit2 > 9)
+                if (digit1 > 5 || digit2 > 9 || hour == 24 && (digit1 > 0 || digit2 > 0))
                 {
                     value = default;
                     bytesConsumed = 0;
@@ -419,7 +419,7 @@ namespace SpanJson.Helpers
             {
                 currentOffset++;
                 var temp = source[currentOffset++] - 48U; // one needs to exist
-                if (temp > 9)
+                if (temp > 9 || hour == 24 && temp > 0)
                 {
                     value = default;
                     bytesConsumed = 0;
@@ -431,11 +431,16 @@ namespace SpanJson.Helpers
                 for (digitCount = 0; digitCount < maxDigits; digitCount++)
                 {
                     var digit = source[currentOffset] - 48U;
+                    if (hour == 24 && digit > 0)
+                    {
+                        value = default;
+                        bytesConsumed = 0;
+                        return false;
+                    }
                     if (digit > 9)
                     {
                         break;
                     }
-
                     if (digitCount < 6)
                     {
                         temp = temp * 10 + digit;
