@@ -77,6 +77,8 @@ namespace SpanJson.Formatters.Dynamic
                     typeof(DateTime),
                     typeof(DateTimeOffset),
                     typeof(TimeSpan),
+                    typeof(DateOnly),
+                    typeof(TimeOnly),
                     typeof(Guid),
                     typeof(string),
                     typeof(Version),
