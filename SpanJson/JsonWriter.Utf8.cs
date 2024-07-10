@@ -195,7 +195,7 @@ namespace SpanJson
         public void WriteUtf8DateTime(DateTime value)
         {
             ref var pos = ref _pos;
-            const int dtSize = JsonSharedConstant.MaxDateTimeLength; // Form o + two JsonUtf8Constant.DoubleQuote
+            const int dtSize = JsonSharedConstant.MaxDateTimeLength;
             if (pos > _bytes.Length - dtSize)
             {
                 Grow(dtSize);
@@ -210,7 +210,7 @@ namespace SpanJson
         public void WriteUtf8DateTimeOffset(DateTimeOffset value)
         {
             ref var pos = ref _pos;
-            const int dtSize = JsonSharedConstant.MaxDateTimeOffsetLength; // Form o + two JsonUtf8Constant.DoubleQuote
+            const int dtSize = JsonSharedConstant.MaxDateTimeOffsetLength;
             if (pos > _bytes.Length - dtSize)
             {
                 Grow(dtSize);
@@ -225,7 +225,7 @@ namespace SpanJson
         public void WriteUtf8TimeSpan(TimeSpan value)
         {
             ref var pos = ref _pos;
-            const int tsSize = JsonSharedConstant.MaxTimeSpanLength; // Form o + two JsonUtf8Constant.DoubleQuote
+            const int tsSize = JsonSharedConstant.MaxTimeSpanLength;
             if (pos > _bytes.Length - tsSize)
             {
                 Grow(tsSize);
@@ -237,10 +237,40 @@ namespace SpanJson
             WriteUtf8DoubleQuote();
         }
 
+        public void WriteUtf8DateOnly(DateOnly value)
+        {
+            ref var pos = ref _pos;
+            const int tsSize = JsonSharedConstant.MaxDateOnlyLength;
+            if (pos > _bytes.Length - tsSize)
+            {
+                Grow(tsSize);
+            }
+
+            WriteUtf8DoubleQuote();
+            DateTimeFormatter.TryFormat(value, _bytes.Slice(pos), out var bytesWritten);
+            pos += bytesWritten;
+            WriteUtf8DoubleQuote();
+        }
+
+        public void WriteUtf8TimeOnly(TimeOnly value)
+        {
+            ref var pos = ref _pos;
+            const int tsSize = JsonSharedConstant.MaxTimeOnlyLength;
+            if (pos > _bytes.Length - tsSize)
+            {
+                Grow(tsSize);
+            }
+
+            WriteUtf8DoubleQuote();
+            DateTimeFormatter.TryFormat(value, _bytes.Slice(pos), out var bytesWritten);
+            pos += bytesWritten;
+            WriteUtf8DoubleQuote();
+        }
+
         public void WriteUtf8Guid(Guid value)
         {
             ref var pos = ref _pos;
-            const int guidSize = JsonSharedConstant.MaxGuidLength; // Format D + two JsonUtf8Constant.DoubleQuote;
+            const int guidSize = JsonSharedConstant.MaxGuidLength;
             if (pos > _bytes.Length - guidSize)
             {
                 Grow(guidSize);
