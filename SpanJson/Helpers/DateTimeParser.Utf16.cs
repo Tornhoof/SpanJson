@@ -142,18 +142,18 @@ namespace SpanJson.Helpers
                 case 7: // Ending in tens of seconds
                 case 9: // Ending in .
                 case > 16:
-                    goto InvalidDate;
+                    goto InvalidTime;
                 case 16: // 0.000_000_1 seconds
                 {
                     var digit = source[15] - 48U; // '0' (this makes it uint)
-                    if (digit > 9) goto InvalidDate;
+                    if (digit > 9) goto InvalidTime;
                     ticks += digit;
                     goto case 15;
                 }
                 case 15: // 0.000_001 seconds
                 {
                     var digit = source[14] - 48U;
-                    if (digit > 9) goto InvalidDate;
+                    if (digit > 9) goto InvalidTime;
 #if NET7_0_OR_GREATER
                     ticks += TimeSpan.TicksPerMicrosecond * digit;
 #else
@@ -164,7 +164,7 @@ namespace SpanJson.Helpers
                 case 14: // 0.000_01 seconds
                 {
                     var digit = source[13] - 48U;
-                    if (digit > 9) goto InvalidDate;
+                    if (digit > 9) goto InvalidTime;
 #if NET7_0_OR_GREATER
                     ticks += 10 * TimeSpan.TicksPerMicrosecond * digit;
 #else
@@ -175,7 +175,7 @@ namespace SpanJson.Helpers
                 case 13: // 0.000_1 seconds
                 {
                     var digit = source[12] - 48U;
-                    if (digit > 9) goto InvalidDate;
+                    if (digit > 9) goto InvalidTime;
 #if NET7_0_OR_GREATER
                     ticks += 100 * TimeSpan.TicksPerMicrosecond * digit;
 #else
@@ -186,31 +186,31 @@ namespace SpanJson.Helpers
                 case 12: // 0.001 seconds
                 {
                     var digit = source[11] - 48U;
-                    if (digit > 9) goto InvalidDate;
+                    if (digit > 9) goto InvalidTime;
                     ticks += TimeSpan.TicksPerMillisecond * digit;
                     goto case 11;
                 }
                 case 11: // 0.01 seconds
                 {
                     var digit = source[10] - 48U;
-                    if (digit > 9) goto InvalidDate;
+                    if (digit > 9) goto InvalidTime;
                     ticks += 10 * TimeSpan.TicksPerMillisecond * digit;
                     goto case 10;
                 }
                 case 10: // 0.1 seconds
                 {
-                    if (source[8] != '.') goto InvalidDate;
+                    if (source[8] != '.') goto InvalidTime;
                     var digit = source[9] - 48U;
-                    if (digit > 9) goto InvalidDate;
+                    if (digit > 9) goto InvalidTime;
                     ticks += 100 * TimeSpan.TicksPerMillisecond * digit;
                     goto case 8;
                 }
                 case 8: // Seconds
                 {
-                    if (source[5] != ':') goto InvalidDate;
+                    if (source[5] != ':') goto InvalidTime;
                     var digit1 = source[6] - 48U;
                     var digit2 = source[7] - 48U;
-                    if (digit1 > 5 || digit2 > 9) goto InvalidDate;
+                    if (digit1 > 5 || digit2 > 9) goto InvalidTime;
                     ticks += TimeSpan.TicksPerSecond * (digit1 * 10 + digit2);
                     goto case 5;
                 }
@@ -220,7 +220,7 @@ namespace SpanJson.Helpers
                     var hourDigit2 = source[1] - 48U;
                     var minuteDigit1 = source[3] - 48U;
                     var minuteDigit2 = source[4] - 48U;
-                    if (source[2] != ':' || hourDigit1 > 2 || hourDigit2 > 9 || hourDigit1 == 1 && hourDigit2 > 2 || minuteDigit1 > 5 || minuteDigit2 > 9) goto InvalidDate;
+                    if (source[2] != ':' || hourDigit1 > 2 || hourDigit2 > 9 || hourDigit1 == 2 && hourDigit2 > 3 || minuteDigit1 > 5 || minuteDigit2 > 9) goto InvalidTime;
                     ticks += TimeSpan.TicksPerHour * (hourDigit1 * 10 + hourDigit2);
                     ticks += TimeSpan.TicksPerMinute * (minuteDigit1 * 10 + minuteDigit2);
                     break;
@@ -231,7 +231,7 @@ namespace SpanJson.Helpers
             value = new TimeOnly(ticks);
             return true;
 
-            InvalidDate:
+            InvalidTime:
             value = default;
             charsConsumed = 0;
             return false;

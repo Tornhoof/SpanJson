@@ -155,6 +155,67 @@ namespace SpanJson.Tests
             Assert.Equal(doValue, utf8doValue);
         }
 
+        [Theory]
+        [InlineData("")]
+        [InlineData("0")]
+        [InlineData("12:")]
+        [InlineData("12:5")]
+        [InlineData("12:59:")]
+        [InlineData("12:59:59.")]
+        [InlineData("12:59:59:9")]
+        [InlineData("12:59:59.99999999")]
+        [InlineData("24:00")]
+        [InlineData("24:00:00")]
+        [InlineData("24:00:00.0")]
+        [InlineData("01:00PM")]
+        [InlineData("1:00PM")]
+        [InlineData("1PM")]
+        [InlineData("01:00 PM")]
+        [InlineData("1:00 PM")]
+        [InlineData("1 PM")]
+        public void ParseInvalidTime(string input)
+        {
+            var charSpan = input.AsSpan();
+            var byteSpan = Encoding.UTF8.GetBytes(input);
+
+            Assert.False(DateTimeParser.TryParseTimeOnly(charSpan, out var toValue, out var charsConsumed));
+            Assert.Equal(0, charsConsumed);
+            Assert.False(DateTimeParser.TryParseTimeOnly(byteSpan, out var utf8ToValue, out var bytesConsumed));
+            Assert.Equal(0, bytesConsumed);
+            TimeOnly defaultToValue = default;
+            Assert.Equal(defaultToValue, toValue);
+            Assert.Equal(defaultToValue, utf8ToValue);
+        }
+
+        [Theory]
+        [InlineData("00:00", 5)]
+        [InlineData("13:00", 5, 13)]
+        [InlineData("23:59", 5, 23, 59)]
+        [InlineData("23:59:00", 8, 23, 59)]
+        [InlineData("23:59:59", 8, 23, 59, 59)]
+        [InlineData("23:59:59.9", 10, 23, 59, 59, 9000000)]
+        [InlineData("23:59:59.98", 11, 23, 59, 59, 9800000)]
+        [InlineData("23:59:59.987", 12, 23, 59, 59, 9870000)]
+        [InlineData("23:59:59.9876", 13, 23, 59, 59, 9876000)]
+        [InlineData("23:59:59.98765", 14, 23, 59, 59, 9876500)]
+        [InlineData("23:59:59.987654", 15, 23, 59, 59, 9876540)]
+        [InlineData("23:59:59.9876543", 16, 23, 59, 59, 9876543)]
+        public void ParseValidTime(string input, int length, int hour = 0, int minute = 0, int second= 0, int fraction = 0)
+        {
+            var charSpan = input.AsSpan();
+            var byteSpan = Encoding.UTF8.GetBytes(input);
+
+            Assert.True(DateTimeParser.TryParseTimeOnly(charSpan, out var toValue, out var charsConsumed));
+            Assert.Equal(length, charsConsumed);
+            Assert.True(DateTimeParser.TryParseTimeOnly(byteSpan, out var utf8ToValue, out var bytesConsumed));
+            Assert.Equal(length, bytesConsumed);
+
+            AssertTimeOnly(toValue, hour, minute, second, fraction);
+            AssertTimeOnly(utf8ToValue, hour, minute, second, fraction);
+
+            Assert.Equal(toValue, utf8ToValue);
+        }
+
 
         /// <summary>
         ///     To make sure the fractions are properly parsed
@@ -239,6 +300,15 @@ namespace SpanJson.Tests
         {
             var comparison = new DateTime(year, month, day, hour, minute, second).AddTicks(fraction);
             Assert.Equal(comparison, dateTime);
+        }
+
+        private void AssertTimeOnly(TimeOnly timeOnly, int hour, int minute, int second, int fraction)
+        {
+            Assert.Equal(timeOnly.Hour, hour);
+            Assert.Equal(timeOnly.Minute, minute);
+            Assert.Equal(timeOnly.Second, second);
+            var comparison = new TimeOnly(hour, minute, second).Add(TimeSpan.FromTicks(fraction));
+            Assert.Equal(comparison, timeOnly);
         }
 
         [Fact]
