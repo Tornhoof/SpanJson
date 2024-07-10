@@ -117,11 +117,16 @@ namespace SpanJson.Tests
         [InlineData("2050-01-01", 10, 2050, 01, 01)]
         public void ParseDate(string input, int length, int year, int month, int day)
         {
-            Assert.True(DateTimeParser.TryParseDateTimeOffset(input.AsSpan(), out var dtoValue, out var dtoConsumed));
+            var charSpan = input.AsSpan();
+            var byteSpan = Encoding.UTF8.GetBytes(input);
+
+            Assert.True(DateTimeParser.TryParseDateTimeOffset(charSpan, out var dtoValue, out var dtoConsumed));
             Assert.Equal(length, input.Length);
             Assert.Equal(length, dtoConsumed);
-            Assert.True(DateTimeParser.TryParseDateTime(input.AsSpan(), out var dtValue, out var dtConsumed));
+            Assert.True(DateTimeParser.TryParseDateTime(charSpan, out var dtValue, out var dtConsumed));
             Assert.Equal(length, dtConsumed);
+            Assert.True(DateTimeParser.TryParseDateOnly(charSpan, out var doValue));
+            // DateOnly does not output how many bytes/chars were consumed because it only supports one format.
 
             Assert.Equal(year, dtoValue.Year);
             Assert.Equal(month, dtoValue.Month);
@@ -129,20 +134,25 @@ namespace SpanJson.Tests
             Assert.Equal(year, dtValue.Year);
             Assert.Equal(month, dtValue.Month);
             Assert.Equal(day, dtValue.Day);
+            Assert.Equal(year, doValue.Year);
+            Assert.Equal(month, doValue.Month);
+            Assert.Equal(day, doValue.Day);
 
-            Assert.True(DateTimeOffset.TryParseExact(input.AsSpan(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var bclDtoValue));
-            Assert.True(DateTime.TryParseExact(input.AsSpan(), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var bclDtValue));
+            Assert.True(DateTimeOffset.TryParseExact(charSpan, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var bclDtoValue));
+            Assert.True(DateTime.TryParseExact(charSpan, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var bclDtValue));
 
             Assert.Equal(bclDtValue, dtValue);
             Assert.Equal(bclDtoValue, dtoValue);
 
-            Assert.True(DateTimeParser.TryParseDateTimeOffset(Encoding.UTF8.GetBytes(input), out var utf8dtoValue, out _));
+            Assert.True(DateTimeParser.TryParseDateTimeOffset(byteSpan, out var utf8dtoValue, out _));
             Assert.Equal(length, input.Length);
             Assert.Equal(length, dtoConsumed);
-            Assert.True(DateTimeParser.TryParseDateTime(Encoding.UTF8.GetBytes(input), out var utf8dtValue, out _));
+            Assert.True(DateTimeParser.TryParseDateTime(byteSpan, out var utf8dtValue, out _));
+            Assert.True(DateTimeParser.TryParseDateOnly(byteSpan, out var utf8doValue));
 
             Assert.Equal(bclDtValue, utf8dtValue);
             Assert.Equal(bclDtoValue, utf8dtoValue);
+            Assert.Equal(doValue, utf8doValue);
         }
 
 
