@@ -48,7 +48,6 @@ namespace SpanJson.Shared.Fixture
             AddValueFixture(new DateOnlyFixture());
             AddValueFixture(new TimeOnlyFixture());
 
-
             AddValueFixture(new GuidValueFixture());
             AddValueFixture(new VersionFixture());
         }
