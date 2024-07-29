@@ -64,7 +64,7 @@ namespace SpanJson.Helpers
             }
 
             ref var c = ref MemoryMarshal.GetReference(output);
-            WriteFourDigits((uint) value.Year, ref c, 0);
+            WriteFourDigits((uint)value.Year, ref c, 0);
             Unsafe.Add(ref c, 4) = '-';
             WriteTwoDigits(value.Month, ref c, 5);
             Unsafe.Add(ref c, 7) = '-';
@@ -88,18 +88,22 @@ namespace SpanJson.Helpers
             WriteTwoDigits(value.Minute, ref c, 3);
             Unsafe.Add(ref c, 5) = ':';
             var ticksRemaining = value.Ticks % TimeSpan.TicksPerMinute;
-            if (ticksRemaining == 0) {
+            if (ticksRemaining == 0)
+            {
                 charsWritten = 5;
                 return true;
             }
-            WriteTwoDigits((int) (ticksRemaining / TimeSpan.TicksPerSecond), ref c, 6);
+
+            WriteTwoDigits((int)(ticksRemaining / TimeSpan.TicksPerSecond), ref c, 6);
             ticksRemaining %= TimeSpan.TicksPerSecond;
-            if (ticksRemaining == 0) {
+            if (ticksRemaining == 0)
+            {
                 charsWritten = 8;
                 return true;
             }
+
             Unsafe.Add(ref c, 8) = '.';
-            WriteDigits((uint) ticksRemaining, ref c, 9);
+            WriteDigits((uint)ticksRemaining, ref c, 9);
             charsWritten = 16;
             return true;
         }
@@ -107,7 +111,7 @@ namespace SpanJson.Helpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void WriteDateAndTime(DateTime value, ref char c, out int charsWritten)
         {
-            WriteFourDigits((uint) value.Year, ref c, 0);
+            WriteFourDigits((uint)value.Year, ref c, 0);
             Unsafe.Add(ref c, 4) = '-';
             WriteTwoDigits(value.Month, ref c, 5);
             Unsafe.Add(ref c, 7) = '-';
@@ -119,7 +123,7 @@ namespace SpanJson.Helpers
             Unsafe.Add(ref c, 16) = ':';
             WriteTwoDigits(value.Second, ref c, 17);
             charsWritten = 19;
-            var fraction = (uint) ((ulong) value.Ticks % TimeSpan.TicksPerSecond);
+            var fraction = (uint)((ulong)value.Ticks % TimeSpan.TicksPerSecond);
             if (fraction > 0)
             {
                 Unsafe.Add(ref c, 19) = '.';
@@ -154,17 +158,17 @@ namespace SpanJson.Helpers
         {
             var temp = '0' + value;
             value /= 10;
-            Unsafe.Add(ref c, startIndex + 3) = (char) (temp - value * 10);
+            Unsafe.Add(ref c, startIndex + 3) = (char)(temp - value * 10);
 
             temp = '0' + value;
             value /= 10;
-            Unsafe.Add(ref c, startIndex + 2) = (char) (temp - value * 10);
+            Unsafe.Add(ref c, startIndex + 2) = (char)(temp - value * 10);
 
             temp = '0' + value;
             value /= 10;
-            Unsafe.Add(ref c, startIndex + 1) = (char) (temp - value * 10);
+            Unsafe.Add(ref c, startIndex + 1) = (char)(temp - value * 10);
 
-            Unsafe.Add(ref c, startIndex) = (char) ('0' + value);
+            Unsafe.Add(ref c, startIndex) = (char)('0' + value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -172,8 +176,8 @@ namespace SpanJson.Helpers
         {
             var temp = '0' + value;
             value /= 10;
-            Unsafe.Add(ref c, startIndex + 1) = (char) (temp - value * 10);
-            Unsafe.Add(ref c, startIndex) = (char) ('0' + value);
+            Unsafe.Add(ref c, startIndex + 1) = (char)(temp - value * 10);
+            Unsafe.Add(ref c, startIndex) = (char)('0' + value);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -183,7 +187,7 @@ namespace SpanJson.Helpers
             {
                 ulong temp = '0' + value;
                 value /= 10;
-                Unsafe.Add(ref c, pos + i - 1) = (char) (temp - value * 10);
+                Unsafe.Add(ref c, pos + i - 1) = (char)(temp - value * 10);
             }
         }
     }

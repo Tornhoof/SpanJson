@@ -46,24 +46,32 @@ namespace SpanJson.Shared
         public static bool TrueEquals<T>(this T? a, T? b)
             where T : struct
         {
-            if (a is null) {
+            if (a is null)
+            {
                 return b is null;
             }
-            if (b is null) {
+
+            if (b is null)
+            {
                 return false;
             }
+
             return a.Value.Equals(b.Value);
         }
 
         public static bool TrueEquals<T>(this T a, T b)
             where T : class, IGenericEquality<T>
         {
-            if (a is null) {
+            if (a is null)
+            {
                 return b is null;
             }
-            if (b is null) {
+
+            if (b is null)
+            {
                 return false;
             }
+
             return ReferenceEquals(a, b) || a.Equals(b);
         }
 

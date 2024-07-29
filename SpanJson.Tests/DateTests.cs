@@ -125,8 +125,8 @@ namespace SpanJson.Tests
             Assert.Equal(length, dtoConsumed);
             Assert.True(DateTimeParser.TryParseDateTime(charSpan, out var dtValue, out var dtConsumed));
             Assert.Equal(length, dtConsumed);
-            Assert.True(DateTimeParser.TryParseDateOnly(charSpan, out var doValue));
-            // DateOnly does not output how many bytes/chars were consumed because it only supports one format.
+            Assert.True(DateTimeParser.TryParseDateOnly(charSpan, out var doValue, out var dateOnlyConsumed));
+            Assert.Equal(length, dateOnlyConsumed);
 
             Assert.Equal(year, dtoValue.Year);
             Assert.Equal(month, dtoValue.Month);
@@ -148,7 +148,7 @@ namespace SpanJson.Tests
             Assert.Equal(length, input.Length);
             Assert.Equal(length, dtoConsumed);
             Assert.True(DateTimeParser.TryParseDateTime(byteSpan, out var utf8dtValue, out _));
-            Assert.True(DateTimeParser.TryParseDateOnly(byteSpan, out var utf8doValue));
+            Assert.True(DateTimeParser.TryParseDateOnly(byteSpan, out var utf8doValue, out _));
 
             Assert.Equal(bclDtValue, utf8dtValue);
             Assert.Equal(bclDtoValue, utf8dtoValue);
@@ -291,6 +291,18 @@ namespace SpanJson.Tests
             Assert.True(DateTimeFormatter.TryFormat(dto, outputBytes, out written));
             Assert.True(DateTimeParser.TryParseDateTime(outputBytes, out outputdto, out consumed));
             Assert.Equal(dto, outputdto);
+            Assert.Equal(written, consumed);
+
+            var dateOnly = new DateOnly(dto.Year, dto.Month, dto.Day);
+            Assert.True(DateTimeFormatter.TryFormat(dateOnly, outputChars, out written));
+            Assert.True(DateTimeParser.TryParseDateOnly(outputChars, out var outputDateOnly, out consumed));
+            Assert.Equal(dateOnly, outputDateOnly);
+            Assert.Equal(written, consumed);
+
+            var timeOnly = new TimeOnly(dto.Hour, dto.Minute, dto.Second, dto.Millisecond);
+            Assert.True(DateTimeFormatter.TryFormat(timeOnly, outputChars, out written));
+            Assert.True(DateTimeParser.TryParseTimeOnly(outputChars, out var outputTimeOnly, out consumed));
+            Assert.Equal(timeOnly, outputTimeOnly);
             Assert.Equal(written, consumed);
         }
 
