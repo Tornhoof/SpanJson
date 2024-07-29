@@ -280,6 +280,40 @@ namespace SpanJson
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteDateOnly(DateOnly value)
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                WriteUtf16DateOnly(value);
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                WriteUtf8DateOnly(value);
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void WriteTimeOnly(TimeOnly value)
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                WriteUtf16TimeOnly(value);
+            }
+            else if (typeof(TSymbol) == typeof(byte))
+            {
+                WriteUtf8TimeOnly(value);
+            }
+            else
+            {
+                ThrowNotSupportedException();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteGuid(Guid value)
         {
             if (typeof(TSymbol) == typeof(char))

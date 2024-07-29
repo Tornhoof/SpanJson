@@ -157,6 +157,24 @@ namespace SpanJson.Tests
 
         [Theory]
         [InlineData("")]
+        [InlineData("2017-13-01")]
+        [InlineData("2017-12-32")]
+        public void ParseInvalidDate(string input)
+        {
+            var charSpan = input.AsSpan();
+            var byteSpan = Encoding.UTF8.GetBytes(input);
+
+            Assert.False(DateTimeParser.TryParseDateOnly(charSpan, out var toValue, out var charsConsumed));
+            Assert.Equal(0, charsConsumed);
+            Assert.False(DateTimeParser.TryParseDateOnly(byteSpan, out var utf8ToValue, out var bytesConsumed));
+            Assert.Equal(0, bytesConsumed);
+            DateOnly defaultToValue = default;
+            Assert.Equal(defaultToValue, toValue);
+            Assert.Equal(defaultToValue, utf8ToValue);
+        }
+
+        [Theory]
+        [InlineData("")]
         [InlineData("0")]
         [InlineData("12:")]
         [InlineData("12:5")]
@@ -295,13 +313,13 @@ namespace SpanJson.Tests
 
             var dateOnly = new DateOnly(dto.Year, dto.Month, dto.Day);
             Assert.True(DateTimeFormatter.TryFormat(dateOnly, outputChars, out written));
-            Assert.True(DateTimeParser.TryParseDateOnly(outputChars, out var outputDateOnly, out consumed));
+            Assert.True(DateTimeParser.TryParseDateOnly(outputChars.Slice(0, written), out var outputDateOnly, out consumed));
             Assert.Equal(dateOnly, outputDateOnly);
             Assert.Equal(written, consumed);
 
             var timeOnly = new TimeOnly(dto.Hour, dto.Minute, dto.Second, dto.Millisecond);
             Assert.True(DateTimeFormatter.TryFormat(timeOnly, outputChars, out written));
-            Assert.True(DateTimeParser.TryParseTimeOnly(outputChars, out var outputTimeOnly, out consumed));
+            Assert.True(DateTimeParser.TryParseTimeOnly(outputChars.Slice(0, written), out var outputTimeOnly, out consumed));
             Assert.Equal(timeOnly, outputTimeOnly);
             Assert.Equal(written, consumed);
         }

@@ -55,6 +55,12 @@ namespace SpanJson.Benchmarks
     private static readonly TimeSpan TimeSpanInput = ExpressionTreeFixture.Create<TimeSpan>();
     private static readonly byte[] TimeSpanInputUtf8 = JsonSerializer.Generic.Utf8.Serialize(TimeSpanInput);
     private static readonly string TimeSpanInputUtf16 = JsonSerializer.Generic.Utf16.Serialize(TimeSpanInput);
+    private static readonly DateOnly DateOnlyInput = ExpressionTreeFixture.Create<DateOnly>();
+    private static readonly byte[] DateOnlyInputUtf8 = JsonSerializer.Generic.Utf8.Serialize(DateOnlyInput);
+    private static readonly string DateOnlyInputUtf16 = JsonSerializer.Generic.Utf16.Serialize(DateOnlyInput);
+    private static readonly TimeOnly TimeOnlyInput = ExpressionTreeFixture.Create<TimeOnly>();
+    private static readonly byte[] TimeOnlyInputUtf8 = JsonSerializer.Generic.Utf8.Serialize(TimeOnlyInput);
+    private static readonly string TimeOnlyInputUtf16 = JsonSerializer.Generic.Utf16.Serialize(TimeOnlyInput);
     private static readonly Guid GuidInput = ExpressionTreeFixture.Create<Guid>();
     private static readonly byte[] GuidInputUtf8 = JsonSerializer.Generic.Utf8.Serialize(GuidInput);
     private static readonly string GuidInputUtf16 = JsonSerializer.Generic.Utf16.Serialize(GuidInput);
@@ -249,6 +255,30 @@ namespace SpanJson.Benchmarks
     {
         var reader = new JsonReader<Char>(TimeSpanInputUtf16);
         reader.ReadUtf16TimeSpan();
+    }
+    [Benchmark]
+    public void ReadUtf8DateOnly()
+    {
+        var reader = new JsonReader<Byte>(DateOnlyInputUtf8);
+        reader.ReadUtf8DateOnly();
+    }
+    [Benchmark]
+    public void ReadUtf16DateOnly()
+    {
+        var reader = new JsonReader<Char>(DateOnlyInputUtf16);
+        reader.ReadUtf16DateOnly();
+    }
+    [Benchmark]
+    public void ReadUtf8TimeOnly()
+    {
+        var reader = new JsonReader<Byte>(TimeOnlyInputUtf8);
+        reader.ReadUtf8TimeOnly();
+    }
+    [Benchmark]
+    public void ReadUtf16TimeOnly()
+    {
+        var reader = new JsonReader<Char>(TimeOnlyInputUtf16);
+        reader.ReadUtf16TimeOnly();
     }
     [Benchmark]
     public void ReadUtf8Guid()

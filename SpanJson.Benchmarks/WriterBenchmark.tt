@@ -1,4 +1,6 @@
 ﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="$(SolutionDir)\SpanJson.Shared\bin\Debug\netstandard2.0\SpanJson.Shared.dll" #>
+<#@ assembly name="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51"#>
 <#@ output extension=".cs" #>
 <#
     var bclTypes = new[]
@@ -18,8 +20,8 @@
         typeof(DateTime),
         typeof(DateTimeOffset),
         typeof(TimeSpan),
-        typeof(DateOnly),
-        typeof(TimeOnly),
+        typeof(SpanJson.Shared.Polyfills.DateOnly),
+        typeof(SpanJson.Shared.Polyfills.TimeOnly),
         typeof(Guid),
         typeof(string),
         typeof(decimal),

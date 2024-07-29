@@ -9511,6 +9511,1194 @@ namespace SpanJson.Formatters
             return list;
         }
     }
+    public sealed class DateOnlyUtf16Formatter : IJsonFormatter<DateOnly, Char>
+    {
+        public static readonly DateOnlyUtf16Formatter Default = new DateOnlyUtf16Formatter();
+
+        public void Serialize(ref JsonWriter<Char> writer, DateOnly value)
+        {
+            writer.WriteUtf16DateOnly(value);
+        }
+
+        public DateOnly Deserialize(ref JsonReader<Char> reader)
+        {
+            return reader.ReadUtf16DateOnly();
+        }
+    }
+    public sealed class NullableDateOnlyUtf16Formatter : IJsonFormatter<DateOnly?, Char>
+    {
+        public static readonly NullableDateOnlyUtf16Formatter Default = new NullableDateOnlyUtf16Formatter();
+        private static readonly DateOnlyUtf16Formatter ElementFormatter = DateOnlyUtf16Formatter.Default;
+        public void Serialize(ref JsonWriter<Char> writer, DateOnly? value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf16Null();
+                return;
+            }
+
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault());
+        }
+
+        public DateOnly? Deserialize(ref JsonReader<Char> reader)
+        {
+            if (reader.ReadUtf16IsNull())
+            {
+                return null;
+            }
+
+            return ElementFormatter.Deserialize(ref reader);
+        }
+    }
+
+    public sealed class NullableDateOnlyUtf16ArrayFormatter : IJsonFormatter<DateOnly?[], Char>
+    {
+        public static readonly NullableDateOnlyUtf16ArrayFormatter Default = new NullableDateOnlyUtf16ArrayFormatter();
+        private static readonly NullableDateOnlyUtf16Formatter ElementFormatter = NullableDateOnlyUtf16Formatter.Default;
+        public void Serialize(ref JsonWriter<Char> writer, DateOnly?[] value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf16Null();
+                return;
+            }
+            var valueLength = value.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, value[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, value[i]);
+                }
+            }
+
+            writer.WriteUtf16EndArray();
+        }
+
+        public DateOnly?[] Deserialize(ref JsonReader<Char> reader)
+        {
+            DateOnly?[] temp = null;
+            DateOnly?[] result;
+            try
+            {
+                if (reader.ReadUtf16IsNull())
+                {
+                    return null;
+                }
+                temp = ArrayPool<DateOnly?>.Shared.Rent(4);
+                reader.ReadUtf16BeginArrayOrThrow();
+                var count = 0;
+                while (!reader.TryReadUtf16IsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
+                {
+                    if (count == temp.Length)
+                    {
+                        FormatterUtils.GrowArray(ref temp);
+                    }
+
+                    temp[count - 1] = ElementFormatter.Deserialize(ref reader);
+                }
+
+                if (count == 0)
+                {
+                    result = Array.Empty<DateOnly?>();
+                }
+                else
+                {
+                    result = FormatterUtils.CopyArray(temp, count);
+                }
+            }
+            finally
+            {
+                if (temp != null)
+                {
+                    ArrayPool<DateOnly?>.Shared.Return(temp);
+                }
+            }
+
+            return result;
+        }
+    }
+
+    public sealed class NullableDateOnlyUtf16ListFormatter : IJsonFormatter<List<DateOnly?>, Char>
+    {
+        public static readonly NullableDateOnlyUtf16ListFormatter Default = new NullableDateOnlyUtf16ListFormatter();
+        private static readonly NullableDateOnlyUtf16Formatter ElementFormatter = NullableDateOnlyUtf16Formatter.Default;
+
+        public void Serialize(ref JsonWriter<Char> writer, List<DateOnly?> value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf16Null();
+                return;
+            }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<DateOnly?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
+            var valueLength = value.Count;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, value[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, value[i]);
+                }
+            }
+#endif
+            writer.WriteUtf16EndArray();
+        }
+
+        public List<DateOnly?> Deserialize(ref JsonReader<Char> reader)
+        {
+            if (reader.ReadUtf16IsNull())
+            {
+                return null;
+            }
+            reader.ReadUtf16BeginArrayOrThrow();
+            var list = new List<DateOnly?>();
+            var count = 0;
+            while (!reader.TryReadUtf16IsEndArrayOrValueSeparator(ref count))
+            {
+                list.Add(ElementFormatter.Deserialize(ref reader));
+            }
+
+            return list;
+        }
+    }
+
+    public sealed class DateOnlyUtf16ArrayFormatter : IJsonFormatter<DateOnly[], Char>
+    {
+        public static readonly DateOnlyUtf16ArrayFormatter Default = new DateOnlyUtf16ArrayFormatter();
+        private static readonly DateOnlyUtf16Formatter ElementFormatter = DateOnlyUtf16Formatter.Default;
+        public void Serialize(ref JsonWriter<Char> writer, DateOnly[] value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf16Null();
+                return;
+            }
+            var valueLength = value.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, value[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, value[i]);
+                }
+            }
+
+            writer.WriteUtf16EndArray();
+        }
+
+        public DateOnly[] Deserialize(ref JsonReader<Char> reader)
+        {
+            DateOnly[] temp = null;
+            DateOnly[] result;
+            try
+            {
+                if (reader.ReadUtf16IsNull())
+                {
+                    return null;
+                }
+                temp = ArrayPool<DateOnly>.Shared.Rent(4);
+                reader.ReadUtf16BeginArrayOrThrow();
+                var count = 0;
+                while (!reader.TryReadUtf16IsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
+                {
+                    if (count == temp.Length)
+                    {
+                        FormatterUtils.GrowArray(ref temp);
+                    }
+
+                    temp[count - 1] = ElementFormatter.Deserialize(ref reader);
+                }
+
+                if (count == 0)
+                {
+                    result = Array.Empty<DateOnly>();
+                }
+                else
+                {
+                    result = FormatterUtils.CopyArray(temp, count);
+                }
+            }
+            finally
+            {
+                if (temp != null)
+                {
+                    ArrayPool<DateOnly>.Shared.Return(temp);
+                }
+            }
+
+            return result;
+        }
+    }
+
+    public sealed class DateOnlyUtf16ListFormatter : IJsonFormatter<List<DateOnly>, Char>
+    {
+        public static readonly DateOnlyUtf16ListFormatter Default = new DateOnlyUtf16ListFormatter();
+        private static readonly DateOnlyUtf16Formatter ElementFormatter = DateOnlyUtf16Formatter.Default;
+
+        public void Serialize(ref JsonWriter<Char> writer, List<DateOnly> value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf16Null();
+                return;
+            }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<DateOnly>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
+            var valueLength = value.Count;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, value[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, value[i]);
+                }
+            }
+#endif
+            writer.WriteUtf16EndArray();
+        }
+
+        public List<DateOnly> Deserialize(ref JsonReader<Char> reader)
+        {
+            if (reader.ReadUtf16IsNull())
+            {
+                return null;
+            }
+            reader.ReadUtf16BeginArrayOrThrow();
+            var list = new List<DateOnly>();
+            var count = 0;
+            while (!reader.TryReadUtf16IsEndArrayOrValueSeparator(ref count))
+            {
+                list.Add(ElementFormatter.Deserialize(ref reader));
+            }
+
+            return list;
+        }
+    }
+    public sealed class DateOnlyUtf8Formatter : IJsonFormatter<DateOnly, Byte>
+    {
+        public static readonly DateOnlyUtf8Formatter Default = new DateOnlyUtf8Formatter();
+
+        public void Serialize(ref JsonWriter<Byte> writer, DateOnly value)
+        {
+            writer.WriteUtf8DateOnly(value);
+        }
+
+        public DateOnly Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf8DateOnly();
+        }
+    }
+    public sealed class NullableDateOnlyUtf8Formatter : IJsonFormatter<DateOnly?, Byte>
+    {
+        public static readonly NullableDateOnlyUtf8Formatter Default = new NullableDateOnlyUtf8Formatter();
+        private static readonly DateOnlyUtf8Formatter ElementFormatter = DateOnlyUtf8Formatter.Default;
+        public void Serialize(ref JsonWriter<Byte> writer, DateOnly? value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf8Null();
+                return;
+            }
+
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault());
+        }
+
+        public DateOnly? Deserialize(ref JsonReader<Byte> reader)
+        {
+            if (reader.ReadUtf8IsNull())
+            {
+                return null;
+            }
+
+            return ElementFormatter.Deserialize(ref reader);
+        }
+    }
+
+    public sealed class NullableDateOnlyUtf8ArrayFormatter : IJsonFormatter<DateOnly?[], Byte>
+    {
+        public static readonly NullableDateOnlyUtf8ArrayFormatter Default = new NullableDateOnlyUtf8ArrayFormatter();
+        private static readonly NullableDateOnlyUtf8Formatter ElementFormatter = NullableDateOnlyUtf8Formatter.Default;
+        public void Serialize(ref JsonWriter<Byte> writer, DateOnly?[] value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf8Null();
+                return;
+            }
+            var valueLength = value.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, value[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, value[i]);
+                }
+            }
+
+            writer.WriteUtf8EndArray();
+        }
+
+        public DateOnly?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            DateOnly?[] temp = null;
+            DateOnly?[] result;
+            try
+            {
+                if (reader.ReadUtf8IsNull())
+                {
+                    return null;
+                }
+                temp = ArrayPool<DateOnly?>.Shared.Rent(4);
+                reader.ReadUtf8BeginArrayOrThrow();
+                var count = 0;
+                while (!reader.TryReadUtf8IsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
+                {
+                    if (count == temp.Length)
+                    {
+                        FormatterUtils.GrowArray(ref temp);
+                    }
+
+                    temp[count - 1] = ElementFormatter.Deserialize(ref reader);
+                }
+
+                if (count == 0)
+                {
+                    result = Array.Empty<DateOnly?>();
+                }
+                else
+                {
+                    result = FormatterUtils.CopyArray(temp, count);
+                }
+            }
+            finally
+            {
+                if (temp != null)
+                {
+                    ArrayPool<DateOnly?>.Shared.Return(temp);
+                }
+            }
+
+            return result;
+        }
+    }
+
+    public sealed class NullableDateOnlyUtf8ListFormatter : IJsonFormatter<List<DateOnly?>, Byte>
+    {
+        public static readonly NullableDateOnlyUtf8ListFormatter Default = new NullableDateOnlyUtf8ListFormatter();
+        private static readonly NullableDateOnlyUtf8Formatter ElementFormatter = NullableDateOnlyUtf8Formatter.Default;
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<DateOnly?> value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf8Null();
+                return;
+            }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<DateOnly?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
+            var valueLength = value.Count;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, value[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, value[i]);
+                }
+            }
+#endif
+            writer.WriteUtf8EndArray();
+        }
+
+        public List<DateOnly?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            if (reader.ReadUtf8IsNull())
+            {
+                return null;
+            }
+            reader.ReadUtf8BeginArrayOrThrow();
+            var list = new List<DateOnly?>();
+            var count = 0;
+            while (!reader.TryReadUtf8IsEndArrayOrValueSeparator(ref count))
+            {
+                list.Add(ElementFormatter.Deserialize(ref reader));
+            }
+
+            return list;
+        }
+    }
+
+    public sealed class DateOnlyUtf8ArrayFormatter : IJsonFormatter<DateOnly[], Byte>
+    {
+        public static readonly DateOnlyUtf8ArrayFormatter Default = new DateOnlyUtf8ArrayFormatter();
+        private static readonly DateOnlyUtf8Formatter ElementFormatter = DateOnlyUtf8Formatter.Default;
+        public void Serialize(ref JsonWriter<Byte> writer, DateOnly[] value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf8Null();
+                return;
+            }
+            var valueLength = value.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, value[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, value[i]);
+                }
+            }
+
+            writer.WriteUtf8EndArray();
+        }
+
+        public DateOnly[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            DateOnly[] temp = null;
+            DateOnly[] result;
+            try
+            {
+                if (reader.ReadUtf8IsNull())
+                {
+                    return null;
+                }
+                temp = ArrayPool<DateOnly>.Shared.Rent(4);
+                reader.ReadUtf8BeginArrayOrThrow();
+                var count = 0;
+                while (!reader.TryReadUtf8IsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
+                {
+                    if (count == temp.Length)
+                    {
+                        FormatterUtils.GrowArray(ref temp);
+                    }
+
+                    temp[count - 1] = ElementFormatter.Deserialize(ref reader);
+                }
+
+                if (count == 0)
+                {
+                    result = Array.Empty<DateOnly>();
+                }
+                else
+                {
+                    result = FormatterUtils.CopyArray(temp, count);
+                }
+            }
+            finally
+            {
+                if (temp != null)
+                {
+                    ArrayPool<DateOnly>.Shared.Return(temp);
+                }
+            }
+
+            return result;
+        }
+    }
+
+    public sealed class DateOnlyUtf8ListFormatter : IJsonFormatter<List<DateOnly>, Byte>
+    {
+        public static readonly DateOnlyUtf8ListFormatter Default = new DateOnlyUtf8ListFormatter();
+        private static readonly DateOnlyUtf8Formatter ElementFormatter = DateOnlyUtf8Formatter.Default;
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<DateOnly> value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf8Null();
+                return;
+            }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<DateOnly>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
+            var valueLength = value.Count;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, value[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, value[i]);
+                }
+            }
+#endif
+            writer.WriteUtf8EndArray();
+        }
+
+        public List<DateOnly> Deserialize(ref JsonReader<Byte> reader)
+        {
+            if (reader.ReadUtf8IsNull())
+            {
+                return null;
+            }
+            reader.ReadUtf8BeginArrayOrThrow();
+            var list = new List<DateOnly>();
+            var count = 0;
+            while (!reader.TryReadUtf8IsEndArrayOrValueSeparator(ref count))
+            {
+                list.Add(ElementFormatter.Deserialize(ref reader));
+            }
+
+            return list;
+        }
+    }
+    public sealed class TimeOnlyUtf16Formatter : IJsonFormatter<TimeOnly, Char>
+    {
+        public static readonly TimeOnlyUtf16Formatter Default = new TimeOnlyUtf16Formatter();
+
+        public void Serialize(ref JsonWriter<Char> writer, TimeOnly value)
+        {
+            writer.WriteUtf16TimeOnly(value);
+        }
+
+        public TimeOnly Deserialize(ref JsonReader<Char> reader)
+        {
+            return reader.ReadUtf16TimeOnly();
+        }
+    }
+    public sealed class NullableTimeOnlyUtf16Formatter : IJsonFormatter<TimeOnly?, Char>
+    {
+        public static readonly NullableTimeOnlyUtf16Formatter Default = new NullableTimeOnlyUtf16Formatter();
+        private static readonly TimeOnlyUtf16Formatter ElementFormatter = TimeOnlyUtf16Formatter.Default;
+        public void Serialize(ref JsonWriter<Char> writer, TimeOnly? value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf16Null();
+                return;
+            }
+
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault());
+        }
+
+        public TimeOnly? Deserialize(ref JsonReader<Char> reader)
+        {
+            if (reader.ReadUtf16IsNull())
+            {
+                return null;
+            }
+
+            return ElementFormatter.Deserialize(ref reader);
+        }
+    }
+
+    public sealed class NullableTimeOnlyUtf16ArrayFormatter : IJsonFormatter<TimeOnly?[], Char>
+    {
+        public static readonly NullableTimeOnlyUtf16ArrayFormatter Default = new NullableTimeOnlyUtf16ArrayFormatter();
+        private static readonly NullableTimeOnlyUtf16Formatter ElementFormatter = NullableTimeOnlyUtf16Formatter.Default;
+        public void Serialize(ref JsonWriter<Char> writer, TimeOnly?[] value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf16Null();
+                return;
+            }
+            var valueLength = value.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, value[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, value[i]);
+                }
+            }
+
+            writer.WriteUtf16EndArray();
+        }
+
+        public TimeOnly?[] Deserialize(ref JsonReader<Char> reader)
+        {
+            TimeOnly?[] temp = null;
+            TimeOnly?[] result;
+            try
+            {
+                if (reader.ReadUtf16IsNull())
+                {
+                    return null;
+                }
+                temp = ArrayPool<TimeOnly?>.Shared.Rent(4);
+                reader.ReadUtf16BeginArrayOrThrow();
+                var count = 0;
+                while (!reader.TryReadUtf16IsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
+                {
+                    if (count == temp.Length)
+                    {
+                        FormatterUtils.GrowArray(ref temp);
+                    }
+
+                    temp[count - 1] = ElementFormatter.Deserialize(ref reader);
+                }
+
+                if (count == 0)
+                {
+                    result = Array.Empty<TimeOnly?>();
+                }
+                else
+                {
+                    result = FormatterUtils.CopyArray(temp, count);
+                }
+            }
+            finally
+            {
+                if (temp != null)
+                {
+                    ArrayPool<TimeOnly?>.Shared.Return(temp);
+                }
+            }
+
+            return result;
+        }
+    }
+
+    public sealed class NullableTimeOnlyUtf16ListFormatter : IJsonFormatter<List<TimeOnly?>, Char>
+    {
+        public static readonly NullableTimeOnlyUtf16ListFormatter Default = new NullableTimeOnlyUtf16ListFormatter();
+        private static readonly NullableTimeOnlyUtf16Formatter ElementFormatter = NullableTimeOnlyUtf16Formatter.Default;
+
+        public void Serialize(ref JsonWriter<Char> writer, List<TimeOnly?> value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf16Null();
+                return;
+            }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<TimeOnly?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
+            var valueLength = value.Count;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, value[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, value[i]);
+                }
+            }
+#endif
+            writer.WriteUtf16EndArray();
+        }
+
+        public List<TimeOnly?> Deserialize(ref JsonReader<Char> reader)
+        {
+            if (reader.ReadUtf16IsNull())
+            {
+                return null;
+            }
+            reader.ReadUtf16BeginArrayOrThrow();
+            var list = new List<TimeOnly?>();
+            var count = 0;
+            while (!reader.TryReadUtf16IsEndArrayOrValueSeparator(ref count))
+            {
+                list.Add(ElementFormatter.Deserialize(ref reader));
+            }
+
+            return list;
+        }
+    }
+
+    public sealed class TimeOnlyUtf16ArrayFormatter : IJsonFormatter<TimeOnly[], Char>
+    {
+        public static readonly TimeOnlyUtf16ArrayFormatter Default = new TimeOnlyUtf16ArrayFormatter();
+        private static readonly TimeOnlyUtf16Formatter ElementFormatter = TimeOnlyUtf16Formatter.Default;
+        public void Serialize(ref JsonWriter<Char> writer, TimeOnly[] value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf16Null();
+                return;
+            }
+            var valueLength = value.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, value[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, value[i]);
+                }
+            }
+
+            writer.WriteUtf16EndArray();
+        }
+
+        public TimeOnly[] Deserialize(ref JsonReader<Char> reader)
+        {
+            TimeOnly[] temp = null;
+            TimeOnly[] result;
+            try
+            {
+                if (reader.ReadUtf16IsNull())
+                {
+                    return null;
+                }
+                temp = ArrayPool<TimeOnly>.Shared.Rent(4);
+                reader.ReadUtf16BeginArrayOrThrow();
+                var count = 0;
+                while (!reader.TryReadUtf16IsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
+                {
+                    if (count == temp.Length)
+                    {
+                        FormatterUtils.GrowArray(ref temp);
+                    }
+
+                    temp[count - 1] = ElementFormatter.Deserialize(ref reader);
+                }
+
+                if (count == 0)
+                {
+                    result = Array.Empty<TimeOnly>();
+                }
+                else
+                {
+                    result = FormatterUtils.CopyArray(temp, count);
+                }
+            }
+            finally
+            {
+                if (temp != null)
+                {
+                    ArrayPool<TimeOnly>.Shared.Return(temp);
+                }
+            }
+
+            return result;
+        }
+    }
+
+    public sealed class TimeOnlyUtf16ListFormatter : IJsonFormatter<List<TimeOnly>, Char>
+    {
+        public static readonly TimeOnlyUtf16ListFormatter Default = new TimeOnlyUtf16ListFormatter();
+        private static readonly TimeOnlyUtf16Formatter ElementFormatter = TimeOnlyUtf16Formatter.Default;
+
+        public void Serialize(ref JsonWriter<Char> writer, List<TimeOnly> value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf16Null();
+                return;
+            }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<TimeOnly>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
+            var valueLength = value.Count;
+            writer.WriteUtf16BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, value[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf16ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, value[i]);
+                }
+            }
+#endif
+            writer.WriteUtf16EndArray();
+        }
+
+        public List<TimeOnly> Deserialize(ref JsonReader<Char> reader)
+        {
+            if (reader.ReadUtf16IsNull())
+            {
+                return null;
+            }
+            reader.ReadUtf16BeginArrayOrThrow();
+            var list = new List<TimeOnly>();
+            var count = 0;
+            while (!reader.TryReadUtf16IsEndArrayOrValueSeparator(ref count))
+            {
+                list.Add(ElementFormatter.Deserialize(ref reader));
+            }
+
+            return list;
+        }
+    }
+    public sealed class TimeOnlyUtf8Formatter : IJsonFormatter<TimeOnly, Byte>
+    {
+        public static readonly TimeOnlyUtf8Formatter Default = new TimeOnlyUtf8Formatter();
+
+        public void Serialize(ref JsonWriter<Byte> writer, TimeOnly value)
+        {
+            writer.WriteUtf8TimeOnly(value);
+        }
+
+        public TimeOnly Deserialize(ref JsonReader<Byte> reader)
+        {
+            return reader.ReadUtf8TimeOnly();
+        }
+    }
+    public sealed class NullableTimeOnlyUtf8Formatter : IJsonFormatter<TimeOnly?, Byte>
+    {
+        public static readonly NullableTimeOnlyUtf8Formatter Default = new NullableTimeOnlyUtf8Formatter();
+        private static readonly TimeOnlyUtf8Formatter ElementFormatter = TimeOnlyUtf8Formatter.Default;
+        public void Serialize(ref JsonWriter<Byte> writer, TimeOnly? value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf8Null();
+                return;
+            }
+
+            ElementFormatter.Serialize(ref writer, value.GetValueOrDefault());
+        }
+
+        public TimeOnly? Deserialize(ref JsonReader<Byte> reader)
+        {
+            if (reader.ReadUtf8IsNull())
+            {
+                return null;
+            }
+
+            return ElementFormatter.Deserialize(ref reader);
+        }
+    }
+
+    public sealed class NullableTimeOnlyUtf8ArrayFormatter : IJsonFormatter<TimeOnly?[], Byte>
+    {
+        public static readonly NullableTimeOnlyUtf8ArrayFormatter Default = new NullableTimeOnlyUtf8ArrayFormatter();
+        private static readonly NullableTimeOnlyUtf8Formatter ElementFormatter = NullableTimeOnlyUtf8Formatter.Default;
+        public void Serialize(ref JsonWriter<Byte> writer, TimeOnly?[] value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf8Null();
+                return;
+            }
+            var valueLength = value.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, value[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, value[i]);
+                }
+            }
+
+            writer.WriteUtf8EndArray();
+        }
+
+        public TimeOnly?[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            TimeOnly?[] temp = null;
+            TimeOnly?[] result;
+            try
+            {
+                if (reader.ReadUtf8IsNull())
+                {
+                    return null;
+                }
+                temp = ArrayPool<TimeOnly?>.Shared.Rent(4);
+                reader.ReadUtf8BeginArrayOrThrow();
+                var count = 0;
+                while (!reader.TryReadUtf8IsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
+                {
+                    if (count == temp.Length)
+                    {
+                        FormatterUtils.GrowArray(ref temp);
+                    }
+
+                    temp[count - 1] = ElementFormatter.Deserialize(ref reader);
+                }
+
+                if (count == 0)
+                {
+                    result = Array.Empty<TimeOnly?>();
+                }
+                else
+                {
+                    result = FormatterUtils.CopyArray(temp, count);
+                }
+            }
+            finally
+            {
+                if (temp != null)
+                {
+                    ArrayPool<TimeOnly?>.Shared.Return(temp);
+                }
+            }
+
+            return result;
+        }
+    }
+
+    public sealed class NullableTimeOnlyUtf8ListFormatter : IJsonFormatter<List<TimeOnly?>, Byte>
+    {
+        public static readonly NullableTimeOnlyUtf8ListFormatter Default = new NullableTimeOnlyUtf8ListFormatter();
+        private static readonly NullableTimeOnlyUtf8Formatter ElementFormatter = NullableTimeOnlyUtf8Formatter.Default;
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<TimeOnly?> value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf8Null();
+                return;
+            }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<TimeOnly?>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
+            var valueLength = value.Count;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, value[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, value[i]);
+                }
+            }
+#endif
+            writer.WriteUtf8EndArray();
+        }
+
+        public List<TimeOnly?> Deserialize(ref JsonReader<Byte> reader)
+        {
+            if (reader.ReadUtf8IsNull())
+            {
+                return null;
+            }
+            reader.ReadUtf8BeginArrayOrThrow();
+            var list = new List<TimeOnly?>();
+            var count = 0;
+            while (!reader.TryReadUtf8IsEndArrayOrValueSeparator(ref count))
+            {
+                list.Add(ElementFormatter.Deserialize(ref reader));
+            }
+
+            return list;
+        }
+    }
+
+    public sealed class TimeOnlyUtf8ArrayFormatter : IJsonFormatter<TimeOnly[], Byte>
+    {
+        public static readonly TimeOnlyUtf8ArrayFormatter Default = new TimeOnlyUtf8ArrayFormatter();
+        private static readonly TimeOnlyUtf8Formatter ElementFormatter = TimeOnlyUtf8Formatter.Default;
+        public void Serialize(ref JsonWriter<Byte> writer, TimeOnly[] value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf8Null();
+                return;
+            }
+            var valueLength = value.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, value[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, value[i]);
+                }
+            }
+
+            writer.WriteUtf8EndArray();
+        }
+
+        public TimeOnly[] Deserialize(ref JsonReader<Byte> reader)
+        {
+            TimeOnly[] temp = null;
+            TimeOnly[] result;
+            try
+            {
+                if (reader.ReadUtf8IsNull())
+                {
+                    return null;
+                }
+                temp = ArrayPool<TimeOnly>.Shared.Rent(4);
+                reader.ReadUtf8BeginArrayOrThrow();
+                var count = 0;
+                while (!reader.TryReadUtf8IsEndArrayOrValueSeparator(ref count)) // count is already preincremented, as it counts the separators
+                {
+                    if (count == temp.Length)
+                    {
+                        FormatterUtils.GrowArray(ref temp);
+                    }
+
+                    temp[count - 1] = ElementFormatter.Deserialize(ref reader);
+                }
+
+                if (count == 0)
+                {
+                    result = Array.Empty<TimeOnly>();
+                }
+                else
+                {
+                    result = FormatterUtils.CopyArray(temp, count);
+                }
+            }
+            finally
+            {
+                if (temp != null)
+                {
+                    ArrayPool<TimeOnly>.Shared.Return(temp);
+                }
+            }
+
+            return result;
+        }
+    }
+
+    public sealed class TimeOnlyUtf8ListFormatter : IJsonFormatter<List<TimeOnly>, Byte>
+    {
+        public static readonly TimeOnlyUtf8ListFormatter Default = new TimeOnlyUtf8ListFormatter();
+        private static readonly TimeOnlyUtf8Formatter ElementFormatter = TimeOnlyUtf8Formatter.Default;
+
+        public void Serialize(ref JsonWriter<Byte> writer, List<TimeOnly> value)
+        {
+            if (value is null)
+            {
+                writer.WriteUtf8Null();
+                return;
+            }
+#if NET5_0_OR_GREATER
+            var span = System.Runtime.InteropServices.CollectionsMarshal.AsSpan<TimeOnly>(value);
+            var valueLength = span.Length;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, span[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, span[i]);
+                }
+            }            
+#else
+            var valueLength = value.Count;
+            writer.WriteUtf8BeginArray();
+            if (valueLength > 0)
+            {
+                ElementFormatter.Serialize(ref writer, value[0]);
+                for (var i = 1; i < valueLength; i++)
+                {
+                    writer.WriteUtf8ValueSeparator();
+                    ElementFormatter.Serialize(ref writer, value[i]);
+                }
+            }
+#endif
+            writer.WriteUtf8EndArray();
+        }
+
+        public List<TimeOnly> Deserialize(ref JsonReader<Byte> reader)
+        {
+            if (reader.ReadUtf8IsNull())
+            {
+                return null;
+            }
+            reader.ReadUtf8BeginArrayOrThrow();
+            var list = new List<TimeOnly>();
+            var count = 0;
+            while (!reader.TryReadUtf8IsEndArrayOrValueSeparator(ref count))
+            {
+                list.Add(ElementFormatter.Deserialize(ref reader));
+            }
+
+            return list;
+        }
+    }
     public sealed class GuidUtf16Formatter : IJsonFormatter<Guid, Char>
     {
         public static readonly GuidUtf16Formatter Default = new GuidUtf16Formatter();

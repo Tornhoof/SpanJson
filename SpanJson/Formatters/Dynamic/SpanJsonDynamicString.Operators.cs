@@ -13,11 +13,11 @@ namespace SpanJson.Formatters.Dynamic
             }
             throw new InvalidCastException();
         }
-	    public static explicit operator Char?(SpanJsonDynamicString<TSymbol> input)
+        public static explicit operator Char?(SpanJsonDynamicString<TSymbol> input)
         {
             if (DynamicConverter.TryConvertTo(typeof(Char?), input.Symbols, out var value))
             {
-				return (Char?) value;
+                return (Char?) value;
             }
             throw new InvalidCastException();
         }
@@ -29,11 +29,11 @@ namespace SpanJson.Formatters.Dynamic
             }
             throw new InvalidCastException();
         }
-	    public static explicit operator DateTime?(SpanJsonDynamicString<TSymbol> input)
+        public static explicit operator DateTime?(SpanJsonDynamicString<TSymbol> input)
         {
             if (DynamicConverter.TryConvertTo(typeof(DateTime?), input.Symbols, out var value))
             {
-				return (DateTime?) value;
+                return (DateTime?) value;
             }
             throw new InvalidCastException();
         }
@@ -45,11 +45,11 @@ namespace SpanJson.Formatters.Dynamic
             }
             throw new InvalidCastException();
         }
-	    public static explicit operator DateTimeOffset?(SpanJsonDynamicString<TSymbol> input)
+        public static explicit operator DateTimeOffset?(SpanJsonDynamicString<TSymbol> input)
         {
             if (DynamicConverter.TryConvertTo(typeof(DateTimeOffset?), input.Symbols, out var value))
             {
-				return (DateTimeOffset?) value;
+                return (DateTimeOffset?) value;
             }
             throw new InvalidCastException();
         }
@@ -61,11 +61,43 @@ namespace SpanJson.Formatters.Dynamic
             }
             throw new InvalidCastException();
         }
-	    public static explicit operator TimeSpan?(SpanJsonDynamicString<TSymbol> input)
+        public static explicit operator TimeSpan?(SpanJsonDynamicString<TSymbol> input)
         {
             if (DynamicConverter.TryConvertTo(typeof(TimeSpan?), input.Symbols, out var value))
             {
-				return (TimeSpan?) value;
+                return (TimeSpan?) value;
+            }
+            throw new InvalidCastException();
+        }
+        public static explicit operator DateOnly(SpanJsonDynamicString<TSymbol> input)
+        {
+            if (DynamicConverter.TryConvertTo(typeof(DateOnly), input.Symbols, out var value))
+            {
+                return (DateOnly) value;
+            }
+            throw new InvalidCastException();
+        }
+        public static explicit operator DateOnly?(SpanJsonDynamicString<TSymbol> input)
+        {
+            if (DynamicConverter.TryConvertTo(typeof(DateOnly?), input.Symbols, out var value))
+            {
+                return (DateOnly?) value;
+            }
+            throw new InvalidCastException();
+        }
+        public static explicit operator TimeOnly(SpanJsonDynamicString<TSymbol> input)
+        {
+            if (DynamicConverter.TryConvertTo(typeof(TimeOnly), input.Symbols, out var value))
+            {
+                return (TimeOnly) value;
+            }
+            throw new InvalidCastException();
+        }
+        public static explicit operator TimeOnly?(SpanJsonDynamicString<TSymbol> input)
+        {
+            if (DynamicConverter.TryConvertTo(typeof(TimeOnly?), input.Symbols, out var value))
+            {
+                return (TimeOnly?) value;
             }
             throw new InvalidCastException();
         }
@@ -77,11 +109,11 @@ namespace SpanJson.Formatters.Dynamic
             }
             throw new InvalidCastException();
         }
-	    public static explicit operator Guid?(SpanJsonDynamicString<TSymbol> input)
+        public static explicit operator Guid?(SpanJsonDynamicString<TSymbol> input)
         {
             if (DynamicConverter.TryConvertTo(typeof(Guid?), input.Symbols, out var value))
             {
-				return (Guid?) value;
+                return (Guid?) value;
             }
             throw new InvalidCastException();
         }

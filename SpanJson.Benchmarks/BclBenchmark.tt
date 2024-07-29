@@ -2,6 +2,8 @@
 <#@ output extension=".cs" #>
 <#@ assembly name="System.Linq" #>
 <#@ assembly name="System.Core" #>
+<#@ assembly name="$(SolutionDir)\SpanJson.Shared\bin\Debug\netstandard2.0\SpanJson.Shared.dll" #>
+<#@ assembly name="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51"#>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Reflection" #>
@@ -31,8 +33,8 @@
         typeof(DateTime),
         typeof(DateTimeOffset),
         typeof(TimeSpan),
-        typeof(DateOnly),
-        typeof(TimeOnly),
+        typeof(SpanJson.Shared.Polyfills.DateOnly),
+        typeof(SpanJson.Shared.Polyfills.TimeOnly),
         typeof(Guid),
         typeof(string),
         typeof(decimal),

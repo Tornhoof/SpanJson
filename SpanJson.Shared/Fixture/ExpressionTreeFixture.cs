@@ -11,9 +11,9 @@ namespace SpanJson.Shared.Fixture
     {
         private readonly int? _seed;
 
-        private readonly ConcurrentDictionary<Type, Func<int, int, object>> _functorCache = new();
+        private readonly ConcurrentDictionary<Type, Func<int, int, object>> _functorCache = new ConcurrentDictionary<Type, Func<int, int, object>>();
 
-        private readonly Dictionary<Type, IValueFixture> _valueFixtures = new();
+        private readonly Dictionary<Type, IValueFixture> _valueFixtures = new Dictionary<Type, IValueFixture>();
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void AddValueFixture<T>(T valueFixture) where T : IValueFixture
         {
@@ -45,9 +45,10 @@ namespace SpanJson.Shared.Fixture
             AddValueFixture(new DateTimeOffsetValueFixture());
             AddValueFixture(new DateTimeValueFixture());
             AddValueFixture(new TimespanFixture());
+#if NET6_0_OR_GREATER
             AddValueFixture(new DateOnlyFixture());
             AddValueFixture(new TimeOnlyFixture());
-
+#endif
             AddValueFixture(new GuidValueFixture());
             AddValueFixture(new VersionFixture());
         }
