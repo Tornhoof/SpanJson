@@ -25,6 +25,8 @@ namespace SpanJson.Benchmarks
     private static readonly DateTime DateTimeInput = ExpressionTreeFixture.Create<DateTime>();
     private static readonly DateTimeOffset DateTimeOffsetInput = ExpressionTreeFixture.Create<DateTimeOffset>();
     private static readonly TimeSpan TimeSpanInput = ExpressionTreeFixture.Create<TimeSpan>();
+    private static readonly DateOnly DateOnlyInput = ExpressionTreeFixture.Create<DateOnly>();
+    private static readonly TimeOnly TimeOnlyInput = ExpressionTreeFixture.Create<TimeOnly>();
     private static readonly Guid GuidInput = ExpressionTreeFixture.Create<Guid>();
     private static readonly String StringInput = ExpressionTreeFixture.Create<String>();
     private static readonly Decimal DecimalInput = ExpressionTreeFixture.Create<Decimal>();
@@ -209,6 +211,30 @@ namespace SpanJson.Benchmarks
     {
         var writer = new JsonWriter<Char>(32);
         writer.WriteUtf16TimeSpan(TimeSpanInput);
+    }
+    [Benchmark]
+    public void WriteUtf8DateOnly()
+    {
+        var writer = new JsonWriter<Byte>(32);
+        writer.WriteUtf8DateOnly(DateOnlyInput);
+    }
+    [Benchmark]
+    public void WriteUtf16DateOnly()
+    {
+        var writer = new JsonWriter<Char>(32);
+        writer.WriteUtf16DateOnly(DateOnlyInput);
+    }
+    [Benchmark]
+    public void WriteUtf8TimeOnly()
+    {
+        var writer = new JsonWriter<Byte>(32);
+        writer.WriteUtf8TimeOnly(TimeOnlyInput);
+    }
+    [Benchmark]
+    public void WriteUtf16TimeOnly()
+    {
+        var writer = new JsonWriter<Char>(32);
+        writer.WriteUtf16TimeOnly(TimeOnlyInput);
     }
     [Benchmark]
     public void WriteUtf8Guid()

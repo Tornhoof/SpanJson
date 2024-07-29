@@ -1042,6 +1042,144 @@ namespace SpanJson.Tests.Generated
     public partial class TimeSpanArrayTests : ArrayTestBase<TimeSpan>
     {
     }
+    public partial class NullableDateOnlyListTests : NullableListTestBase<DateOnly>
+    {
+    }
+
+    public partial class NullableDateOnlyArrayTests : NullableArrayTestBase<DateOnly>
+    {
+    }
+    public partial class DateOnlyTests : StructTestBase<DateOnly>
+    {
+
+        [Fact]
+        public void PrimitiveWrapperUtf8()
+        {
+            var value = Fixture.Create<DateOnly>();
+            var writer = new JsonWriter<byte>();
+            writer.WriteDateOnly(value);
+            var output = writer.ToByteArray();
+
+            var reader = new JsonReader<byte>(output);
+            var deserialized = reader.ReadDateOnly();
+            Assert.Equal(value, deserialized);
+        }
+
+        [Fact]
+        public void PrimitiveWrapperUtf16()
+        {
+            var value = Fixture.Create<DateOnly>();
+            var writer = new JsonWriter<char>();
+            writer.WriteDateOnly(value);
+            var output = writer.ToString();
+
+            var reader = new JsonReader<char>(output);
+            var deserialized = reader.ReadDateOnly();
+            Assert.Equal(value, deserialized);
+        }
+
+        [Fact]
+        public void EscapedUtf8()
+        {
+            var value = Fixture.Create<DateOnly>();
+            var writer = new JsonWriter<byte>();
+            writer.WriteDateOnly(value);
+            var output = writer.ToByteArray();
+            output = EscapeMore(output);
+            var reader = new JsonReader<byte>(output);
+            var deserialized = reader.ReadDateOnly();
+            Assert.Equal(value, deserialized);
+        }
+
+        [Fact]
+        public void EscapedUtf16()
+        {
+            var value = Fixture.Create<DateOnly>();
+            var writer = new JsonWriter<char>();
+            writer.WriteDateOnly(value);
+            var output = writer.ToString();
+            output = EscapeMore(output);
+            var reader = new JsonReader<char>(output);
+            var deserialized = reader.ReadDateOnly();
+            Assert.Equal(value, deserialized);
+        }
+    }
+    public partial class DateOnlyListTests : ListTestBase<DateOnly>
+    {
+    }
+
+    public partial class DateOnlyArrayTests : ArrayTestBase<DateOnly>
+    {
+    }
+    public partial class NullableTimeOnlyListTests : NullableListTestBase<TimeOnly>
+    {
+    }
+
+    public partial class NullableTimeOnlyArrayTests : NullableArrayTestBase<TimeOnly>
+    {
+    }
+    public partial class TimeOnlyTests : StructTestBase<TimeOnly>
+    {
+
+        [Fact]
+        public void PrimitiveWrapperUtf8()
+        {
+            var value = Fixture.Create<TimeOnly>();
+            var writer = new JsonWriter<byte>();
+            writer.WriteTimeOnly(value);
+            var output = writer.ToByteArray();
+
+            var reader = new JsonReader<byte>(output);
+            var deserialized = reader.ReadTimeOnly();
+            Assert.Equal(value, deserialized);
+        }
+
+        [Fact]
+        public void PrimitiveWrapperUtf16()
+        {
+            var value = Fixture.Create<TimeOnly>();
+            var writer = new JsonWriter<char>();
+            writer.WriteTimeOnly(value);
+            var output = writer.ToString();
+
+            var reader = new JsonReader<char>(output);
+            var deserialized = reader.ReadTimeOnly();
+            Assert.Equal(value, deserialized);
+        }
+
+        [Fact]
+        public void EscapedUtf8()
+        {
+            var value = Fixture.Create<TimeOnly>();
+            var writer = new JsonWriter<byte>();
+            writer.WriteTimeOnly(value);
+            var output = writer.ToByteArray();
+            output = EscapeMore(output);
+            var reader = new JsonReader<byte>(output);
+            var deserialized = reader.ReadTimeOnly();
+            Assert.Equal(value, deserialized);
+        }
+
+        [Fact]
+        public void EscapedUtf16()
+        {
+            var value = Fixture.Create<TimeOnly>();
+            var writer = new JsonWriter<char>();
+            writer.WriteTimeOnly(value);
+            var output = writer.ToString();
+            output = EscapeMore(output);
+            var reader = new JsonReader<char>(output);
+            var deserialized = reader.ReadTimeOnly();
+            Assert.Equal(value, deserialized);
+        }
+    }
+    public partial class TimeOnlyListTests : ListTestBase<TimeOnly>
+    {
+    }
+
+    public partial class TimeOnlyArrayTests : ArrayTestBase<TimeOnly>
+    {
+    }
     public partial class NullableGuidListTests : NullableListTestBase<Guid>
     {
     }

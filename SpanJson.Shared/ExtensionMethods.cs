@@ -46,24 +46,32 @@ namespace SpanJson.Shared
         public static bool TrueEquals<T>(this T? a, T? b)
             where T : struct
         {
-            if (a is null) {
+            if (a is null)
+            {
                 return b is null;
             }
-            if (b is null) {
+
+            if (b is null)
+            {
                 return false;
             }
+
             return a.Value.Equals(b.Value);
         }
 
         public static bool TrueEquals<T>(this T a, T b)
             where T : class, IGenericEquality<T>
         {
-            if (a is null) {
+            if (a is null)
+            {
                 return b is null;
             }
-            if (b is null) {
+
+            if (b is null)
+            {
                 return false;
             }
+
             return ReferenceEquals(a, b) || a.Equals(b);
         }
 
@@ -96,42 +104,46 @@ namespace SpanJson.Shared
                 return true;
             }
 
-            using var e1 = a.GetEnumerator();
-            using var e2 = b.GetEnumerator();
-            while (true)
+            using (var e1 = a.GetEnumerator())
             {
-                var e1Next = e1.MoveNext();
-                var e2Next = e2.MoveNext();
-                if (e1Next != e2Next)
+                using (var e2 = b.GetEnumerator())
                 {
-                    return false;
-                }
+                    while (true)
+                    {
+                        var e1Next = e1.MoveNext();
+                        var e2Next = e2.MoveNext();
+                        if (e1Next != e2Next)
+                        {
+                            return false;
+                        }
 
-                if (!e1Next && !e2Next)
-                {
-                    break;
-                }
+                        if (!e1Next && !e2Next)
+                        {
+                            break;
+                        }
 
-                var c1 = e1.Current;
-                var c2 = e2.Current;
+                        var c1 = e1.Current;
+                        var c2 = e2.Current;
 
-                if (c1 is null && c2 is not null)
-                {
-                    return false;
-                }
+                        if (c1 is null && !(c2 is null))
+                        {
+                            return false;
+                        }
 
-                if (c2 is null && c1 is not null)
-                {
-                    return false;
-                }
+                        if (c2 is null && !(c1 is null))
+                        {
+                            return false;
+                        }
 
-                if (!c1.EqualsDynamic(c2))
-                {
-                    return false;
+                        if (!c1.EqualsDynamic(c2))
+                        {
+                            return false;
+                        }
+                    }
+
+                    return true;
                 }
             }
-
-            return true;
         }
 
         public static bool IsTypedList(this Type type)

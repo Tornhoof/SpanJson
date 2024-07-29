@@ -14,12 +14,12 @@ namespace SpanJson
             {
                 return ReadUtf16SByte();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8SByte();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }
@@ -31,12 +31,12 @@ namespace SpanJson
             {
                 return ReadUtf16Int16();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8Int16();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }
@@ -48,12 +48,12 @@ namespace SpanJson
             {
                 return ReadUtf16Int32();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8Int32();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }
@@ -65,12 +65,12 @@ namespace SpanJson
             {
                 return ReadUtf16Int64();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8Int64();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }
@@ -82,12 +82,12 @@ namespace SpanJson
             {
                 return ReadUtf16Byte();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8Byte();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }
@@ -99,12 +99,12 @@ namespace SpanJson
             {
                 return ReadUtf16UInt16();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8UInt16();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }
@@ -116,12 +116,12 @@ namespace SpanJson
             {
                 return ReadUtf16UInt32();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8UInt32();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }
@@ -133,12 +133,12 @@ namespace SpanJson
             {
                 return ReadUtf16UInt64();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8UInt64();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }
@@ -150,12 +150,12 @@ namespace SpanJson
             {
                 return ReadUtf16Single();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8Single();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }
@@ -167,12 +167,12 @@ namespace SpanJson
             {
                 return ReadUtf16Double();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8Double();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }
@@ -184,12 +184,12 @@ namespace SpanJson
             {
                 return ReadUtf16Decimal();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8Decimal();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }
@@ -201,12 +201,12 @@ namespace SpanJson
             {
                 return ReadUtf16Boolean();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8Boolean();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }
@@ -218,12 +218,12 @@ namespace SpanJson
             {
                 return ReadUtf16Char();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8Char();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }
@@ -235,12 +235,12 @@ namespace SpanJson
             {
                 return ReadUtf16DateTime();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8DateTime();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }
@@ -252,12 +252,12 @@ namespace SpanJson
             {
                 return ReadUtf16DateTimeOffset();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8DateTimeOffset();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }
@@ -269,12 +269,46 @@ namespace SpanJson
             {
                 return ReadUtf16TimeSpan();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8TimeSpan();
             }
-	    
+
+            ThrowNotSupportedException();
+            return default;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public DateOnly ReadDateOnly()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return ReadUtf16DateOnly();
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                return ReadUtf8DateOnly();
+            }
+
+            ThrowNotSupportedException();
+            return default;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public TimeOnly ReadTimeOnly()
+        {
+            if (typeof(TSymbol) == typeof(char))
+            {
+                return ReadUtf16TimeOnly();
+            }
+
+            if (typeof(TSymbol) == typeof(byte))
+            {
+                return ReadUtf8TimeOnly();
+            }
+
             ThrowNotSupportedException();
             return default;
         }
@@ -286,12 +320,12 @@ namespace SpanJson
             {
                 return ReadUtf16Guid();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8Guid();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }
@@ -303,12 +337,12 @@ namespace SpanJson
             {
                 return ReadUtf16String();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8String();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }
@@ -320,12 +354,12 @@ namespace SpanJson
             {
                 return ReadUtf16Version();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8Version();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }
@@ -337,12 +371,12 @@ namespace SpanJson
             {
                 return ReadUtf16Uri();
             }
-	    
+
             if (typeof(TSymbol) == typeof(byte))
             {
                 return ReadUtf8Uri();
             }
-	    
+
             ThrowNotSupportedException();
             return default;
         }

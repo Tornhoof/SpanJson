@@ -2,6 +2,7 @@ using System;
 
 namespace SpanJson.Shared.Fixture
 {
+#if NET6_0_OR_GREATER
     public class DateOnlyFixture : IValueFixture
     {
         private DateOnly _lastValue = DateOnly.MinValue;
@@ -13,4 +14,5 @@ namespace SpanJson.Shared.Fixture
             return _lastValue;
         }
     }
+#endif
 }

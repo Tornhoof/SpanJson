@@ -69,11 +69,12 @@ namespace SpanJson.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryParseDateOnly(ReadOnlySpan<byte> source, out DateOnly value)
+        public static bool TryParseDateOnly(ReadOnlySpan<byte> source, out DateOnly value, out int bytesConsumed)
         {
             if (source.Length != 10 || source[4] != (byte) '-' || source[7] != (byte) '-')
             {
                 value = default;
+                bytesConsumed = 0;
                 return false;
             }
 
@@ -87,6 +88,7 @@ namespace SpanJson.Helpers
                 if (digit1 > 9 || digit2 > 9 || digit3 > 9 || digit4 > 9)
                 {
                     value = default;
+                    bytesConsumed = 0;
                     return false;
                 }
 
@@ -101,6 +103,7 @@ namespace SpanJson.Helpers
                 if (digit1 > 2 || digit2 > 9 || digit1 == 1 && digit2 > 2)
                 {
                     value = default;
+                    bytesConsumed = 0;
                     return false;
                 }
 
@@ -115,6 +118,7 @@ namespace SpanJson.Helpers
                 if (digit1 > 3 || digit2 > 9 || digit1 == 3 && digit2 > 1)
                 {
                     value = default;
+                    bytesConsumed = 0;
                     return false;
                 }
 
@@ -122,6 +126,7 @@ namespace SpanJson.Helpers
             }
 
             value = new DateOnly(year, month, day);
+            bytesConsumed = 10;
             return true;
         }
 

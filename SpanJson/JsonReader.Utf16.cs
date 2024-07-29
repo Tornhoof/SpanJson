@@ -361,7 +361,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private DateOnly ParseUtf16DateOnly(in ReadOnlySpan<char> span)
         {
-            if (DateTimeParser.TryParseDateOnly(span, out var value))
+            if (DateTimeParser.TryParseDateOnly(span, out var value, out var charsConsumed) && span.Length == charsConsumed)
             {
                 return value;
             }
@@ -376,7 +376,7 @@ namespace SpanJson
         {
             Span<char> span = stackalloc char[JsonSharedConstant.MaxDateOnlyLength];
             UnescapeUtf16Chars(input, ref span);
-            if (DateTimeParser.TryParseDateOnly(span, out var value))
+            if (DateTimeParser.TryParseDateOnly(span, out var value, out var charsConsumed) && span.Length == charsConsumed)
             {
                 return value;
             }
