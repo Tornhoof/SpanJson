@@ -68,6 +68,175 @@ namespace SpanJson.Helpers
             return false;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryParseDateOnly(ReadOnlySpan<byte> source, out DateOnly value)
+        {
+            if (source.Length != 10 || source[4] != (byte) '-' || source[7] != (byte) '-')
+            {
+                value = default;
+                return false;
+            }
+
+            int year;
+            {
+                var digit1 = source[0] - 48U; // '0' (this makes it uint)
+                var digit2 = source[1] - 48U;
+                var digit3 = source[2] - 48U;
+                var digit4 = source[3] - 48U;
+
+                if (digit1 > 9 || digit2 > 9 || digit3 > 9 || digit4 > 9)
+                {
+                    value = default;
+                    return false;
+                }
+
+                year = (int) (digit1 * 1000 + digit2 * 100 + digit3 * 10 + digit4);
+            }
+
+            int month;
+            {
+                var digit1 = source[5] - 48U;
+                var digit2 = source[6] - 48U;
+
+                if (digit1 > 2 || digit2 > 9 || digit1 == 1 && digit2 > 2)
+                {
+                    value = default;
+                    return false;
+                }
+
+                month = (int) (digit1 * 10 + digit2);
+            }
+
+            int day;
+            {
+                var digit1 = source[8] - 48U;
+                var digit2 = source[9] - 48U;
+
+                if (digit1 > 3 || digit2 > 9 || digit1 == 3 && digit2 > 1)
+                {
+                    value = default;
+                    return false;
+                }
+
+                day = (int) (digit1 * 10 + digit2);
+            }
+
+            value = new DateOnly(year, month, day);
+            return true;
+        }
+
+        // <summary>
+        // Supports the formats:
+        // 23:59
+        // 23:59:59
+        // 23:59:59.9
+        // 23:59:59.9999999
+        // </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryParseTimeOnly(ReadOnlySpan<byte> source, out TimeOnly value, out int bytesConsumed)
+        {
+            var ticks = 0L;
+            switch (source.Length) {
+                case < 5:
+                case 6: // Ending in :
+                case 7: // Ending in tens of seconds
+                case 9: // Ending in .
+                case > 16:
+                    goto InvalidTime;
+                case 16: // 0.000_000_1 seconds
+                {
+                    var digit = source[15] - 48U; // '0' (this makes it uint)
+                    if (digit > 9) goto InvalidTime;
+                    ticks += digit;
+                    goto case 15;
+                }
+                case 15: // 0.000_001 seconds
+                {
+                    var digit = source[14] - 48U;
+                    if (digit > 9) goto InvalidTime;
+#if NET7_0_OR_GREATER
+                    ticks += TimeSpan.TicksPerMicrosecond * digit;
+#else
+                    ticks += 10 * digit;
+#endif
+                    goto case 14;
+                }
+                case 14: // 0.000_01 seconds
+                {
+                    var digit = source[13] - 48U;
+                    if (digit > 9) goto InvalidTime;
+#if NET7_0_OR_GREATER
+                    ticks += 10 * TimeSpan.TicksPerMicrosecond * digit;
+#else
+                    ticks += 100 * digit;
+#endif
+                    goto case 13;
+                }
+                case 13: // 0.000_1 seconds
+                {
+                    var digit = source[12] - 48U;
+                    if (digit > 9) goto InvalidTime;
+#if NET7_0_OR_GREATER
+                    ticks += 100 * TimeSpan.TicksPerMicrosecond * digit;
+#else
+                    ticks += 1000 * digit;
+#endif
+                    goto case 12;
+                }
+                case 12: // 0.001 seconds
+                {
+                    var digit = source[11] - 48U;
+                    if (digit > 9) goto InvalidTime;
+                    ticks += TimeSpan.TicksPerMillisecond * digit;
+                    goto case 11;
+                }
+                case 11: // 0.01 seconds
+                {
+                    var digit = source[10] - 48U;
+                    if (digit > 9) goto InvalidTime;
+                    ticks += 10 * TimeSpan.TicksPerMillisecond * digit;
+                    goto case 10;
+                }
+                case 10: // 0.1 seconds
+                {
+                    if (source[8] != (byte) '.') goto InvalidTime;
+                    var digit = source[9] - 48U;
+                    if (digit > 9) goto InvalidTime;
+                    ticks += 100 * TimeSpan.TicksPerMillisecond * digit;
+                    goto case 8;
+                }
+                case 8: // Seconds
+                {
+                    if (source[5] != (byte) ':') goto InvalidTime;
+                    var digit1 = source[6] - 48U;
+                    var digit2 = source[7] - 48U;
+                    if (digit1 > 5 || digit2 > 9) goto InvalidTime;
+                    ticks += TimeSpan.TicksPerSecond * (digit1 * 10 + digit2);
+                    goto case 5;
+                }
+                case 5: // Hours and minutes
+                {
+                    var hourDigit1 = source[0] - 48U;
+                    var hourDigit2 = source[1] - 48U;
+                    var minuteDigit1 = source[3] - 48U;
+                    var minuteDigit2 = source[4] - 48U;
+                    if (source[2] != (byte) ':' || hourDigit1 > 2 || hourDigit2 > 9 || hourDigit1 == 2 && hourDigit2 > 3 || minuteDigit1 > 5 || minuteDigit2 > 9) goto InvalidTime;
+                    ticks += TimeSpan.TicksPerHour * (hourDigit1 * 10 + hourDigit2);
+                    ticks += TimeSpan.TicksPerMinute * (minuteDigit1 * 10 + minuteDigit2);
+                    break;
+                }
+            }
+
+            bytesConsumed = source.Length;
+            value = new TimeOnly(ticks);
+            return true;
+
+            InvalidTime:
+            value = default;
+            bytesConsumed = 0;
+            return false;
+        }
+
         /// <summary>
         ///     2017-06-12T05:30:45.7680000-07:00
         ///     2017-06-12T05:30:45.7680000Z
@@ -80,8 +249,7 @@ namespace SpanJson.Helpers
         ///     2017-06-12T05:30:45 (local)
         ///     2017-06-12 (local)
         /// </summary>
-        private static bool TryParseDate(in ReadOnlySpan<byte> source, out Date value,
-            out int bytesConsumed)
+        private static bool TryParseDate(in ReadOnlySpan<byte> source, out Date value, out int bytesConsumed)
         {
             if (source.Length < 10)
             {
@@ -119,7 +287,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[5] - 48U;
                 var digit2 = source[6] - 48U;
 
-                if (digit1 > 1 || digit2 > 9)
+                if (digit1 > 1 || digit2 > 9 || digit1 == 1 && digit2 > 2)
                 {
                     value = default;
                     bytesConsumed = 0;
@@ -141,7 +309,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[8] - 48U;
                 var digit2 = source[9] - 48U;
 
-                if (digit1 > 3 || digit2 > 9)
+                if (digit1 > 3 || digit2 > 9 || digit1 == 3 && digit2 > 1)
                 {
                     value = default;
                     bytesConsumed = 0;
@@ -170,7 +338,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[11] - 48U;
                 var digit2 = source[12] - 48U;
 
-                if (digit1 > 2 || digit2 > 9)
+                if (digit1 > 2 || digit2 > 9 || digit1 == 2 && digit2 > 4)
                 {
                     value = default;
                     bytesConsumed = 0;
@@ -199,7 +367,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[14] - 48U;
                 var digit2 = source[15] - 48U;
 
-                if (digit1 > 6 || digit2 > 9)
+                if (digit1 > 5 || digit2 > 9 || hour == 24 && (digit1 > 0 || digit2 > 0))
                 {
                     value = default;
                     bytesConsumed = 0;
@@ -228,7 +396,7 @@ namespace SpanJson.Helpers
                 var digit1 = source[17] - 48U;
                 var digit2 = source[18] - 48U;
 
-                if (digit1 > 6 || digit2 > 9)
+                if (digit1 > 5 || digit2 > 9 || hour == 24 && (digit1 > 0 || digit2 > 0))
                 {
                     value = default;
                     bytesConsumed = 0;
@@ -246,14 +414,12 @@ namespace SpanJson.Helpers
             }
 
             var currentOffset = 19; // up until here everything is fixed
-
-
             var fraction = 0;
             if (source.Length > currentOffset + 1 && source[currentOffset] == (byte) '.')
             {
                 currentOffset++;
                 var temp = source[currentOffset++] - 48U; // one needs to exist
-                if (temp > 9)
+                if (temp > 9 || hour == 24 && temp > 0)
                 {
                     value = default;
                     bytesConsumed = 0;
@@ -265,11 +431,16 @@ namespace SpanJson.Helpers
                 for (digitCount = 0; digitCount < maxDigits; digitCount++)
                 {
                     var digit = source[currentOffset] - 48U;
+                    if (hour == 24 && digit > 0)
+                    {
+                        value = default;
+                        bytesConsumed = 0;
+                        return false;
+                    }
                     if (digit > 9)
                     {
                         break;
                     }
-
                     if (digitCount < 6)
                     {
                         temp = temp * 10 + digit;

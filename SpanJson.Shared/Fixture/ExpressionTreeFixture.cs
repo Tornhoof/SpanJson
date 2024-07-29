@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 
 namespace SpanJson.Shared.Fixture
 {
@@ -10,54 +11,45 @@ namespace SpanJson.Shared.Fixture
     {
         private readonly int? _seed;
 
-        private readonly ConcurrentDictionary<Type, Func<int, int, object>> _functorCache =
-            new ConcurrentDictionary<Type, Func<int, int, object>>();
+        private readonly ConcurrentDictionary<Type, Func<int, int, object>> _functorCache = new();
 
-        private readonly Dictionary<Type, IValueFixture> _valueFixtures = new Dictionary<Type, IValueFixture>();
+        private readonly Dictionary<Type, IValueFixture> _valueFixtures = new();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void AddValueFixture<T>(T valueFixture) where T : IValueFixture
+        {
+            _valueFixtures.Add(valueFixture.Type, valueFixture);
+        }
 
         public ExpressionTreeFixture(int? seed = null)
         {
             _seed = seed;
-            var stringFixture = new StringValueFixture(seed);
-            _valueFixtures.Add(stringFixture.Type, stringFixture);
-            var intFixture = new IntValueFixture(seed);
-            _valueFixtures.Add(intFixture.Type, intFixture);
-            var guidFixture = new GuidValueFixture();
-            _valueFixtures.Add(guidFixture.Type, guidFixture);
-            var dtoFixture = new DateTimeOffsetValueFixture();
-            _valueFixtures.Add(dtoFixture.Type, dtoFixture);
-            var dtFixture = new DateTimeValueFixture();
-            _valueFixtures.Add(dtFixture.Type, dtFixture);
-            var boolFixture = new BooleanValueFixture(seed);
-            _valueFixtures.Add(boolFixture.Type, boolFixture);
-            var decimalFixture = new DecimalValueFixture(seed);
-            _valueFixtures.Add(decimalFixture.Type, decimalFixture);
-            var longFixture = new LongValueFixture(seed);
-            _valueFixtures.Add(longFixture.Type, longFixture);
-            var floatFixture = new FloatValueFixture(seed);
-            _valueFixtures.Add(floatFixture.Type, floatFixture);
-            var doubleFixture = new DoubleValueFixture(seed);
-            _valueFixtures.Add(doubleFixture.Type, doubleFixture);
-            var byteFixture = new ByteValueFixture(seed);
-            _valueFixtures.Add(byteFixture.Type, byteFixture);
-            var shortFixture = new ShortValueFixture(seed);
-            _valueFixtures.Add(shortFixture.Type, shortFixture);
-            var versionFixture = new VersionFixture();
-            _valueFixtures.Add(versionFixture.Type, versionFixture);
-            var uriFixture = new UriFixture();
-            _valueFixtures.Add(uriFixture.Type, uriFixture);
-            var sbyteFixture = new SByteValueFixture(seed);
-            _valueFixtures.Add(sbyteFixture.Type, sbyteFixture);
-            var uintFixture = new UintValueFixture(seed);
-            _valueFixtures.Add(uintFixture.Type, uintFixture);
-            var ushortFixture = new UshortValueFixture(seed);
-            _valueFixtures.Add(ushortFixture.Type, ushortFixture);
-            var ulongFixture = new UlongValueFixture(seed);
-            _valueFixtures.Add(ulongFixture.Type, ulongFixture);
-            var timespanFixture = new TimespanFixture();
-            _valueFixtures.Add(timespanFixture.Type, timespanFixture);
-            var charFixture = new CharValueFixture(seed);
-            _valueFixtures.Add(charFixture.Type, charFixture);
+            AddValueFixture(new StringValueFixture(seed));
+            AddValueFixture(new UriFixture());
+
+            AddValueFixture(new BooleanValueFixture(seed));
+            AddValueFixture(new ByteValueFixture(seed));
+            AddValueFixture(new CharValueFixture(seed));
+            AddValueFixture(new UshortValueFixture(seed));
+            AddValueFixture(new UintValueFixture(seed));
+            AddValueFixture(new UlongValueFixture(seed));
+
+            AddValueFixture(new SByteValueFixture(seed));
+            AddValueFixture(new ShortValueFixture(seed));
+            AddValueFixture(new IntValueFixture(seed));
+            AddValueFixture(new LongValueFixture(seed));
+
+            AddValueFixture(new FloatValueFixture(seed));
+            AddValueFixture(new DoubleValueFixture(seed));
+            AddValueFixture(new DecimalValueFixture(seed));
+
+            AddValueFixture(new DateTimeOffsetValueFixture());
+            AddValueFixture(new DateTimeValueFixture());
+            AddValueFixture(new TimespanFixture());
+            AddValueFixture(new DateOnlyFixture());
+            AddValueFixture(new TimeOnlyFixture());
+
+            AddValueFixture(new GuidValueFixture());
+            AddValueFixture(new VersionFixture());
         }
 
         public T Configure<T>() where T : IValueFixture
@@ -95,7 +87,7 @@ namespace SpanJson.Shared.Fixture
         {
             var breakLabel = Expression.Label("LoopBreak");
             var length = Expression.Variable(typeof(int), "length");
-            var block = Expression.Block(new[] {index, length},
+            var block = Expression.Block(new[] { index, length },
                 Expression.Assign(index, Expression.Constant(0)),
                 Expression.Assign(length, lengthExpression),
                 Expression.Loop(
@@ -136,7 +128,7 @@ namespace SpanJson.Shared.Fixture
                     var isRecursion = IsRecursion(type, propertyType) || IsRecursion(propertyType, type);
                     var memberAccess = Expression.MakeMemberAccess(typedOutput, propertyInfo);
                     var expression = GenerateValue(memberAccess, repeatCount,
-                        isRecursion ? Expression.Decrement(recursiveCount) : (Expression) recursiveCount, propertyType);
+                        isRecursion ? Expression.Decrement(recursiveCount) : recursiveCount, propertyType);
                     subExpressions.Add(expression);
                 }
             }
@@ -144,12 +136,12 @@ namespace SpanJson.Shared.Fixture
             var returnTarget = Expression.Label(typeof(object));
             var returnLabel = Expression.Label(returnTarget, Expression.Convert(typedOutput, typeof(object)));
             subExpressions.Add(returnLabel);
-            var block = Expression.Block(new[] {typedOutput}, subExpressions);
+            var block = Expression.Block(new[] { typedOutput }, subExpressions);
             var lambda = Expression.Lambda<Func<int, int, object>>(block, repeatCount, recursiveCount);
             return lambda.Compile();
         }
 
-        private bool IsRecursion(Type parentType, Type type)
+        private static bool IsRecursion(Type parentType, Type type)
         {
             if (type == parentType)
             {
@@ -207,7 +199,7 @@ namespace SpanJson.Shared.Fixture
                 var elementType = type.GetGenericArguments()[0];
                 expressionList.Add(Expression.Assign(generatedValue, Expression.New(type)));
                 var index = Expression.Parameter(typeof(int), "i");
-                var addMi = type.GetMethod("Add", new[] {elementType});
+                var addMi = type.GetMethod("Add", new[] { elementType });
                 var childValue = Expression.Parameter(elementType);
                 var loopBlock = new List<Expression>
                 {
@@ -216,7 +208,7 @@ namespace SpanJson.Shared.Fixture
                 };
                 if (loopBlock.Count > 0)
                 {
-                    var loopContent = Expression.Block(new[] {childValue, index}, loopBlock);
+                    var loopContent = Expression.Block(new[] { childValue, index }, loopBlock);
                     expressionList.Add(ForLoop(index, repeatCount, loopContent));
                 }
 
@@ -247,25 +239,25 @@ namespace SpanJson.Shared.Fixture
             return result.Count > 1 ? Expression.Block(result) : result.Single();
         }
 
-        private Expression InvokeCreate(Type type, Expression generatedValue, Expression repeatCount,
+        private BinaryExpression InvokeCreate(Type type, Expression generatedValue, Expression repeatCount,
             Expression recursiveCount)
         {
             var mi = typeof(ExpressionTreeFixture).GetMethod(nameof(Create),
-                new[] {typeof(Type), typeof(int), typeof(int)});
+                new[] { typeof(Type), typeof(int), typeof(int) });
             return Expression.Assign(generatedValue,
                 Expression.Convert(
                     Expression.Call(Expression.Constant(this), mi,
-                        new[] {Expression.Constant(type), repeatCount, recursiveCount}),
+                        new[] { Expression.Constant(type), repeatCount, recursiveCount }),
                     generatedValue.Type));
         }
 
-        private Expression MakeIfExpression(Expression recursiveCount, params Expression[] input)
+        private static ConditionalExpression MakeIfExpression(Expression recursiveCount, params Expression[] input)
         {
             return Expression.IfThen(Expression.GreaterThanOrEqual(recursiveCount, Expression.Constant(0)),
                 input.Length > 1 ? Expression.Block(input) : input.Single());
         }
 
-        private Expression MakeIfExpression(Expression recursiveCount, IList<Expression> input)
+        private static ConditionalExpression MakeIfExpression(Expression recursiveCount, IList<Expression> input)
         {
             return Expression.IfThen(Expression.GreaterThanOrEqual(recursiveCount, Expression.Constant(0)),
                 input.Count > 1 ? Expression.Block(input) : input.Single());

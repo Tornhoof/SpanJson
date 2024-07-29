@@ -46,48 +46,25 @@ namespace SpanJson.Shared
         public static bool TrueEquals<T>(this T? a, T? b)
             where T : struct
         {
-            if (ReferenceEquals(a, b))
-            {
-                return true;
+            if (a is null) {
+                return b is null;
             }
-
-            if (!a.HasValue)
-            {
+            if (b is null) {
                 return false;
             }
-
-            if (!b.HasValue)
-            {
-                return false;
-            }
-
             return a.Value.Equals(b.Value);
         }
 
         public static bool TrueEquals<T>(this T a, T b)
             where T : class, IGenericEquality<T>
         {
-            if (ReferenceEquals(a, b))
-            {
-                return true;
+            if (a is null) {
+                return b is null;
             }
-
-            if (ReferenceEquals(a, null) && ReferenceEquals(b, null))
-            {
-                return true;
-            }
-
-            if (ReferenceEquals(a, null))
-            {
+            if (b is null) {
                 return false;
             }
-
-            if (ReferenceEquals(b, null))
-            {
-                return false;
-            }
-
-            return a.Equals(b);
+            return ReferenceEquals(a, b) || a.Equals(b);
         }
 
         public static bool TrueEqualsList<T>(this IEnumerable<T> a, IEnumerable<T> b)
@@ -104,60 +81,53 @@ namespace SpanJson.Shared
         public static bool TrueEqualsListDynamic<T>(this IEnumerable<T> a, IEnumerable<dynamic> b)
             where T : class, IGenericEquality<T>
         {
+            if (a is null)
+            {
+                return b is null;
+            }
+
+            if (b is null)
+            {
+                return false;
+            }
+
             if (ReferenceEquals(a, b))
             {
                 return true;
             }
 
-            if (ReferenceEquals(a, null) && ReferenceEquals(b, null))
+            using var e1 = a.GetEnumerator();
+            using var e2 = b.GetEnumerator();
+            while (true)
             {
-                return true;
-            }
-
-            if (ReferenceEquals(a, null))
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(b, null))
-            {
-                return false;
-            }
-
-            using (var e1 = a.GetEnumerator())
-            using (var e2 = b.GetEnumerator())
-            {
-                while (true)
+                var e1Next = e1.MoveNext();
+                var e2Next = e2.MoveNext();
+                if (e1Next != e2Next)
                 {
-                    var e1Next = e1.MoveNext();
-                    var e2Next = e2.MoveNext();
-                    if (e1Next != e2Next)
-                    {
-                        return false;
-                    }
+                    return false;
+                }
 
-                    if (!e1Next && !e2Next)
-                    {
-                        break;
-                    }
+                if (!e1Next && !e2Next)
+                {
+                    break;
+                }
 
-                    var c1 = e1.Current;
-                    var c2 = e2.Current;
+                var c1 = e1.Current;
+                var c2 = e2.Current;
 
-                    if (c1 == null && c2 != null)
-                    {
-                        return false;
-                    }
+                if (c1 is null && c2 is not null)
+                {
+                    return false;
+                }
 
-                    if (c2 == null && c1 != null)
-                    {
-                        return false;
-                    }
+                if (c2 is null && c1 is not null)
+                {
+                    return false;
+                }
 
-                    if (!c1.EqualsDynamic(c2))
-                    {
-                        return false;
-                    }
+                if (!c1.EqualsDynamic(c2))
+                {
+                    return false;
                 }
             }
 

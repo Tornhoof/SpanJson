@@ -6,30 +6,33 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
 ## What is supported ##
 - Serialization and Deserialization into/from byte arrays, strings, TextWriter/TextReader and streams
 - Serialization and Deserialization of Arrays, Lists, Complex types of the following Base Class Library types:
-
-``sbyte``, ``Int16``, ``Int32``, ``Int64``, ``byte``,
-``UInt16``, ``UInt32``, ``UInt64``, ``Single``, ``Double``,
-``decimal``, ``bool``, ``char``, ``DateTime``, ``DateTimeOffset``,
-``TimeSpan``, ``Guid``, ``string``, ``Version``, ``Uri``, ``Tuple<,>``,``ValueTuple<,>``, ``KeyValuePair<,>``
+    - ``bool``, ``char``
+    - ``sbyte``, ``Int16``, ``Int32``, ``Int64``
+    - ``byte``, ``UInt16``, ``UInt32``, ``UInt64``
+    - ``Single``, ``Double``, ``decimal``
+    - ``DateTime``, ``DateTimeOffset``, ``TimeSpan``, ``DateOnly``, ``TimeOnly``
+    - ``string``, ``Uri``
+    - ``Guid``,  ``Version``
+    - ``Tuple<,>``,``ValueTuple<,>``, ``KeyValuePair<,>``
 - Public Properties and Fields are considered for serialization/deserialization
 - DateTime{Offset} is in ISO8601 mode with profile https://www.w3.org/TR/NOTE-datetime
 - Dynamics
 - Enums (string and integer, for integer see section Custom Resolver), incl. Flags
 - Anonymous types
-- ``Dictionary``, ``ConcurrentDictionary`` with string/int/enum as key, the enum is formatted as a string.
+- ``Dictionary``, ``ConcurrentDictionary`` with string/int/enum as key, the enum is formatted as a string
 - Serialization/Deserialization of most IEnumerable<T> types (Stack and ConcurrentStack are not supported)
 - Support for ``[DataMember(Name="MemberName")]`` to set field name
 - Support for ``[IgnoreDataMember]`` to ignore a specific member
-- Support for ``ShouldSerializeXXX`` pattern to decide at runtime if a member should be serialized
+- Support for ``ShouldSerializeXXX()`` method pattern to decide at runtime if a member should be serialized
 - Support for ``[EnumMember]`` to specify the string value of the enum value
-- Support for Immutable Collections, full Serialization/Deserialization for ``ImmutableList``, ``ImmutableArray``, ``ImmutableDictionary``, ``ImmutableSortedDictionary``. ImmutableStack is not supported.
-- Support for read-only collections, ``ReadOnlyCollection``, ``ReadOnlyDictionary``, they are deserialized into a writeable type (i.e. List or Dictionary), then the read-only version is created via an appropriate constructor overload.
-- Support for tuples currently excludes the last type with 8 arguments (TRest)
+- Support for Immutable Collections, full Serialization/Deserialization for ``ImmutableList``, ``ImmutableArray``, ``ImmutableDictionary``, ``ImmutableSortedDictionary``. ``ImmutableStack`` is not supported
+- Support for read-only collections, ``ReadOnlyCollection``, ``ReadOnlyDictionary``, they are deserialized into a writeable type (i.e. ``List`` or ``Dictionary``), then the read-only version is created via an appropriate constructor overload
+- Support for tuples currently excludes the last type with 8 arguments (``TRest``)
 - Support for annotating a constructor with ``[JsonConstructor]`` to use that one instead of assigning members during deserialization
 - Support for custom serializers with ``[JsonCustomSerializer]`` to use that one instead of the normal formatter, see examples below
 - Support for Base64 encoded byte arrays, see the Custom Resolvers example below
-- Support for annotating a IDictionary<string,object> with ``[JsonExtensionData]``. Serialization will write all values from the dictionary as additional attributes. Deserialization will deserialize all unknown attributes into it.
-  This does not work together with the Dynamic Language Runtime (DLR) support or the ``[JsonConstructor]`` attribute. See Example below. The Dictionary will also honor the Case Setting (i.e. CamelCase) and null behaviour for the dictionary keys.
+- Support for annotating a ``IDictionary<string,object>`` with ``[JsonExtensionData]``. Serialization will write all values from the dictionary as additional attributes. Deserialization will deserialize all unknown attributes into it.
+  This does not work together with the Dynamic Language Runtime (DLR) support or the ``[JsonConstructor]`` attribute. See example below. The ``Dictionary`` will also honor the Case Setting (i.e. CamelCase) and ``null`` behaviour for the dictionary keys
 - Pretty printing JSON
 - Minify JSON
 - Different 'Resolvers' to control general behaviour:
@@ -37,14 +40,12 @@ See https://github.com/Tornhoof/SpanJson/wiki/Performance for Benchmarks
   - Exclude Nulls with Original Case (default): ``ExcludeNullsOriginalCaseResolver``
   - Include Nulls with Camel Case: ``IncludeNullsCamelCaseResolver``
   - Include Nulls with Original Case: ``IncludeNullsOriginalCaseResolver``
-  
-- Custom Resolvers to control behaviour much more detailed.
- 
- 
+- Custom Resolvers to control behaviour how you desire
+
+
 ## How to use it ##
 ```csharp
-Synchronous API:
-
+// Synchronous API:
 var result = JsonSerializer.Generic.Utf16.Serialize(input);
 var result = JsonSerializer.NonGeneric.Utf16.Serialize(input);
 var result = JsonSerializer.Generic.Utf16.Deserialize<Input>(input);
@@ -61,8 +62,7 @@ var result = JsonSerializer.NonGeneric.Utf16.SerializeToArrayPool(input);
 var result = JsonSerializer.Generic.Utf8.SerializeToArrayPool(input);
 var result = JsonSerializer.NonGeneric.Utf8.SerializeToArrayPool(input);
 
-Asynchronous API:
-
+// Asynchronous API:
 ValueTask result = JsonSerializer.Generic.Utf16.SerializeAsync(input, textWriter, cancellationToken);
 ValueTask result = JsonSerializer.NonGeneric.Utf16.SerializeAsync(input, textWriter, cancellationToken);
 ValueTask<Input> result = JsonSerializer.Generic.Utf16.DeserializeAsync<Input>(textReader,cancellationToken);
@@ -72,17 +72,14 @@ ValueTask result = JsonSerializer.NonGeneric.Utf8.SerializeAsync(input, stream, 
 ValueTask<Input> result = JsonSerializer.Generic.Utf8.DeserializeAsync<Input>(input, stream, cancellationToken);
 ValueTask<object> result = JsonSerializer.NonGeneric.Utf8.DeserializeAsync(input, stream, typeof(Input) cancellationToken);
 
-To use other resolvers use the appropriate overloads,e.g.:
-
+// To use other resolvers use the appropriate overloads,e.g.:
 var serialized = JsonSerializer.NonGeneric.Utf16.Serialize<Input, IncludeNullsOriginalCaseResolver<char>>(includeNull);
 
-Pretty Printing:
-
+// Pretty printing:
 var pretty = JsonSerializer.PrettyPrinter.Print(serialized); // this works by reading the JSON and writing it out again with spaces and line breaks
 
-Minify:
+// Minify:
 var minified = JsonSerializer.Minifier.Minify(serialized); // this works by reading the JSON and writing it out again without spaces and line breaks
-
 ```
 
 Full example:
@@ -96,11 +93,8 @@ namespace Test
     {
         private static void Main(string[] args)
         {
-
             var input = new Input { Text = "Hello World" };
-
             var serialized = JsonSerializer.Generic.Utf16.Serialize(input);
-
             var deserialized = JsonSerializer.Generic.Utf16.Deserialize<Input>(serialized);
         }
     }
@@ -142,7 +136,6 @@ namespace Test
             Value = second;
         }
 
-
         public string Key { get; }
         public int Value { get; }
     }
@@ -161,8 +154,8 @@ public class TestDTO
 public sealed class LongAsStringFormatter : ICustomJsonFormatter<long>
 {
     public static readonly LongAsStringFormatter Default = new LongAsStringFormatter();
-    
-    public object Arguments {get;set;} // the Argument from the attribute will be assigned
+
+    public object Arguments { get; set; } // the Argument from the attribute will be assigned
 
     public void Serialize(ref JsonWriter<char> writer, long value)
     {
@@ -199,7 +192,7 @@ public sealed class LongAsStringFormatter : ICustomJsonFormatter<long>
 ```
 
 ```csharp
-// It's possible to annotate custom types a custom formatter to always use the custom formatter 
+// It's possible to annotate custom types a custom formatter to always use the custom formatter
 [JsonCustomSerializer(typeof(TwcsCustomSerializer))]
 public class TypeWithCustomSerializer : IEquatable<TypeWithCustomSerializer>
 {
@@ -223,11 +216,8 @@ public sealed class TwcsCustomSerializer : ICustomJsonFormatter<TypeWithCustomSe
         }
 
         writer.WriteBeginObject();
-
         writer.WriteName(nameof(TypeWithCustomSerializer.Value));
-
         writer.WriteInt64(value.Value);
-
         writer.WriteEndObject();
     }
 
@@ -281,10 +271,10 @@ public class ExtensionTest
 
 
 ## ASP.NET Core 6.0+ Formatter ##
-You can enable SpanJson as the default JSON formatter in ASP.NET Core 6.0+ by using the Nuget package [SpanJson.AspNetCore.Formatter](https://www.nuget.org/packages/SpanJson.AspNetCore.Formatter).
+You can enable ``SpanJson`` as the default JSON formatter in ASP.NET Core 6.0+ by using the NuGet package [SpanJson.AspNetCore.Formatter](https://www.nuget.org/packages/SpanJson.AspNetCore.Formatter).
 To enable it, add one of the following extension methods to the ``AddMvc()`` call in ``ConfigureServices``
-* AddSpanJson for a resolver with ASP.NET Core 6.0 defaults: IncludeNull, CamelCase, Integer Enums
-* AddSpanJsonCustom for a custom resolver (one of the default resolvers or custom)
+- ``AddSpanJson`` for a resolver with ASP.NET Core 6.0 defaults: IncludeNull, CamelCase, Integer Enums
+- ``AddSpanJsonCustom`` for a custom resolver (one of the default resolvers or custom)
 
 ```csharp
 // This method gets called by the runtime. Use this method to add services to the container.
@@ -294,12 +284,12 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-``AddSpanJson`` is the closest in behaviour compared to the default JSON.NET formatter, this used the AspNetCoreDefaultResolver type.
-Note: This clears the Formatter list, if you have other formatters, e.g. JSON Patch or XML, you need to re-add them.
+``AddSpanJson`` is the closest in behaviour compared to the default JSON.NET formatter; this uses the ``AspNetCoreDefaultResolver`` type.
+### **Note:** This clears the ``Formatter`` list; if you have other formatters (e.g. JSON Patch or XML) you need to readd them.
 
 ## Custom Resolver ##
 As each option is a concrete class it is infeasible to supply concrete classes for each possible option combination.
-To support a custom combination implement your own custom formatter resolvers
+To support a custom combination implement your own custom formatter resolvers.
 ```csharp
 public sealed class CustomResolver<TSymbol> : ResolverBase<TSymbol, CustomResolver<TSymbol>> where TSymbol : struct
 {

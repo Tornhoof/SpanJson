@@ -344,7 +344,6 @@ namespace SpanJson
             return default;
         }
 
-
         [MethodImpl(MethodImplOptions.NoInlining)]
         private TimeSpan ParseUtf8TimeSpanAllocating(in ReadOnlySpan<byte> input)
         {
@@ -356,6 +355,73 @@ namespace SpanJson
             }
 
             ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.TimeSpan);
+            return default;
+        }
+
+        public DateOnly ReadUtf8DateOnly()
+        {
+            SkipWhitespaceUtf8();
+            var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
+            return escapedCharsSize == 0 ? ParseUtf8DateOnly(span) : ParseUtf8DateOnlyAllocating(span);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private DateOnly ParseUtf8DateOnly(in ReadOnlySpan<byte> span)
+        {
+            if (DateTimeParser.TryParseDateOnly(span, out var value))
+            {
+                return value;
+            }
+
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateOnly);
+            return default;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private DateOnly ParseUtf8DateOnlyAllocating(in ReadOnlySpan<byte> input)
+        {
+            Span<byte> span = stackalloc byte[JsonSharedConstant.MaxDateOnlyLength];
+            UnescapeUtf8Bytes(input, ref span);
+            if (DateTimeParser.TryParseDateOnly(span, out var value))
+            {
+                return value;
+            }
+
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateOnly);
+            return default;
+        }
+
+        public TimeOnly ReadUtf8TimeOnly()
+        {
+            SkipWhitespaceUtf8();
+            var span = ReadUtf8StringSpanInternal(out var escapedCharsSize);
+            return escapedCharsSize == 0 ? ParseUtf8TimeOnly(span) : ParseUtf8TimeOnlyAllocating(span);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private TimeOnly ParseUtf8TimeOnly(in ReadOnlySpan<byte> span)
+        {
+            if (DateTimeParser.TryParseTimeOnly(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            {
+                return value;
+            }
+
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.TimeOnly);
+            return default;
+        }
+
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private TimeOnly ParseUtf8TimeOnlyAllocating(in ReadOnlySpan<byte> input)
+        {
+            Span<byte> span = stackalloc byte[JsonSharedConstant.MaxTimeOnlyLength];
+            UnescapeUtf8Bytes(input, ref span);
+            if (DateTimeParser.TryParseTimeOnly(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            {
+                return value;
+            }
+
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.TimeOnly);
             return default;
         }
 

@@ -278,7 +278,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private DateTime ParseUtf16DateTime(in ReadOnlySpan<char> span)
         {
-            if (DateTimeParser.TryParseDateTime(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            if (DateTimeParser.TryParseDateTime(span, out var value, out var charsConsumed) && span.Length == charsConsumed)
             {
                 return value;
             }
@@ -293,7 +293,7 @@ namespace SpanJson
         {
             Span<char> span = stackalloc char[JsonSharedConstant.MaxDateTimeLength];
             UnescapeUtf16Chars(input, ref span);
-            if (DateTimeParser.TryParseDateTime(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            if (DateTimeParser.TryParseDateTime(span, out var value, out var charsConsumed) && span.Length == charsConsumed)
             {
                 return value;
             }
@@ -312,7 +312,7 @@ namespace SpanJson
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private DateTimeOffset ParseUtf16DateTimeOffset(in ReadOnlySpan<char> span)
         {
-            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var charsConsumed) && span.Length == charsConsumed)
             {
                 return value;
             }
@@ -327,7 +327,7 @@ namespace SpanJson
         {
             Span<char> span = stackalloc char[JsonSharedConstant.MaxDateTimeOffsetLength];
             UnescapeUtf16Chars(input, ref span);
-            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var bytesConsumed) && span.Length == bytesConsumed)
+            if (DateTimeParser.TryParseDateTimeOffset(span, out var value, out var charsConsumed) && span.Length == charsConsumed)
             {
                 return value;
             }
@@ -349,6 +349,74 @@ namespace SpanJson
             Span<char> span = stackalloc char[JsonSharedConstant.MaxTimeSpanLength];
             UnescapeUtf16Chars(input, ref span);
             return ConvertTimeSpanViaUtf8(span, _pos);
+        }
+
+        public DateOnly ReadUtf16DateOnly()
+        {
+            SkipWhitespaceUtf16();
+            var span = ReadUtf16StringSpanInternal(out var escapedCharsSize);
+            return escapedCharsSize == 0 ? ParseUtf16DateOnly(span) : ParseUtf16DateOnlyAllocating(span);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private DateOnly ParseUtf16DateOnly(in ReadOnlySpan<char> span)
+        {
+            if (DateTimeParser.TryParseDateOnly(span, out var value))
+            {
+                return value;
+            }
+
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateOnly);
+            return default;
+        }
+
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private DateOnly ParseUtf16DateOnlyAllocating(in ReadOnlySpan<char> input)
+        {
+            Span<char> span = stackalloc char[JsonSharedConstant.MaxDateOnlyLength];
+            UnescapeUtf16Chars(input, ref span);
+            if (DateTimeParser.TryParseDateOnly(span, out var value))
+            {
+                return value;
+            }
+
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.DateOnly);
+            return default;
+        }
+
+        public TimeOnly ReadUtf16TimeOnly()
+        {
+            SkipWhitespaceUtf16();
+            var span = ReadUtf16StringSpanInternal(out var escapedCharsSize);
+            return escapedCharsSize == 0 ? ParseUtf16TimeOnly(span) : ParseUtf16TimeOnlyAllocating(span);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private TimeOnly ParseUtf16TimeOnly(in ReadOnlySpan<char> span)
+        {
+            if (DateTimeParser.TryParseTimeOnly(span, out var value, out var charsConsumed) && span.Length == charsConsumed)
+            {
+                return value;
+            }
+
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.TimeOnly);
+            return default;
+        }
+
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private TimeOnly ParseUtf16TimeOnlyAllocating(in ReadOnlySpan<char> input)
+        {
+            Span<char> span = stackalloc char[JsonSharedConstant.MaxTimeOnlyLength];
+            UnescapeUtf16Chars(input, ref span);
+            if (DateTimeParser.TryParseTimeOnly(span, out var value, out var charsConsumed) && span.Length == charsConsumed)
+            {
+                return value;
+            }
+
+            ThrowJsonParserException(JsonParserException.ParserError.InvalidSymbol, JsonParserException.ValueType.TimeOnly);
+            return default;
         }
 
         public Guid ReadUtf16Guid()
@@ -390,7 +458,7 @@ namespace SpanJson
 
             // still slow in .NET Core 3.0
             byteSpan = byteSpan.Slice(0, span.Length);
-            if (Utf8Parser.TryParse(byteSpan, out TimeSpan value, out var bytesConsumed) && bytesConsumed == span.Length)
+            if (Utf8Parser.TryParse(byteSpan, out TimeSpan value, out var bytesConsumed) && bytesConsumed == byteSpan.Length)
             {
                 return value;
             }

@@ -55,6 +55,56 @@ namespace SpanJson.Helpers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryFormat(DateOnly value, Span<char> output, out int charsWritten)
+        {
+            if (output.Length < JsonSharedConstant.MaxDateOnlyLength - 2)
+            {
+                charsWritten = default;
+                return false;
+            }
+
+            ref var c = ref MemoryMarshal.GetReference(output);
+            WriteFourDigits((uint) value.Year, ref c, 0);
+            Unsafe.Add(ref c, 4) = '-';
+            WriteTwoDigits(value.Month, ref c, 5);
+            Unsafe.Add(ref c, 7) = '-';
+            WriteTwoDigits(value.Day, ref c, 8);
+            charsWritten = 10;
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool TryFormat(TimeOnly value, Span<char> output, out int charsWritten)
+        {
+            if (output.Length < JsonSharedConstant.MaxTimeOnlyLength - 2)
+            {
+                charsWritten = default;
+                return false;
+            }
+
+            ref var c = ref MemoryMarshal.GetReference(output);
+            WriteTwoDigits(value.Hour, ref c, 0);
+            Unsafe.Add(ref c, 2) = ':';
+            WriteTwoDigits(value.Minute, ref c, 3);
+            Unsafe.Add(ref c, 5) = ':';
+            var ticksRemaining = value.Ticks % TimeSpan.TicksPerMinute;
+            if (ticksRemaining == 0) {
+                charsWritten = 5;
+                return true;
+            }
+            WriteTwoDigits((int) (ticksRemaining / TimeSpan.TicksPerSecond), ref c, 6);
+            ticksRemaining %= TimeSpan.TicksPerSecond;
+            if (ticksRemaining == 0) {
+                charsWritten = 8;
+                return true;
+            }
+            Unsafe.Add(ref c, 8) = '.';
+            WriteDigits((uint) ticksRemaining, ref c, 9);
+            charsWritten = 16;
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void WriteDateAndTime(DateTime value, ref char c, out int charsWritten)
         {
             WriteFourDigits((uint) value.Year, ref c, 0);

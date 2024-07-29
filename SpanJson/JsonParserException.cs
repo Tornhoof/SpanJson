@@ -26,6 +26,8 @@ namespace SpanJson
             DateTime,
             DateTimeOffset,
             TimeSpan,
+            DateOnly,
+            TimeOnly,
             Guid,
             Array,
         }
