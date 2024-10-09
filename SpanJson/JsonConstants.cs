@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace SpanJson
 {
@@ -57,5 +58,7 @@ namespace SpanJson
 
         public static ReadOnlySpan<char> NewLine => new[] {'\r', '\n'};
         public static ReadOnlySpan<char> NullTerminator => new[] {'\0'};
+
+        public const NumberStyles Float = NumberStyles.AllowExponent | NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign;
     }
 }

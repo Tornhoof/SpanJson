@@ -54,12 +54,12 @@ namespace SpanJson
 
         public float ReadUtf16Single()
         {
-            return float.Parse(ReadUtf16NumberInternal(), NumberStyles.Float, CultureInfo.InvariantCulture);
+            return float.Parse(ReadUtf16NumberInternal(), JsonUtf16Constant.Float, CultureInfo.InvariantCulture);
         }
 
         public double ReadUtf16Double()
         {
-            return double.Parse(ReadUtf16NumberInternal(), NumberStyles.Float, CultureInfo.InvariantCulture);
+            return double.Parse(ReadUtf16NumberInternal(), JsonUtf16Constant.Float, CultureInfo.InvariantCulture);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -683,7 +683,7 @@ namespace SpanJson
 
         public decimal ReadUtf16Decimal()
         {
-            return decimal.Parse(ReadUtf16NumberInternal(), NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+            return decimal.Parse(ReadUtf16NumberInternal(), JsonUtf16Constant.Float, CultureInfo.InvariantCulture);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
